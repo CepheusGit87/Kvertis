@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>Kvertis.Queue</RootNamespace>
+    <Description>Kvertis job queue: scheduling, parallelism, progress, pause/cancel, history. Platform-neutral.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kvertis.Engine\Kvertis.Engine.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Kvertis.Queue.Tests" />
+  </ItemGroup>
+</Project>
