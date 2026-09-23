@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+  x:Class="Kvertis.App.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Grid x:Name="RootGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="48" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <!-- Custom title bar (Mica shows through). Only AppTitleBar is the drag region; the buttons stay clickable. -->
+    <Grid x:Name="TitleBarGrid" Grid.Row="0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition x:Name="CaptionButtonsColumn" Width="140" />
+      </Grid.ColumnDefinitions>
+
+      <Button
+        x:Name="BackButton"
+        x:Uid="Window_Back_Button"
+        Grid.Column="0"
+        Width="40"
+        Height="32"
+        Margin="8,0,0,0"
+        VerticalAlignment="Center"
+        Background="Transparent"
+        BorderThickness="0"
+        Visibility="Collapsed"
+        Click="OnBackClick">
+        <FontIcon FontSize="14" Glyph="&#xE72B;" />
+      </Button>
+
+      <Grid x:Name="AppTitleBar" Grid.Column="1" Background="Transparent">
+        <StackPanel Margin="12,0,0,0" VerticalAlignment="Center" Orientation="Horizontal" Spacing="10">
+          <Image Width="18" Height="18" Source="ms-appx:///Assets/Square44x44Logo.png" />
+          <TextBlock x:Uid="Window_Title_Text" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+        </StackPanel>
+      </Grid>
+
+      <StackPanel Grid.Column="2" VerticalAlignment="Center" Orientation="Horizontal" Spacing="4">
+        <Button
+          x:Name="HistoryButton"
+          x:Uid="Window_History_Button"
+          Height="32"
+          Background="Transparent"
+          BorderThickness="0"
+          Click="OnHistoryClick">
+          <FontIcon FontSize="16" Glyph="&#xE81C;" />
+        </Button>
+        <Button
+          x:Name="SettingsButton"
+          x:Uid="Window_Settings_Button"
+          Height="32"
+          Background="Transparent"
+          BorderThickness="0"
+          Click="OnSettingsClick">
+          <FontIcon FontSize="16" Glyph="&#xE713;" />
+        </Button>
+        <Button
+          x:Name="ProButton"
+          x:Uid="Window_Pro_Button"
+          Height="32"
+          Background="Transparent"
+          BorderThickness="0"
+          Click="OnProClick">
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <FontIcon FontSize="16" Glyph="&#xE734;" />
+            <TextBlock x:Name="ProStatusText" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+          </StackPanel>
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <Frame x:Name="ContentFrame" Grid.Row="1" />
+  </Grid>
+</Window>

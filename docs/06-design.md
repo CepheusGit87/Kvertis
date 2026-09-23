@@ -101,3 +101,14 @@ Alle Animationen respektieren die Systemeinstellung „Animationen reduzieren“
 ## Logo und Icon
 
 Platzhalter: ein abstraktes Symbol aus zwei ineinander übergehenden Formen (Wandlung), einfarbig auf Akzentfarbe. Kein Bezug zu bestehenden Marken. Wird später ersetzt; alle Größen liegen unter `Assets/` und werden aus einer SVG-Quelle erzeugt.
+
+## Umsetzungsstand und Abweichungen (UI, 2026-09-23)
+
+Erste Umsetzung in `src/Kvertis.App` (noch nicht unter Windows gebaut). Abweichungen vom Entwurf oben, bewusst klein gehalten:
+
+- **Mehrfachauswahl:** Statt eines eigenen Format-Chips „Alle: → JPG“ in der Aktionsleiste gibt es im „Mehr“-Panel jeder Karte „Auf alle anwenden“ (Format, Qualität, Zielgröße, Metadaten, Dateiname für alle bereiten Karten derselben Kategorie). Grund: ein Bedienelement weniger in der Aktionsleiste; nachrüstbar.
+- **„Mehr“-Panel:** Auflösung, Abtastrate und Bitrate sind noch nicht einzeln einstellbar; sie kommen aus der gewählten Voreinstellung (`PresetCatalog`). Qualität, Zielgröße, Metadaten und Dateiname sind umgesetzt.
+- **Vorschau Audio:** Zwei Abspielelemente (Original und 10-Sekunden-Ausschnitt), noch ohne Wellenform.
+- **Karten-Schatten:** Karten haben Rand und Kartenhintergrund aus den Theme-Ressourcen, aber noch keinen `ThemeShadow` (Tiefe je Zustand). Grund: Schatten brauchen unter Windows gezielte Tests (Hoher Kontrast, Performance bei vielen Karten).
+- **Schmale Fenster:** Unter 900 px Breite rutschen die Buttons der Aktionsleiste in eine zweite Zeile (`AdaptiveTrigger`).
+- **Tastatur:** Strg+O, Strg+V (nicht in Textfeldern), Entf und Leertaste auf der markierten Karte, Enter auf einer Karte startet. Enter auf dem Start-Button wirkt wie immer.

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+  x:Class="Kvertis.App.Views.AboutPage"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <ScrollViewer>
+    <StackPanel MaxWidth="720" Padding="24,8,24,24" Spacing="16">
+      <StackPanel Orientation="Horizontal" Spacing="16">
+        <Image Width="64" Height="64" Source="ms-appx:///Assets/Square150x150Logo.png" />
+        <StackPanel VerticalAlignment="Center" Spacing="2">
+          <TextBlock x:Uid="About_Title" Style="{StaticResource TitleTextBlockStyle}" />
+          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind VersionText}" />
+        </StackPanel>
+      </StackPanel>
+
+      <TextBlock x:Uid="About_Description" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+
+      <Border Style="{StaticResource CardBorderStyle}">
+        <StackPanel Spacing="8">
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <FontIcon Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE72E;" />
+            <TextBlock x:Uid="About_Privacy_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
+          </StackPanel>
+          <TextBlock x:Uid="About_Privacy_Text" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <Button x:Uid="About_Licenses_Button" Click="OnLicensesClick" />
+    </StackPanel>
+  </ScrollViewer>
+</Page>
