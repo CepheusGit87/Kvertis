@@ -362,6 +362,100 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .zuletzt button.an { border-color: var(--mint); color: var(--mint); }
 .zuletzt button:hover { border-color: var(--line-stark); }
 
+/* Glas-Sanduhr in 3D */
+.uhr3d { --dx: 0; position: relative; width: 240px; height: 400px; justify-self: center; }
+.uhr3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.uhr3d .p-vorn, .uhr3d .p-hinten, .uhr3d .glanz { transition: transform .25s ease-out; }
+.uhr3d .p-vorn { transform: translateX(calc(var(--dx) * 6px)); }
+.uhr3d .p-hinten { transform: translateX(calc(var(--dx) * -9px)); }
+.uhr3d .glanz { transform: translateX(calc(var(--dx) * 3px)); }
+.uhr3d .u-schatten { fill: var(--schatten); filter: blur(5px); }
+.uhr3d .u-kontur { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.2; }
+.uhr3d .u-rand { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; }
+.uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--k) 45%, var(--panel2)); stroke: color-mix(in srgb, var(--k) 60%, transparent); stroke-width: .8; }
+.uhr3d .u-bodenflaeche { fill: color-mix(in srgb, var(--mint) 22%, transparent); }
+.uhr3d .u-glanz { fill: none; stroke: #fff; stroke-opacity: .2; stroke-width: 5; stroke-linecap: round; }
+.uhr3d .u-glanz.d { stroke-width: 2; stroke-opacity: .12; }
+.uhr3d .u-deckel { fill: color-mix(in srgb, var(--line-stark) 55%, var(--panel2)); stroke: var(--line-stark); stroke-width: 1; }
+.uhr3d .u-strom { stroke-width: 2.2; stroke-dasharray: 3 5; stroke-linecap: round; animation: strom3d .6s linear infinite; }
+@keyframes strom3d { to { stroke-dashoffset: -8; } }
+.uhr3d .sand-o, .uhr3d .sand-u { position: absolute; left: 30px; right: 30px; display: grid; gap: 5px; justify-items: center; }
+.uhr3d .sand-o { top: 58px; } .uhr3d .sand-u { bottom: 40px; }
+.uhr3d .zeile { display: flex; gap: 4px; justify-content: center; }
+.uhr3d .hals-m { position: absolute; left: 50%; top: 188px; transform: translateX(-50%); display: grid; place-items: center; }
+/* ===== Schritt 3: Förderband mit Sanduhr ===== */
+.lauf2 { height: 100%; display: grid; grid-template-rows: 246px minmax(0, 1fr); min-height: 0; }
+.bahn3 { position: relative; margin: 6px 20px 0; }
+.bahn3 .schild { position: absolute; left: 0; top: 0; display: grid; gap: 1px; }
+.bahn3 .schild b { font-size: 13px; }
+.bahn3 .schild small { font-size: 11px; color: var(--coral); }
+.gurt { position: absolute; left: 0; bottom: 22px; height: 16px; border-radius: 8px; background: var(--tief); border: 1px solid var(--line-stark); overflow: hidden; }
+.gurt::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--line-stark) 0 2px, transparent 2px 18px); }
+.lauf2.aktiv .gurt::before { animation: gurt .5s linear infinite; }
+@keyframes gurt { to { transform: translateX(18px); } }
+.rolle-e { position: absolute; bottom: 10px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line-stark); background: radial-gradient(circle, var(--panel2) 30%, var(--tief)); }
+.rolle-e.l { left: -10px; }
+.bl2 { position: absolute; bottom: 40px; left: 0; width: 86px; height: 60px; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 14px -8px #000a; padding: 16px 6px 0; font: 600 9.5px var(--mono); text-align: center; transform-origin: 50% 100%; transform: scale(var(--s, 1)); transition: left .7s var(--sanft), transform .35s var(--feder), opacity .3s; z-index: 2; }
+.bl2::before { content: attr(data-f); position: absolute; top: -12px; left: 6px; padding: 1px 7px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; }
+.bl2.fertig::before { background: var(--mint); color: var(--auf-mint); }
+.bl2 span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bl2 small { display: block; font-weight: 500; opacity: .6; margin-top: 3px; }
+.st3 { position: absolute; bottom: 100px; width: 82px; height: 136px; z-index: 4; pointer-events: none; }
+.mini { position: absolute; left: 0; bottom: 0; width: 82px; height: 136px; --k: var(--muted); }
+.mini .skal { position: absolute; left: 0; top: 0; width: 240px; height: 400px; transform: scale(.34); transform-origin: 0 0; }
+.kippbox { perspective: 1000px; }
+.kipp { position: absolute; inset: 0; transform-style: preserve-3d; }
+.kipp.an { transition: transform 1.2s cubic-bezier(.55,-0.15,.3,1.15); }
+.kipp .flaeche { position: absolute; inset: 0; backface-visibility: hidden; }
+.kipp .flaeche.b { transform: rotateX(180deg); }
+.korn2 { position: absolute; left: 0; top: 0; width: 4px; height: 4px; border-radius: 50%; z-index: 9; pointer-events: none; }
+/* Ordner mit Reitern */
+.ziel2 { position: absolute; right: 0; top: 0; width: 236px; display: grid; justify-items: center; gap: 4px; z-index: 5; border-radius: 16px; transition: background .2s, box-shadow .2s; }
+.ziel2.drop { background: var(--mint-flaeche); box-shadow: 0 0 0 2px var(--mint); }
+.ordner3 { position: relative; width: 214px; height: 180px; perspective: 800px; margin-top: 2px; }
+.ordner3 .reiterleiste { position: absolute; left: 10px; right: 10px; top: 0; height: 30px; display: flex; gap: 4px; z-index: 1; }
+.oreiter { position: relative; flex: 1; height: 30px; border: 0; border-radius: 9px 9px 0 0; padding: 0 4px 6px; font: 600 9.5px var(--schrift); color: color-mix(in srgb, var(--ink) 70%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 22%, var(--panel2)), color-mix(in srgb, var(--mint) 16%, var(--karton-tief))); transform: translateY(6px); transition: transform .3s var(--feder), background .3s, color .3s; }
+.oreiter:hover { transform: translateY(3px); }
+.oreiter.an { transform: translateY(0); color: #0b0f12; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 80%, #fff 10%), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); }
+.oreiter.damals::after { content: '↺'; position: absolute; top: -8px; right: -3px; width: 14px; height: 14px; border-radius: 50%; background: var(--panel2); border: 1px dashed var(--line-stark); color: var(--muted); font-size: 9px; line-height: 12px; }
+.ordner3 .rueck { position: absolute; left: 0; right: 0; top: 24px; bottom: 0; border-radius: 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 38%, var(--karton-tief)), color-mix(in srgb, var(--mint) 22%, var(--karton-tief))); box-shadow: inset 0 1px 0 #ffffff22; z-index: 2; }
+.ordner3 .papiere { position: absolute; left: 16px; right: 16px; top: 38px; bottom: 16px; z-index: 3; }
+.ordner3 .papiere i { position: absolute; inset: 0; border-radius: 3px; background: var(--paper); box-shadow: 0 -1px 0 #0002; }
+.ordner3 .papiere i::before { content: attr(data-f); position: absolute; top: -9px; left: var(--x, 8px); padding: 0 5px; border-radius: 3px 3px 0 0; font: 600 7.5px/10px var(--mono); background: var(--mint); color: var(--auf-mint); }
+.ordner3 .vorn { position: absolute; left: -4px; right: -4px; bottom: 0; height: 116px; border-radius: 12px 12px 14px 14px; transform-origin: bottom; transform: rotateX(-12deg); transition: transform .5s var(--feder); z-index: 4; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 70%, #fff 6%), color-mix(in srgb, var(--mint) 48%, var(--karton-tief))); box-shadow: inset 0 1.5px 0 #ffffff55, inset 0 -10px 18px -10px #0006, 0 22px 30px -14px var(--schatten); display: grid; place-items: center; }
+.ordner3.offen .vorn { transform: rotateX(-34deg); }
+.o-etikett { width: 168px; padding: 7px 10px 8px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); transform: rotate(-1.5deg); box-shadow: 0 2px 0 #0003, 0 6px 10px -6px #0008; text-align: left; }
+.o-etikett b { display: block; font: 700 12px var(--mono); letter-spacing: .04em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.o-etikett small { display: block; font: 500 9.5px var(--mono); color: #5b646a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.o-etikett small em { font-style: normal; color: #0a6851; font-weight: 600; }
+.ordner3 .zaehl { position: absolute; right: -8px; top: 18px; z-index: 6; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; background: var(--mint); color: var(--auf-mint); font: 700 13px/30px var(--mono); text-align: center; box-shadow: 0 4px 10px -4px var(--mint); }
+.ziel2 .hinweis-o { font-size: 10.5px; color: var(--muted); text-align: center; }
+.ziel2 .zuletzt { padding: 0; justify-content: center; }
+/* Liste */
+.liste3 { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 4px; padding: 4px 20px 6px; min-height: 0; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 30%, transparent); }
+.liste3-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 4px; }
+.liste3-kopf .gross { font: 600 16px var(--mono); }
+.liste3-kopf .gross span { color: var(--muted); font-size: 12px; }
+.liste3-kopf .gross b { color: var(--mint); }
+.kp-liste { display: grid; align-content: start; gap: 3px; overflow: auto; min-height: 0; }
+.kz { position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr) 14px 54px 200px 118px 70px; gap: 10px; align-items: center; padding: 4px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; text-align: left; width: 100%; }
+.kz:hover { border-color: var(--line-stark); }
+.kz::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+.kz .chip3 { justify-self: start; font: 500 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); }
+.kz .nm { font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kz .pf { color: var(--mint); text-align: center; }
+.kz .etikett { justify-self: start; font-size: 10.5px; padding: 1px 7px; }
+.balken3d { display: grid; gap: 3px; align-content: center; }
+.balken3d i { display: block; height: 7px; border-radius: 2px; width: var(--w); min-width: 3px; }
+.balken3d .vor { background: linear-gradient(180deg, var(--line-stark), color-mix(in srgb, var(--line-stark) 55%, var(--karton-tief))); }
+.balken3d .nach { background: linear-gradient(180deg, var(--mint), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); }
+.kz .gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.kz .gr b { color: var(--ink); }
+.kz .st2 { font-size: 11px; color: var(--muted); display: inline-flex; gap: 5px; align-items: center; justify-content: flex-end; }
+.kz.ok { border-color: var(--mint-rahmen); } .kz.ok .st2 { color: var(--mint); }
+.spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-stark); border-top-color: var(--mint); animation: dreh .7s linear infinite; }
+@keyframes dreh { to { transform: rotate(360deg); } }
+
 /* Alte Einstellungen aus dem Verlauf */
 .damals-hinweis { position: relative; z-index: 1; width: min(440px, 100%); display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 85%, transparent); }
 .damals-hinweis svg { width: 18px; height: 18px; color: var(--mint); grid-row: span 2; }
@@ -555,25 +649,26 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 
           <!-- Schritt 3 -->
           <section class="ebene" data-pos="1" data-s="2" aria-label="Schritt 3: Umwandeln">
-            <div class="lauf" id="lauf">
-              <div class="band" aria-hidden="true"></div>
-              <div class="spalte">
-                <span class="label">Eingang</span>
-                <div class="szene" id="ein-szene"><div class="kiste"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="ein-blaetter"></span><span class="f rt"></span><span class="f fr" data-t="EINGANG"></span></div></div>
-                <div class="unter"><span class="zahl" id="ein-zahl"></span><span class="klein" id="ein-klein"></span></div>
+            <div class="lauf2" id="lauf">
+              <div class="bahn3" id="bahn3">
+                <div class="schild"><span class="label">Eingang</span><b id="ein-zahl"></b><small id="ein-klein"></small></div>
+                <span class="rolle-e l"></span><div class="gurt" id="gurt"></div><span class="rolle-e" id="rolle-r"></span>
+                <div class="st3" id="st3"><div class="mini"><div class="skal uhr3d kippbox"><div class="kipp" id="kipp"><div class="flaeche a"></div><div class="flaeche b"></div></div></div></div></div>
+                <div id="blaetter3"></div>
+                <div class="ziel2" id="aus-spalte">
+                  <div class="ordner3" id="ordner3">
+                    <div class="reiterleiste" id="wohin" role="radiogroup" aria-label="Wohin speichern?"></div>
+                    <span class="rueck"></span><div class="papiere" id="papiere"></div>
+                    <span class="vorn"><span class="o-etikett"><b id="o-name"></b><small id="o-pfad"></small></span></span>
+                    <span class="zaehl" id="o-zaehl" hidden>0</span>
+                  </div>
+                  <span class="hinweis-o" id="o-hinweis"></span>
+                  <div class="zuletzt" id="o-zuletzt" hidden></div>
+                </div>
               </div>
-              <div class="spalte">
-                <button class="los" id="los" aria-label="Umwandlung starten">
-                  <svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="75" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="bogen" cx="80" cy="80" r="75" fill="none" stroke="var(--mint)" stroke-width="6" stroke-linecap="round" stroke-dasharray="471.2" stroke-dashoffset="471.2"/></svg>
-                  <span class="knopf" id="knopf">Los</span>
-                </button>
-                <div class="auftrag" id="auftrag" aria-label="Was umgewandelt wird"></div>
-              </div>
-              <div class="spalte" id="aus-spalte">
-                <span class="label">Ausgang</span>
-                <div class="szene" id="aus-szene"><div class="kiste aus"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="aus-blaetter"></span><span class="f rt"></span><span class="f fr" id="aus-front" data-t="AUSGANG"></span></div></div>
-                <span class="zahl" id="aus-zahl" style="font:600 13px var(--mono)">Noch leer</span>
-                <div class="wohin" id="wohin" role="radiogroup" aria-label="Wohin speichern?"></div>
+              <div class="liste3">
+                <div class="liste3-kopf"><span class="label">Dateien in diesem Auftrag · Zeile anklicken, um das Ziel zu ändern</span><span class="gross" id="l-summe"></span><span class="label" id="l-stand">bereit</span></div>
+                <div class="kp-liste" id="auftrag"></div>
               </div>
             </div>
           </section>
@@ -925,22 +1020,26 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   function wohinKurz() { return wohin === 'neben' ? 'Neben den Originalen' : wohin === 'unter' ? 'Unterordner „Kvertis“' : eigener; }
   function renderWohin() {
     const ordner = [...new Set(umwandelbar().map(d => d.ordner).filter(Boolean))];
-    const mehrere = ordner.length > 1 ? ` <span class="muted">· ${ordner.length} Ordner</span>` : '';
-    $('wohin').innerHTML = `<span class="label">Wohin speichern?</span>
-      <button class="wo ${wohin === 'neben' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'neben'}" data-w="neben"><i class="radio"></i><span><b>Neben dem Original${mehrere}${damals && damals.wohinKey === 'neben' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${beispielPfad('neben')}</small></span></button>
-      <button class="wo ${wohin === 'unter' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'unter'}" data-w="unter"><i class="radio"></i><span><b>In Unterordner „Kvertis“${damals && damals.wohinKey === 'unter' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${beispielPfad('unter')}</small></span></button>
-      <button class="wo ${wohin === 'eigen' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'eigen'}" data-w="eigen"><i class="radio"></i><span><b>Eigener Ordner${damals && damals.wohinKey === 'eigen' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${eigener ? beispielPfad('eigen') : wohinHinweis || 'Ordner auf die Kiste ziehen oder wählen'}</small></span></button>
-      ${wohin === 'eigen' ? `<div class="zuletzt">${ZULETZT.map(z => `<button data-z="${esc(z)}" class="${z === eigener ? 'an' : ''}">${esc(z)}</button>`).join('')}<button data-z="?">Wählen …</button></div>` : ''}`;
-    const front = wohin === 'eigen' && eigener ? eigener.split('\\').pop().toUpperCase().slice(0, 12) : 'AUSGANG';
-    $('aus-front').dataset.t = front;
+    const reiter = [['neben', 'Neben Original'], ['unter', 'Unterordner'], ['eigen', 'Eigener …']];
+    $('wohin').innerHTML = reiter.map(([w, t]) => `<button class="oreiter ${wohin === w ? 'an' : ''} ${damals && damals.wohinKey === w ? 'damals' : ''}" role="radio" aria-checked="${wohin === w}" data-w="${w}" title="${damals && damals.wohinKey === w ? 'damals gewählt' : ''}">${t}</button>`).join('');
+    const name = wohin === 'neben' ? 'NEBEN DEM ORIGINAL' : wohin === 'unter' ? 'UNTERORDNER KVERTIS' : (eigener ? eigener.split('\\').pop().toUpperCase() : 'ORDNER WÄHLEN');
+    $('o-name').textContent = name;
+    $('o-pfad').innerHTML = wohin === 'eigen' && !eigener ? esc(wohinHinweis || 'Ordner hierher ziehen') : beispielPfad(wohin);
+    $('o-hinweis').textContent = wohin === 'neben' ? `Jede Datei bleibt in ihrem Ordner${ordner.length > 1 ? ' · ' + ordner.length + ' Ordner' : ''}` : wohin === 'unter' ? 'Neuer Ordner „Kvertis“ neben jedem Original' : 'Alles in einen Ordner · Ordner hierher ziehen';
+    const zl = $('o-zuletzt'); zl.hidden = wohin !== 'eigen';
+    zl.innerHTML = ZULETZT.map(z => `<button data-z="${esc(z)}" class="${z === eigener ? 'an' : ''}">${esc(z)}</button>`).join('') + '<button data-z="?">Wählen …</button>';
   }
   $('wohin').addEventListener('click', e => {
-    const w = e.target.closest('.wo'), z = e.target.closest('.zuletzt button');
-    if (w) { wohin = w.dataset.w; if (wohin === 'eigen' && !eigener) eigener = ZULETZT[0]; }
-    if (z) eigener = z.dataset.z === '?' ? 'Bilder\\Export' : z.dataset.z;
-    renderWohin(); renderLauf(); renderFaden();
+    const w = e.target.closest('.oreiter'); if (!w || laeuft) return;
+    wohin = w.dataset.w; if (wohin === 'eigen' && !eigener) eigener = ZULETZT[0];
+    renderWohin(); renderFaden(); renderLeiste();
   });
-  // Ordner auf die Ausgangskiste ziehen = Zielordner
+  $('o-zuletzt').addEventListener('click', e => {
+    const z = e.target.closest('button'); if (!z) return;
+    eigener = z.dataset.z === '?' ? 'Bilder\\Export' : z.dataset.z; wohinHinweis = '';
+    renderWohin(); renderFaden();
+  });
+  // Ordner auf den Ordner ziehen = Zielordner
   const ausSp = $('aus-spalte');
   ausSp.addEventListener('dragover', e => { if (schritt === 2) { e.preventDefault(); ausSp.classList.add('drop'); win.classList.add('drag-ordner'); } });
   ausSp.addEventListener('dragleave', e => { if (!ausSp.contains(e.relatedTarget)) { ausSp.classList.remove('drop'); win.classList.remove('drag-ordner'); } });
@@ -952,65 +1051,155 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     wohin = 'eigen';
     if (entry && entry.isDirectory) { eigener = entry.name; wohinHinweis = ''; }
     else { eigener = null; wohinHinweis = 'Bitte einen Ordner ziehen, keine Datei'; }
-    renderWohin(); renderLauf(); renderFaden();
+    renderWohin(); renderFaden(); renderLeiste();
   });
 
-  // ===== Durchlauf
-  function renderLauf() {
-    const u = umwandelbar();
-    if (!$('wohin')) return;
-    $('ein-blaetter').innerHTML = u.slice(0, 6).map((d, i) => blattHtml(d, i)).join('');
-    $('ein-zahl').textContent = `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
-    const nein = dateien.filter(d => !d.kat).length;
-    $('ein-klein').textContent = nein ? `${nein} nicht umwandelbar` : '';
-    $('auftrag').innerHTML = gruppen().map(k => {
-      const l = dateien.filter(d => d.kat === k), vor = l.reduce((s, d) => s + d.mb, 0), nach = schaetze(k);
-      const fm = [...new Set(l.map(d => d.fmt))].join(', ');
-      const p = Math.round((1 - nach / vor) * 100);
-      return `<button class="az k-${k}" id="az-${k}" data-k="${k}" title="Ziel ändern">
-        <span class="stapel" aria-hidden="true"><i></i><i></i><i></i><span>${l.length}</span></span>
-        <span class="was"><b>${KAT[k].name}</b><small>${fm}</small></span>
-        <span class="pf" aria-hidden="true">→</span>
-        <span class="etikett">${ziele(k)[wahl[k]][0]}</span>
-        <span class="spur"><span class="balken" style="--nach:${Math.min(100, nach / vor * 100)}%"><i></i><b></b></span><small>${zweck[k] ? esc(zweck[k]) + ' · ' : ''}<em>${p >= 0 ? '−' + p : '+' + -p} %</em></small></span>
-      </button>`;
-    }).join('') + `<div class="summe"><span>Zusammen</span><span><b>≈ ${mb(summeNachher())} MB</b> statt ${mb(summeVorher())} MB</span></div>`;
-    renderWohin();
-    if (!fertig) { $('aus-blaetter').innerHTML = ''; $('aus-zahl').textContent = 'Noch leer'; $('knopf').textContent = 'Los'; $('knopf').classList.remove('ok'); $('bogen').style.strokeDashoffset = 471.2; }
+  // ===== Durchlauf: Förderband mit Sanduhr (Einwurf und Wende)
+  let nr = 0;
+  const st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+  function glasSvg() {
+    const n = ++nr;
+    return `<svg viewBox="0 0 240 400" aria-hidden="true">
+      <defs>
+        <linearGradient id="gl${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+        <linearGradient id="sa${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .6)}/><stop offset="1" ${st('var(--k)', .25)}/></linearGradient>
+        <radialGradient id="su${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .55)}/><stop offset="1" ${st('var(--mint)', .14)}/></radialGradient>
+        <linearGradient id="sl${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', 1)}/><stop offset="1" ${st('var(--mint)', 1)}/></linearGradient>
+        <linearGradient id="sae${n}" x1="0" x2="1"><stop offset="0" ${st('var(--tief)', 1)}/><stop offset=".35" ${st('var(--line-stark)', 1)}/><stop offset=".55" ${st('var(--muted)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+        <linearGradient id="de${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--line-stark)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+      </defs>
+      <ellipse class="u-schatten" cx="120" cy="392" rx="112" ry="7"/>
+      <g class="p-hinten"><rect x="116" y="26" width="8" height="348" rx="4" fill="url(#sae${n})" opacity=".45"/></g>
+      <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#gl${n})"/>
+      <path class="s-oben" fill="url(#sa${n})"/>
+      <ellipse class="u-sandflaeche s-flaeche" cx="120"/>
+      <line class="u-strom s-strom" x1="120" y1="198" x2="120" stroke="url(#sl${n})"/>
+      <path class="s-unten" fill="url(#su${n})"/>
+      <ellipse cx="120" cy="366" rx="94" ry="7" class="u-bodenflaeche"/>
+      <path class="u-kontur" d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z"/>
+      <ellipse cx="120" cy="32" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="368" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="200" rx="8" ry="2.5" class="u-rand"/>
+      <g class="glanz"><path d="M36,52 C38,112 70,150 100,176" class="u-glanz"/><path d="M36,350 C40,296 70,258 100,226" class="u-glanz"/><path d="M204,62 C202,104 180,132 160,152" class="u-glanz d"/></g>
+      <path d="M8,20 V30 A112,10 0 0 0 232,30 V20 Z" fill="url(#de${n})"/><ellipse cx="120" cy="20" rx="112" ry="10" class="u-deckel"/>
+      <path d="M8,372 V384 A112,10 0 0 0 232,384 V372 Z" fill="url(#de${n})"/><ellipse cx="120" cy="372" rx="112" ry="10" class="u-deckel"/>
+      <g class="p-vorn"><rect x="13" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/><rect x="217" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/></g>
+    </svg>`;
   }
-  $('auftrag').addEventListener('click', e => { const z = e.target.closest('.az'); if (z && !laeuft) { aktiv = z.dataset.k; geheZu(1); } });
+  const breite = y => 4 + 86 * Math.pow(Math.max(0, (196 - y) / 152), 1.25);
+  function sandZeichnen(svg, L, laeuft) {
+    const ys = 44 + 150 * Math.pow(1 - L, 1.8);
+    let pts = [];
+    if (L > .005) {
+      for (let i = 0; i <= 10; i++) { const y = ys + (196 - ys) * i / 10; pts.push(`${(120 - breite(y)).toFixed(1)},${y.toFixed(1)}`); }
+      for (let i = 10; i >= 0; i--) { const y = ys + (196 - ys) * i / 10; pts.push(`${(120 + breite(y)).toFixed(1)},${y.toFixed(1)}`); }
+    }
+    svg.querySelector('.s-oben').setAttribute('d', pts.length ? 'M' + pts.join(' L') + ' Z' : '');
+    const f = svg.querySelector('.s-flaeche');
+    f.setAttribute('cy', ys.toFixed(1)); f.setAttribute('rx', L > .005 ? (breite(ys) - 1).toFixed(1) : 0); f.setAttribute('ry', Math.max(1.2, breite(ys) * .085).toFixed(1));
+    const h = 8 + (1 - L) * 100;
+    svg.querySelector('.s-unten').setAttribute('d', `M26,366 C58,354 88,${(366 - h * .45).toFixed(1)} 120,${(364 - h).toFixed(1)} C152,${(366 - h * .45).toFixed(1)} 182,354 214,366 Z`);
+    const s = svg.querySelector('.s-strom');
+    s.setAttribute('y2', (364 - h).toFixed(1)); s.style.opacity = laeuft && L > .005 ? 1 : 0;
+  }
+
+
+  const FARBE = { bild: 'var(--blue)', audio: 'var(--violet)', video: 'var(--amber)', dok: 'var(--cyan)' };
+  document.querySelectorAll('#kipp .flaeche').forEach(f => { f.innerHTML = glasSvg(); sandZeichnen(f.querySelector('svg'), 1, false); });
+  const uhr = { L: 1, seite: 0, winkel: 0 };
+  const schaetzeDatei = d => { const l = dateien.filter(x => x.kat === d.kat), s = l.reduce((a, x) => a + x.mb, 0); return s ? d.mb * schaetze(d.kat) / s : d.mb; };
+  const skalD = d => Math.max(.5, Math.min(1, Math.sqrt(schaetzeDatei(d) / d.mb)));
+  function sandLauf(svg, von, bis, ms) {
+    return new Promise(res => { const t0 = performance.now(), dd = leise ? 1 : ms; const st = t => { const p = Math.min(1, (t - t0) / dd); sandZeichnen(svg, von + (bis - von) * p, p < 1); p < 1 ? requestAnimationFrame(st) : res(); }; requestAnimationFrame(st); });
+  }
+  function partikel(bahn, von, nach, farbe, n, ms, bogen) {
+    return Promise.all(Array.from({ length: n }, (_, i) => {
+      const d = document.createElement('span'); d.className = 'korn2'; d.style.background = farbe; d.style.boxShadow = `0 0 6px ${farbe}`; bahn.appendChild(d);
+      const sx = von.x + (Math.random() - .5) * (bogen ? 70 : 12), sy = von.y + (Math.random() - .5) * (bogen ? 40 : 8);
+      const ex = nach.x + (Math.random() - .5) * (bogen ? 10 : 70), ey = nach.y + (Math.random() - .5) * (bogen ? 6 : 36);
+      const mx = (sx + ex) / 2 + (Math.random() - .5) * 30, my = Math.min(sy, ey) - (bogen ? 60 + Math.random() * 40 : 10);
+      return d.animate([{ transform: `translate(${sx}px,${sy}px)`, opacity: 1 }, { transform: `translate(${mx}px,${my}px) scale(1.2)`, opacity: 1, offset: .5 }, { transform: `translate(${ex}px,${ey}px) scale(.6)`, opacity: bogen ? 0 : 1 }],
+        { duration: leise ? 1 : ms, delay: leise ? 0 : i * 14, easing: 'cubic-bezier(.45,.05,.4,1)' }).finished.then(() => d.remove());
+    }));
+  }
+  const geo = () => { const W = $('bahn3').clientWidth, ende = W - 250; return { W, ende, sx: Math.round(ende * .56) }; };
+  function renderLauf() {
+    const u = umwandelbar(), g = geo();
+    $('gurt').style.width = g.ende + 'px'; $('rolle-r').style.left = (g.ende - 26) + 'px'; $('st3').style.left = (g.sx - 41) + 'px';
+    const nein = dateien.filter(d => !d.kat).length;
+    $('ein-zahl').textContent = `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
+    $('ein-klein').textContent = nein ? `${nein} nicht umwandelbar` : '';
+    renderWohin();
+    if (laeuft) return;
+    $('blaetter3').innerHTML = u.map((d, i) => `<div class="bl2 k-${d.kat}" data-f="${esc(d.fmt)}" data-i="${i}" style="left:${6 + Math.min(u.length - 1 - i, 8) * 18}px;z-index:${2 + i}"><span>${esc(d.name)}</span><small>${mb(d.mb)} MB</small></div>`).join('');
+    const maxMb = Math.sqrt(Math.max(...u.map(d => d.mb), 1));
+    $('auftrag').innerHTML = u.map((d, i) => { const z = ziele(d.kat)[wahl[d.kat]][0], n = schaetzeDatei(d); return `<button class="kz k-${d.kat}" data-i="${i}" data-k="${d.kat}" title="Ziel für ${KAT[d.kat].name} ändern">
+      <span class="chip3">${esc(d.fmt)}</span><span class="nm">${esc(d.name)}</span><span class="pf">→</span><span class="etikett">${z === 'TON' ? 'MP3' : z}</span>
+      <span class="balken3d" aria-hidden="true"><i class="vor" style="--w:${Math.sqrt(d.mb) / maxMb * 100}%"></i><i class="nach" style="--w:${Math.sqrt(n) / maxMb * 100}%"></i></span>
+      <span class="gr">${mb(d.mb)} → <b>≈ ${mb(n)} MB</b></span><span class="st2">${fertig ? '✓ fertig' : 'wartet'}</span></button>`; }).join('');
+    if (fertig) $('auftrag').querySelectorAll('.kz').forEach(z => z.classList.add('ok'));
+    $('l-summe').innerHTML = `${mb(summeVorher())} <span>MB →</span> <b>≈ ${mb(summeNachher())} MB</b>`;
+    $('l-stand').innerHTML = fertig ? `<span style="color:var(--mint)">fertig · −${fertig.p} %</span>` : 'bereit';
+    if (!fertig) { $('papiere').innerHTML = ''; $('o-zaehl').hidden = true; }
+  }
+  $('auftrag').addEventListener('click', e => { const z = e.target.closest('.kz'); if (z && !laeuft) { aktiv = z.dataset.k; geheZu(1); } });
   let laeuft = false;
+  async function einwurfUndWende(b, d, prog) {
+    const bahn = $('bahn3'), st = $('st3'), kipp = $('kipp');
+    const flaechen = kipp.querySelectorAll('svg'), svg = flaechen[uhr.seite];
+    st.querySelectorAll('.mini').forEach(m => m.style.setProperty('--k', FARBE[d.kat]));
+    const pr = bahn.getBoundingClientRect(), sr = st.querySelector('.mini').getBoundingClientRect(), br = b.getBoundingClientRect();
+    const mx = sr.left - pr.left + sr.width / 2;
+    const oben = { x: mx, y: sr.top - pr.top + 18 }, unten = { x: mx, y: sr.top - pr.top + 120 }, blatt = { x: br.left - pr.left + br.width / 2, y: br.top - pr.top + br.height / 2 };
+    b.animate([{ opacity: 1 }, { opacity: 0, transform: 'scale(.8)' }], { duration: leise ? 1 : 380, fill: 'forwards' });
+    await partikel(bahn, blatt, oben, FARBE[d.kat], 26, 700, true);
+    b.style.opacity = 0; b.getAnimations().forEach(x => x.cancel());
+    const bis = Math.max(0, uhr.L - .5);
+    await Promise.all([sandLauf(svg, uhr.L, bis, 1000), prog(1000)]);
+    await partikel(bahn, unten, blatt, 'var(--mint)', 22, 560, false);
+    const z = ziele(d.kat)[wahl[d.kat]][0];
+    b.dataset.f = z === 'TON' ? 'MP3' : z; b.classList.add('fertig'); b.style.setProperty('--s', skalD(d)); b.style.opacity = 1;
+    b.querySelector('small').textContent = '≈ ' + mb(schaetzeDatei(d)) + ' MB';
+    await b.animate([{ opacity: 0, transform: 'scale(.35)' }, { opacity: 1, transform: `scale(${skalD(d)})` }], { duration: leise ? 1 : 420, easing: 'cubic-bezier(.3,1.3,.5,1)' }).finished;
+    const neuL = 1 - bis;
+    sandZeichnen(flaechen[1 - uhr.seite], neuL, false);
+    uhr.winkel -= 180; kipp.classList.add('an'); kipp.style.transform = `rotateX(${uhr.winkel}deg)`;
+    await warte(1250); kipp.classList.remove('an');
+    uhr.seite = 1 - uhr.seite; uhr.L = neuL;
+  }
   async function los() {
     if (laeuft || !umwandelbar().length || (wohin === 'eigen' && !eigener)) return;
-    laeuft = true; fertig = null;
-    renderLauf();
+    fertig = null; renderLauf();
+    laeuft = true; renderLeiste();
     $('lauf').classList.add('aktiv');
-    const u = umwandelbar();
-    const einB = [...$('ein-blaetter').children];
-    const aus = $('aus-blaetter');
+    const u = umwandelbar(), g = geo(), ordner = $('ordner3');
+    let gespart = 0;
     for (let i = 0; i < u.length; i++) {
-      const d = u[i];
-      const ziel = ziele(d.kat)[wahl[d.kat]][0];
-      if (einB[i]) einB[i].style.opacity = 0;
-      await flug(d, $('ein-szene'), $('aus-szene'), ziel, $('los'));
-      aus.insertAdjacentHTML('beforeend', blattHtml(d, i, ziel));
-      const p = (i + 1) / u.length;
-      $('bogen').style.strokeDashoffset = 471.2 * (1 - p);
-      $('knopf').textContent = Math.round(p * 100) + ' %';
-      $('aus-zahl').textContent = `${i + 1} von ${u.length} fertig`;
-      const gl = u.filter(x => x.kat === d.kat), fertigG = u.slice(0, i + 1).filter(x => x.kat === d.kat).length;
-      const zeile = $('az-' + d.kat);
-      zeile.querySelector('.balken b').style.setProperty('--p', (fertigG / gl.length) * parseFloat(zeile.querySelector('.balken').style.getPropertyValue('--nach')) + '%');
-      if (fertigG === gl.length) { zeile.classList.add('fertig'); zeile.querySelector('.pf').textContent = '✓'; }
+      const d = u[i], b = $('blaetter3').querySelector(`.bl2[data-i="${i}"]`), zeile = $('auftrag').querySelector(`.kz[data-i="${i}"]`);
+      b.style.zIndex = 30; b.style.left = (g.sx - 43) + 'px'; await warte(720);
+      zeile.querySelector('.st2').innerHTML = '<span class="spin"></span>läuft';
+      const prog = ms => new Promise(res => { const t0 = performance.now(), dd = leise ? 1 : ms; const st = t => { const p = Math.min(100, (t - t0) / dd * 100); zeile.style.setProperty('--p', p + '%'); p < 100 ? requestAnimationFrame(st) : res(); }; requestAnimationFrame(st); });
+      await einwurfUndWende(b, d, prog);
+      zeile.classList.add('ok'); zeile.querySelector('.st2').textContent = '✓ fertig';
+      gespart += d.mb - schaetzeDatei(d);
+      $('l-stand').innerHTML = `${i + 1} von ${u.length} · <span style="color:var(--mint)">${mb(gespart)} MB gespart</span>`;
+      $('ein-zahl').textContent = `${u.length - 1 - i} ${u.length - 1 - i === 1 ? 'Datei' : 'Dateien'} übrig`;
+      ordner.classList.add('offen');
+      b.style.left = (g.ende - 96) + 'px'; await warte(650);
+      const br = b.getBoundingClientRect(), or = ordner.getBoundingClientRect(), sc = b.style.getPropertyValue('--s') || 1;
+      const dx = or.left + or.width / 2 - (br.left + br.width / 2), dy = or.top + or.height * .35 - (br.top + br.height / 2);
+      await b.animate([{ transform: `scale(${sc})`, opacity: 1 }, { transform: `translate(${dx * .5}px, ${dy - 60}px) scale(${sc * .9}) rotate(-8deg)`, opacity: 1, offset: .55 }, { transform: `translate(${dx}px, ${dy}px) scale(.45)`, opacity: 0 }], { duration: leise ? 1 : 650, easing: 'cubic-bezier(.45,.05,.3,1)' }).finished;
+      b.style.opacity = 0;
+      $('o-zaehl').hidden = false; $('o-zaehl').textContent = i + 1;
+      const z = ziele(d.kat)[wahl[d.kat]][0];
+      $('papiere').insertAdjacentHTML('beforeend', `<i data-f="${z === 'TON' ? 'MP3' : z}" style="--x:${8 + (i % 4) * 36}px;top:${-Math.min(i, 8) * 2}px;transform:rotate(${(i % 2 ? 1 : -1) * (i * .5 + .4)}deg)"></i>`);
     }
-    $('lauf').classList.remove('aktiv');
+    $('lauf').classList.remove('aktiv'); ordner.classList.remove('offen');
     const vor = summeVorher(), nach = summeNachher();
     fertig = { vor, nach, p: Math.round((1 - nach / vor) * 100) };
-    $('knopf').textContent = '✓'; $('knopf').classList.add('ok');
-    $('aus-zahl').innerHTML = `${u.length} fertig · <span style="color:var(--mint)">${mb(nach)} MB</span>`;
+    $('l-stand').innerHTML = `<span style="color:var(--mint)">fertig · ${mb(vor)} → ${mb(nach)} MB</span>`;
+    $('ein-zahl').textContent = 'alles umgewandelt';
     inVerlauf();
-    renderFaden(); renderLeiste();
     laeuft = false;
+    renderFaden(); renderLeiste();
   }
 
   function flug(d, von, nach, fmt, ueber) {
@@ -1137,7 +1326,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     w.disabled = !hat;
     if (schritt === 0) { w.hidden = false; w.textContent = 'Weiter: Ziel wählen'; }
     else if (schritt === 1) { w.hidden = false; w.textContent = 'Weiter: Umwandeln'; }
-    else { w.hidden = !fertig; w.textContent = 'Neue Runde'; }
+    else { w.hidden = laeuft; w.disabled = !hat || (wohin === 'eigen' && !eigener); w.textContent = fertig ? 'Neue Runde' : `Umwandeln · ${umwandelbar().length} ${umwandelbar().length === 1 ? 'Datei' : 'Dateien'}`; }
   }
   function geheZu(s) {
     schritt = s;
@@ -1147,11 +1336,10 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     renderFaden(); renderLeiste();
   }
   document.querySelectorAll('.knoten').forEach(k => k.addEventListener('click', () => geheZu(+k.dataset.s)));
-  $('weiter').addEventListener('click', () => { if (schritt === 2) { leeren(); return; } geheZu(schritt + 1); });
+  $('weiter').addEventListener('click', () => { if (schritt === 2) { fertig ? leeren() : los(); return; } geheZu(schritt + 1); });
   $('zurueck').addEventListener('click', () => geheZu(Math.max(0, schritt - 1)));
   $('direkt').addEventListener('click', () => geheZu(2));
   $('hilfe').addEventListener('click', () => geheZu(0));
-  $('los').addEventListener('click', los);
 
   function leeren() {
     damals = null;
