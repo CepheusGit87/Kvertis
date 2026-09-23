@@ -1,0 +1,30 @@
+# Third-party brand names that must not appear in UI strings, presets or store texts.
+# One per line, matched case-insensitively as whole words. Extend as needed.
+# Messaging
+WhatsApp
+Telegram
+Signal
+Threema
+iMessage
+# (Messenger is a generic word used in "Für Messenger" and is intentionally NOT listed)
+# Social / video platforms
+Instagram
+Facebook
+TikTok
+YouTube
+Twitter
+Snapchat
+Pinterest
+LinkedIn
+Discord
+Vimeo
+Twitch
+# Cloud / mail / devices
+Dropbox
+iCloud
+Gmail
+Outlook
+iPhone
+Android
+GoPro
+Photoshop

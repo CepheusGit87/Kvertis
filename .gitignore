@@ -35,3 +35,6 @@ src/Kvertis.App/Tools/
 # Local settings / logs
 *.log
 .env
+
+# Agent worktrees (local only)
+.claude/worktrees/

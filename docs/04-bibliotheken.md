@@ -8,19 +8,20 @@ Einbindung: `NuGet` (verwaltete DLL), `native` (native DLL im Paket), `Prozess` 
 
 | Bibliothek | Version | Lizenz | Zweck | Einbindung | Status |
 |---|---|---|---|---|---|
-| Microsoft.WindowsAppSDK (WinUI 3) | — | Microsoft Software License Terms (Quellcode MIT) | UI-Framework, MSIX | NuGet | geplant |
-| Microsoft.Windows.SDK.BuildTools | — | Microsoft Software License Terms | Build der Windows-App | NuGet (nur Build) | geplant |
-| CommunityToolkit.Mvvm | — | MIT | MVVM (ObservableObject, RelayCommand) | NuGet | geplant |
-| CommunityToolkit.WinUI.Controls.* | — | MIT | SettingsCard u. a. Steuerelemente | NuGet | geplant |
-| Microsoft.Extensions.DependencyInjection | — | MIT | Dependency Injection | NuGet | geplant |
-| Microsoft.Extensions.Logging | — | MIT | Lokales Logging (opt-in, nie versendet) | NuGet | geplant |
-| Magick.NET-Q16-AnyCPU + Magick.NET.Core | — | Apache 2.0 (Wrapper), ImageMagick License (nativ) | Bilder lesen, wandeln, komprimieren, Metadaten entfernen | NuGet + native | geplant, **Prüfung der mitgelieferten Drittbibliotheken in `Magick.Native` offen (Verdacht: HEVC-Komponenten, x265 wäre GPL)** |
-| FFMpegCore | — | MIT | Ansteuerung von ffmpeg/ffprobe als Prozess | NuGet | geplant |
+| Microsoft.WindowsAppSDK (WinUI 3) | 2.5.1 | Microsoft Software License Terms (Quellcode MIT) | UI-Framework, MSIX | NuGet | geplant |
+| Microsoft.Windows.SDK.BuildTools | 10.0.28000.2705 | Microsoft Software License Terms | Build der Windows-App | NuGet (nur Build) | geplant |
+| CommunityToolkit.Mvvm | 8.4.2 | MIT | MVVM (ObservableObject, RelayCommand) | NuGet | geplant |
+| CommunityToolkit.WinUI.Controls.SettingsControls | 8.2.251219 | MIT | SettingsCard, SettingsExpander | NuGet | geplant |
+| Microsoft.Extensions.DependencyInjection | 8.0.1 | MIT | Dependency Injection (nur App) | NuGet | geplant |
+| Microsoft.Extensions.Logging | 8.0.1 | MIT | Lokales Logging (opt-in, nie versendet) | NuGet | geplant |
+| Microsoft.Extensions.Logging.Abstractions | 8.0.3 | MIT | `ILogger` in Engine und Queue | NuGet | im Code |
+| Markdig | 1.4.0 | BSD-2 | Markdown → HTML/Text/PDF-Blockmodell | NuGet | im Code |
+| Magick.NET-Q16-AnyCPU + Magick.NET.Core | 14.17.1 | Apache 2.0 (Wrapper), ImageMagick License (nativ) | Bilder lesen, wandeln, komprimieren, Metadaten entfernen | NuGet + native (`Magick.Native-Q16-<arch>.dll`) | im Code, **Prüfung 2026-09-23 (siehe unten): kein GPL, aber libde265 (HEVC-Decoder) und openh264 statisch enthalten → O-01 blockierend für die Store-Einreichung** |
+| FFMpegCore | 5.5.0 | MIT | Ansteuerung von ffmpeg/ffprobe als Prozess | NuGet | geplant |
 | FFmpeg (LGPL-Build) | — | LGPL 2.1 | Audio/Video-Konvertierung | Prozess (`ffmpeg.exe`, `ffprobe.exe`) | geplant, Build-Konfiguration siehe `02-rechtssicherheit.md` §2, Bezugsquelle offener Punkt |
-| NAudio | — | MIT | Audio-Analyse (Pegel, Wellenform für Vorschau) | NuGet | geplant |
-| PdfPig (UglyToad.PdfPig) | — | Apache 2.0 | PDF lesen: Text, Seitenzahl, Schutz erkennen | NuGet | geplant |
-| PDFsharp | — | MIT | PDF erzeugen: Text/Markdown → PDF, Bilder → PDF | NuGet | geplant (ersetzt QuestPDF, siehe unten) |
-| DocumentFormat.OpenXml | — | MIT | DOCX/XLSX/PPTX lesen (Text, Tabellen) | NuGet | geplant |
+| PdfPig (UglyToad.PdfPig) | 0.1.16 | Apache 2.0 | PDF lesen: Text, Seitenzahl, Schutz erkennen | NuGet | geplant |
+| PDFsharp | 6.2.4 | MIT | PDF erzeugen: Text/Markdown → PDF, Bilder → PDF | NuGet | geplant (ersetzt QuestPDF, siehe unten) |
+| DocumentFormat.OpenXml | 3.5.1 | MIT | DOCX/XLSX/PPTX lesen (Text, Tabellen) | NuGet | geplant |
 | System.Text.Json | (in .NET 8) | MIT | Einstellungen, Verlauf, Tempo-Profil | Framework | geplant |
 | Media Foundation | (Windows) | System | Encoder H.264/HEVC/AAC/MP3 über FFmpeg `*_mf` | System | geplant |
 | Windows Imaging Component + HEIF-Bilderweiterung | (Windows) | System | HEIC/HEIF dekodieren | System | geplant |
@@ -33,11 +34,26 @@ Einbindung: `NuGet` (verwaltete DLL), `native` (native DLL im Paket), `Prozess` 
 
 | Bibliothek | Version | Lizenz | Zweck | Einbindung | Status |
 |---|---|---|---|---|---|
-| xunit, xunit.runner.visualstudio | — | Apache 2.0 | Testframework | NuGet | geplant |
-| NSubstitute | — | BSD-3 | Mocks (`IProcessRunner` u. a.) | NuGet | geplant |
-| Shouldly | — | BSD-3 | Assertions | NuGet | geplant |
-| coverlet.collector | — | MIT | Testabdeckung | NuGet | geplant |
-| Microsoft.NET.Test.Sdk | — | MIT | Test-Host | NuGet | geplant |
+| xunit 2.9.3, xunit.runner.visualstudio 3.1.5 | s. links | Apache 2.0 | Testframework | NuGet | geplant |
+| NSubstitute | 5.3.0 | BSD-3 | Mocks (`IProcessRunner` u. a.) | NuGet | geplant |
+| Shouldly | 4.3.0 | BSD-3 | Assertions | NuGet | geplant |
+| coverlet.collector | 6.0.4 | MIT | Testabdeckung | NuGet | geplant |
+| Microsoft.NET.Test.Sdk | 17.14.1 | MIT | Test-Host | NuGet | geplant |
+
+## Prüfbericht Magick.Native (2026-09-23, lizenz-waechter)
+
+Untersucht: `Magick.NET-Q16-AnyCPU 14.17.1`, Datei `runtimes/win-x64/native/Magick.Native-Q16-x64.dll` (24 MB) und die mitgelieferte `Notice.txt`. Die Notice listet alle statisch eingebundenen Bibliotheken:
+
+| Komponente | Lizenz | Bewertung |
+|---|---|---|
+| ImageMagick, libjpeg-turbo, libpng, libwebp, libtiff, zlib, lcms, openjpeg, openjph, libjxl, brotli, libhwy, aom, freetype, harfbuzz, pixman, libxml2, libzip, liblzma, bzip2, openexr, imath, libffi, fribidi, libraqm | permissiv (Apache/BSD/MIT/zlib/ImageMagick) | OK |
+| glib, pango, gdk-pixbuf, cairo, librsvg, libcroco, liblqr, libraw, fontconfig | LGPL (bzw. MPL/CDDL-Dual) | OK unter der Bedingung, dass `Magick.Native-*.dll` als eigenständige, austauschbare DLL ausgeliefert wird und Magick.NET die Build-Skripte veröffentlicht (Relink-Möglichkeit). Lizenztexte aus `Notice.txt` in die App übernehmen. |
+| **libde265 1.1.1** | LGPL 3 | **HEVC-Software-Decoder wird mitgeliefert**, auch wenn Kvertis ihn nie aufruft. Widerspricht ADR-003/ADR-006 (keine mitgelieferten HEVC-Decoder, Patentlage). |
+| **libheif 1.23.2** | LGPL 3 | HEIF-Container, ohne Decoder unkritisch, hängt aber an libde265. |
+| **openh264 2.6.0** | BSD-2 | H.264-Codec; die Patentlizenz gilt nur für die von Cisco verteilten Binärdateien, nicht für diese Einbettung. |
+| x265 | GPL | **nicht enthalten** (Suche nach `x265` in der DLL ohne Treffer). |
+
+Folgerung: Kein GPL-Verstoß. Das Patentrisiko liegt in den mitgelieferten Codecs libde265 und openh264. Entscheidung O-01 (Projektinhaber): (a) Risiko akzeptieren und dokumentieren, oder (b) Bildpfad auf eine Bibliothek ohne Video-Codecs umstellen (Kandidat: SkiaSharp, MIT, plus Windows Imaging Component für HEIC/RAW/TIFF-Mehrseitig). Bis zur Entscheidung bleibt Magick.NET im Code, HEIC läuft ausschließlich über WIC.
 
 ## Abgelehnt oder gesperrt
 
@@ -47,7 +63,8 @@ Einbindung: `NuGet` (verwaltete DLL), `native` (native DLL im Paket), `Prozess` 
 | FluentAssertions ≥ 8 | Kommerzielle Nutzung lizenzpflichtig. | Shouldly (BSD-3) oder xUnit-Asserts |
 | libx264, libx265, libfdk-aac, libxvid | GPL bzw. non-free. | Media-Foundation-Encoder, libvpx, libaom/SVT-AV1, libopus |
 | FFmpeg.AutoGen (P/Invoke auf FFmpeg-DLLs) | Verlinkung statt Prozessgrenze; LGPL-Auflagen schwerer zu erfüllen. | FFMpegCore + Prozess |
-| libde265, libheif mit x265 | HEVC-Patente, x265 ist GPL. | Windows Imaging Component |
+| NAudio | Nicht nötig: Wellenform und Pegel liefert ffmpeg (`-af astats`, PCM-Export). Eine Abhängigkeit weniger. | ffmpeg |
+| libde265, libheif (als eigene Abhängigkeit) | HEVC-Patente. Hinweis: in Magick.Native dennoch enthalten, siehe Prüfbericht oben. | Windows Imaging Component |
 | OpenH264 | Patentlizenz gilt nur für den von Cisco verteilten Binär-Download; nicht kontrollierbar im MSIX. | `h264_mf` |
 
 ## Regeln

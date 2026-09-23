@@ -1,0 +1,12 @@
+{
+  "solution": {
+    "path": "Kvertis.sln",
+    "projects": [
+      "src\\Kvertis.Engine\\Kvertis.Engine.csproj",
+      "src\\Kvertis.Engine.Windows\\Kvertis.Engine.Windows.csproj",
+      "src\\Kvertis.Queue\\Kvertis.Queue.csproj",
+      "tests\\Kvertis.Engine.Tests\\Kvertis.Engine.Tests.csproj",
+      "tests\\Kvertis.Queue.Tests\\Kvertis.Queue.Tests.csproj"
+    ]
+  }
+}
