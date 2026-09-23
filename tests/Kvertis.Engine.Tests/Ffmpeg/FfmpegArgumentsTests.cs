@@ -312,6 +312,34 @@ public class FfmpegArgumentsTests
             .ShouldContain("libvpx-vp9");
     }
 
+    [Theory]
+    [InlineData(ConversionPreset.Archive)]
+    [InlineData(ConversionPreset.None)]
+    public void MkvWithoutProbeDataIsRefusedEvenForStreamCopy(ConversionPreset preset)
+    {
+        var mkv = TestMedia.Video(VideoPath, format: FormatRegistry.Mkv);
+
+        Should.Throw<ConversionException>(() => FfmpegArguments.Build(mkv, null, "/out/v.kvertis-tmp",
+                new ConversionSettings(FormatRegistry.Mkv, Preset: preset), Registry, AllSystemCodecCapabilities.Instance, AllFeatures))
+            .Detail.ShouldBe("requires system decoding");
+        Should.Throw<ConversionException>(() => FfmpegArguments.BuildFrameExtraction(mkv, null, "/tmp/p.png", TimeSpan.Zero,
+                new ConversionSettings(FormatRegistry.Mkv, Preset: preset)))
+            .Detail.ShouldBe("requires system decoding");
+    }
+
+    [Fact]
+    public void WithoutProbeDataOnlyPatentFreeContainersMayUseFfmpeg()
+    {
+        foreach (var format in new[] { FormatRegistry.WebM, FormatRegistry.Ogg, FormatRegistry.Opus, FormatRegistry.Flac, FormatRegistry.Wav, FormatRegistry.Aiff, FormatRegistry.Mp3 })
+        {
+            FfmpegToolset.MayDecodeWithFfmpeg(TestMedia.Audio("/a", format: format), null).ShouldBeTrue(format.Id);
+        }
+        foreach (var format in new[] { FormatRegistry.Mkv, FormatRegistry.Mp4, FormatRegistry.Mov, FormatRegistry.M4a, FormatRegistry.Avi, FormatRegistry.Flv, FormatRegistry.Wma, FormatRegistry.Ts })
+        {
+            FfmpegToolset.MayDecodeWithFfmpeg(TestMedia.Audio("/a", format: format), null).ShouldBeFalse(format.Id);
+        }
+    }
+
     [Fact]
     public void PatentFreeWebmToMp4UsesMediaFoundationEncodersWithoutHardwareDecode()
     {

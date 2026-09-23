@@ -35,6 +35,8 @@ public sealed class FfmpegToolset
         Reader = reader;
         Cache = cache;
         Registry = registry;
+        // The system transcoder shares the cache and uses this probe when detection left no entry.
+        cache.AttachProber(GetMediaInfoAsync);
     }
 
     public IFfmpegLocator Locator { get; }
@@ -69,17 +71,28 @@ public sealed class FfmpegToolset
 
     /// <summary>
     /// ADR-015: inputs with a patent-encumbered stream never reach ffmpeg (no decode, no stream copy, no
-    /// sound-track extraction). The same holds when the stream codecs are unknown and the container family
-    /// usually carries such codecs (MP4, MOV, M4A, WMV, WMA, AVI, 3GP, MPEG, TS): Media Foundation handles those.
+    /// sound-track extraction). Without probe data (ffprobe missing or failed) ffmpeg may only open containers
+    /// that cannot carry such streams (<see cref="EncumberedCodecs.IsPatentFreeContainer"/>: WebM, OGG, Opus,
+    /// FLAC, WAV, AIFF, MP3); MKV and every other container are refused because their codecs are unknown.
     /// Throws UnsupportedFormat "requires system decoding".
     /// </summary>
     public static void EnsureNoSystemDecoding(InputInfo input, MediaInfo? media)
     {
         ArgumentNullException.ThrowIfNull(input);
-        if (media is { RequiresSystemDecoding: true } || (media is null && EncumberedCodecs.IsSystemDecodingFamily(input.Format)))
+        if (!MayDecodeWithFfmpeg(input, media))
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "prepare", RequiresSystemDecodingDetail);
         }
+    }
+
+    /// <summary>
+    /// The ADR-015 decoder rule as a predicate: with probe data, no encumbered stream; without probe data, a
+    /// patent-free container only.
+    /// </summary>
+    public static bool MayDecodeWithFfmpeg(InputInfo input, MediaInfo? media)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        return media is null ? EncumberedCodecs.IsPatentFreeContainer(input.Format) : !media.RequiresSystemDecoding;
     }
 
     /// <summary>Error detail for inputs that only Media Foundation may decode.</summary>
@@ -93,6 +106,17 @@ public sealed class FfmpegToolset
     {
         ArgumentNullException.ThrowIfNull(input);
         return Cache.TryGet(input.Path, out var media) && media.RequiresSystemDecoding;
+    }
+
+    /// <summary>
+    /// Routing check for the converters' synchronous <c>Supports</c>: <see cref="MayDecodeWithFfmpeg"/> on the
+    /// cached probe data. Without cached data only patent-free containers qualify; the job runner re-probes
+    /// before resolving, so an evicted entry does not misroute a job.
+    /// </summary>
+    public bool MayUseFfmpeg(InputInfo input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        return MayDecodeWithFfmpeg(input, Cache.TryGet(input.Path, out var media) ? media : null);
     }
 
     /// <summary>Cached ffprobe data, or a fresh probe; null when ffprobe cannot read the file.</summary>

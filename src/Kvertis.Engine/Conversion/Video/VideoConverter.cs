@@ -8,8 +8,8 @@ namespace Kvertis.Engine.Conversion.Video;
 /// Video → MP4 (H.264/AAC via Media Foundation only), MKV and WebM (VP9/Opus), for patent-free inputs
 /// (VP8/VP9/AV1/Theora/MPEG-1/2 with Opus/Vorbis/FLAC/MP3/AC-3/PCM). The Archive preset with MKV copies the
 /// streams unchanged. Inputs with a patent-encumbered stream (<see cref="EncumberedCodecs"/>) never reach
-/// ffmpeg, not even for a stream copy: <see cref="Supports"/> is false when cached probe data says so and the
-/// conversion re-checks after probing (ADR-015). A target size uses a single-pass average bitrate in phase 1
+/// ffmpeg, not even for a stream copy: <see cref="Supports"/> is false when cached probe data says so or when
+/// there is no probe data for a container other than WebM, and the conversion re-checks after probing (ADR-015). A target size uses a single-pass average bitrate in phase 1
 /// (see <see cref="FfmpegArguments.VideoBitrateForTargetSize"/>); exact two-pass encoding is phase 2.
 /// </summary>
 public sealed class VideoConverter : IConverter
@@ -26,8 +26,12 @@ public sealed class VideoConverter : IConverter
     public bool Supports(InputInfo input, FormatId output)
     {
         ArgumentNullException.ThrowIfNull(input);
-        return input.Kind == MediaKind.Video && FfmpegArguments.IsVideoOutput(output) && !_tools.IsKnownToRequireSystemDecoding(input);
+        return HandlesKinds(input, output) && _tools.MayUseFfmpeg(input);
     }
+
+    /// <summary>Kind and output check only; the decoder rule is applied by <see cref="Supports"/> and after probing.</summary>
+    private static bool HandlesKinds(InputInfo input, FormatId output) =>
+        input.Kind == MediaKind.Video && FfmpegArguments.IsVideoOutput(output);
 
     public Task<ConversionResult> ConvertAsync(
         InputInfo input,
@@ -44,11 +48,12 @@ public sealed class VideoConverter : IConverter
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", FfmpegToolset.RequiresSystemDecodingDetail);
         }
-        if (!Supports(input, settings.Output))
+        if (!HandlesKinds(input, settings.Output))
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", $"{input.Format} -> {settings.Output}");
         }
 
+        // Without cached probe data PrepareAsync probes first and refuses unknown or encumbered streams (ADR-015).
         return _tools.ConvertAsync(input, outputPath, settings, progress,
             (context, tempPath) => FfmpegArguments.Build(input, context.Media, tempPath, settings, _tools.Registry, _tools.Codecs, context.Features),
             ct);
@@ -59,7 +64,8 @@ public sealed class VideoConverter : IConverter
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(settings);
-        if (!Supports(input, settings.Output) || !_tools.Locator.IsAvailable)
+        // Uncached inputs are probed by PrepareAsync, which applies the decoder rule (ADR-015).
+        if (!HandlesKinds(input, settings.Output) || _tools.IsKnownToRequireSystemDecoding(input) || !_tools.Locator.IsAvailable)
         {
             return null;
         }

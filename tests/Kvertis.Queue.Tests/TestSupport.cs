@@ -140,7 +140,9 @@ internal sealed class QueueHarness : IAsyncDisposable
         JobHistory? history = null,
         ISpeedProfileStore? speedStore = null,
         TimeProvider? time = null,
-        TimeSpan? throttle = null)
+        TimeSpan? throttle = null,
+        IFormatDetector? detector = null,
+        Kvertis.Engine.Probing.MediaInfoCache? mediaInfo = null)
     {
         Converter.Name.Returns("fake");
         Converter.ConvertAsync(default!, default!, default!, default!, default)
@@ -170,6 +172,8 @@ internal sealed class QueueHarness : IAsyncDisposable
             SpeedProfileStore = speedStore,
             TimeProvider = time,
             ProgressThrottle = throttle ?? JobQueueOptions.DefaultProgressThrottle,
+            FormatDetector = detector,
+            MediaInfo = mediaInfo,
         });
         Queue.JobChanged += (_, e) =>
         {

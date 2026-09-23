@@ -331,17 +331,26 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         await _detectGate.WaitAsync();
         try
         {
-            var input = await _detector.DetectAsync(item.FilePath, CancellationToken.None);
-            var suggestion = _registry.Suggest(input, _codecs);
+            // Off the UI thread: detection probes files, and the first read of the system codec capabilities
+            // (Suggest, CanConvert) may block for up to 3 s while Media Foundation is queried. The await resumes
+            // on the UI thread, so the item updates below need no extra marshalling.
+            var path = item.FilePath;
+            var (input, suggestion, producible) = await Task.Run(async () =>
+            {
+                var detected = await _detector.DetectAsync(path, CancellationToken.None).ConfigureAwait(false);
+                var suggested = _registry.Suggest(detected, _codecs);
+                // The static matrix lists what a format family can become; the resolver knows what this file can
+                // become (e.g. an MKV with H.264 has no WebM output in Phase 1).
+                var targets = detected.Kind == MediaKind.Unknown || suggested is null
+                    ? new List<FormatId>()
+                    : suggested.Options.Where(id => _resolver.CanConvert(detected, id)).ToList();
+                return (detected, suggested, targets);
+            });
             if (input.Kind == MediaKind.Unknown || suggestion is null)
             {
                 item.SetRejected(_errors.Map(ConversionErrorCode.UnsupportedFormat));
                 return;
             }
-
-            // The static matrix lists what a format family can become; the resolver knows what this file can
-            // become (e.g. an MKV with H.264 has no WebM output in Phase 1).
-            var producible = suggestion.Options.Where(id => _resolver.CanConvert(input, id)).ToList();
             if (producible.Count == 0)
             {
                 item.SetRejected(_errors.Map(ConversionErrorCode.UnsupportedFormat));
@@ -405,6 +414,11 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             && !warnings.Contains(InputWarning.TransparencyLost))
         {
             warnings.Add(InputWarning.TransparencyLost);
+        }
+        if (!item.StripMetadata)
+        {
+            // Only relevant when the user asked for metadata removal.
+            warnings.Remove(InputWarning.MetadataNotStrippable);
         }
         return string.Join(" ", warnings.Select(w => _loc.Get("Warning_" + w.ToString())));
     }

@@ -56,7 +56,8 @@ public sealed record ComplianceReport(
 
 /// <summary>
 /// Checks that the located ffmpeg is the Kvertis allowlist build (LGPL, no forbidden encoders, no decoders for
-/// patent-encumbered formats, no network protocols; same rules as <c>tools/ffmpeg/check-build.sh</c>) and
+/// patent-encumbered formats per <see cref="EncumberedCodecs.IsForbiddenDecoder"/> including hardware variants, no
+/// network protocols; same rules as <c>tools/ffmpeg/check-build.sh</c>) and
 /// refuses to work with anything else. Register one instance per process (singleton); the result is cached.
 /// </summary>
 public sealed class FfmpegCompliance
@@ -78,19 +79,6 @@ public sealed class FfmpegCompliance
         "--enable-" + "lib" + "x265",
         "--enable-" + "lib" + "fdk-aac",
         "--enable-" + "lib" + "xvid",
-    ];
-
-    // Decoders for patent-encumbered formats (list identical to tools/ffmpeg/check-build.sh). Assembled from
-    // parts: a source scan test guarantees that these names never appear as plain literals under src/.
-    private static readonly string[] ForbiddenDecoderNames =
-    [
-        "h26" + "4", "he" + "vc", "aa" + "c", "aa" + "c_fixed", "aa" + "c_latm",
-        "mpeg" + "4", "msmpeg4" + "v1", "msmpeg4" + "v2", "msmpeg4" + "v3",
-        "wm" + "v1", "wm" + "v2", "wm" + "v3", "vc" + "1",
-        "wma" + "v1", "wma" + "v2", "wma" + "pro", "wma" + "lossless", "wma" + "voice",
-        "h26" + "3", "pro" + "res", "dnx" + "hd", "ea" + "c3", "dc" + "a", "true" + "hd",
-        "amr" + "nb", "amr" + "wb",
-        "h26" + "4_qsv", "he" + "vc_qsv", "h26" + "4_cuvid", "he" + "vc_cuvid",
     ];
 
     // Network protocols that must not be compiled in (--disable-network; only "file" and "pipe" exist).
@@ -198,7 +186,7 @@ public sealed class FfmpegCompliance
             .ToList();
 
         var decoders = FfmpegFeatures.ParseDecoders(decodersOutput)
-            .Where(d => ForbiddenDecoderNames.Contains(d, StringComparer.OrdinalIgnoreCase))
+            .Where(EncumberedCodecs.IsForbiddenDecoder)
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
         var protocols = ParseProtocols(protocolsOutput)

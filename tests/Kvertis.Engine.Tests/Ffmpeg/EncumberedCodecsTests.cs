@@ -99,4 +99,71 @@ public class EncumberedCodecsTests
     [Fact]
     public void RegistryKnowsAllFamilies() =>
         new FormatRegistry().All.Count(d => EncumberedCodecs.IsSystemDecodingFamily(d.Id)).ShouldBe(9);
+
+    [Theory]
+    [InlineData("h264_qsv", true)]
+    [InlineData("hevc_cuvid", true)]
+    [InlineData("h264_amf", true)]
+    [InlineData("vc1_cuvid", true)]
+    [InlineData("mpeg4_mediacodec", true)]
+    [InlineData("aac_fixed", true)]
+    [InlineData("wmv3image", true)]
+    [InlineData("vc1image", true)]
+    [InlineData("flv", true)]
+    [InlineData("vp9_qsv", false)]
+    [InlineData("av1_cuvid", false)]
+    [InlineData("libdav1d", false)]
+    [InlineData("mp3", false)]
+    [InlineData("_qsv", false)]
+    [InlineData("", false)]
+    public void ForbiddenDecodersIncludeHardwareVariants(string decoder, bool expected) =>
+        EncumberedCodecs.IsForbiddenDecoder(decoder).ShouldBe(expected);
+
+    /// <summary>
+    /// One source for the forbidden decoders: every decoder the release build check refuses is known to
+    /// <see cref="EncumberedCodecs"/> (and therefore to <see cref="FfmpegCompliance"/>).
+    /// </summary>
+    [Fact]
+    public void BuildCheckDecodersAreSubsetOfEncumberedCodecs()
+    {
+        var script = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "tools", "ffmpeg", "check-build.sh"));
+        var match = System.Text.RegularExpressions.Regex.Match(script, @"for dec in (?<list>[^;]+); do");
+        match.Success.ShouldBeTrue("decoder loop not found in check-build.sh");
+        var names = match.Groups["list"].Value
+            .Split(new[] { ' ', '\\', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+
+        names.Length.ShouldBeGreaterThan(30);
+        names.Where(n => !EncumberedCodecs.IsForbiddenDecoder(n)).ShouldBeEmpty();
+        foreach (var added in new[] { "vv" + "c", "fl" + "v", "h26" + "3p", "h26" + "3i", "ml" + "p", "wm" + "v3image", "vc" + "1image" })
+        {
+            names.ShouldContain(added);
+        }
+
+        // The Windows variant of the check lists the same decoders.
+        var ps1 = File.ReadAllText(Path.Combine(FindRepositoryRoot(), "tools", "ffmpeg", "check-build.ps1"));
+        var psMatch = System.Text.RegularExpressions.Regex.Match(ps1, @"\$dec in @\((?<list>[^)]+)\)");
+        psMatch.Success.ShouldBeTrue("decoder loop not found in check-build.ps1");
+        var psNames = psMatch.Groups["list"].Value
+            .Split(new[] { ',', ' ', '\'', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+        psNames.ShouldBe(names, ignoreOrder: true);
+    }
+
+    [Fact]
+    public void ComplianceUsesTheCanonicalDecoderList()
+    {
+        var decoders = FakeFfmpeg.DecodersOutput(["vp9", "h26" + "3p", "fl" + "v", "he" + "vc_amf"]);
+        var report = FfmpegCompliance.Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders), decoders, FakeFfmpeg.AllowlistProtocols);
+
+        report.ForbiddenDecodersFound.ShouldBe(["h26" + "3p", "fl" + "v", "he" + "vc_amf"], ignoreOrder: true);
+    }
+
+    private static string FindRepositoryRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "Kvertis.sln")))
+        {
+            dir = dir.Parent;
+        }
+        return dir?.FullName ?? throw new InvalidOperationException("Kvertis.sln not found above " + AppContext.BaseDirectory);
+    }
 }

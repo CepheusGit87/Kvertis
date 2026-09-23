@@ -14,22 +14,22 @@ public class ForbiddenEncoderSourceScanTests
     // Assembled from parts so this test file does not trip other literal scans.
     private static readonly string[] Forbidden = ["lib" + "x264", "lib" + "x265", "lib" + "fdk_aac"];
 
-    // Same list as tools/ffmpeg/check-build.sh, assembled from parts for the same reason.
+    // The canonical list (EncumberedCodecs, a superset of tools/ffmpeg/check-build.sh, see
+    // EncumberedCodecsTests) plus the hardware decoder names the build check lists explicitly.
     private static readonly string[] ForbiddenDecoderLiterals =
     [
-        "h26" + "4", "he" + "vc", "aa" + "c", "aa" + "c_fixed", "aa" + "c_latm", "mpeg" + "4",
-        "msmpeg4" + "v1", "msmpeg4" + "v2", "msmpeg4" + "v3", "wm" + "v1", "wm" + "v2", "wm" + "v3", "vc" + "1",
-        "wma" + "v1", "wma" + "v2", "wma" + "pro", "wma" + "lossless", "wma" + "voice", "h26" + "3", "pro" + "res",
-        "dnx" + "hd", "ea" + "c3", "dc" + "a", "true" + "hd", "amr" + "nb", "amr" + "wb",
+        .. Kvertis.Engine.Ffmpeg.EncumberedCodecs.ForbiddenDecoderNames,
         "h26" + "4_qsv", "he" + "vc_qsv", "h26" + "4_cuvid", "he" + "vc_cuvid",
     ];
 
-    // Literals that are not codec selectors: the HEIF brand "hevc" in the ISO-BMFF brand check and the ".aac"
-    // file extension of the M4A format. File (relative to src/) and literal.
+    // Literals that are not codec selectors: the HEIF brand "hevc" in the ISO-BMFF brand check, the ".aac"
+    // file extension of the M4A format and the FLV container id/extension and file signature. File (relative to src/) and literal.
     private static readonly (string File, string Literal)[] AllowedDecoderLiterals =
     [
         ("Kvertis.Engine/Formats/MagicBytes.cs", "he" + "vc"),
         ("Kvertis.Engine/Formats/FormatRegistry.cs", "aa" + "c"),
+        ("Kvertis.Engine/Formats/FormatRegistry.cs", "fl" + "v"),
+        ("Kvertis.Engine/Formats/MagicBytes.cs", "fl" + "v"),
     ];
 
     private static readonly string[] Extensions = [".cs", ".csproj", ".props", ".targets", ".json", ".xaml", ".resw", ".xml", ".ps1", ".cmd", ".bat"];

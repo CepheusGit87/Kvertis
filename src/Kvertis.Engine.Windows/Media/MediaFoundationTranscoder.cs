@@ -26,9 +26,13 @@ namespace Kvertis.Engine.Windows.Media;
 /// <para>Stream codecs come from the shared <see cref="MediaInfoCache"/>, filled by ffprobe during detection.
 /// ffprobe works with the allowlist build because <c>-show_streams</c> reads container and codec parameters
 /// without opening a decoder.</para>
-/// <para>Known limitation (Phase 2): <see cref="MediaTranscoder"/> has no switch to drop container metadata;
-/// with <see cref="MetadataPolicy.Strip"/> some tags (title, creation time) may be carried over by the media sink.
-/// GPS/EXIF blocks of camera MP4 files are not guaranteed to be removed on this path.</para>
+/// <para>Known limitation: <see cref="MediaTranscoder"/> has no switch to drop container metadata; with
+/// <see cref="MetadataPolicy.Strip"/> some tags (title, creation time, location) may be carried over by the media
+/// sink (<see cref="TranscodePlan.CanStripMetadata"/> is false). The prober marks every input routed here with
+/// <see cref="InputWarning.MetadataNotStrippable"/>, which the job card shows.</para>
+/// <para>Without cached probe data the file is probed through <see cref="MediaInfoCache.GetOrProbeAsync"/> first,
+/// so encrypted tracks are refused before Media Foundation opens the file; if ffprobe cannot read it either,
+/// Media Foundation content-protection HRESULTs are mapped to <see cref="ConversionErrorCode.ProtectedFile"/>.</para>
 /// <para>MediaTranscoder picks the container from the profile. The work file nevertheless carries the real
 /// extension (<c>&lt;target&gt;.kvertis-tmp.&lt;ext&gt;</c>) and is renamed onto the usual temp path before the
 /// atomic commit (ADR-007), so no assumption about extension handling is needed.</para>
@@ -45,6 +49,14 @@ public sealed class MediaFoundationTranscoder : IConverter
 
     // MF_E_TOPO_CODEC_NOT_FOUND: no decoder or encoder for a stream.
     private const int TopologyCodecNotFound = unchecked((int)0xC00D5212);
+
+    // Content protection / DRM HRESULTs of Media Foundation (mferror.h, "protected media" block: license, DRM,
+    // content-protection-manager and trust errors such as MF_E_LICENSE_INCORRECT_RIGHTS, MF_E_DRM_UNSUPPORTED,
+    // MF_E_NO_CONTENT_PROTECTION_MANAGER, MF_E_CONTENT_PROTECTION_*). Treated as ProtectedFile when probe data was
+    // unavailable. Unverified on a real protected file: the exact codes MediaTranscoder surfaces are not documented;
+    // the range is deliberately wide (defensive: a protected file must never be reported as corrupt or retried).
+    private const uint ContentProtectionFirst = 0xC00D7148;
+    private const uint ContentProtectionLast = 0xC00D71FF;
 
     private readonly MediaInfoCache _mediaInfo;
     private readonly ISystemCodecCapabilities _codecs;
@@ -78,7 +90,17 @@ public sealed class MediaFoundationTranscoder : IConverter
         ArgumentNullException.ThrowIfNull(progress);
 
         var stopwatch = Stopwatch.StartNew();
-        var media = CachedMedia(input);
+        // Detection normally filled the cache; if not (ffprobe failed then, or the entry was evicted), probe now:
+        // ffprobe reads the headers of encumbered files without decoding and reports encrypted tracks.
+        MediaInfo? media;
+        try
+        {
+            media = await _mediaInfo.GetOrProbeAsync(input, ct).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            throw Map(ex, input.Path, null, "probe");
+        }
         if (!TranscodePlan.Supports(input, settings.Output, media, _codecs))
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, Step, $"{input.Format} -> {settings.Output}");
@@ -292,9 +314,14 @@ public sealed class MediaFoundationTranscoder : IConverter
         OperationCanceledException => ConversionException.From(ex, path, step),
         _ when ex.HResult == TopologyCodecNotFound => new ConversionException(ConversionErrorCode.MissingSystemCodec, path, step,
             media is { IsHevc: true } ? EncumberedCodecs.Hevc : $"0x{ex.HResult:X8}", ex),
+        _ when IsContentProtectionError(ex.HResult) => new ConversionException(ConversionErrorCode.ProtectedFile, path, step, $"0x{ex.HResult:X8}", ex),
         _ when ex.HResult == UnsupportedByteStream => new ConversionException(ConversionErrorCode.CorruptFile, path, step, $"0x{ex.HResult:X8}", ex),
         _ => ConversionException.From(ex, path, step),
     };
+
+    /// <summary>True for the Media Foundation content-protection/DRM HRESULT block (see the constants).</summary>
+    internal static bool IsContentProtectionError(int hresult) =>
+        (uint)hresult is >= ContentProtectionFirst and <= ContentProtectionLast;
 
     private static void TryDelete(string path)
     {

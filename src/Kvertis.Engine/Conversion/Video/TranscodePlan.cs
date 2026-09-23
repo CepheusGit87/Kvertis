@@ -59,6 +59,13 @@ public sealed record TranscodePlan(
         FormatRegistry.Avi, FormatRegistry.ThreeGp, FormatRegistry.Mpeg, FormatRegistry.Ts, FormatRegistry.Mkv,
     ];
 
+    /// <summary>
+    /// Always false: <c>MediaTranscoder</c> has no switch to drop container metadata, so <see cref="MetadataPolicy.Strip"/>
+    /// cannot be honoured on this path (GPS/EXIF blocks of camera files may be carried over). The prober reports
+    /// <see cref="InputWarning.MetadataNotStrippable"/> for inputs routed here so the UI can say so.
+    /// </summary>
+    public bool CanStripMetadata => false;
+
     /// <summary>True when the output has no video track.</summary>
     public bool AudioOnly => Container != TranscodeContainer.Mp4;
 
@@ -127,7 +134,7 @@ public sealed record TranscodePlan(
             int? audioKbps = container switch
             {
                 TranscodeContainer.Wav or TranscodeContainer.Flac => null,
-                TranscodeContainer.M4a => AacStep(FfmpegArguments.ChooseAudioKbps(input, media, settings, isVideo: false)),
+                TranscodeContainer.M4a => EnsureFitsTargetSize(AacStep(FfmpegArguments.ChooseAudioKbps(input, media, settings, isVideo: false)), input, media, settings),
                 _ => FfmpegArguments.ChooseAudioKbps(input, media, settings, isVideo: false),
             };
             return new TranscodePlan(container, null, null, null, null, true, audioKbps, sampleRate);
@@ -139,7 +146,9 @@ public sealed record TranscodePlan(
         }
 
         var includeAudio = media is not { HasAudio: false };
-        var videoAudioKbps = includeAudio ? AacStep(FfmpegArguments.ChooseAudioKbps(input, media, settings, isVideo: true)) : (int?)null;
+        var videoAudioKbps = includeAudio
+            ? EnsureFitsTargetSize(AacStep(FfmpegArguments.ChooseAudioKbps(input, media, settings, isVideo: true)), input, media, settings)
+            : (int?)null;
         var videoKbps = settings.TargetSizeBytes is { } target
             ? FfmpegArguments.VideoBitrateForTargetSize(target, media?.Duration ?? input.Duration, videoAudioKbps ?? 0, input.Path)
             : FfmpegArguments.QualityVideoKbps(input, media, settings);
@@ -176,6 +185,29 @@ public sealed record TranscodePlan(
         "flac" => TranscodeContainer.Flac,
         _ => null,
     };
+
+    /// <summary>
+    /// The AAC encoder's floor (96 kbit/s) can exceed a small target-size budget. Like the ffmpeg path, a bitrate
+    /// that does not fit the budget is TargetSizeUnreachable instead of a file larger than requested.
+    /// </summary>
+    private static int EnsureFitsTargetSize(int audioKbps, InputInfo input, MediaInfo? media, ConversionSettings settings)
+    {
+        if (settings.TargetSizeBytes is not { } target)
+        {
+            return audioKbps;
+        }
+        if ((media?.Duration ?? input.Duration) is not { } d || d <= TimeSpan.Zero)
+        {
+            throw new ConversionException(ConversionErrorCode.TargetSizeUnreachable, input.Path, "transcode-plan", "duration unknown");
+        }
+        var budgetKbps = target * 8.0 / d.TotalSeconds / 1000.0;
+        if (audioKbps > budgetKbps)
+        {
+            throw new ConversionException(ConversionErrorCode.TargetSizeUnreachable, input.Path, "transcode-plan",
+                string.Create(System.Globalization.CultureInfo.InvariantCulture, $"aac needs {audioKbps} kbit/s, budget is {budgetKbps:0.#}"));
+        }
+        return audioKbps;
+    }
 
     /// <summary>Largest accepted AAC bitrate at or below <paramref name="kbps"/>; 96 as the floor.</summary>
     public static int AacStep(int kbps)

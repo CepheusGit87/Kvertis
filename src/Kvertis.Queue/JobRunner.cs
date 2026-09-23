@@ -1,6 +1,7 @@
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
 using Kvertis.Engine.Naming;
+using Kvertis.Engine.Probing;
 using Microsoft.Extensions.Logging;
 
 namespace Kvertis.Queue;
@@ -60,6 +61,12 @@ internal sealed class JobRunner
         _raise = raise;
     }
 
+    /// <summary>Re-detects audio/video inputs without cached probe data before routing. Optional.</summary>
+    public IFormatDetector? FormatDetector { get; init; }
+
+    /// <summary>The shared probe cache; see <see cref="FormatDetector"/>.</summary>
+    public MediaInfoCache? MediaInfo { get; init; }
+
     public async Task<JobOutcome> RunAsync(ConversionJob job, ThrottledProgress progress, CancellationToken ct)
     {
         // Scoped to this async flow: the value is restored when this method returns to its caller.
@@ -75,10 +82,11 @@ internal sealed class JobRunner
             }
             ct.ThrowIfCancellationRequested();
 
-            var converter = _resolver.Resolve(job.Input, job.Settings.Output);
+            var input = await EnsureProbedAsync(job.Input, ct).ConfigureAwait(false);
+            var converter = _resolver.Resolve(input, job.Settings.Output);
             if (converter is null)
             {
-                return JobOutcome.Failed(ConversionErrorCode.UnsupportedFormat, $"{job.Input.Format} -> {job.Settings.Output}");
+                return JobOutcome.Failed(ConversionErrorCode.UnsupportedFormat, $"{input.Format} -> {job.Settings.Output}");
             }
 
             try
@@ -96,7 +104,7 @@ internal sealed class JobRunner
             job.Estimate = SafeEstimate(_estimator, job, _logger);
             _raise(job, JobChangeKind.Details);
 
-            var result = await converter.ConvertAsync(job.Input, job.OutputPath, job.Settings, progress, ct).ConfigureAwait(false);
+            var result = await converter.ConvertAsync(input, job.OutputPath, job.Settings, progress, ct).ConfigureAwait(false);
             if (result is null)
             {
                 return JobOutcome.Failed(ConversionErrorCode.Unknown, $"Converter '{converter.Name}' returned no result");
@@ -136,6 +144,24 @@ internal sealed class JobRunner
         {
             JobExecutionContext.Set(null);
         }
+    }
+
+    /// <summary>
+    /// The converters route audio/video by the cached ffprobe data (ADR-015). When the entry is gone (evicted, or
+    /// the file's size/mtime changed since it was added) the input is detected again, which probes and refills
+    /// the cache; otherwise an MKV with H.264 would resolve to the ffmpeg converter and fail instead of going to
+    /// the system transcoder.
+    /// </summary>
+    private async Task<InputInfo> EnsureProbedAsync(InputInfo input, CancellationToken ct)
+    {
+        if (FormatDetector is null || MediaInfo is null
+            || input.Kind is not (MediaKind.Audio or MediaKind.Video)
+            || MediaInfo.TryGet(input.Path, out _))
+        {
+            return input;
+        }
+        _logger.LogDebug("No cached probe data for {Path}; detecting again", input.Path);
+        return await FormatDetector.DetectAsync(input.Path, ct).ConfigureAwait(false);
     }
 
     public static Estimate SafeEstimate(IEstimator estimator, ConversionJob job, ILogger logger)

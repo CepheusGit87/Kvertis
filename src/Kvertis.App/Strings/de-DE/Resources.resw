@@ -927,6 +927,9 @@
   <data name="Warning_LargeFile" xml:space="preserve">
     <value>Sehr große Datei. Die Umwandlung kann lange dauern.</value>
   </data>
+  <data name="Warning_MetadataNotStrippable" xml:space="preserve">
+    <value>Metadaten können bei diesem Format nicht entfernt werden. Aufnahmeort und Kameradaten bleiben erhalten.</value>
+  </data>
   <data name="Warning_MultipleAudioTracks" xml:space="preserve">
     <value>Nur die erste Tonspur wird übernommen.</value>
   </data>

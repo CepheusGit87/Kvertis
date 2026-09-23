@@ -143,6 +143,10 @@ public class TranscodePlanTests
         { "mkv", "mp4", "h264", "aac", true },
         { "mkv", "webm", "h264", "aac", false },
         { "mkv", "mp4", "vp9", "opus", false },
+        { "mkv", "mp4", "vp9", "aac", true },        // one encumbered stream is enough
+        { "mkv", "mp3", "vp9", "aac", true },
+        { "mp3", "mp3", "mjpeg", "mp3", false },     // cover art is patent-free: ffmpeg path
+        { "mp3", "wav", "mjpeg", "mp3", false },
         { "webm", "mp4", "vp9", "opus", false },
         { "flv", "mp4", "h264", "aac", false },      // Media Foundation cannot read FLV
         { "mpeg", "mp4", "mpeg2video", "mp2", false },
@@ -180,4 +184,39 @@ public class TranscodePlanTests
         TranscodePlan.Supports(video, FormatRegistry.Mp3, TestMedia.VideoInfo("h264", hasAudio: false)).ShouldBeFalse();
         TranscodePlan.Supports(TestMedia.Audio("/in/a.wav"), FormatRegistry.Mp3, TestMedia.AudioInfo()).ShouldBeFalse();
     }
+
+    [Fact]
+    public void RoutingPairsAreComplementary()
+    {
+        // MKV with VP9 + AAC: Media Foundation only, ffmpeg refuses it.
+        var mkv = TestMedia.Video(Path, format: FormatRegistry.Mkv);
+        var vp9Aac = TestMedia.VideoInfo("vp9", audioCodec: "aac");
+        TranscodePlan.Supports(mkv, FormatRegistry.Mp4, vp9Aac, AllSystemCodecCapabilities.Instance).ShouldBeTrue();
+        Kvertis.Engine.Ffmpeg.FfmpegToolset.MayDecodeWithFfmpeg(mkv, vp9Aac).ShouldBeFalse();
+
+        // MP3 with an embedded JPEG cover: ffmpeg only.
+        var mp3 = TestMedia.Audio("/in/song.mp3", format: FormatRegistry.Mp3);
+        var cover = TestMedia.AudioInfo() with { AudioCodec = "mp3", VideoCodec = "mjpeg", HasVideo = true, StreamCodecs = ["mp3", "mjpeg"] };
+        TranscodePlan.Supports(mp3, FormatRegistry.Wav, cover, AllSystemCodecCapabilities.Instance).ShouldBeFalse();
+        Kvertis.Engine.Ffmpeg.FfmpegToolset.MayDecodeWithFfmpeg(mp3, cover).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void AacFloorAboveTargetSizeBudgetIsUnreachable()
+    {
+        // 600 s, 5 MB -> 66.7 kbit/s: the audio step is 64, but the AAC encoder needs at least 96.
+        var m4a = TestMedia.Audio("/in/a.m4a", TimeSpan.FromSeconds(600), FormatRegistry.M4a);
+        var aac = TestMedia.AudioInfo(600) with { AudioCodec = "aac", StreamCodecs = ["aac"] };
+        var ex = Should.Throw<ConversionException>(() => TranscodePlan.Create(m4a, aac, new ConversionSettings(FormatRegistry.M4a, TargetSizeBytes: 5_000_000)));
+        ex.Code.ShouldBe(ConversionErrorCode.TargetSizeUnreachable);
+
+        // 60 s, 1 MB -> 133 kbit/s: 128 fits.
+        var fits = TranscodePlan.Create(TestMedia.Audio("/in/a.m4a", TimeSpan.FromSeconds(60), FormatRegistry.M4a), TestMedia.AudioInfo(60) with { AudioCodec = "aac", StreamCodecs = ["aac"] },
+            new ConversionSettings(FormatRegistry.M4a, TargetSizeBytes: 1_000_000));
+        fits.AudioBitrateKbps.ShouldBe(128);
+    }
+
+    [Fact]
+    public void SystemTranscoderCannotStripMetadata() =>
+        TranscodePlan.Create(TestMedia.Video(Path), TestMedia.VideoInfo("h264", audioCodec: "aac"), new ConversionSettings(FormatRegistry.Mp4)).CanStripMetadata.ShouldBeFalse();
 }

@@ -206,6 +206,40 @@ public class MediaProberTests
     }
 
     [Fact]
+    public async Task EncumberedInputGetsMetadataNotStrippableWarning()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson("h264", "aac") };
+        var prober = new MediaProber(new FfprobeReader(fake.Locator, fake.Runner), fake.Locator, new MediaInfoCache());
+
+        var info = await prober.ProbeAsync(Input(fake.CreateInputFile(".mp4"), FormatRegistry.Mp4, MediaKind.Video), CancellationToken.None);
+
+        info.HasWarning(InputWarning.MetadataNotStrippable).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task PatentFreeInputHasNoMetadataWarning()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson("vp9", "opus") };
+        var prober = new MediaProber(new FfprobeReader(fake.Locator, fake.Runner), fake.Locator, new MediaInfoCache());
+
+        var info = await prober.ProbeAsync(Input(fake.CreateInputFile(".webm"), FormatRegistry.WebM, MediaKind.Video), CancellationToken.None);
+
+        info.HasWarning(InputWarning.MetadataNotStrippable).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task UnprobedEncumberedFamilyGetsMetadataNotStrippableWarning()
+    {
+        using var fake = new FakeFfmpeg { ProbeOutcome = FakeFfmpeg.FailedProbe };
+        var prober = new MediaProber(new FfprobeReader(fake.Locator, fake.Runner), fake.Locator, new MediaInfoCache());
+
+        (await prober.ProbeAsync(Input(fake.CreateInputFile(".mov"), FormatRegistry.Mov, MediaKind.Video), CancellationToken.None))
+            .HasWarning(InputWarning.MetadataNotStrippable).ShouldBeTrue();
+        (await prober.ProbeAsync(Input(fake.CreateInputFile(".webm"), FormatRegistry.WebM, MediaKind.Video), CancellationToken.None))
+            .HasWarning(InputWarning.MetadataNotStrippable).ShouldBeFalse();
+    }
+
+    [Fact]
     public void SupportsOnlyAudioAndVideo()
     {
         using var fake = new FakeFfmpeg();
@@ -213,6 +247,45 @@ public class MediaProberTests
         prober.Supports(MediaKind.Audio).ShouldBeTrue();
         prober.Supports(MediaKind.Video).ShouldBeTrue();
         prober.Supports(MediaKind.Image).ShouldBeFalse();
+    }
+}
+
+public class MediaInfoCacheTests
+{
+    [Fact]
+    public void EvictsLeastRecentlyUsedEntryInsteadOfClearing()
+    {
+        using var fake = new FakeFfmpeg();
+        var cache = new MediaInfoCache(capacity: 2);
+        var a = fake.CreateInputFile(".mkv");
+        var b = fake.CreateInputFile(".mkv");
+        var c = fake.CreateInputFile(".mkv");
+        cache.Set(a, TestMedia.VideoInfo("h264"));
+        cache.Set(b, TestMedia.VideoInfo("vp9"));
+        cache.TryGet(a, out _).ShouldBeTrue(); // a is now the most recently used
+
+        cache.Set(c, TestMedia.VideoInfo("hevc"));
+
+        cache.Count.ShouldBe(2);
+        cache.TryGet(a, out var kept).ShouldBeTrue();
+        kept.VideoCodec.ShouldBe("h264");
+        cache.TryGet(b, out _).ShouldBeFalse();
+        cache.TryGet(c, out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task GetOrProbeUsesTheToolsetProbeWhenNothingIsCached()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson("h264", "aac") };
+        var cache = new MediaInfoCache();
+        var input = TestMedia.Video(fake.CreateInputFile(".mp4"));
+        (await cache.GetOrProbeAsync(input, CancellationToken.None)).ShouldBeNull(); // no prober attached yet
+
+        _ = fake.CreateToolset(cache: cache);
+        var media = await cache.GetOrProbeAsync(input, CancellationToken.None);
+
+        media.ShouldNotBeNull().RequiresSystemDecoding.ShouldBeTrue();
+        cache.TryGet(input.Path, out _).ShouldBeTrue();
     }
 }
 

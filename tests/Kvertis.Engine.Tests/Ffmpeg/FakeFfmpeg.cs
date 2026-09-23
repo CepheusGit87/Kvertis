@@ -68,6 +68,12 @@ internal sealed class FakeFfmpeg : IDisposable
     public string ProtocolsOutput { get; set; } = AllowlistProtocols;
     public string ProbeJson { get; set; } = TestMedia.AudioJson(60);
     public ProcessOutcome? ConversionOutcome { get; set; }
+
+    /// <summary>When set, every ffprobe run answers with this outcome instead of <see cref="ProbeJson"/>.</summary>
+    public ProcessOutcome? ProbeOutcome { get; set; }
+
+    /// <summary>A failed ffprobe run (unreadable header).</summary>
+    public static readonly ProcessOutcome FailedProbe = new(1, string.Empty, "Invalid data found when processing input", TimeSpan.FromMilliseconds(5), false);
     public IReadOnlyList<string> StderrLines { get; set; } = [];
     public int OutputBytes { get; set; } = 1000;
 
@@ -133,7 +139,7 @@ internal sealed class FakeFfmpeg : IDisposable
         var args = request.Arguments;
         if (request.ExecutablePath == FfprobePath)
         {
-            return Ok(ProbeJson);
+            return ProbeOutcome ?? Ok(ProbeJson);
         }
         if (args.Contains("-version"))
         {

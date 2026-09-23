@@ -154,7 +154,7 @@ public class AudioConverterTests
         var converter = new AudioConverter(fake.CreateToolset());
         var input = TestMedia.Audio(fake.CreateInputFile(".wma"), format: FormatRegistry.Wma);
 
-        converter.Supports(input, FormatRegistry.Mp3).ShouldBeTrue(); // no probe data yet
+        converter.Supports(input, FormatRegistry.Mp3).ShouldBeFalse(); // no probe data yet: WMA may carry encumbered codecs
         var ex = await Should.ThrowAsync<ConversionException>(() =>
             converter.ConvertAsync(input, fake.NewOutputPath(".mp3"), new ConversionSettings(FormatRegistry.Mp3), NoProgress, CancellationToken.None));
 
@@ -171,7 +171,8 @@ public class AudioConverterTests
         var converter = new AudioConverter(fake.CreateToolset());
         converter.Name.ShouldBe("audio");
         converter.Supports(TestMedia.Audio("/a.wav"), FormatRegistry.Mp3).ShouldBeTrue();
-        converter.Supports(TestMedia.Video("/v.mp4"), FormatRegistry.Flac).ShouldBeTrue();
+        converter.Supports(TestMedia.Video("/v.webm", format: FormatRegistry.WebM), FormatRegistry.Flac).ShouldBeTrue();
+        converter.Supports(TestMedia.Video("/v.mp4"), FormatRegistry.Flac).ShouldBeFalse(); // no probe data
         converter.Supports(TestMedia.Audio("/a.wav"), FormatRegistry.Wma).ShouldBeFalse();
         converter.Supports(TestMedia.Audio("/a.wav"), FormatRegistry.Mp4).ShouldBeFalse();
     }

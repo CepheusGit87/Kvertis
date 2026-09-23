@@ -87,13 +87,46 @@ public class VideoConverterTests
         var converter = new VideoConverter(fake.CreateToolset());
         var input = TestMedia.Video(fake.CreateInputFile(".mkv"), format: FormatRegistry.Mkv);
 
-        converter.Supports(input, FormatRegistry.WebM).ShouldBeTrue(); // no probe data yet
+        converter.Supports(input, FormatRegistry.WebM).ShouldBeFalse(); // no probe data yet: MKV codecs unknown
         var ex = await Should.ThrowAsync<ConversionException>(() =>
             converter.ConvertAsync(input, fake.NewOutputPath(".webm"), new ConversionSettings(FormatRegistry.WebM), NoProgress, CancellationToken.None));
 
         ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
         ex.Detail.ShouldBe("requires system decoding");
         fake.Requests.ShouldHaveSingleItem().ExecutablePath.ShouldBe(FakeFfmpeg.FfprobePath);
+    }
+
+    [Theory]
+    [InlineData(ConversionPreset.Archive)]
+    [InlineData(ConversionPreset.None)]
+    public async Task MkvWithFailingProbeNeverStartsFfmpeg(ConversionPreset preset)
+    {
+        using var fake = new FakeFfmpeg { ProbeOutcome = FakeFfmpeg.FailedProbe };
+        var converter = new VideoConverter(fake.CreateToolset());
+        var input = TestMedia.Video(fake.CreateInputFile(".mkv"), format: FormatRegistry.Mkv);
+        var settings = new ConversionSettings(FormatRegistry.Mkv, Preset: preset);
+
+        converter.Supports(input, FormatRegistry.Mkv).ShouldBeFalse();
+        var ex = await Should.ThrowAsync<ConversionException>(() =>
+            converter.ConvertAsync(input, fake.NewOutputPath(".mkv"), settings, NoProgress, CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
+        ex.Detail.ShouldBe("requires system decoding");
+        fake.Requests.ShouldNotBeEmpty();
+        fake.Requests.ShouldAllBe(r => r.ExecutablePath == FakeFfmpeg.FfprobePath);
+    }
+
+    [Fact]
+    public async Task WebmWithFailingProbeIsStillAccepted()
+    {
+        using var fake = new FakeFfmpeg { ProbeOutcome = FakeFfmpeg.FailedProbe };
+        var converter = new VideoConverter(fake.CreateToolset());
+        var input = TestMedia.Video(fake.CreateInputFile(".webm"), format: FormatRegistry.WebM);
+
+        converter.Supports(input, FormatRegistry.WebM).ShouldBeTrue();
+        await converter.ConvertAsync(input, fake.NewOutputPath(".webm"), new ConversionSettings(FormatRegistry.WebM), NoProgress, CancellationToken.None);
+
+        FfmpegArgumentsTests.ValueAfter(fake.ConversionRequests.ShouldHaveSingleItem().Arguments, "-c:v").ShouldBe("libvpx-vp9");
     }
 
     [Fact]
@@ -165,9 +198,12 @@ public class VideoConverterTests
         using var fake = new FakeFfmpeg();
         var converter = new VideoConverter(fake.CreateToolset());
         converter.Name.ShouldBe("video");
-        converter.Supports(TestMedia.Video("/v.avi", format: FormatRegistry.Avi), FormatRegistry.Mp4).ShouldBeTrue();
-        converter.Supports(TestMedia.Video("/v.avi"), FormatRegistry.WebM).ShouldBeTrue();
-        converter.Supports(TestMedia.Video("/v.avi"), FormatRegistry.Mp3).ShouldBeFalse();
+        converter.Supports(TestMedia.Video("/v.webm", format: FormatRegistry.WebM), FormatRegistry.Mp4).ShouldBeTrue();
+        converter.Supports(TestMedia.Video("/v.webm", format: FormatRegistry.WebM), FormatRegistry.WebM).ShouldBeTrue();
+        converter.Supports(TestMedia.Video("/v.webm", format: FormatRegistry.WebM), FormatRegistry.Mp3).ShouldBeFalse();
+        // Without probe data only patent-free containers qualify (ADR-015).
+        converter.Supports(TestMedia.Video("/v.avi", format: FormatRegistry.Avi), FormatRegistry.Mp4).ShouldBeFalse();
+        converter.Supports(TestMedia.Video("/v.mkv", format: FormatRegistry.Mkv), FormatRegistry.WebM).ShouldBeFalse();
         converter.Supports(TestMedia.Audio("/a.wav"), FormatRegistry.Mp4).ShouldBeFalse();
     }
 
