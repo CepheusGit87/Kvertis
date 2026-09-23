@@ -90,7 +90,8 @@ public sealed class ConversionOutput : IDisposable
             return 0;
         }
         var count = 0;
-        foreach (var file in Directory.EnumerateFiles(directory, "*" + TempSuffix))
+        // Matches "<name>.kvertis-tmp" and helper files such as ".kvertis-heic-<guid>.png".
+        foreach (var file in Directory.EnumerateFiles(directory, "*.kvertis-*"))
         {
             if (TryDelete(file))
             {

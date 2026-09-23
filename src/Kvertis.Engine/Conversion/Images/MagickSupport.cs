@@ -55,6 +55,7 @@ internal static class MagickSupport
 
     public static MagickReadSettings ReadSettings(FormatId format, string path, bool firstFrameOnly)
     {
+        MagickSecurity.EnsureInitialized();
         var coder = ReadFormatFor(format, path)
                     ?? throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "read", $"no image reader for '{format}'");
         var settings = new MagickReadSettings { Format = coder };
