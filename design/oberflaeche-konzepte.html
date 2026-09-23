@@ -1,0 +1,930 @@
+<title>Kvertis Oberflächen-Entwürfe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (src/renderer/src/styles/tokens.css). Dunkel ist Vorgabe, hell nachgedunkelt für WCAG AA. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --coral-rahmen: #5e2f29; --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --boden: #080a0b; --boden-schein: #0009;
+  --glas: #14181bcc; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c;
+    --glas: #ffffffcc; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c;
+  --glas: #ffffffcc; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.mono { font-family: var(--mono); }
+.muted { color: var(--muted); }
+
+.seite { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 56px; }
+
+/* Kopf */
+.kopf { display: grid; gap: 14px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 48px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 18ch; }
+h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.lead { margin: 0; max-width: 64ch; color: var(--muted); font-size: 17px; }
+
+/* Befund */
+.befund { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.befund > div { background: var(--panel); padding: 18px 20px; display: grid; gap: 6px; align-content: start; }
+.befund p { margin: 0; color: var(--muted); font-size: 14px; }
+.befund code { font: 12px var(--mono); color: var(--leise); }
+.befund h3 { display: flex; gap: 8px; align-items: baseline; }
+.befund h3 span { color: var(--coral); font-family: var(--mono); font-size: 12px; }
+
+/* Palette */
+.palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.farbe { display: grid; grid-template-columns: 34px 1fr; gap: 2px 10px; align-items: center; padding: 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); }
+.farbe i { grid-row: span 2; width: 34px; height: 34px; border-radius: 8px; background: var(--c); box-shadow: inset 0 -6px 0 #0003, 0 4px 10px -4px var(--c); }
+.farbe b { font-size: 13px; font-weight: 600; }
+.farbe span { font: 11px var(--mono); color: var(--muted); }
+.abschnitt { display: grid; gap: 18px; }
+.abschnitt > p { margin: 0; color: var(--muted); max-width: 70ch; }
+
+/* Umschalter */
+.umschalter { display: flex; flex-wrap: wrap; gap: 8px; }
+.umschalter button { display: grid; gap: 2px; text-align: left; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); min-width: 200px; flex: 1 1 200px; transition: border-color .2s, transform .3s var(--feder), box-shadow .3s; }
+.umschalter button b { font-size: 15px; font-weight: 600; }
+.umschalter button span { font-size: 13px; color: var(--muted); }
+.umschalter button small { font: 11px var(--mono); color: var(--leise); letter-spacing: .06em; text-transform: uppercase; }
+.umschalter button:hover { border-color: var(--line-stark); }
+.umschalter button[aria-selected="true"] { border-color: var(--mint); background: var(--mint-flaeche); transform: translateY(-2px); box-shadow: 0 10px 24px -14px var(--mint); }
+.umschalter button[aria-selected="true"] small { color: var(--mint); }
+
+.konzept { display: grid; gap: 22px; }
+.konzept-kopf { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; align-items: end; }
+.konzept-kopf p { margin: 6px 0 0; color: var(--muted); max-width: 62ch; }
+.demo-knopf { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 9px 16px; border-radius: 10px; font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.demo-knopf:hover { border-color: var(--mint); }
+
+.buehne { overflow-x: auto; padding: 8px 4px 28px; margin-inline: -4px; }
+.notizen { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.notizen > div { display: grid; gap: 8px; align-content: start; }
+.notizen h3 { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.notizen ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 6px; }
+.notizen li::marker { color: var(--mint); }
+.notizen code { font: 12px var(--mono); color: var(--ink); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+
+/* ============ Fenster-Rahmen (gemeinsam) ============ */
+.win { --fs: 1; position: relative; width: 100%; min-width: 860px; height: 600px; border-radius: 14px; border: 1px solid var(--line-stark); background:
+  radial-gradient(1200px 500px at 15% -10%, color-mix(in srgb, var(--mint) 9%, transparent), transparent 60%),
+  radial-gradient(900px 400px at 110% 110%, color-mix(in srgb, var(--violet) 7%, transparent), transparent 60%),
+  var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten), 0 0 0 1px #0000001a; overflow: hidden; display: grid; grid-template-rows: 42px 1fr auto; font-size: 13px; }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); mix-blend-mode: normal; box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-weight: 600; font-size: 13px; }
+.tb .platz { flex: 1; }
+.ikon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 0; background: transparent; color: var(--muted); }
+.ikon:hover { background: var(--hover); color: var(--ink); }
+.ikon svg { width: 16px; height: 16px; }
+.pro { font: 600 11px var(--mono); letter-spacing: .08em; padding: 3px 8px; border-radius: 6px; border: 1px solid var(--amber-rahmen); color: var(--amber); }
+.wk { display: flex; height: 100%; }
+.wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+
+.taste { position: relative; border: 0; border-radius: 12px; padding: 12px 22px; font-weight: 600; font-size: 14px; background: var(--mint); color: var(--auf-mint);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 12px 24px -8px color-mix(in srgb, var(--mint) 60%, transparent), inset 0 1px 0 #ffffff55;
+  transform: translateY(-2px); transition: transform .12s, box-shadow .12s; display: inline-flex; gap: 10px; align-items: center; }
+.taste:hover { transform: translateY(-3px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 4px 10px -6px var(--mint), inset 0 1px 0 #ffffff55; }
+.taste small { font: 500 11px var(--mono); opacity: .75; }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.pille { display: inline-flex; gap: 6px; align-items: center; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; color: var(--muted); }
+.pille svg { width: 13px; height: 13px; }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+
+/* Kategorie-Farben */
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ============ A: Durchlauf ============ */
+.a-body { position: relative; display: grid; grid-template-columns: 1fr 300px 1fr; align-items: center; padding: 10px 28px; }
+.a-spalte { display: grid; justify-items: center; gap: 14px; position: relative; z-index: 1; }
+.a-spalte .label { justify-self: center; }
+.band { position: absolute; left: 18%; right: 18%; top: 47%; height: 2px; background: repeating-linear-gradient(90deg, var(--mint-rahmen) 0 8px, transparent 8px 16px); animation: band 1.2s linear infinite; animation-play-state: paused; }
+.win.laeuft .band { animation-play-state: running; background: repeating-linear-gradient(90deg, var(--mint) 0 8px, transparent 8px 16px); }
+@keyframes band { to { background-position: 16px 0; } }
+
+.szene { width: 240px; height: 220px; perspective: 900px; display: grid; place-items: center; }
+.kiste { --W: 190px; --D: 130px; --H: 84px; --c: var(--mint); position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-32deg); transition: transform .5s var(--feder); }
+.kiste.aus { --c: var(--line-stark); transform: rotateX(-24deg) rotateY(32deg); }
+.szene:hover .kiste, .szene.drag .kiste { transform: rotateX(-26deg) rotateY(-24deg) translateY(-8px); }
+.szene:hover .kiste.aus { transform: rotateX(-26deg) rotateY(24deg) translateY(-8px); }
+.kiste .f { position: absolute; left: 0; top: 0; border: 1px solid var(--karton-kante); }
+.kiste .fr { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / 2)); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 46%, var(--karton-tief)), color-mix(in srgb, var(--c) 24%, var(--karton-tief))); }
+.kiste .bk { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / -2)); background: color-mix(in srgb, var(--c) 16%, var(--karton-tief)); }
+.kiste .lf { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 36%, var(--karton-tief)); }
+.kiste .rt { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 22%, var(--karton-tief)); }
+.kiste .bt { width: var(--W); height: var(--D); transform: translate(-50%, -50%) translateY(calc(var(--H) / 2)) rotateX(90deg); background: var(--boden); box-shadow: 0 0 60px 22px var(--boden-schein); }
+.kiste .fr::after { content: attr(data-t); position: absolute; inset: auto 12px 10px; font: 600 10px var(--mono); letter-spacing: .3em; color: #0000005c; text-align: center; }
+.kiste .blatt { position: absolute; left: 0; top: 0; width: calc(var(--W) - 34px); height: calc(var(--H) + 6px); transform: translate(-50%, -50%) translateY(-14px) translateX(var(--x, 0px)) translateZ(var(--z)); border-radius: 6px 6px 2px 2px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transition: transform .45s var(--feder), opacity .3s; }
+.kiste .blatt::before { content: attr(data-f); position: absolute; top: -13px; left: var(--tab, 10px); padding: 2px 8px 3px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font: 600 9.5px var(--mono); letter-spacing: .06em; }
+.kiste .blatt::after { content: attr(data-n); position: absolute; left: 10px; top: 8px; font: 500 10px var(--mono); color: var(--paper-ink); opacity: .7; }
+.szene:hover .blatt { transform: translate(-50%, -50%) translateY(-24px) translateX(var(--x, 0px)) translateZ(var(--z)); }
+.kiste .blatt.weg { opacity: 0; transform: translate(-50%, -50%) translateY(-120px) translateZ(var(--z)); }
+.kiste.aus .blatt { opacity: 0; transform: translate(-50%, -50%) translateY(-110px) translateZ(var(--z)); }
+.kiste.aus .blatt.da { opacity: 1; transform: translate(-50%, -50%) translateY(-14px) translateZ(var(--z)); }
+.kiste.aus .blatt.da::after { content: '✓  ' attr(data-n); color: #0a6851; opacity: 1; }
+.unter { display: grid; justify-items: center; gap: 8px; text-align: center; }
+.unter .zahl { font: 600 13px var(--mono); }
+.unter .reihe { display: flex; gap: 8px; }
+
+.wandler { display: grid; justify-items: center; gap: 14px; }
+.karussell { width: 280px; height: 150px; perspective: 700px; display: grid; place-items: center; position: relative; }
+.ring { --rot: 0deg; position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-14deg) rotateY(var(--rot)); transition: transform .7s var(--feder); }
+.ring button { position: absolute; left: -38px; top: -26px; width: 76px; height: 52px; border-radius: 12px; border: 1px solid var(--line-stark); background: linear-gradient(180deg, var(--panel2), var(--panel)); font: 600 15px var(--mono); color: var(--muted);
+  transform: rotateY(calc(var(--i) * 60deg)) translateZ(118px); backface-visibility: hidden; transition: color .3s, border-color .3s, box-shadow .3s; display: grid; place-items: center; line-height: 1.1; }
+.ring button small { font: 500 9px var(--schrift); letter-spacing: 0; color: var(--leise); }
+.ring button.an { color: var(--mint); border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-flaeche), 0 18px 30px -12px var(--mint); }
+.teller { position: absolute; left: 50%; bottom: 8px; width: 250px; height: 60px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--mint) 22%, transparent), transparent); border: 1px solid var(--mint-rahmen); }
+.win.laeuft .teller { animation: puls 1s ease-in-out infinite; }
+@keyframes puls { 50% { box-shadow: 0 0 40px 4px color-mix(in srgb, var(--mint) 35%, transparent); } }
+.gruppen { display: grid; gap: 6px; width: 100%; }
+.gruppe { display: grid; grid-template-columns: 8px 1fr auto; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 9px; border: 1px solid var(--line); background: var(--panel); text-align: left; }
+.gruppe i { width: 8px; height: 8px; border-radius: 2px; background: var(--k); }
+.gruppe b { font: 600 12px var(--mono); color: var(--mint); }
+.gruppe.an { border-color: var(--line-stark); background: var(--panel2); }
+.preset { display: flex; gap: 4px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.preset button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-size: 12px; color: var(--muted); }
+.preset button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.schaetzung { font: 500 12px var(--mono); color: var(--muted); }
+.schaetzung b { color: var(--mint); }
+.fortschritt-ring { position: absolute; inset: 0; pointer-events: none; }
+.flieger { position: absolute; z-index: 5; width: 96px; height: 60px; border-radius: 8px; background: var(--paper); box-shadow: 0 20px 30px -10px #000a; pointer-events: none; display: grid; place-items: center; font: 600 11px var(--mono); color: var(--paper-ink); }
+.flieger::before { content: attr(data-f); position: absolute; top: -14px; left: 8px; padding: 2px 8px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font-size: 9.5px; }
+
+.leiste { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.leiste .platz { flex: 1; }
+
+/* ============ B: Kartei ============ */
+.b-body { display: grid; grid-template-columns: 1fr 300px; min-height: 0; }
+.b-haupt { display: grid; grid-template-rows: auto 1fr; gap: 14px; padding: 16px 20px 0; min-height: 0; }
+.ablage-streifen { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; border: 1.5px dashed var(--line-stark); color: var(--muted); transition: border-color .2s, background .2s; }
+.ablage-streifen:hover { border-color: var(--mint); background: var(--mint-flaeche); color: var(--ink); }
+.mini-kiste { width: 26px; height: 20px; position: relative; }
+.mini-kiste::before { content: ''; position: absolute; inset: 6px 0 0; border-radius: 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 50%, var(--bg)), color-mix(in srgb, var(--mint) 25%, var(--bg))); }
+.mini-kiste::after { content: ''; position: absolute; left: 5px; right: 5px; top: 0; height: 12px; border-radius: 2px 2px 0 0; background: var(--paper); }
+.ablage-streifen .platz { flex: 1; }
+.kartei { perspective: 1100px; perspective-origin: 50% -30%; overflow-y: auto; overflow-x: hidden; min-height: 0; padding: 12px 18px 8px; margin-inline: -18px; }
+.stapel { display: grid; gap: 10px; transform-style: preserve-3d; transform: rotateX(9deg); transform-origin: 50% 0; padding-bottom: 24px; }
+.karte { --rx: 0deg; --ry: 0deg; --lift: 0px; position: relative; display: grid; grid-template-columns: 58px 1fr auto; gap: 14px; align-items: center; padding: 12px 14px 12px 12px; border-radius: 12px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel));
+  transform: translateZ(var(--lift)) rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .35s var(--feder), box-shadow .35s, border-color .25s, opacity .25s; box-shadow: 0 1px 0 var(--karton-kante) inset, 0 6px 14px -10px var(--schatten); text-align: left; width: 100%; color: inherit; }
+.karte::before { content: attr(data-kat); position: absolute; top: -9px; left: 16px; padding: 1px 8px; border-radius: 5px 5px 0 0; font: 600 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; background: color-mix(in srgb, var(--k) 85%, var(--bg)); color: #0b0f12; }
+.karte:hover { border-color: var(--line-stark); }
+.karte.an { --lift: 22px; border-color: var(--mint-rahmen); box-shadow: 0 1px 0 var(--karton-kante) inset, 0 26px 40px -20px var(--schatten), 0 0 0 1px var(--mint-rahmen); }
+.stapel.hat-auswahl .karte:not(.an) { opacity: .78; }
+.vorschau { width: 58px; height: 58px; border-radius: 9px; position: relative; overflow: hidden; background: var(--tief); display: grid; place-items: center; box-shadow: inset 0 0 0 1px #ffffff10; }
+.v-foto { background: linear-gradient(170deg, #f7c77f 0%, #e98b6c 38%, #5b4a8f 70%, #1f2b4a 100%); }
+.v-foto::after { content: ''; position: absolute; left: -10%; right: -10%; bottom: -6px; height: 24px; background: #172033; border-radius: 50% 50% 0 0; }
+.v-foto2 { background: linear-gradient(180deg, #9fd6f5, #d8eef7 55%, #6c9a5b 56%, #3f6b3c); }
+.v-welle { display: flex; gap: 2px; align-items: center; height: 30px; }
+.v-welle i { width: 3px; border-radius: 2px; background: var(--violet); }
+.v-seite { width: 34px; height: 44px; background: var(--paper); border-radius: 3px; padding: 6px 5px; display: grid; gap: 3px; align-content: start; }
+.v-seite i { height: 2px; background: var(--paper-linie); border-radius: 1px; }
+.v-film { background: linear-gradient(135deg, #3a2c16, #8a6424); }
+.v-film::before { content: ''; position: absolute; inset: 20px 22px; border-left: 14px solid #fff9; border-top: 9px solid transparent; border-bottom: 9px solid transparent; width: 0; height: 0; }
+.mitte { display: grid; gap: 5px; min-width: 0; }
+.name { font-weight: 600; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta { color: var(--muted); font: 11.5px var(--mono); }
+.etikett-reihe { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.etikett { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px 3px 8px; background: var(--paper); color: var(--paper-ink); border-radius: 3px; font: 600 11px var(--mono); transform: rotate(-1.2deg); box-shadow: 0 2px 0 #0003; border: 0; }
+.etikett::after { content: '▾'; font-size: 9px; opacity: .55; }
+.etikett.klein { transform: rotate(.8deg); background: color-mix(in srgb, var(--paper) 88%, var(--k)); font-weight: 500; }
+.rechts { display: grid; justify-items: end; gap: 4px; font: 500 11.5px var(--mono); color: var(--muted); }
+.rechts b { color: var(--ink); font-weight: 600; }
+.rechts .gut { color: var(--mint); }
+.balken-klein { width: 110px; height: 5px; border-radius: 3px; background: var(--tief); overflow: hidden; }
+.balken-klein i { display: block; height: 100%; background: var(--mint); border-radius: 3px; width: var(--w); }
+.karte .lauf { position: absolute; left: 12px; right: 12px; bottom: 0; height: 3px; border-radius: 2px; background: var(--tief); overflow: hidden; opacity: 0; transition: opacity .2s; }
+.karte .lauf i { display: block; height: 100%; width: var(--p, 0%); background: linear-gradient(90deg, var(--mint-rahmen), var(--mint)); box-shadow: 0 0 12px var(--mint); transition: width .15s linear; }
+.karte.laeuft .lauf { opacity: 1; }
+.karte.laeuft { border-color: var(--mint-rahmen); }
+.karte.laeuft::after { content: ''; position: absolute; inset: -1px; border-radius: 12px; padding: 1px; background: conic-gradient(from var(--wink, 0deg), transparent 0 70%, var(--mint) 85%, transparent 100%); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; animation: kreis 1.6s linear infinite; }
+@property --wink { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes kreis { to { --wink: 360deg; } }
+.status { display: inline-flex; gap: 6px; align-items: center; font: 500 11.5px var(--schrift); }
+.status.ok { color: var(--mint); } .status.fehler { color: var(--coral); } .status.pro { color: var(--amber); }
+.status svg { width: 14px; height: 14px; }
+.karte.fehler { border-color: var(--coral-rahmen); }
+.b-mehr { border-left: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); padding: 16px 18px; display: grid; gap: 16px; align-content: start; overflow: auto; }
+.b-mehr h4 { margin: 0; font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.saeulen { height: 150px; perspective: 600px; display: flex; gap: 34px; align-items: end; justify-content: center; padding-top: 8px; }
+.saeule { --h: 100px; --c: var(--line-stark); position: relative; width: 50px; height: var(--h); transform-style: preserve-3d; transform: rotateX(-14deg) rotateY(-28deg); transition: height .5s var(--feder); }
+.saeule .vo { position: absolute; inset: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--c) 80%, #fff 0%), color-mix(in srgb, var(--c) 45%, var(--karton-tief))); border-radius: 2px; }
+.saeule .se { position: absolute; top: 0; right: 0; width: 22px; height: 100%; transform-origin: right; transform: rotateY(90deg); background: color-mix(in srgb, var(--c) 35%, var(--karton-tief)); }
+.saeule .ob { position: absolute; top: 0; left: 0; width: 100%; height: 22px; transform-origin: top; transform: rotateX(90deg); background: color-mix(in srgb, var(--c) 100%, #fff 18%); }
+.saeule span { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 500 11px var(--mono); color: var(--muted); }
+.saeule em { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font: 600 12px var(--mono); font-style: normal; white-space: nowrap; }
+.saeule.nach { --c: var(--mint); }
+.saeule.nach em { color: var(--mint); }
+.feld { display: grid; gap: 6px; }
+.feld label { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+.feld label b { color: var(--ink); font: 600 12px var(--mono); }
+input[type="range"] { width: 100%; accent-color: var(--mint); }
+.schalter { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; }
+.schalter span { color: var(--muted); display: block; font-size: 11.5px; }
+.toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--mint); position: relative; flex: none; border: 0; }
+.toggle::after { content: ''; position: absolute; top: 3px; left: 19px; width: 16px; height: 16px; border-radius: 50%; background: var(--auf-mint); transition: left .2s var(--feder); }
+.toggle[aria-pressed="false"] { background: var(--line-stark); }
+.toggle[aria-pressed="false"]::after { left: 3px; background: var(--panel); }
+.dock-rahmen { padding: 0 20px 16px; display: grid; }
+.dock { display: flex; align-items: center; gap: 14px; padding: 10px 10px 10px 16px; border-radius: 16px; border: 1px solid var(--line-stark); background: var(--glas); backdrop-filter: blur(14px); box-shadow: 0 18px 40px -18px var(--schatten), inset 0 1px 0 var(--karton-kante); }
+.dock .platz { flex: 1; }
+.gesamt { display: grid; gap: 5px; min-width: 180px; }
+.gesamt .balken-klein { width: 100%; }
+.b-win { grid-template-rows: 42px 1fr; }
+.b-links { display: grid; grid-template-rows: 1fr auto; min-height: 0; }
+
+/* ============ C: Tiefenebenen ============ */
+.c-body { display: grid; grid-template-columns: 170px 1fr; min-height: 0; }
+.schritte { border-right: 1px solid var(--line); padding: 26px 18px; display: grid; gap: 4px; align-content: start; }
+.schritt { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: center; padding: 8px; border-radius: 10px; border: 0; background: transparent; text-align: left; color: var(--muted); }
+.schritt i { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--line-stark); }
+.schritt.an { color: var(--ink); background: var(--panel2); }
+.schritt.an i { background: var(--mint); color: var(--auf-mint); border-color: var(--mint); }
+.schritt.fertig i { color: var(--mint); border-color: var(--mint-rahmen); }
+.schritte .linie { width: 1px; height: 14px; background: var(--line-stark); margin-left: 21px; }
+.raum { position: relative; perspective: 1200px; perspective-origin: 50% 0%; overflow: hidden; }
+.ebene { position: absolute; left: 50%; top: 56px; width: min(620px, 86%); height: 400px; margin-left: calc(min(620px, 86%) / -2); border-radius: 18px; border: 1px solid var(--line-stark); background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: 0 30px 60px -30px var(--schatten), inset 0 1px 0 var(--karton-kante);
+  transition: transform .7s var(--feder), opacity .5s, filter .5s; transform-origin: 50% 0; padding: 22px 26px; display: grid; grid-template-rows: auto 1fr auto; gap: 14px; }
+.ebene[data-pos="0"] { transform: translateZ(0); z-index: 3; }
+.ebene[data-pos="-1"] { transform: translateY(-34px) translateZ(-150px) rotateX(8deg); opacity: .55; z-index: 2; filter: saturate(.6); cursor: pointer; }
+.ebene[data-pos="-2"] { transform: translateY(-58px) translateZ(-300px) rotateX(10deg); opacity: .3; z-index: 1; filter: saturate(.4); cursor: pointer; }
+.ebene[data-pos="1"] { transform: translateY(420px) translateZ(120px) rotateX(-20deg); opacity: 0; z-index: 4; pointer-events: none; }
+.ebene[data-pos="-1"] > *, .ebene[data-pos="-2"] > * { pointer-events: none; }
+.ebene-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ebene-kopf h4 { margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.ebene-fuss { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.plattform-szene { perspective: 700px; display: grid; place-items: center; position: relative; }
+.plattform { width: 360px; height: 200px; border-radius: 28px; transform: rotateX(58deg); transform-style: preserve-3d; position: relative;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--mint) 20%, var(--panel)), var(--tief));
+  border: 1.5px solid var(--mint-rahmen); box-shadow: 0 0 0 8px color-mix(in srgb, var(--mint) 6%, transparent), 0 40px 60px -10px var(--schatten), 0 18px 0 -2px color-mix(in srgb, var(--mint) 18%, var(--karton-tief)); transition: box-shadow .3s, transform .5s var(--feder); }
+.plattform-szene:hover .plattform { transform: rotateX(54deg) translateZ(10px); box-shadow: 0 0 0 10px color-mix(in srgb, var(--mint) 12%, transparent), 0 0 60px 6px color-mix(in srgb, var(--mint) 25%, transparent), 0 18px 0 -2px color-mix(in srgb, var(--mint) 22%, var(--karton-tief)); }
+.plattform::before { content: ''; position: absolute; inset: 22px; border-radius: 18px; border: 1.5px dashed var(--mint-rahmen); }
+.marke { position: absolute; bottom: 50%; width: 62px; height: 78px; transform-origin: bottom; transform: translateX(-50%) rotateX(-90deg); border-radius: 6px; background: var(--paper); display: grid; place-items: end center; padding-bottom: 8px; font: 600 10px var(--mono); color: var(--paper-ink); box-shadow: 0 0 0 1px #0001; animation: schweb 3s ease-in-out infinite; }
+.marke::before { content: ''; position: absolute; top: 8px; left: 8px; right: 8px; height: 34px; border-radius: 3px; background: var(--k); opacity: .8; }
+@keyframes schweb { 50% { transform: translateX(-50%) rotateX(-90deg) translateY(-8px); } }
+.plattform-text { position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; display: grid; gap: 6px; justify-items: center; }
+.kacheln { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; perspective: 800px; align-content: start; }
+.kachel { position: relative; padding: 14px 12px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); display: grid; gap: 4px; text-align: left; transition: transform .35s var(--feder), border-color .2s, box-shadow .35s; box-shadow: 0 5px 0 -1px var(--tief), 0 5px 0 0 var(--line); }
+.kachel b { font: 600 18px var(--mono); }
+.kachel span { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.kachel:hover { transform: translateY(-3px) rotateX(8deg); }
+.kachel.an { border-color: var(--mint); transform: translateY(-6px) rotateX(10deg); box-shadow: 0 10px 0 -1px var(--mint-rahmen), 0 10px 0 0 var(--mint), 0 26px 30px -16px var(--mint); }
+.kachel.an b { color: var(--mint); }
+.zweck { display: flex; flex-wrap: wrap; gap: 8px; }
+.zweck button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 12px; color: var(--muted); }
+.zweck button.an { border-color: var(--mint); color: var(--mint); background: var(--mint-flaeche); }
+.los-mitte { display: grid; grid-template-columns: auto 1fr; gap: 30px; align-items: center; }
+.los { position: relative; width: 170px; height: 170px; border-radius: 50%; border: 0; background: none; padding: 0; perspective: 500px; }
+.los svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.los .knopf { position: absolute; inset: 22px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 20px; color: var(--auf-mint);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--mint) 70%, #fff), var(--mint) 55%, color-mix(in srgb, var(--mint) 60%, #000));
+  box-shadow: 0 10px 0 color-mix(in srgb, var(--mint) 40%, #000), 0 24px 30px -8px color-mix(in srgb, var(--mint) 55%, transparent); transform: translateY(-6px); transition: transform .12s, box-shadow .12s; }
+.los:hover .knopf { transform: translateY(-8px); }
+.los:active .knopf { transform: translateY(2px); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 40%, #000), 0 8px 14px -6px var(--mint); }
+.zusammen { display: grid; gap: 8px; }
+.zusammen div { display: flex; justify-content: space-between; gap: 12px; padding-bottom: 8px; border-bottom: 1px dashed var(--line); font-size: 12.5px; }
+.zusammen div span { color: var(--muted); }
+.zusammen div b { font: 600 12.5px var(--mono); }
+.zusammen .gross { font-size: 26px; font-weight: 600; letter-spacing: -.02em; border: 0; }
+.zusammen .gross b { font-size: 26px; color: var(--mint); font-family: var(--schrift); }
+
+/* Vergleich */
+.tabelle-rahmen { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; }
+table { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 14px; background: var(--panel); }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 11.5px var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--leise); background: var(--panel2); }
+tr:last-child td { border-bottom: 0; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+.punkte { font-family: var(--mono); letter-spacing: 2px; color: var(--mint); white-space: nowrap; }
+.punkte span { color: var(--line-stark); }
+.empfehlung { display: grid; grid-template-columns: auto 1fr; gap: 18px; padding: 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); align-items: start; }
+.empfehlung .kreis { width: 42px; height: 42px; border-radius: 12px; background: var(--mint); color: var(--auf-mint); display: grid; place-items: center; box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000); }
+.empfehlung p { margin: 6px 0 0; color: var(--ink); max-width: 72ch; }
+.empfehlung ul { margin: 10px 0 0; padding-left: 18px; color: var(--muted); display: grid; gap: 5px; }
+.hinweis { font-size: 13px; color: var(--leise); max-width: 80ch; margin: 0; }
+
+@media (max-width: 560px) {
+  .empfehlung { grid-template-columns: 1fr; }
+  .umschalter button { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Oberflächen-Entwürfe · 23. September 2026</div>
+    <h1>Drei Wege zu einer Oberfläche mit Tiefe</h1>
+    <p class="lead">Die Farben stammen direkt aus ShoeBox (Mint als die eine Aktionsfarbe, Karton-Schattierung für 3D). Jeder Entwurf ist klickbar: Karten anwählen, Formate drehen, „Demo abspielen“ startet eine Beispiel-Umwandlung. Die Dateien sind Beispiele.</p>
+  </header>
+
+  <section class="abschnitt" aria-labelledby="h-befund">
+    <h2 id="h-befund">Was an der jetzigen Oberfläche hakt</h2>
+    <div class="befund">
+      <div>
+        <h3><span>01</span>Kein erkennbarer Weg</h3>
+        <p>Datei → Format → Start soll der Kern sein, aber die Formatwahl steckt als kleiner Dropdown-Chip „→ JPG“ in jeder Zeile. Das Wichtigste sieht aus wie ein Nebendetail.</p>
+        <code>JobCardControl.xaml · FormatChip</code>
+      </div>
+      <div>
+        <h3><span>02</span>Ablage wie ein Web-Formular</h3>
+        <p>Ein gestricheltes Rechteck mit Standard-Icon. Nichts lädt zum Hineinwerfen ein, nichts reagiert körperlich.</p>
+        <code>MainPage.xaml · DropZone</code>
+      </div>
+      <div>
+        <h3><span>03</span>Alles gleich flach</h3>
+        <p>Karten ohne Schatten (bewusst zurückgestellt), Systemakzent statt eigener Farbe, Standard-Fluent überall. Das Programm hat keine Handschrift.</p>
+        <code>docs/06-design.md · Abweichungen</code>
+      </div>
+      <div>
+        <h3><span>04</span>Aktionsleiste überladen</h3>
+        <p>Zielordner-Auswahl, Ordner-Knopf, Pfad, Gesamtfortschritt und bis zu vier Knöpfe in einer Zeile, die unter 900 px umbricht.</p>
+        <code>MainPage.xaml · Action bar</code>
+      </div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-farben">
+    <h2 id="h-farben">Farben aus ShoeBox, neu belegt</h2>
+    <p>Mint bleibt, wie in ShoeBox, die einzige Farbe für „hier geht es weiter“. Die übrigen Akzente bekommen in Kvertis eine feste Bedeutung: die Dateiart. So erkennt man Bilder, Ton, Video und Dokumente, bevor man den Namen liest. Hell und Dunkel folgen dem Thema dieser Seite.</p>
+    <div class="palette">
+      <div class="farbe" style="--c: var(--mint)"><i></i><b>Mint · Aktion</b><span>#6FE0BF / #0A6851</span></div>
+      <div class="farbe" style="--c: var(--blue)"><i></i><b>Blau · Bilder</b><span>#6BA7FF / #1A53A8</span></div>
+      <div class="farbe" style="--c: var(--violet)"><i></i><b>Violett · Audio</b><span>#B28CFF / #5B39A3</span></div>
+      <div class="farbe" style="--c: var(--amber)"><i></i><b>Bernstein · Video/Pro</b><span>#F2B45A / #7A5104</span></div>
+      <div class="farbe" style="--c: var(--cyan)"><i></i><b>Cyan · Dokumente</b><span>#4FC3E8 / #095C78</span></div>
+      <div class="farbe" style="--c: var(--coral)"><i></i><b>Koralle · Fehler</b><span>#F07A6A / #9E3123</span></div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-konzepte">
+    <h2 id="h-konzepte">Die Entwürfe</h2>
+    <div class="umschalter" role="tablist" aria-label="Entwurf wählen">
+      <button role="tab" id="t-a" aria-controls="p-a" aria-selected="true" data-ziel="a"><small>Entwurf A</small><b>Durchlauf</b><span>Eingang → Wandler → Ausgang</span></button>
+      <button role="tab" id="t-b" aria-controls="p-b" aria-selected="false" data-ziel="b"><small>Entwurf B</small><b>Kartei</b><span>Dateien als Karteikarten mit Tiefe</span></button>
+      <button role="tab" id="t-c" aria-controls="p-c" aria-selected="false" data-ziel="c"><small>Entwurf C</small><b>Tiefenebenen</b><span>Drei Schritte, hintereinander gestapelt</span></button>
+    </div>
+
+    <!-- ============ A ============ -->
+    <div class="konzept" role="tabpanel" id="p-a" aria-labelledby="t-a">
+      <div class="konzept-kopf">
+        <div>
+          <h3 style="font-size:20px">A · Durchlauf</h3>
+          <p>Der Weg ist das Layout: links die Eingangskiste, in der Mitte das Format-Karussell, rechts die Ausgangskiste. Wer es einmal gesehen hat, versteht das Programm. Am nächsten an ShoeBox.</p>
+        </div>
+        <button class="demo-knopf" id="a-demo"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1l9 5-9 5z"/></svg>Demo abspielen</button>
+      </div>
+      <div class="buehne">
+        <div class="win" id="win-a">
+          <div class="tb">
+            <span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span>
+            <button class="ikon" aria-label="Verlauf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
+            <button class="ikon" aria-label="Einstellungen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>
+            <span class="pro">PRO</span>
+            <div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div>
+          </div>
+          <div class="a-body">
+            <div class="band" aria-hidden="true"></div>
+            <div class="a-spalte">
+              <span class="label">Eingang</span>
+              <div class="szene" id="a-ein" title="Dateien hierher ziehen">
+                <div class="kiste">
+                  <span class="f bk"></span><span class="f lf"></span><span class="f bt"></span>
+                  <span class="blatt k-bild" data-f="HEIC" data-n="IMG_2041" style="--z:-44px;--tab:12px"></span>
+                  <span class="blatt k-bild" data-f="PNG" data-n="Plan_Garten" style="--z:-8px;--tab:62px"></span>
+                  <span class="blatt k-audio" data-f="WAV" data-n="Probe_03" style="--z:40px;--tab:112px"></span>
+                  <span class="f rt"></span><span class="f fr" data-t="EINGANG"></span>
+                </div>
+              </div>
+              <div class="unter">
+                <span class="zahl">3 Dateien · 31,2 MB</span>
+                <div class="reihe"><button class="btn">Dateien wählen</button><button class="btn">Ordner</button></div>
+                <span class="muted" style="font-size:11.5px">oder hineinziehen · Strg+V fügt ein</span>
+              </div>
+            </div>
+
+            <div class="wandler">
+              <span class="label">Umwandeln in</span>
+              <div class="karussell">
+                <div class="teller" aria-hidden="true"></div>
+                <div class="ring" id="a-ring" role="radiogroup" aria-label="Zielformat für Bilder">
+                  <button role="radio" aria-checked="true" class="an" style="--i:0">JPG<small>überall lesbar</small></button>
+                  <button role="radio" aria-checked="false" style="--i:1">PNG<small>verlustfrei</small></button>
+                  <button role="radio" aria-checked="false" style="--i:2">WEBP<small>klein, fürs Web</small></button>
+                  <button role="radio" aria-checked="false" style="--i:3">TIFF<small>zum Drucken</small></button>
+                  <button role="radio" aria-checked="false" style="--i:4">PDF<small>als Dokument</small></button>
+                  <button role="radio" aria-checked="false" style="--i:5">GIF<small>einfach</small></button>
+                </div>
+              </div>
+              <div class="preset" role="group" aria-label="Voreinstellung">
+                <button class="an">Für E-Mail</button><button>Für Website</button><button>Original</button>
+              </div>
+              <div class="gruppen">
+                <button class="gruppe k-bild an"><i></i><span>2 Bilder</span><b id="a-ziel">→ JPG</b></button>
+                <button class="gruppe k-audio"><i></i><span>1 Audio</span><b>→ MP3</b></button>
+              </div>
+              <span class="schaetzung">≈ 3,4 MB statt 31,2 MB · <b>−89 %</b></span>
+            </div>
+
+            <div class="a-spalte">
+              <span class="label">Ausgang</span>
+              <div class="szene">
+                <div class="kiste aus" id="a-aus">
+                  <span class="f bk"></span><span class="f lf"></span><span class="f bt"></span>
+                  <span class="blatt k-bild" data-f="JPG" data-n="IMG_2041" style="--z:-44px;--tab:12px"></span>
+                  <span class="blatt k-bild" data-f="JPG" data-n="Plan_Garten" style="--z:-8px;--tab:62px"></span>
+                  <span class="blatt k-audio" data-f="MP3" data-n="Probe_03" style="--z:40px;--tab:112px"></span>
+                  <span class="f rt"></span><span class="f fr" data-t="AUSGANG"></span>
+                </div>
+              </div>
+              <div class="unter">
+                <span class="zahl" id="a-aus-text">Noch leer</span>
+                <span class="pille"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 4.5h5l1.5 1.5h6.5v7h-13z"/></svg>Gleicher Ordner ▾</span>
+              </div>
+            </div>
+          </div>
+          <div class="leiste">
+            <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+            <span class="platz"></span>
+            <span class="schaetzung">≈ 6 s</span>
+            <button class="taste" id="a-start">Umwandeln <small>3 Dateien</small></button>
+          </div>
+        </div>
+      </div>
+      <div class="notizen">
+        <div><h3>So fühlt es sich an</h3><ul><li>Ein Blick erklärt den Ablauf; kein Handbuch nötig.</li><li>Das Format ist das größte Bedienelement, nicht ein Chip am Rand.</li><li>Gemischte Stapel werden nach Dateiart gruppiert, jede Gruppe hat ihr Ziel.</li><li>Schwäche: bei 200 Dateien braucht es zusätzlich eine Liste (Klick auf die Kiste).</li></ul></div>
+        <div><h3>3D-Moment</h3><ul><li>Kisten im ShoeBox-Stil, drehen sich beim Darüberfahren zum Nutzer.</li><li>Format-Karussell rotiert in echter Tiefe.</li><li>Beim Start fliegen die Blätter über das Karussell in die Ausgangskiste.</li></ul></div>
+        <div><h3>In WinUI 3</h3><ul><li>Kisten: <code>Rectangle</code>-Flächen mit <code>CompositeTransform3D</code> in einem <code>PerspectiveTransform3D</code>.</li><li>Flug: <code>Vector3KeyFrameAnimation</code> auf <code>Visual.Offset</code>.</li><li>Karussell: <code>RotationAngleInDegrees</code> um die Y-Achse, Tastatur mit Pfeiltasten.</li></ul></div>
+      </div>
+    </div>
+
+    <!-- ============ B ============ -->
+    <div class="konzept" role="tabpanel" id="p-b" aria-labelledby="t-b" hidden>
+      <div class="konzept-kopf">
+        <div>
+          <h3 style="font-size:20px">B · Kartei</h3>
+          <p>Nah an der heutigen Struktur, aber mit Körper: Jede Datei ist eine Karteikarte mit Reiter in ihrer Farbe, das Zielformat klebt als Papier-Etikett darauf. Die gewählte Karte hebt sich nach vorn, rechts stehen ihre Einstellungen. Stark bei vielen Dateien.</p>
+        </div>
+        <button class="demo-knopf" id="b-demo"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1l9 5-9 5z"/></svg>Demo abspielen</button>
+      </div>
+      <div class="buehne">
+        <div class="win b-win" id="win-b">
+          <div class="tb">
+            <span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span>
+            <button class="ikon" aria-label="Verlauf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
+            <button class="ikon" aria-label="Einstellungen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>
+            <span class="pro">PRO</span>
+            <div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div>
+          </div>
+          <div class="b-body">
+            <div class="b-links">
+              <div class="b-haupt">
+                <div class="ablage-streifen"><span class="mini-kiste" aria-hidden="true"></span><span class="platz">Weitere Dateien hierher ziehen</span><button class="btn">Dateien wählen</button><button class="btn">Ordner</button></div>
+                <div class="kartei">
+                  <div class="stapel hat-auswahl" id="b-stapel">
+                    <button class="karte k-bild an" data-kat="Bild" data-name="IMG_2041.heic" data-mb="8.4">
+                      <span class="vorschau v-foto"></span>
+                      <span class="mitte"><span class="name">IMG_2041.heic</span><span class="meta">8,4 MB · 4032 × 3024</span>
+                        <span class="etikett-reihe"><span class="etikett">→ JPG</span><span class="etikett klein">Für E-Mail</span></span></span>
+                      <span class="rechts"><span>8,4 MB → <b class="b-nach">≈ 1,1 MB</b></span><span class="balken-klein"><i style="--w:13%"></i></span><span class="gut">−87 %</span></span>
+                      <span class="lauf"><i></i></span>
+                    </button>
+                    <button class="karte k-bild" data-kat="Bild" data-name="Plan_Garten.png" data-mb="3.1">
+                      <span class="vorschau v-foto2"></span>
+                      <span class="mitte"><span class="name">Plan_Garten.png</span><span class="meta">3,1 MB · 2480 × 3508</span>
+                        <span class="etikett-reihe"><span class="etikett">→ JPG</span><span class="etikett klein">Für E-Mail</span></span></span>
+                      <span class="rechts"><span>3,1 MB → <b>≈ 0,6 MB</b></span><span class="balken-klein"><i style="--w:19%"></i></span><span class="gut">−81 %</span></span>
+                      <span class="lauf"><i></i></span>
+                    </button>
+                    <button class="karte k-audio" data-kat="Audio" data-name="Probe_03.wav" data-mb="19.7">
+                      <span class="vorschau"><span class="v-welle"><i style="height:10px"></i><i style="height:22px"></i><i style="height:14px"></i><i style="height:28px"></i><i style="height:18px"></i><i style="height:24px"></i><i style="height:8px"></i></span></span>
+                      <span class="mitte"><span class="name">Probe_03.wav</span><span class="meta">19,7 MB · 1:52 min · 48 kHz</span>
+                        <span class="etikett-reihe"><span class="etikett">→ MP3</span><span class="etikett klein">192 kbit/s</span></span></span>
+                      <span class="rechts"><span>19,7 MB → <b>≈ 2,6 MB</b></span><span class="balken-klein"><i style="--w:13%"></i></span><span class="gut">−87 %</span></span>
+                      <span class="lauf"><i></i></span>
+                    </button>
+                    <button class="karte k-dok fehler" data-kat="Dokument" data-name="Vertrag_2024.pdf" data-mb="1.2">
+                      <span class="vorschau"><span class="v-seite"><i></i><i></i><i style="width:70%"></i><i></i><i style="width:50%"></i></span></span>
+                      <span class="mitte"><span class="name">Vertrag_2024.pdf</span><span class="meta">1,2 MB · 12 Seiten</span>
+                        <span class="status fehler"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 4.8v3.6M8 10.8v.2"/></svg>Die Datei ist mit einem Kennwort geschützt.</span></span>
+                      <span class="rechts"><span class="btn" style="font-family:var(--schrift)">Was tun?</span></span>
+                    </button>
+                    <button class="karte k-video" data-kat="Video" data-name="Urlaub_Clip.mov" data-mb="148">
+                      <span class="vorschau v-film"></span>
+                      <span class="mitte"><span class="name">Urlaub_Clip.mov</span><span class="meta">148 MB · 0:48 min · 1080p</span>
+                        <span class="status pro"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.8l1.9 3.9 4.3.6-3.1 3 .7 4.3L8 11.6l-3.8 2 .7-4.3-3.1-3 4.3-.6z"/></svg>Video-Umwandlung ist Teil von Kvertis Pro.</span></span>
+                      <span class="rechts"><span class="btn" style="font-family:var(--schrift)">Mehr erfahren</span></span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="dock-rahmen">
+                <div class="dock">
+                  <span class="pille"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 4.5h5l1.5 1.5h6.5v7h-13z"/></svg>Gleicher Ordner ▾</span>
+                  <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Bleibt auf diesem PC</span>
+                  <span class="platz"></span>
+                  <span class="gesamt"><span class="schaetzung" id="b-gesamt-text">3 bereit · ≈ 7 s · ≈ 4,3 MB</span><span class="balken-klein"><i id="b-gesamt" style="--w:0%"></i></span></span>
+                  <button class="taste" id="b-start">Alle umwandeln</button>
+                </div>
+              </div>
+            </div>
+            <aside class="b-mehr" aria-label="Einstellungen der gewählten Datei">
+              <div style="display:grid;gap:4px"><span class="label">Ausgewählt</span><h4 id="b-titel">IMG_2041.heic</h4></div>
+              <div class="saeulen" aria-hidden="true">
+                <div class="saeule" style="--h:110px"><span class="vo"></span><span class="se"></span><span class="ob"></span><em id="b-vorher">8,4 MB</em><span>vorher</span></div>
+                <div class="saeule nach" id="b-saeule" style="--h:14px"><span class="vo"></span><span class="se"></span><span class="ob"></span><em id="b-nachher">1,1 MB</em><span>nachher</span></div>
+              </div>
+              <div class="feld" style="margin-top:14px"><label for="b-q">Qualität ↔ Größe <b id="b-q-wert">72</b></label><input id="b-q" type="range" min="10" max="100" value="72"></div>
+              <div class="feld"><label for="b-ziel">Zielgröße (optional)</label><input id="b-ziel" class="btn" style="font-family:var(--mono);text-align:left" placeholder="z. B. 1 MB"></div>
+              <div class="schalter"><div>EXIF/GPS entfernen<span>Aufnahmeort und Kameradaten werden nicht mitgegeben.</span></div><button class="toggle" aria-pressed="true" aria-label="EXIF und GPS entfernen"></button></div>
+              <button class="btn">Auf alle Bilder anwenden</button>
+            </aside>
+          </div>
+        </div>
+      </div>
+      <div class="notizen">
+        <div><h3>So fühlt es sich an</h3><ul><li>Vertrautes Listenmuster, skaliert auf hunderte Dateien.</li><li>Reiterfarbe zeigt die Dateiart, das Etikett das Ziel, rechts steht die Ersparnis.</li><li>Fehler und Pro-Hinweis sitzen als Karte in der Liste, nie als Dialog.</li><li>Der Aktionsbereich ist ein schwebendes Dock mit nur einem großen Knopf.</li></ul></div>
+        <div><h3>3D-Moment</h3><ul><li>Die Liste liegt leicht geneigt wie ein Karteikasten; die gewählte Karte hebt sich nach vorn.</li><li>Karten neigen sich zur Maus.</li><li>Laufende Karten: Lichtkante wandert um den Rand (steht so schon in docs/06).</li><li>Vorher/Nachher als 3D-Säulen, die beim Regeln wachsen.</li></ul></div>
+        <div><h3>In WinUI 3</h3><ul><li>Anheben: <code>Translation</code>-Z plus <code>ThemeShadow</code>, wächst mit der Tiefe.</li><li>Neigung: <code>PointerMoved</code> → <code>RotationAxis</code>/<code>RotationAngle</code> am Karten-Visual.</li><li>Lichtkante: <code>CompositionGeometricClip</code> + animierter <code>CompositionLinearGradientBrush</code>.</li><li>Geringster Umbau: <code>JobCardControl</code> bleibt, bekommt neue Vorlage.</li></ul></div>
+      </div>
+    </div>
+
+    <!-- ============ C ============ -->
+    <div class="konzept" role="tabpanel" id="p-c" aria-labelledby="t-c" hidden>
+      <div class="konzept-kopf">
+        <div>
+          <h3 style="font-size:20px">C · Tiefenebenen</h3>
+          <p>Geführt wie ein Assistent: Drei Ebenen liegen hintereinander. Die aktuelle steht vorn, erledigte rutschen nach hinten und bleiben sichtbar, ein Klick holt sie zurück. Am einfachsten für Einsteiger, etwas langsamer für Geübte.</p>
+        </div>
+        <button class="demo-knopf" id="c-demo"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1l9 5-9 5z"/></svg>Demo abspielen</button>
+      </div>
+      <div class="buehne">
+        <div class="win b-win" id="win-c">
+          <div class="tb">
+            <span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span>
+            <button class="ikon" aria-label="Verlauf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
+            <button class="ikon" aria-label="Einstellungen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>
+            <span class="pro">PRO</span>
+            <div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div>
+          </div>
+          <div class="c-body">
+            <nav class="schritte" aria-label="Schritte">
+              <button class="schritt an" data-s="0"><i>1</i>Dateien</button>
+              <span class="linie"></span>
+              <button class="schritt" data-s="1"><i>2</i>Ziel</button>
+              <span class="linie"></span>
+              <button class="schritt" data-s="2"><i>3</i>Umwandeln</button>
+              <span style="height:30px"></span>
+              <span class="vertrauen" style="align-items:start"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+            </nav>
+            <div class="raum" id="c-raum">
+              <section class="ebene" data-pos="0" data-s="0" aria-label="Schritt 1: Dateien">
+                <div class="ebene-kopf"><h4>Was möchten Sie umwandeln?</h4><span class="label">Schritt 1 von 3</span></div>
+                <div class="plattform-szene">
+                  <div class="plattform">
+                    <span class="marke k-bild" style="left:28%">HEIC</span>
+                    <span class="marke k-bild" style="left:50%;animation-delay:-1s">HEIC</span>
+                    <span class="marke k-bild" style="left:72%;animation-delay:-2s">PNG</span>
+                  </div>
+                  <div class="plattform-text"><b>3 Bilder liegen bereit · 20,6 MB</b><span class="muted" style="font-size:12px">Weitere hineinziehen, <u>Dateien wählen</u> oder Strg+V</span></div>
+                </div>
+                <div class="ebene-fuss"><span class="muted" style="font-size:12px">Bilder, Audio, Video und Dokumente</span><button class="taste" data-weiter="1">Weiter</button></div>
+              </section>
+              <section class="ebene" data-pos="1" data-s="1" aria-label="Schritt 2: Ziel">
+                <div class="ebene-kopf"><h4>Wozu brauchen Sie die Bilder?</h4><span class="label">Schritt 2 von 3</span></div>
+                <div style="display:grid;gap:16px;align-content:start">
+                  <div class="zweck" id="c-zweck"><button class="an">Für E-Mail</button><button>Für Messenger</button><button>Für Website</button><button>Zum Archivieren</button><button>Original behalten</button></div>
+                  <div class="kacheln" id="c-kacheln">
+                    <button class="kachel an"><b>JPG</b><span>Überall lesbar, klein</span></button>
+                    <button class="kachel"><b>PNG</b><span>Verlustfrei, größer</span></button>
+                    <button class="kachel"><b>WEBP</b><span>Sehr klein, fürs Web</span></button>
+                    <button class="kachel"><b>PDF</b><span>Alle in einem Dokument</span></button>
+                  </div>
+                  <div class="schaetzung">Ergebnis etwa <b>2,9 MB</b> statt 20,6 MB · Ortsdaten werden entfernt</div>
+                </div>
+                <div class="ebene-fuss"><button class="btn" data-weiter="0">Zurück</button><button class="taste" data-weiter="2">Weiter</button></div>
+              </section>
+              <section class="ebene" data-pos="1" data-s="2" aria-label="Schritt 3: Umwandeln">
+                <div class="ebene-kopf"><h4 id="c-t3">Alles bereit</h4><span class="label">Schritt 3 von 3</span></div>
+                <div class="los-mitte">
+                  <button class="los" id="c-los" aria-label="Umwandlung starten">
+                    <svg viewBox="0 0 170 170" aria-hidden="true"><circle cx="85" cy="85" r="80" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="c-bogen" cx="85" cy="85" r="80" fill="none" stroke="var(--mint)" stroke-width="6" stroke-linecap="round" stroke-dasharray="502.7" stroke-dashoffset="502.7"/></svg>
+                    <span class="knopf" id="c-knopf">Los</span>
+                  </button>
+                  <div class="zusammen">
+                    <div><span>Dateien</span><b>3 Bilder</b></div>
+                    <div><span>Ziel</span><b>JPG · Für E-Mail</b></div>
+                    <div><span>Speichern in</span><b>Gleicher Ordner</b></div>
+                    <div class="gross"><span id="c-gross-l">Ersparnis</span><b id="c-gross">≈ 86 %</b></div>
+                  </div>
+                </div>
+                <div class="ebene-fuss"><button class="btn" data-weiter="1">Zurück</button><span class="muted" style="font-size:12px" id="c-fuss">Dauert etwa 4 Sekunden</span></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="notizen">
+        <div><h3>So fühlt es sich an</h3><ul><li>Eine Frage pro Ebene; Fachbegriffe erst bei Bedarf.</li><li>„Wozu?“ statt „Welches Format?“: der Zweck schlägt das passende Format vor.</li><li>Geübte können mit Enter durchklicken; ein Schalter „Direkt starten“ überspringt Schritt 2.</li></ul></div>
+        <div><h3>3D-Moment</h3><ul><li>Ebenen weichen in die Tiefe zurück und stapeln sich sichtbar.</li><li>Die Ablage ist eine leuchtende Plattform; Dateien stehen darauf.</li><li>Formate als Kacheln mit Kante, die gewählte kippt nach vorn. Runder Los-Knopf mit Fortschrittsring.</li></ul></div>
+        <div><h3>In WinUI 3</h3><ul><li>Ebenen: drei <code>Grid</code>s mit <code>Translation</code> + <code>Scale</code>, <code>ImplicitAnimations</code> beim Wechsel.</li><li>Plattform: <code>PlaneProjection</code> (RotationX 58°).</li><li>Ring: <code>ProgressRing</code> mit eigenem Template oder <code>CompositionSpriteShape</code>.</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-vergleich">
+    <h2 id="h-vergleich">Im Vergleich</h2>
+    <div class="tabelle-rahmen">
+      <table>
+        <thead><tr><th>Entwurf</th><th>Verständlich</th><th>Viele Dateien</th><th>3D-Wirkung</th><th>Umbauaufwand</th><th>Passt zu</th></tr></thead>
+        <tbody>
+          <tr><td>A · Durchlauf</td><td class="punkte">●●●●●</td><td class="punkte">●●<span>●●●</span></td><td class="punkte">●●●●●</td><td>hoch (neues Layout)</td><td>Gelegenheitsnutzer, Wiedererkennung</td></tr>
+          <tr><td>B · Kartei</td><td class="punkte">●●●●<span>●</span></td><td class="punkte">●●●●●</td><td class="punkte">●●●<span>●●</span></td><td>gering (Vorlagen tauschen)</td><td>alle; nah an docs/06</td></tr>
+          <tr><td>C · Tiefenebenen</td><td class="punkte">●●●●●</td><td class="punkte">●●●<span>●●</span></td><td class="punkte">●●●●<span>●</span></td><td>mittel (Navigation neu)</td><td>Einsteiger</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="empfehlung">
+      <div class="kreis" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg></div>
+      <div>
+        <b>Mein Vorschlag: B als Gerüst, A für den leeren Zustand</b>
+        <p>Solange keine Datei da ist, zeigt Kvertis die Eingangskiste und das Format-Karussell aus A. Sobald Dateien liegen, klappt die Ansicht in die Kartei aus B. So bleibt der erste Eindruck spielerisch, die Arbeit mit vielen Dateien aber schnell.</p>
+        <ul>
+          <li>Eigene Akzentfarbe Mint statt Systemakzent: betrifft docs/06 („nicht überschreiben“), braucht eine ADR.</li>
+          <li>Alle 3D-Effekte fallen bei „Animationen reduzieren“ und Hohem Kontrast weg; dann flache Karten mit Rand, wie heute.</li>
+          <li>Geist ist die ShoeBox-Schrift (SIL OFL). Die steht nicht auf der Lizenzliste in CLAUDE.md; bis zur Prüfung durch den Lizenz-Wächter bleibt es in der App bei Segoe UI Variable.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="hinweis">Datei im Repository: design/oberflaeche-konzepte.html. Dateinamen und Größen sind Beispiele.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const warte = ms => new Promise(r => setTimeout(r, leise ? 0 : ms));
+
+  // Tabs
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  function zeige(id) {
+    tabs.forEach(t => {
+      const an = t.dataset.ziel === id;
+      t.setAttribute('aria-selected', an);
+      document.getElementById('p-' + t.dataset.ziel).hidden = !an;
+    });
+  }
+  tabs.forEach(t => t.addEventListener('click', () => { zeige(t.dataset.ziel); try { localStorage.setItem('kv-tab', t.dataset.ziel); } catch (e) {} }));
+  const hash = location.hash.replace('#', '');
+  let start = ['a', 'b', 'c'].includes(hash) ? hash : null;
+  if (!start) { try { start = localStorage.getItem('kv-tab'); } catch (e) {} }
+  if (['a', 'b', 'c'].includes(start)) zeige(start);
+
+  // ===== A: Karussell
+  const ring = document.getElementById('a-ring');
+  const chips = [...ring.children];
+  const ziel = document.getElementById('a-ziel');
+  const outBlatt = [...document.querySelectorAll('#a-aus .blatt')];
+  function waehle(i) {
+    ring.style.setProperty('--rot', (-i * 60) + 'deg');
+    chips.forEach((c, j) => { c.classList.toggle('an', i === j); c.setAttribute('aria-checked', i === j); });
+    const f = chips[i].firstChild.textContent;
+    ziel.textContent = '→ ' + f;
+    outBlatt.slice(0, 2).forEach(b => b.dataset.f = f);
+  }
+  chips.forEach((c, i) => c.addEventListener('click', () => waehle(i)));
+  ring.addEventListener('keydown', e => {
+    const i = chips.findIndex(c => c.classList.contains('an'));
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); const n = (i + (e.key === 'ArrowRight' ? 1 : 5)) % 6; waehle(n); chips[n].focus(); }
+  });
+  document.querySelectorAll('.preset').forEach(p => p.addEventListener('click', e => {
+    if (e.target.tagName !== 'BUTTON') return;
+    [...p.children].forEach(b => b.classList.toggle('an', b === e.target));
+  }));
+
+  // ===== A: Flug-Demo
+  const winA = document.getElementById('win-a');
+  let aLaeuft = false;
+  async function demoA() {
+    if (aLaeuft) return; aLaeuft = true;
+    const ein = [...document.querySelectorAll('#a-ein .blatt')];
+    const ausText = document.getElementById('a-aus-text');
+    ein.forEach(b => b.classList.remove('weg')); outBlatt.forEach(b => b.classList.remove('da'));
+    ausText.textContent = 'Noch leer';
+    await warte(300);
+    winA.classList.add('laeuft');
+    const wr = winA.getBoundingClientRect();
+    const von = document.getElementById('a-ein').getBoundingClientRect();
+    const mitte = ring.parentElement.getBoundingClientRect();
+    const nach = document.getElementById('a-aus').parentElement.getBoundingClientRect();
+    for (let i = ein.length - 1; i >= 0; i--) {
+      const b = ein[i];
+      const f = document.createElement('div');
+      f.className = 'flieger ' + [...b.classList].find(c => c.startsWith('k-'));
+      f.dataset.f = b.dataset.f; f.textContent = b.dataset.n;
+      winA.appendChild(f);
+      b.classList.add('weg');
+      const p = (r, dy = 0) => `translate(${r.left - wr.left + r.width / 2 - 48}px, ${r.top - wr.top + r.height / 2 - 30 + dy}px)`;
+      const anim = f.animate([
+        { transform: p(von, -20) + ' rotate(-4deg) scale(.9)', opacity: 0 },
+        { transform: p(von, -90) + ' rotate(-8deg) scale(1)', opacity: 1, offset: .2 },
+        { transform: p(mitte, -70) + ' rotate(0deg) scale(1.15)', offset: .55 },
+        { transform: p(nach, -90) + ' rotate(6deg) scale(1)', offset: .85 },
+        { transform: p(nach, -20) + ' rotate(0deg) scale(.9)', opacity: 0 }
+      ], { duration: leise ? 1 : 1400, easing: 'cubic-bezier(.45,.05,.3,1)' });
+      await anim.finished;
+      f.remove();
+      outBlatt[i].classList.add('da');
+      ausText.textContent = (ein.length - i) + ' von 3 fertig';
+    }
+    winA.classList.remove('laeuft');
+    ausText.innerHTML = '3 fertig · <span style="color:var(--mint)">3,4 MB</span>';
+    aLaeuft = false;
+  }
+  document.getElementById('a-demo').addEventListener('click', demoA);
+  document.getElementById('a-start').addEventListener('click', demoA);
+
+  // ===== B: Auswahl, Neigung, Regler
+  const stapel = document.getElementById('b-stapel');
+  const karten = [...stapel.querySelectorAll('.karte')];
+  const titel = document.getElementById('b-titel');
+  const q = document.getElementById('b-q');
+  const fmt = n => n.toLocaleString('de-DE', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+  let mb = 8.4;
+  function schaetze() {
+    const v = +q.value;
+    document.getElementById('b-q-wert').textContent = v;
+    const nachher = mb * (0.03 + Math.pow(v / 100, 2.2) * 0.42);
+    document.getElementById('b-nachher').textContent = fmt(nachher) + ' MB';
+    document.getElementById('b-saeule').style.setProperty('--h', Math.max(6, 110 * nachher / mb) + 'px');
+  }
+  karten.forEach(k => {
+    k.addEventListener('click', () => {
+      karten.forEach(x => x.classList.toggle('an', x === k));
+      titel.textContent = k.dataset.name;
+      mb = +k.dataset.mb;
+      document.getElementById('b-vorher').textContent = fmt(mb) + ' MB';
+      schaetze();
+    });
+    if (!leise) {
+      k.addEventListener('pointermove', e => {
+        const r = k.getBoundingClientRect();
+        k.style.setProperty('--ry', ((e.clientX - r.left) / r.width - .5) * 6 + 'deg');
+        k.style.setProperty('--rx', -((e.clientY - r.top) / r.height - .5) * 8 + 'deg');
+      });
+      k.addEventListener('pointerleave', () => { k.style.setProperty('--rx', '0deg'); k.style.setProperty('--ry', '0deg'); });
+    }
+  });
+  q.addEventListener('input', schaetze);
+  document.querySelectorAll('.toggle').forEach(t => t.addEventListener('click', () => t.setAttribute('aria-pressed', t.getAttribute('aria-pressed') !== 'true')));
+
+  let bLaeuft = false;
+  async function demoB() {
+    if (bLaeuft) return; bLaeuft = true;
+    const bereit = karten.slice(0, 3);
+    const gesamt = document.getElementById('b-gesamt');
+    const gtext = document.getElementById('b-gesamt-text');
+    bereit.forEach(k => {
+      k.classList.remove('fertig');
+      const r = k.querySelector('.rechts');
+      if (k.dataset.orig) r.innerHTML = k.dataset.orig; else k.dataset.orig = r.innerHTML;
+    });
+    let erledigt = 0;
+    await Promise.all(bereit.map(async (k, i) => {
+      await warte(i * 350);
+      k.classList.add('laeuft');
+      const bar = k.querySelector('.lauf i');
+      const dauer = [1800, 1300, 2400][i];
+      const t0 = performance.now();
+      await new Promise(res => {
+        const schritt = t => {
+          const p = Math.min(1, (t - t0) / (leise ? 1 : dauer));
+          bar.style.setProperty('--p', p * 100 + '%');
+          const summe = (erledigt + bereit.filter(x => x.classList.contains('laeuft')).reduce((s, x) => s + parseFloat(x.querySelector('.lauf i').style.getPropertyValue('--p') || 0) / 100, 0)) / 3;
+          gesamt.style.setProperty('--w', Math.min(100, summe * 100) + '%');
+          gtext.textContent = 'Läuft · ' + Math.round(summe * 100) + ' %';
+          p < 1 ? requestAnimationFrame(schritt) : res();
+        };
+        requestAnimationFrame(schritt);
+      });
+      k.classList.remove('laeuft');
+      erledigt++;
+      const gut = k.querySelector('.gut').textContent;
+      k.querySelector('.rechts').innerHTML = `<span class="status ok"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8.5l3 3 7-7"/></svg>Fertig ${gut}</span><span class="btn" style="font-family:var(--schrift)">Ordner öffnen</span>`;
+    }));
+    gesamt.style.setProperty('--w', '100%');
+    gtext.textContent = '3 fertig · 4,3 MB statt 31,2 MB';
+    bLaeuft = false;
+  }
+  document.getElementById('b-demo').addEventListener('click', demoB);
+  document.getElementById('b-start').addEventListener('click', demoB);
+
+  // ===== C: Ebenen
+  const ebenen = [...document.querySelectorAll('#c-raum .ebene')];
+  const schritte = [...document.querySelectorAll('.schritt')];
+  let aktiv = 0;
+  function geheZu(s) {
+    aktiv = s;
+    ebenen.forEach(e => {
+      const d = +e.dataset.s - s;
+      e.dataset.pos = d > 0 ? 1 : d;
+      e.inert = d !== 0;
+    });
+    schritte.forEach(b => {
+      const i = +b.dataset.s;
+      b.classList.toggle('an', i === s);
+      b.classList.toggle('fertig', i < s);
+    });
+  }
+  ebenen.forEach(e => e.addEventListener('click', () => { if (+e.dataset.pos < 0) geheZu(+e.dataset.s); }));
+  document.querySelectorAll('[data-weiter]').forEach(b => b.addEventListener('click', ev => { ev.stopPropagation(); geheZu(+b.dataset.weiter); }));
+  schritte.forEach(b => b.addEventListener('click', () => geheZu(+b.dataset.s)));
+  const auswahl = gruppe => gruppe.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    [...gruppe.children].forEach(x => x.classList.toggle('an', x === b));
+  });
+  auswahl(document.getElementById('c-zweck'));
+  auswahl(document.getElementById('c-kacheln'));
+  geheZu(0);
+
+  let cLaeuft = false;
+  async function los() {
+    if (cLaeuft) return; cLaeuft = true;
+    const bogen = document.getElementById('c-bogen');
+    const knopf = document.getElementById('c-knopf');
+    bogen.style.transition = 'none'; bogen.style.strokeDashoffset = 502.7;
+    document.getElementById('c-t3').textContent = 'Wird umgewandelt …';
+    const t0 = performance.now(), dauer = leise ? 1 : 2600;
+    await new Promise(res => {
+      const s = t => {
+        const p = Math.min(1, (t - t0) / dauer);
+        bogen.style.strokeDashoffset = 502.7 * (1 - p);
+        knopf.textContent = Math.round(p * 100) + ' %';
+        p < 1 ? requestAnimationFrame(s) : res();
+      };
+      requestAnimationFrame(s);
+    });
+    knopf.textContent = '✓';
+    document.getElementById('c-t3').textContent = 'Fertig';
+    document.getElementById('c-gross-l').textContent = '20,6 → 2,9 MB';
+    document.getElementById('c-gross').textContent = '−86 %';
+    document.getElementById('c-fuss').innerHTML = '<span class="btn">Ordner öffnen</span>';
+    cLaeuft = false;
+  }
+  document.getElementById('c-los').addEventListener('click', los);
+  document.getElementById('c-demo').addEventListener('click', async () => {
+    const knopf = document.getElementById('c-knopf');
+    knopf.textContent = 'Los'; document.getElementById('c-t3').textContent = 'Alles bereit';
+    document.getElementById('c-bogen').style.strokeDashoffset = 502.7;
+    geheZu(0); await warte(900); geheZu(1); await warte(1300); geheZu(2); await warte(900); los();
+  });
+})();
+</script>
