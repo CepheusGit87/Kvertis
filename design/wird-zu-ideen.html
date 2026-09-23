@@ -1,0 +1,324 @@
+<title>Kvertis „wird zu“-Ideen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c; --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --boden: #080a0b; --boden-schein: #0009;
+  --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0; --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0; --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 16.5px; }
+
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 72ch; }
+.reihe-rahmen { overflow-x: auto; padding: 6px 2px 10px; }
+.reihe { display: grid; grid-template-columns: repeat(4, minmax(215px, 1fr)); gap: 12px; min-width: 900px; }
+.zelle { position: relative; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 14px; display: grid; gap: 10px; align-content: start; }
+.zelle h3 { margin: 0; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.zelle h3 i { width: 11px; height: 11px; border-radius: 3px; background: var(--k); }
+.pro { font: 600 10px var(--mono); letter-spacing: .08em; padding: 1px 6px; border-radius: 5px; border: 1px solid var(--amber-rahmen); color: var(--amber); }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil b { color: var(--ink); font-weight: 600; }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 25%, transparent); white-space: nowrap; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.klein { font-size: 11.5px; color: var(--muted); }
+.label { font: 500 9.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--leise); }
+
+/* 1 · Sanduhr */
+.sand { position: relative; display: grid; gap: 30px; justify-items: center; padding: 2px 0 4px; }
+.sand .oben, .sand .unten { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; position: relative; z-index: 1; }
+.sand .mitte { width: 30px; height: 30px; border-radius: 9px; background: var(--mint); display: grid; place-items: center; position: relative; z-index: 1; box-shadow: 0 0 0 5px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.sand .mitte::before, .sand .mitte::after { content: ''; position: absolute; width: 10px; height: 10px; border-radius: 3px; }
+.sand .mitte::before { left: 7px; top: 7px; background: var(--auf-mint); opacity: .8; }
+.sand .mitte::after { right: 7px; bottom: 7px; border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.sand svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.sand path { fill: none; stroke-width: 1.3; }
+.sand path.rein { stroke: color-mix(in srgb, var(--k) 55%, transparent); }
+.sand path.raus { stroke: var(--mint); stroke-dasharray: 4 5; animation: fluss 1s linear infinite; }
+@keyframes fluss { to { stroke-dashoffset: -9; } }
+
+/* 2 · Was wird aus …? */
+.frage { display: grid; gap: 9px; }
+.frage .rein { display: flex; flex-wrap: wrap; gap: 5px; }
+.frage .rein button { font: 500 10.5px var(--mono); padding: 3px 7px; border-radius: 5px; border: 1px solid color-mix(in srgb, var(--k) 25%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); color: var(--k); transition: transform .2s var(--feder); }
+.frage .rein button.an { background: var(--k); color: #0b0f12; transform: translateY(-2px); box-shadow: 0 6px 12px -6px var(--k); }
+.frage .satz { font-size: 12.5px; }
+.frage .satz b { font-family: var(--mono); color: var(--k); }
+.frage .raus { display: flex; flex-wrap: wrap; gap: 6px; }
+.frage .raus .eti { transition: opacity .25s, transform .3s var(--feder), filter .25s; }
+.frage .raus .eti.nein { opacity: .18; transform: scale(.92); box-shadow: none; filter: grayscale(1); }
+.frage .raus .eti.ja { transform: translateY(-2px) rotate(-1.5deg); box-shadow: 0 3px 0 #0003, 0 8px 14px -8px var(--mint); }
+
+/* 3 · Wendekarte */
+.wende { perspective: 900px; height: 150px; border: 0; background: none; padding: 0; text-align: left; width: 100%; }
+.wende .innen { position: relative; height: 100%; transform-style: preserve-3d; transition: transform .7s var(--feder); }
+.wende:hover .innen, .wende:focus-visible .innen, .wende.gedreht .innen { transform: rotateY(180deg); }
+.wende .seite-v, .wende .seite-h { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; padding: 12px; display: grid; gap: 8px; align-content: start; border: 1px solid var(--line-stark); }
+.wende .seite-v { background: linear-gradient(160deg, color-mix(in srgb, var(--k) 16%, var(--panel2)), var(--panel)); }
+.wende .seite-h { background: var(--paper); color: var(--paper-ink); transform: rotateY(180deg); border-color: var(--paper-linie); }
+.wende .seite-h .label { color: #5b646a; }
+.wende .flex { display: flex; flex-wrap: wrap; gap: 5px; }
+.wende .seite-h .eti { background: #fff; box-shadow: 0 0 0 1px var(--paper-linie), 0 2px 0 #0002; }
+.wende .dreh { position: absolute; right: 10px; bottom: 8px; font: 500 10px var(--mono); color: var(--muted); }
+.wende .seite-h .dreh { color: #5b646a; }
+
+/* 4 · Förderband */
+.bandz { display: grid; gap: 8px; }
+.gleis { position: relative; height: 74px; border-radius: 10px; background: var(--tief); overflow: hidden; }
+.gleis::before { content: ''; position: absolute; left: 0; right: 0; bottom: 14px; height: 2px; background: repeating-linear-gradient(90deg, var(--line-stark) 0 6px, transparent 6px 12px); animation: rollen .6s linear infinite; }
+@keyframes rollen { to { background-position: 12px 0; } }
+.tor { position: absolute; left: 50%; top: 8px; bottom: 8px; width: 34px; margin-left: -17px; border-radius: 8px; border: 1.5px solid var(--mint-rahmen); background: color-mix(in srgb, var(--mint) 10%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--mint) 25%, transparent); }
+.laeufer { position: absolute; top: 24px; left: 0; width: 46px; height: 34px; border-radius: 3px; background: var(--paper); box-shadow: 0 6px 10px -6px #000a; animation: fahren 3s cubic-bezier(.5,0,.5,1) infinite; }
+.laeufer::before { content: attr(data-f); position: absolute; top: -12px; left: 4px; padding: 1px 6px; border-radius: 4px 4px 0 0; font: 600 9px var(--mono); background: var(--tab, var(--k)); color: #0b0f12; transition: background .2s; }
+.laeufer.raus { --tab: var(--mint); }
+@keyframes fahren { 0% { transform: translateX(-60px); } 100% { transform: translateX(260px); } }
+.bandz .satz { font: 500 12px var(--mono); text-align: center; min-height: 18px; }
+.bandz .satz b { color: var(--mint); }
+.bandz .satz span { color: var(--k); }
+
+/* 5 · Alltagssätze */
+.alltag { display: grid; gap: 8px; }
+.alltag .zeile { display: grid; grid-template-columns: 1fr 14px 1fr; gap: 6px; align-items: center; padding: 7px 8px; border-radius: 9px; background: var(--panel2); border: 1px solid var(--line); }
+.alltag .zeile:hover { border-color: var(--line-stark); }
+.alltag .von, .alltag .nach { display: grid; gap: 2px; font-size: 11.5px; line-height: 1.25; }
+.alltag .nach { justify-items: end; text-align: right; }
+.alltag .von span, .alltag .nach span { color: var(--muted); }
+.alltag .pf { color: var(--mint); font-size: 13px; text-align: center; }
+
+/* 6 · Reiter in der Kiste */
+.kistez { display: grid; justify-items: center; gap: 6px; }
+.szene { width: 220px; height: 170px; perspective: 900px; display: grid; place-items: center; }
+.kiste { --W: 168px; --D: 108px; --H: 70px; --c: var(--k); position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-24deg); transition: transform .5s var(--feder); }
+.szene:hover .kiste { transform: rotateX(-26deg) rotateY(-14deg) translateY(-6px); }
+.kiste .f { position: absolute; left: 0; top: 0; border: 1px solid var(--karton-kante); }
+.kiste .fr { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / 2)); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 46%, var(--karton-tief)), color-mix(in srgb, var(--c) 24%, var(--karton-tief))); display: grid; place-items: center; }
+.kiste .bk { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / -2)); background: color-mix(in srgb, var(--c) 16%, var(--karton-tief)); }
+.kiste .lf { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 36%, var(--karton-tief)); }
+.kiste .rt { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 22%, var(--karton-tief)); }
+.kiste .bt { width: var(--W); height: var(--D); transform: translate(-50%, -50%) translateY(calc(var(--H) / 2)) rotateX(90deg); background: var(--boden); box-shadow: 0 0 40px 14px var(--boden-schein); }
+.aufkleber { width: 132px; padding: 4px 6px 5px; border-radius: 2px; background: var(--paper); color: var(--paper-ink); font: 600 8.5px var(--mono); line-height: 1.35; text-align: center; box-shadow: 0 1px 0 #0003; transform: rotate(-1deg); }
+.aufkleber small { display: block; font: 500 7.5px var(--mono); letter-spacing: .12em; opacity: .6; }
+.reiter { position: absolute; left: 0; top: 0; width: calc(var(--W) - 28px); height: calc(var(--H) + 2px); transform: translate(-50%, -50%) translateY(-10px) translateZ(var(--z)); border-radius: 4px 4px 2px 2px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transition: transform .45s var(--feder); }
+.reiter::before { content: attr(data-f); position: absolute; top: -14px; left: var(--tab); padding: 2px 7px 3px; border-radius: 5px 5px 0 0; background: var(--mint); color: var(--auf-mint); font: 600 9px var(--mono); }
+.szene:hover .reiter { transform: translate(-50%, -50%) translateY(calc(-10px - var(--hoch))) translateZ(var(--z)); }
+.legende { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; font-size: 11px; color: var(--muted); }
+.legende span { display: inline-flex; gap: 5px; align-items: center; }
+.legende i { width: 10px; height: 8px; border-radius: 2px; background: var(--paper); box-shadow: 0 0 0 1px var(--line-stark); }
+.legende i.m { background: var(--mint); box-shadow: none; }
+
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 76ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .001s !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Sortierregal · „wird zu“</div>
+    <h1>Sechs Ideen für „Was kann daraus werden?“</h1>
+    <p class="lead">Jede Idee zeigt alle vier Dateiarten, damit man sie direkt vergleichen kann. Die Formate stammen aus docs/05-formate.md. Idee 2, 3 und 6 reagieren auf Maus und Tastatur, 1 und 4 bewegen sich von selbst.</p>
+  </header>
+
+  <section class="idee" aria-labelledby="i1">
+    <h2 id="i1">1 · Sanduhr <small>Formate fließen durch Kvertis</small></h2>
+    <p>Oben die Eingangsformate, in der Mitte das Kvertis-Zeichen, unten die Ergebnisse als Etiketten. Die Linien zeigen: Alles läuft durch dieselbe Stelle, heraus kommt eine Auswahl.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r1"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> sofort als Ablauf lesbar, passt zum Durchlauf</span><span class="minus"><b>Schwäche:</b> sagt nicht, welches Format zu welchem wird</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i2">
+    <h2 id="i2">2 · „Was wird aus …?“ <small>Eingang antippen, Ergebnisse leuchten auf</small></h2>
+    <p>Man wählt das eigene Format, zum Beispiel HEIC, und sieht sofort, welche Etiketten möglich sind. Die übrigen verblassen. Das ist die ehrlichste Darstellung, weil nicht jedes Format zu jedem wird.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r2"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> genau, beantwortet die echte Frage des Nutzers</span><span class="minus"><b>Schwäche:</b> braucht einen Klick oder Hover, bevor es etwas sagt</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i3">
+    <h2 id="i3">3 · Wendekarte <small>vorn „liest“, hinten „macht daraus“</small></h2>
+    <p>Eine Karte, die sich beim Darüberfahren oder Antippen in 3D umdreht. Die Rückseite ist Papier, so wie die fertigen Dateien in der Ausgangskiste.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r3"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> ruhig, viel Platz, schöner 3D-Moment</span><span class="minus"><b>Schwäche:</b> die Hälfte der Information ist verdeckt</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i4">
+    <h2 id="i4">4 · Förderband <small>zeigt Beispiele, statt sie aufzuzählen</small></h2>
+    <p>Ein Blatt fährt durch ein Tor, dabei wechselt sein Reiter vom Eingangs- zum Ergebnisformat. Nacheinander laufen typische Paare durch. Man versteht das Prinzip, ohne eine Liste zu lesen.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r4"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> lebendig, erklärt „Umwandeln“ ohne Worte</span><span class="minus"><b>Schwäche:</b> Bewegung im Ruhezustand kann ablenken; nie vollständig</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i5">
+    <h2 id="i5">5 · Alltagssätze <small>vom Anlass her gedacht</small></h2>
+    <p>Keine Formatlisten, sondern drei typische Situationen je Dateiart: „Handyfoto → für überall“. Das Format steht klein dabei. Für Menschen, die HEIC nicht kennen, ist das der kürzeste Weg.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r5"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> am verständlichsten für Laien, passt zu „Wozu?“ in Schritt 2</span><span class="minus"><b>Schwäche:</b> unvollständig, Profis suchen ihr Format</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i6">
+    <h2 id="i6">6 · Reiter in der Kiste <small>die Kiste erklärt sich selbst</small></h2>
+    <p>Kein Textblock mehr unter der Kiste. Vorn klebt ein Etikett mit den Eingangsformaten, drinnen stehen Karteiblätter mit Mint-Reitern: die möglichen Ergebnisse. Beim Darüberfahren heben sich die Reiter. Sobald echte Dateien darin liegen, ersetzen sie die Muster.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r6"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> ganz im 3D-Bild, am wenigsten Text, sehr ShoeBox</span><span class="minus"><b>Schwäche:</b> wenig Platz, höchstens fünf Reiter lesbar</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="ie">
+    <h2 id="ie">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>Idee 6 als Grundbild, Idee 2 beim Anklicken.</b> Die Kiste zeigt im Ruhezustand vorn, was hineinpasst, und innen als Reiter, was herauskommt. Ein Klick auf die Kiste öffnet „Was wird aus …?“ für die genaue Antwort je Format.</p>
+      <p class="muted">Idee 5 passt als Zusatz gut in den leeren Zustand, zum Beispiel als eine Zeile unter der Kiste („Handyfoto → für überall“). Idee 4 nur dort, wo Bewegung nicht stört, etwa beim ersten Start.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const K = {
+    bild: { name: 'Bilder', rein: ['HEIC','JPG','PNG','WEBP','RAW','TIFF','GIF','SVG','PSD'], raus: ['JPG','PNG','WEBP','PDF','TIFF','GIF','BMP','ICO'],
+      map: { HEIC: ['JPG','PNG','WEBP'], JPG: ['PNG','WEBP','TIFF','BMP','GIF','PDF'], PNG: ['JPG','WEBP','TIFF','BMP','GIF','ICO','PDF'], WEBP: ['JPG','PNG','TIFF','GIF'], RAW: ['JPG','PNG','TIFF'], TIFF: ['PNG','JPG','WEBP','PDF'], GIF: ['PNG','JPG','WEBP'], SVG: ['PNG','JPG','WEBP'], PSD: ['PNG','JPG'] },
+      paare: [['HEIC','JPG'],['PNG','WEBP'],['JPG','PDF'],['RAW','JPG']],
+      alltag: [['Handyfoto','HEIC','für überall','JPG'],['Großes Foto','JPG','klein für E-Mail','JPG'],['Bildschirmfoto','PNG','fürs Web','WEBP']] },
+    audio: { name: 'Audio', rein: ['WAV','MP3','M4A','FLAC','OGG','OPUS','WMA','AIFF'], raus: ['MP3','M4A','FLAC','WAV','OGG','OPUS'],
+      map: null, paare: [['WAV','MP3'],['M4A','MP3'],['WAV','FLAC'],['WMA','M4A']],
+      alltag: [['Aufnahme','WAV','fürs Handy','MP3'],['Sprachmemo','M4A','für jeden Player','MP3'],['Musik sichern','WAV','verlustfrei, kleiner','FLAC']] },
+    video: { name: 'Video', rein: ['MOV','MP4','MKV','WEBM','AVI','WMV','3GP','MPG'], raus: ['MP4','MKV','WEBM','Ton'],
+      map: { MOV: ['MP4','MKV','WEBM','Ton'], MP4: ['MKV','WEBM','Ton'], MKV: ['MP4','WEBM','Ton'], WEBM: ['MP4','MKV','Ton'], AVI: ['MP4','MKV','WEBM','Ton'], WMV: ['MP4','MKV','WEBM','Ton'], '3GP': ['MP4','MKV','WEBM','Ton'], MPG: ['MP4','MKV','WEBM','Ton'] },
+      paare: [['MOV','MP4'],['MKV','MP4'],['MP4','Ton'],['AVI','WEBM']],
+      alltag: [['Handyvideo','MOV','für überall','MP4'],['Video','MP4','nur den Ton','MP3'],['Film','MKV','kleiner fürs Web','WEBM']] },
+    dok: { name: 'Dokumente', rein: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','CSV','HTML','PDF'],
+      map: { PDF: ['TXT'], DOCX: ['TXT','MD','HTML'], XLSX: ['CSV','TXT'], PPTX: ['TXT','MD'], TXT: ['PDF','HTML'], MD: ['PDF','HTML','TXT'], HTML: ['TXT','MD'] },
+      paare: [['DOCX','TXT'],['XLSX','CSV'],['MD','PDF'],['PDF','TXT']],
+      alltag: [['Textdokument','DOCX','nur der Text','TXT'],['Tabelle','XLSX','für jedes Programm','CSV'],['Notizen','MD','zum Drucken','PDF']] }
+  };
+  const KS = ['bild', 'audio', 'video', 'dok'];
+  const moeglich = (k, f) => K[k].map ? K[k].map[f] : K[k].raus.filter(x => x !== f);
+  const kopf = k => `<h3><i></i>${K[k].name}${K[k].pro ? ' <span class="pro">PRO</span>' : ''}</h3>`;
+  const zelle = (k, inhalt) => `<div class="zelle k-${k}">${kopf(k)}${inhalt}</div>`;
+  const chips = (l, n) => l.slice(0, n).map(f => `<span class="chip">${f}</span>`).join('') + (l.length > n ? `<span class="chip" style="background:transparent;color:var(--muted);border-style:dashed">+${l.length - n}</span>` : '');
+  const etis = (l, n) => l.slice(0, n).map((f, i) => `<span class="eti" style="transform:rotate(${[-2,1.5,-1,2,-1.5,1][i % 6]}deg)">${f === 'Ton' ? 'nur Ton' : f}</span>`).join('') + (l.length > n ? `<span class="eti" style="background:transparent;color:var(--muted);box-shadow:none;border:1px dashed var(--line-stark)">+${l.length - n}</span>` : '');
+
+  // 1 Sanduhr
+  document.getElementById('r1').innerHTML = KS.map(k => zelle(k, `<div class="sand"><svg aria-hidden="true"></svg><div class="oben">${chips(K[k].rein, 6)}</div><span class="mitte" aria-hidden="true"></span><div class="unten">${etis(K[k].raus, 5)}</div></div>`)).join('');
+  function faeden() {
+    document.querySelectorAll('.sand').forEach(s => {
+      const r = s.getBoundingClientRect(), m = s.querySelector('.mitte').getBoundingClientRect();
+      const mx = m.left + m.width / 2 - r.left, mo = m.top - r.top, mu = m.bottom - r.top;
+      let d = '';
+      s.querySelectorAll('.oben > *').forEach(c => { const b = c.getBoundingClientRect(), x = b.left + b.width / 2 - r.left, y = b.bottom - r.top; d += `<path class="rein" d="M${x},${y} C${x},${(y + mo) / 2} ${mx},${(y + mo) / 2} ${mx},${mo}"/>`; });
+      s.querySelectorAll('.unten > *').forEach(c => { const b = c.getBoundingClientRect(), x = b.left + b.width / 2 - r.left, y = b.top - r.top; d += `<path class="raus" d="M${mx},${mu} C${mx},${(y + mu) / 2} ${x},${(y + mu) / 2} ${x},${y}"/>`; });
+      s.querySelector('svg').innerHTML = d;
+    });
+  }
+  faeden();
+  new ResizeObserver(faeden).observe(document.getElementById('r1'));
+  document.fonts && document.fonts.ready.then(faeden);
+
+  // 2 Was wird aus …?
+  document.getElementById('r2').innerHTML = KS.map(k => zelle(k, `<div class="frage" data-k="${k}">
+      <span class="label">Was wird aus …?</span>
+      <div class="rein" role="radiogroup" aria-label="Eingangsformat">${K[k].rein.map((f, i) => `<button role="radio" aria-checked="${i === 0}" class="${i === 0 ? 'an' : ''}">${f}</button>`).join('')}</div>
+      <span class="satz"></span>
+      <div class="raus">${K[k].raus.map(f => `<span class="eti" data-f="${f}">${f === 'Ton' ? 'nur Ton' : f}</span>`).join('')}</div>
+    </div>`)).join('');
+  function waehle(fr, btn) {
+    const k = fr.dataset.k, f = btn.textContent, m = moeglich(k, f);
+    fr.querySelectorAll('.rein button').forEach(b => { b.classList.toggle('an', b === btn); b.setAttribute('aria-checked', b === btn); });
+    fr.querySelectorAll('.raus .eti').forEach(e => { const ja = m.includes(e.dataset.f); e.classList.toggle('ja', ja); e.classList.toggle('nein', !ja); });
+    fr.querySelector('.satz').innerHTML = `Aus <b>${f}</b> kann werden: ${m.length} ${m.length === 1 ? 'Format' : 'Formate'}`;
+  }
+  document.querySelectorAll('.frage').forEach(fr => {
+    waehle(fr, fr.querySelector('.rein button'));
+    fr.querySelectorAll('.rein button').forEach(b => { b.addEventListener('click', () => waehle(fr, b)); b.addEventListener('mouseenter', () => waehle(fr, b)); b.addEventListener('focus', () => waehle(fr, b)); });
+  });
+
+  // 3 Wendekarte
+  document.getElementById('r3').innerHTML = KS.map(k => zelle(k, `<button class="wende" aria-label="${K[k].name}: umdrehen, um die Ergebnisformate zu sehen"><div class="innen">
+      <div class="seite-v"><span class="label">liest</span><div class="flex">${chips(K[k].rein, 8)}</div><span class="dreh">umdrehen ↻</span></div>
+      <div class="seite-h"><span class="label">macht daraus</span><div class="flex">${etis(K[k].raus, 8)}</div><span class="dreh">↺</span></div>
+    </div></button>`)).join('');
+  document.querySelectorAll('.wende').forEach(w => w.addEventListener('click', () => w.classList.toggle('gedreht')));
+
+  // 4 Förderband
+  document.getElementById('r4').innerHTML = KS.map(k => zelle(k, `<div class="bandz" data-k="${k}"><div class="gleis"><span class="tor" aria-hidden="true"></span><span class="laeufer" data-f="${K[k].paare[0][0]}"></span></div><div class="satz" aria-live="off"></div><div class="klein" style="text-align:center">außerdem: ${K[k].raus.slice(0, 5).map(f => f === 'Ton' ? 'nur Ton' : f).join(' · ')}</div></div>`)).join('');
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll('.bandz').forEach((b, idx) => {
+    const k = b.dataset.k, l = b.querySelector('.laeufer'), s = b.querySelector('.satz');
+    let i = 0;
+    const zeige = () => { const [von, nach] = K[k].paare[i % K[k].paare.length]; s.innerHTML = `<span>${von}</span> wird zu <b>${nach === 'Ton' ? 'nur Ton' : nach}</b>`; return [von, nach]; };
+    if (leise) { zeige(); l.classList.add('raus'); l.dataset.f = K[k].paare[0][1]; return; }
+    l.style.animationDelay = (-idx * .4) + 's';
+    l.addEventListener('animationiteration', () => { i++; const [von] = zeige(); l.classList.remove('raus'); l.dataset.f = von; });
+    const pruefe = () => {
+      const m = new DOMMatrix(getComputedStyle(l).transform).m41;
+      if (m > 100 && !l.classList.contains('raus')) { l.classList.add('raus'); const n = K[k].paare[i % K[k].paare.length][1]; l.dataset.f = n === 'Ton' ? 'MP3' : n; }
+      requestAnimationFrame(pruefe);
+    };
+    zeige(); requestAnimationFrame(pruefe);
+  });
+
+  // 5 Alltag
+  document.getElementById('r5').innerHTML = KS.map(k => zelle(k, `<div class="alltag">${K[k].alltag.map(([a, af, b, bf]) => `<div class="zeile"><span class="von"><strong style="font-weight:600">${a}</strong><span><span class="chip">${af}</span></span></span><span class="pf" aria-hidden="true">→</span><span class="nach"><strong style="font-weight:600">${b}</strong><span><span class="eti">${bf}</span></span></span></div>`).join('')}<span class="klein">und ${K[k].raus.length - 1} weitere Ziele</span></div>`)).join('');
+
+  // 6 Reiter in der Kiste
+  document.getElementById('r6').innerHTML = KS.map(k => {
+    const raus = K[k].raus.slice(0, 5);
+    const reiter = raus.map((f, i) => `<span class="reiter" data-f="${f === 'Ton' ? 'nur Ton' : f}" style="--z:${-40 + i * 19}px;--tab:${6 + (i % 3) * 44}px;--hoch:${6 + (i % 2) * 6}px"></span>`).join('');
+    return zelle(k, `<div class="kistez"><div class="szene"><div class="kiste">
+        <span class="f bk"></span><span class="f lf"></span><span class="f bt"></span>${reiter}<span class="f rt"></span>
+        <span class="f fr"><span class="aufkleber"><small>PASST HINEIN</small>${K[k].rein.slice(0, 6).join(' · ')}${K[k].rein.length > 6 ? ' …' : ''}</span></span>
+      </div></div>
+      <div class="legende"><span><i></i>vorn: was hineinpasst</span><span><i class="m"></i>Reiter: was herauskommt</span></div></div>`);
+  }).join('');
+})();
+</script>
