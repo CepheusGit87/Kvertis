@@ -25,6 +25,7 @@ done
 # Decoders for patent-encumbered formats: Kvertis decodes these through Windows Media Foundation only.
 for dec in h264 hevc aac aac_fixed aac_latm mpeg4 msmpeg4v1 msmpeg4v2 msmpeg4v3 wmv1 wmv2 wmv3 vc1 \
            wmav1 wmav2 wmapro wmalossless wmavoice h263 prores dnxhd eac3 dca truehd amrnb amrwb \
+           vvc flv h263p h263i mlp wmv3image vc1image \
            h264_qsv hevc_qsv h264_cuvid hevc_cuvid; do
   if echo "$decoders" | grep -qwE "^ *[VAS][A-Z.]{5} +$dec( |$)"; then echo "FAIL: patentbelasteter Decoder $dec"; fail=1; fi
 done

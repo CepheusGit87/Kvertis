@@ -516,7 +516,7 @@
   <data name="Main_Overall_Estimate" xml:space="preserve">
     <value>{0} files · takes about {1}</value>
   </data>
-  <data name="Main_Overall_Progress" xml:space="preserve">
+  <data name="Main_Overall_ProgressText" xml:space="preserve">
     <value>{0} of {1} done</value>
   </data>
   <data name="Main_Overall_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -926,6 +926,9 @@
   </data>
   <data name="Warning_LargeFile" xml:space="preserve">
     <value>Very large file. The conversion may take a long time.</value>
+  </data>
+  <data name="Warning_MetadataNotStrippable" xml:space="preserve">
+    <value>Metadata cannot be removed for this format. Recording location and camera data are kept.</value>
   </data>
   <data name="Warning_MultipleAudioTracks" xml:space="preserve">
     <value>Only the first audio track is kept.</value>

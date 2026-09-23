@@ -35,6 +35,8 @@ public sealed class FfmpegToolset
         Reader = reader;
         Cache = cache;
         Registry = registry;
+        // The system transcoder shares the cache and uses this probe when detection left no entry.
+        cache.AttachProber(GetMediaInfoAsync);
     }
 
     public IFfmpegLocator Locator { get; }
@@ -46,20 +48,75 @@ public sealed class FfmpegToolset
     public MediaInfoCache Cache { get; }
     public FormatRegistry Registry { get; }
 
-    /// <summary>Fails with ToolMissing when ffmpeg is absent or not compliant; returns features and probe data.</summary>
+    /// <summary>
+    /// Fails with ToolMissing when ffmpeg is absent or not compliant; returns features and probe data.
+    /// Probes first and refuses inputs that need system decoding (<see cref="EnsureNoSystemDecoding"/>)
+    /// before ffmpeg itself is started for anything, including the compliance check.
+    /// </summary>
     public async Task<FfmpegJobContext> PrepareAsync(InputInfo input, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(input);
         var ffmpeg = Locator.FfmpegPath
                      ?? throw new ConversionException(ConversionErrorCode.ToolMissing, input.Path, "prepare", "ffmpeg not found");
-        await Compliance.EnsureCompliantAsync(ct).ConfigureAwait(false);
-        var features = await Features.GetAsync(ct).ConfigureAwait(false);
         var media = await GetMediaInfoAsync(input, ct).ConfigureAwait(false);
         if (media is { IsEncrypted: true })
         {
             throw new ConversionException(ConversionErrorCode.ProtectedFile, input.Path, "prepare", "encrypted stream");
         }
+        EnsureNoSystemDecoding(input, media);
+        await Compliance.EnsureCompliantAsync(ct).ConfigureAwait(false);
+        var features = await Features.GetAsync(ct).ConfigureAwait(false);
         return new FfmpegJobContext(ffmpeg, features, media);
+    }
+
+    /// <summary>
+    /// ADR-015: inputs with a patent-encumbered stream never reach ffmpeg (no decode, no stream copy, no
+    /// sound-track extraction). Without probe data (ffprobe missing or failed) ffmpeg may only open containers
+    /// that cannot carry such streams (<see cref="EncumberedCodecs.IsPatentFreeContainer"/>: WebM, OGG, Opus,
+    /// FLAC, WAV, AIFF, MP3); MKV and every other container are refused because their codecs are unknown.
+    /// Throws UnsupportedFormat "requires system decoding".
+    /// </summary>
+    public static void EnsureNoSystemDecoding(InputInfo input, MediaInfo? media)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        if (!MayDecodeWithFfmpeg(input, media))
+        {
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "prepare", RequiresSystemDecodingDetail);
+        }
+    }
+
+    /// <summary>
+    /// The ADR-015 decoder rule as a predicate: with probe data, no encumbered stream; without probe data, a
+    /// patent-free container only.
+    /// </summary>
+    public static bool MayDecodeWithFfmpeg(InputInfo input, MediaInfo? media)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        return media is null ? EncumberedCodecs.IsPatentFreeContainer(input.Format) : !media.RequiresSystemDecoding;
+    }
+
+    /// <summary>Error detail for inputs that only Media Foundation may decode.</summary>
+    public const string RequiresSystemDecodingDetail = "requires system decoding";
+
+    /// <summary>
+    /// True when cached probe data says the input needs system decoding. Used by the converters' synchronous
+    /// <c>Supports</c>; without cached data it returns false and <see cref="PrepareAsync"/> re-checks after probing.
+    /// </summary>
+    public bool IsKnownToRequireSystemDecoding(InputInfo input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        return Cache.TryGet(input.Path, out var media) && media.RequiresSystemDecoding;
+    }
+
+    /// <summary>
+    /// Routing check for the converters' synchronous <c>Supports</c>: <see cref="MayDecodeWithFfmpeg"/> on the
+    /// cached probe data. Without cached data only patent-free containers qualify; the job runner re-probes
+    /// before resolving, so an evicted entry does not misroute a job.
+    /// </summary>
+    public bool MayUseFfmpeg(InputInfo input)
+    {
+        ArgumentNullException.ThrowIfNull(input);
+        return MayDecodeWithFfmpeg(input, Cache.TryGet(input.Path, out var media) ? media : null);
     }
 
     /// <summary>Cached ffprobe data, or a fresh probe; null when ffprobe cannot read the file.</summary>
@@ -90,43 +147,18 @@ public sealed class FfmpegToolset
         }
     }
 
-    /// <summary>
-    /// Runs ffmpeg with the conversion timeout of the input's kind and maps failures to error codes.
-    /// With <paramref name="media"/> describing an HEVC source decoded through the system (<c>-hwaccel</c>),
-    /// stderr is watched for ffmpeg's silent software fallback, which is refused (ADR-003) with
-    /// MissingSystemCodec "hevc software fallback refused".
-    /// </summary>
-    public async Task RunFfmpegAsync(string ffmpegPath, IReadOnlyList<string> arguments, InputInfo input, IProgress<string>? stderrLines, string step, CancellationToken ct, MediaInfo? media = null)
+    /// <summary>Runs ffmpeg with the conversion timeout of the input's kind and maps failures to error codes.</summary>
+    public async Task RunFfmpegAsync(string ffmpegPath, IReadOnlyList<string> arguments, InputInfo input, IProgress<string>? stderrLines, string step, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(arguments);
         var request = new ProcessRequest(ffmpegPath, arguments, InputLimits.ConversionTimeoutFor(input.Kind)) { CaptureStdout = false };
-
-        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        var guard = NeedsHevcGuard(media, arguments) ? new HevcFallbackGuard(stderrLines, linked) : null;
-        ProcessOutcome outcome;
-        try
-        {
-            outcome = await Runner.RunAsync(request, (IProgress<string>?)guard ?? stderrLines, linked.Token).ConfigureAwait(false);
-        }
-        catch (Exception ex) when (guard is { Triggered: true } && !ct.IsCancellationRequested
-                                   && ex is OperationCanceledException or ConversionException { Code: ConversionErrorCode.Cancelled })
-        {
-            throw HevcFallbackGuard.Refused(input.Path, step);
-        }
-        if (guard is { Triggered: true })
-        {
-            throw HevcFallbackGuard.Refused(input.Path, step);
-        }
+        var outcome = await Runner.RunAsync(request, stderrLines, ct).ConfigureAwait(false);
         if (!outcome.Succeeded)
         {
             throw FfmpegErrorMapper.Map(outcome, input.Path, step);
         }
     }
-
-    /// <summary>True when the run decodes an HEVC source through D3D11VA and must not fall back to software.</summary>
-    internal static bool NeedsHevcGuard(MediaInfo? media, IReadOnlyList<string> arguments) =>
-        media is { IsHevc: true } && arguments.Contains("-hwaccel");
 
     /// <summary>
     /// Full conversion pipeline: prepare, build arguments, write to the temp file, commit.
@@ -156,7 +188,7 @@ public sealed class FfmpegToolset
 
             progress.Report(new ConversionProgress(FfmpegProgressParser.ConvertStart, ConversionPhase.Converting));
             var parser = new FfmpegProgressParser(context.Media?.Duration ?? input.Duration, progress);
-            await RunFfmpegAsync(context.FfmpegPath, arguments, input, parser, "convert", ct, context.Media).ConfigureAwait(false);
+            await RunFfmpegAsync(context.FfmpegPath, arguments, input, parser, "convert", ct).ConfigureAwait(false);
 
             progress.Report(new ConversionProgress(FfmpegProgressParser.ConvertEnd, ConversionPhase.Finalizing));
             var bytes = output.Commit();

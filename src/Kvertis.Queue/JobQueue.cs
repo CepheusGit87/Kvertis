@@ -74,7 +74,11 @@ public sealed class JobQueue : IJobQueue, IAsyncDisposable
         _maxParallelVideo = Math.Max(1, options.MaxParallelVideo);
         _runner = new JobRunner(
             resolver, validator, estimator, options.Registry ?? new FormatRegistry(), _reserver,
-            options.SpeedProfileStore, _time, _logger, Raise);
+            options.SpeedProfileStore, _time, _logger, Raise)
+        {
+            FormatDetector = options.FormatDetector,
+            MediaInfo = options.MediaInfo,
+        };
 
         if (options.AutoStart)
         {

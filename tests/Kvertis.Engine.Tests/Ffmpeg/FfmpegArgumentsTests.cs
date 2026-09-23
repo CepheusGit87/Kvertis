@@ -136,7 +136,7 @@ public class FfmpegArgumentsTests
     [Fact]
     public void AudioExtractionFromVideoUsesVnAndNoVideoDecode()
     {
-        var args = BuildAudio(new ConversionSettings(FormatRegistry.Mp3), TestMedia.VideoInfo("hevc"), TestMedia.Video(VideoPath),
+        var args = BuildAudio(new ConversionSettings(FormatRegistry.Mp3), TestMedia.VideoInfo(), TestMedia.Video(VideoPath),
             codecs: NullSystemCodecCapabilities.Instance);
 
         args.ShouldContain("-vn");
@@ -209,7 +209,7 @@ public class FfmpegArgumentsTests
     public void ArchiveMkvCopiesStreams()
     {
         var args = BuildVideo(new ConversionSettings(FormatRegistry.Mkv, Preset: ConversionPreset.Archive, Metadata: MetadataPolicy.Keep),
-            TestMedia.VideoInfo("hevc"), codecs: NullSystemCodecCapabilities.Instance);
+            TestMedia.VideoInfo("av1"), codecs: NullSystemCodecCapabilities.Instance);
 
         args.ShouldBe(
         [
@@ -268,41 +268,87 @@ public class FfmpegArgumentsTests
         ValueAfter(args, "-r").ShouldBe("25");
     }
 
-    [Fact]
-    public void HevcInputWithoutSystemDecoderIsMissingSystemCodec()
+    public static TheoryData<string, string, string?> EncumberedJobs => new()
     {
-        var codecs = new TestCodecs { CanEncodeH264 = true, CanEncodeAac = true, CanDecodeHevc = false };
-        var features = new FfmpegFeatures(FakeFfmpeg.DefaultEncoders, ["d3d11va"]);
-        Should.Throw<ConversionException>(() => BuildVideo(new ConversionSettings(FormatRegistry.Mp4), TestMedia.VideoInfo("hevc"), features: features, codecs: codecs))
-            .Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        // video codec, output, preset (null = none)
+        { "h264", "mp4", null },
+        { "hevc", "webm", null },
+        { "h264", "mkv", "Archive" },   // no stream copy either
+        { "mpeg4", "mp3", null },       // no sound extraction either
+        { "vp9", "mp3", "aac-audio" },  // patent-free video, encumbered audio
+    };
+
+    [Theory]
+    [MemberData(nameof(EncumberedJobs))]
+    public void EncumberedMediaIsNeverHandedToFfmpeg(string videoCodec, string output, string? variant)
+    {
+        var media = TestMedia.VideoInfo(videoCodec, audioCodec: variant == "aac-audio" ? "aac" : "opus");
+        var settings = new ConversionSettings(new FormatId(output), Preset: variant == "Archive" ? ConversionPreset.Archive : ConversionPreset.None);
+
+        var ex = Should.Throw<ConversionException>(() => FfmpegArguments.Build(TestMedia.Video(VideoPath), media, "/out/v.kvertis-tmp", settings, Registry,
+            AllSystemCodecCapabilities.Instance, AllFeatures));
+
+        ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
+        ex.Detail.ShouldBe("requires system decoding");
     }
 
     [Fact]
-    public void HevcInputWithoutD3D11VaIsMissingSystemCodec()
+    public void EncumberedFrameExtractionIsRefused()
     {
-        // No software fallback for HEVC (ADR-003), even for patent-free outputs.
-        Should.Throw<ConversionException>(() => BuildVideo(new ConversionSettings(FormatRegistry.WebM), TestMedia.VideoInfo("hevc")))
-            .Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        Should.Throw<ConversionException>(() => FfmpegArguments.BuildFrameExtraction(TestMedia.Video(VideoPath), TestMedia.VideoInfo("hevc"), "/tmp/p.png",
+                TimeSpan.Zero, new ConversionSettings(FormatRegistry.Mp4)))
+            .Detail.ShouldBe("requires system decoding");
     }
 
     [Fact]
-    public void HevcInputUsesD3D11VaBeforeInput()
+    public void UnknownCodecsInMp4FamilyAreRefusedButWebmIsAccepted()
     {
-        var features = new FfmpegFeatures(FakeFfmpeg.DefaultEncoders, ["d3d11va", "dxva2"]);
-        var args = BuildVideo(new ConversionSettings(FormatRegistry.Mp4), TestMedia.VideoInfo("hevc"), features: features);
+        Should.Throw<ConversionException>(() => FfmpegArguments.Build(TestMedia.Video(VideoPath), null, "/out/v.kvertis-tmp",
+                new ConversionSettings(FormatRegistry.WebM), Registry, AllSystemCodecCapabilities.Instance, AllFeatures))
+            .Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
 
-        var hw = IndexOf(args, "-hwaccel");
-        hw.ShouldBeGreaterThanOrEqualTo(0);
-        args[hw + 1].ShouldBe("d3d11va");
-        hw.ShouldBeLessThan(IndexOf(args, "-i"));
+        var webm = TestMedia.Video(VideoPath, format: FormatRegistry.WebM);
+        FfmpegArguments.Build(webm, null, "/out/v.kvertis-tmp", new ConversionSettings(FormatRegistry.Mkv), Registry, AllSystemCodecCapabilities.Instance, AllFeatures)
+            .ShouldContain("libvpx-vp9");
+    }
+
+    [Theory]
+    [InlineData(ConversionPreset.Archive)]
+    [InlineData(ConversionPreset.None)]
+    public void MkvWithoutProbeDataIsRefusedEvenForStreamCopy(ConversionPreset preset)
+    {
+        var mkv = TestMedia.Video(VideoPath, format: FormatRegistry.Mkv);
+
+        Should.Throw<ConversionException>(() => FfmpegArguments.Build(mkv, null, "/out/v.kvertis-tmp",
+                new ConversionSettings(FormatRegistry.Mkv, Preset: preset), Registry, AllSystemCodecCapabilities.Instance, AllFeatures))
+            .Detail.ShouldBe("requires system decoding");
+        Should.Throw<ConversionException>(() => FfmpegArguments.BuildFrameExtraction(mkv, null, "/tmp/p.png", TimeSpan.Zero,
+                new ConversionSettings(FormatRegistry.Mkv, Preset: preset)))
+            .Detail.ShouldBe("requires system decoding");
     }
 
     [Fact]
-    public void H264UsesHardwareDecodeOnlyWhenAvailable()
+    public void WithoutProbeDataOnlyPatentFreeContainersMayUseFfmpeg()
     {
-        BuildVideo(new ConversionSettings(FormatRegistry.Mp4)).ShouldNotContain("-hwaccel");
-        var features = new FfmpegFeatures(FakeFfmpeg.DefaultEncoders, ["d3d11va"]);
-        BuildVideo(new ConversionSettings(FormatRegistry.Mp4), features: features).ShouldContain("-hwaccel");
+        foreach (var format in new[] { FormatRegistry.WebM, FormatRegistry.Ogg, FormatRegistry.Opus, FormatRegistry.Flac, FormatRegistry.Wav, FormatRegistry.Aiff, FormatRegistry.Mp3 })
+        {
+            FfmpegToolset.MayDecodeWithFfmpeg(TestMedia.Audio("/a", format: format), null).ShouldBeTrue(format.Id);
+        }
+        foreach (var format in new[] { FormatRegistry.Mkv, FormatRegistry.Mp4, FormatRegistry.Mov, FormatRegistry.M4a, FormatRegistry.Avi, FormatRegistry.Flv, FormatRegistry.Wma, FormatRegistry.Ts })
+        {
+            FfmpegToolset.MayDecodeWithFfmpeg(TestMedia.Audio("/a", format: format), null).ShouldBeFalse(format.Id);
+        }
+    }
+
+    [Fact]
+    public void PatentFreeWebmToMp4UsesMediaFoundationEncodersWithoutHardwareDecode()
+    {
+        var webm = TestMedia.Video(VideoPath, format: FormatRegistry.WebM);
+        var args = BuildVideo(new ConversionSettings(FormatRegistry.Mp4), TestMedia.VideoInfo("vp9", audioCodec: "opus"), webm);
+
+        ValueAfter(args, "-c:v").ShouldBe("h264_mf");
+        ValueAfter(args, "-c:a").ShouldBe("aac_mf");
+        args.ShouldNotContain("-hwaccel");
     }
 
     [Fact]
@@ -345,7 +391,7 @@ public class FfmpegArgumentsTests
     public void FrameExtractionWritesOnePng()
     {
         var args = FfmpegArguments.BuildFrameExtraction(TestMedia.Video(VideoPath), TestMedia.VideoInfo(), "/tmp/p.png", TimeSpan.FromSeconds(15),
-            new ConversionSettings(FormatRegistry.Mp4), AllSystemCodecCapabilities.Instance, AllFeatures);
+            new ConversionSettings(FormatRegistry.Mp4));
 
         args.ShouldBe(
         [

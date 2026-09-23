@@ -331,16 +331,34 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         await _detectGate.WaitAsync();
         try
         {
-            var input = await _detector.DetectAsync(item.FilePath, CancellationToken.None);
-            var suggestion = _registry.Suggest(input, _codecs);
+            // Off the UI thread: detection probes files, and the first read of the system codec capabilities
+            // (Suggest, CanConvert) may block for up to 3 s while Media Foundation is queried. The await resumes
+            // on the UI thread, so the item updates below need no extra marshalling.
+            var path = item.FilePath;
+            var (input, suggestion, producible) = await Task.Run(async () =>
+            {
+                var detected = await _detector.DetectAsync(path, CancellationToken.None).ConfigureAwait(false);
+                var suggested = _registry.Suggest(detected, _codecs);
+                // The static matrix lists what a format family can become; the resolver knows what this file can
+                // become (e.g. an MKV with H.264 has no WebM output in Phase 1).
+                var targets = detected.Kind == MediaKind.Unknown || suggested is null
+                    ? new List<FormatId>()
+                    : suggested.Options.Where(id => _resolver.CanConvert(detected, id)).ToList();
+                return (detected, suggested, targets);
+            });
             if (input.Kind == MediaKind.Unknown || suggestion is null)
             {
                 item.SetRejected(_errors.Map(ConversionErrorCode.UnsupportedFormat));
                 return;
             }
-
-            var options = suggestion.Options
-                .Select(id => new FormatOption(id, _registry.Get(id)?.DisplayName ?? id.Id.ToUpperInvariant(), id == suggestion.Default))
+            if (producible.Count == 0)
+            {
+                item.SetRejected(_errors.Map(ConversionErrorCode.UnsupportedFormat));
+                return;
+            }
+            var defaultId = producible.Contains(suggestion.Default) ? suggestion.Default : producible[0];
+            var options = producible
+                .Select(id => new FormatOption(id, _registry.Get(id)?.DisplayName ?? id.Id.ToUpperInvariant(), id == defaultId))
                 .ToList();
             var inputLabel = _registry.Get(input.Format)?.DisplayName ?? input.Format.Id.ToUpperInvariant();
             item.Initialize(input, inputLabel, options, Formatting.Bytes(_loc, input.SizeBytes), DescribeInput(input), string.Empty);
@@ -396,6 +414,11 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             && !warnings.Contains(InputWarning.TransparencyLost))
         {
             warnings.Add(InputWarning.TransparencyLost);
+        }
+        if (!item.StripMetadata)
+        {
+            // Only relevant when the user asked for metadata removal.
+            warnings.Remove(InputWarning.MetadataNotStrippable);
         }
         return string.Join(" ", warnings.Select(w => _loc.Get("Warning_" + w.ToString())));
     }
@@ -738,7 +761,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             OverallProgress = Math.Clamp(overall.Fraction, 0, 1) * 100;
             OverallText = overall.Remaining is { } remaining
                 ? _loc.Format("Main_Overall_Remaining", overall.Done, overall.Total, Formatting.Duration(_loc, remaining))
-                : _loc.Format("Main_Overall_Progress", overall.Done, overall.Total);
+                : _loc.Format("Main_Overall_ProgressText", overall.Done, overall.Total);
         }
         else if (staged.Count > 0)
         {
@@ -754,7 +777,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             OverallProgress = 100;
             OverallText = overall.BytesIn > 0
                 ? _loc.Format("Main_Overall_Done", overall.Completed, Formatting.Bytes(_loc, overall.BytesIn), Formatting.Bytes(_loc, overall.BytesOut))
-                : _loc.Format("Main_Overall_Progress", overall.Done, overall.Total);
+                : _loc.Format("Main_Overall_ProgressText", overall.Done, overall.Total);
         }
         else
         {

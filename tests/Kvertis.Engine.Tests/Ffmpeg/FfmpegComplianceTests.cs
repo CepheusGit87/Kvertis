@@ -15,22 +15,86 @@ public class FfmpegComplianceTests
         "ffmpeg version 6.1.1 Copyright (c) 2000-2023 the FFmpeg developers\n" +
         "configuration: --prefix=/usr --enable-" + "gpl --enable-version3 --enable-libvpx\n";
 
+    private static ComplianceReport Parse(string version, string encoders, string? decoders = null, string? protocols = null) =>
+        FfmpegCompliance.Parse(version, encoders, decoders ?? FakeFfmpeg.DecodersOutput(FakeFfmpeg.AllowlistDecoders), protocols ?? FakeFfmpeg.AllowlistProtocols);
+
     [Fact]
     public void LgplBuildIsCompliant()
     {
-        var report = FfmpegCompliance.Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders));
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders));
 
         report.IsGplBuild.ShouldBeFalse();
         report.HasNonFree.ShouldBeFalse();
         report.HasForbiddenEncoders.ShouldBeFalse();
+        report.HasForbiddenDecoders.ShouldBeFalse();
+        report.HasNetworkProtocols.ShouldBeFalse();
         report.IsCompliant.ShouldBeTrue();
+        report.Reasons.ShouldBeEmpty();
         report.Configuration.ShouldStartWith("--disable-gpl");
     }
+
+    [Theory]
+    [InlineData("h26", "4")]
+    [InlineData("he", "vc")]
+    [InlineData("aa", "c")]
+    [InlineData("mpeg", "4")]
+    [InlineData("wm", "v3")]
+    [InlineData("vc", "1")]
+    [InlineData("wma", "pro")]
+    [InlineData("pro", "res")]
+    [InlineData("ea", "c3")]
+    [InlineData("dc", "a")]
+    [InlineData("amr", "nb")]
+    [InlineData("he", "vc_cuvid")]
+    public void EncumberedDecoderMakesBuildNonCompliant(string head, string tail)
+    {
+        var decoder = head + tail;
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders),
+            FakeFfmpeg.DecodersOutput([.. FakeFfmpeg.AllowlistDecoders, decoder]));
+
+        report.HasForbiddenDecoders.ShouldBeTrue();
+        report.ForbiddenDecodersFound.ShouldBe([decoder]);
+        report.IsCompliant.ShouldBeFalse();
+        report.Reasons.ShouldBe(["forbidden decoders: " + decoder]);
+    }
+
+    [Fact]
+    public void PatentFreeDecodersWithSimilarNamesAreAllowed()
+    {
+        // ac3 (expired) is fine while eac3 is not; mpeg2video/mp3 are fine while mpeg4 is not.
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders),
+            FakeFfmpeg.DecodersOutput(["ac3", "mpeg2video", "mp3", "mjpeg", "vp9"]));
+        report.IsCompliant.ShouldBeTrue();
+    }
+
+    [Theory]
+    [InlineData("http")]
+    [InlineData("https")]
+    [InlineData("tcp")]
+    [InlineData("udp")]
+    [InlineData("tls")]
+    [InlineData("rtmp")]
+    [InlineData("rtp")]
+    [InlineData("srt")]
+    [InlineData("ftp")]
+    [InlineData("sftp")]
+    public void NetworkProtocolMakesBuildNonCompliant(string protocol)
+    {
+        var protocols = $"Supported file protocols:\nInput:\n  file\n  {protocol}\n  pipe\nOutput:\n  file\n  pipe\n";
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(FakeFfmpeg.DefaultEncoders), protocols: protocols);
+
+        report.NetworkProtocolsFound.ShouldBe([protocol]);
+        report.IsCompliant.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void ParsesProtocolList() =>
+        FfmpegCompliance.ParseProtocols(FakeFfmpeg.AllowlistProtocols).ShouldBe(["file", "pipe", "file", "pipe"]);
 
     [Fact]
     public void GplBuildIsDetected()
     {
-        var report = FfmpegCompliance.Parse(GplVersion, FakeFfmpeg.EncodersOutput(["flac"]));
+        var report = Parse(GplVersion, FakeFfmpeg.EncodersOutput(["flac"]));
         report.IsGplBuild.ShouldBeTrue();
         report.IsCompliant.ShouldBeFalse();
     }
@@ -38,7 +102,7 @@ public class FfmpegComplianceTests
     [Fact]
     public void NonFreeBuildIsDetected()
     {
-        var report = FfmpegCompliance.Parse("configuration: --enable-" + "nonfree --enable-lib" + "fdk-aac\n", FakeFfmpeg.EncodersOutput(["flac"]));
+        var report = Parse("configuration: --enable-" + "nonfree --enable-lib" + "fdk-aac\n", FakeFfmpeg.EncodersOutput(["flac"]));
         report.HasNonFree.ShouldBeTrue();
         report.HasForbiddenEncoders.ShouldBeTrue();
     }
@@ -47,7 +111,7 @@ public class FfmpegComplianceTests
     public void XvidEncoderIsForbidden()
     {
         var xvid = "lib" + "xvid";
-        var report = FfmpegCompliance.Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(["flac", xvid]));
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(["flac", xvid]));
         report.HasForbiddenEncoders.ShouldBeTrue();
         report.ForbiddenEncodersFound.ShouldContain(xvid);
     }
@@ -55,7 +119,7 @@ public class FfmpegComplianceTests
     [Fact]
     public void ForbiddenEncoderInListIsDetected()
     {
-        var report = FfmpegCompliance.Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(["flac", X264]));
+        var report = Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(["flac", X264]));
         report.HasForbiddenEncoders.ShouldBeTrue();
         report.ForbiddenEncodersFound.ShouldContain(X264);
     }
@@ -67,7 +131,8 @@ public class FfmpegComplianceTests
         var report = await FfmpegCompliance.CheckAsync(fake.Locator, fake.Runner);
 
         report.IsCompliant.ShouldBeTrue();
-        fake.Requests.Select(r => string.Join(' ', r.Arguments)).ShouldBe(["-version", "-hide_banner -encoders"]);
+        fake.Requests.Select(r => string.Join(' ', r.Arguments))
+            .ShouldBe(["-version", "-hide_banner -encoders", "-hide_banner -decoders", "-hide_banner -protocols"]);
     }
 
     [Fact]
@@ -78,10 +143,27 @@ public class FfmpegComplianceTests
 
         var ex = await Should.ThrowAsync<ConversionException>(() => compliance.EnsureCompliantAsync(CancellationToken.None));
         ex.Code.ShouldBe(ConversionErrorCode.ToolMissing);
-        ex.Detail.ShouldBe("gpl build");
+        ex.Detail.ShouldBe("ffmpeg build not compliant: gpl build");
 
         await Should.ThrowAsync<ConversionException>(() => compliance.EnsureCompliantAsync(CancellationToken.None));
         fake.Requests.Count(r => r.Arguments.Contains("-version")).ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task EnsureCompliantRefusesBuildWithEncumberedDecodersAndNetwork()
+    {
+        var h264 = "h26" + "4";
+        using var fake = new FakeFfmpeg
+        {
+            Decoders = [.. FakeFfmpeg.AllowlistDecoders, h264],
+            ProtocolsOutput = "Supported file protocols:\nInput:\n  file\n  https\nOutput:\n  file\n",
+        };
+        var compliance = new FfmpegCompliance(fake.Locator, fake.Runner);
+
+        var ex = await Should.ThrowAsync<ConversionException>(() => compliance.EnsureCompliantAsync(CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.ToolMissing);
+        ex.Detail.ShouldBe($"ffmpeg build not compliant: forbidden decoders: {h264}; network protocols: https");
     }
 
     [Fact]
@@ -106,13 +188,13 @@ public class FfmpegFeaturesTests
     }
 
     [Fact]
-    public void ParsesHwaccels() =>
-        FfmpegFeatures.ParseHardwareAccelerations("Hardware acceleration methods:\ndxva2\nd3d11va\n\n").ShouldBe(["dxva2", "d3d11va"]);
+    public void ParsesDecoderTable() =>
+        FfmpegFeatures.ParseDecoders(FakeFfmpeg.DecodersOutput(["vp9", "flac"])).ShouldBe(["vp9", "flac"]);
 
     [Fact]
     public async Task ProbeRunsOnceAndCaches()
     {
-        using var fake = new FakeFfmpeg { Encoders = ["flac", "mp3_mf"], Hwaccels = ["d3d11va"] };
+        using var fake = new FakeFfmpeg { Encoders = ["flac", "mp3_mf"] };
         var probe = new FfmpegFeatureProbe(fake.Locator, fake.Runner);
 
         var first = await probe.GetAsync(CancellationToken.None);
@@ -121,7 +203,6 @@ public class FfmpegFeaturesTests
         first.ShouldBeSameAs(second);
         first.HasEncoder("mp3_mf").ShouldBeTrue();
         first.HasEncoder("libmp3lame").ShouldBeFalse();
-        first.CanUseD3D11Va.ShouldBeTrue();
         fake.Requests.Count(r => r.Arguments.SequenceEqual(["-hide_banner", "-encoders"])).ShouldBe(1);
     }
 }

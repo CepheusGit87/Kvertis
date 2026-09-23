@@ -2,6 +2,22 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-23 – Rechtsrahmen ohne Patentrisiko
+
+**Geändert**
+
+- Bilder: Magick.NET entfernt; SkiaSharp (MIT, DLL geprüft) plus Windows Imaging Component (`ISystemImageCodec`, `WicImageCodec`) für HEIC, AVIF, RAW, TIFF und die TIFF/BMP/GIF-Encoder; eigener ICO-Writer; EXIF-Übernahme nur JPEG → JPG/WebP; PSD und SVG entfallen (ADR-014).
+- Audio/Video: eigener FFmpeg-Allowlist-Build ohne patentbelastete Decoder/Encoder und ohne Netzwerkprotokolle (`tools/ffmpeg/configure-allowlist.txt`, Build-Workflow, erweiterte Prüfskripte); `FfmpegCompliance` verweigert fremde Builds (Decoder, Protokolle); Routing nach Stream-Codec (`EncumberedCodecs`): H.264/HEVC/AAC/MPEG-4/WMV/WMA-Eingaben laufen nur über `MediaFoundationTranscoder` (Windows), nie über ffmpeg; `HevcFallbackGuard` entfernt (ADR-015).
+- Formatmatrix: patentbelastete Familien → MP4/M4A/MP3/WAV/FLAC; MKV je nach Codec (`IConverterResolver.CanConvert`); FLV entfällt; MP4 → MP4 ist Standardvorschlag bei Video.
+- Neu: `docs/10-rechtsmatrix.md` (Konverter → Bibliothek → Lizenz → Patentlage → Begründung → Nachweis); Compliance-Gate prüft, dass jeder `IConverter` dort steht.
+- App: Ausgabeliste über `CanConvert` gefiltert; Analyzer-Hinweise CA1822/CA1859/CA1873 als Vorschläge (Windows-Build war daran gescheitert).
+- Vorschau der Oberfläche als HTML-Attrappe (nicht im Repository).
+
+**Bibliotheken**
+
+- Neu: SkiaSharp 4.152.1 (MIT), SkiaSharp.NativeAssets.Win32 4.152.1 (MIT; enthält skia, libjpeg-turbo, libpng, libwebp, zlib, freetype, harfbuzz, expat, ICU, piex, DNG SDK, wuffs; GIF-Decoder unter MPL 1.1), SkiaSharp.NativeAssets.Linux.NoDependencies 4.152.1 (MIT, nur Tests).
+- Entfernt: Magick.NET-Q16-AnyCPU, Magick.NET.Core (Magick.Native enthält libde265 und openh264).
+
 ## 2026-09-23 – Grundgerüst und Phase-1-Funktionen
 
 **Geändert**

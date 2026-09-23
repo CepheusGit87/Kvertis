@@ -111,6 +111,13 @@ def content_children(el):
     return [c for c in el if '.' not in local(c.tag)]
 
 
+def check_scope_collisions(names):
+    """PRI278: a key must not be both a plain resource ("Foo") and a scope ("Foo.Text")."""
+    bare = {n for n in names if '.' not in n}
+    scoped = {n.split('.')[0] for n in names if '.' in n}
+    return sorted(bare & scoped)  # scope-collision
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--app', default='src/Kvertis.App')
@@ -132,6 +139,8 @@ def main():
     if len(tables) != len(LANGUAGES):
         return report()
     keys = set(tables[LANGUAGES[0]])
+    for k in check_scope_collisions(keys):
+        fail(f'PRI278: {k} is both a plain resource and an x:Uid scope; rename the plain key (e.g. {k}Text)')
     for lang in LANGUAGES[1:]:
         other = set(tables[lang])
         for k in sorted(keys - other):

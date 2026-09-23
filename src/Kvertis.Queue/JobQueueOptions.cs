@@ -1,3 +1,5 @@
+using Kvertis.Engine.Abstractions;
+using Kvertis.Engine.Probing;
 using Microsoft.Extensions.Logging;
 
 namespace Kvertis.Queue;
@@ -30,6 +32,16 @@ public sealed class JobQueueOptions
 
     /// <summary>Maps output formats to file extensions. Default: a new <see cref="Kvertis.Engine.Formats.FormatRegistry"/>.</summary>
     public Kvertis.Engine.Formats.FormatRegistry? Registry { get; init; }
+
+    /// <summary>
+    /// Re-detects audio/video inputs whose probe data is no longer in <see cref="MediaInfo"/> (evicted, or the file
+    /// changed) right before the converter is chosen, so routing (ffmpeg vs. system transcoder, ADR-015) never
+    /// runs on missing codec data. Optional; both must be set to take effect.
+    /// </summary>
+    public IFormatDetector? FormatDetector { get; init; }
+
+    /// <summary>The shared ffprobe cache that the converters route by. See <see cref="FormatDetector"/>.</summary>
+    public MediaInfoCache? MediaInfo { get; init; }
 
     public TimeProvider? TimeProvider { get; init; }
 

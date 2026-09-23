@@ -50,6 +50,11 @@ public enum InputWarning
     DurationUnknown,
     /// <summary>The file exceeds the soft size limit for its category; the UI asks before continuing.</summary>
     LargeFile,
+    /// <summary>
+    /// The input is converted by the system transcoder, which cannot remove container metadata (location, camera
+    /// data) even when metadata stripping is on.
+    /// </summary>
+    MetadataNotStrippable,
 }
 
 /// <summary>Everything the engine learned about an input file. Immutable.</summary>

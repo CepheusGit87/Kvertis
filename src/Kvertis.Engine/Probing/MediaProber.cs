@@ -7,7 +7,8 @@ namespace Kvertis.Engine.Probing;
 /// <summary>
 /// Deep probe for audio and video via ffprobe (separate process). Fills duration and dimensions,
 /// adds warnings (VFR, interlaced, several audio tracks, unknown duration) and re-classifies an MP4
-/// without a video stream as M4A. Without ffmpeg the info is returned unchanged. Only a protected file
+/// without a video stream as M4A. Inputs that go to the system transcoder get
+/// <see cref="InputWarning.MetadataNotStrippable"/>. Without ffmpeg the info is returned unchanged. Only a protected file
 /// is reported as an error here; everything else is left to the converter.
 /// </summary>
 public sealed class MediaProber : IMediaProber
@@ -28,9 +29,13 @@ public sealed class MediaProber : IMediaProber
     public async Task<InputInfo> ProbeAsync(InputInfo info, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(info);
-        if (!Supports(info.Kind) || !_locator.IsAvailable)
+        if (!Supports(info.Kind))
         {
             return info;
+        }
+        if (!_locator.IsAvailable)
+        {
+            return WithoutProbeData(info);
         }
 
         MediaInfo media;
@@ -55,13 +60,20 @@ public sealed class MediaProber : IMediaProber
             catch (Exception)
             {
                 // Not certain enough to reject: the converter reports the real error later.
-                return info;
+                return WithoutProbeData(info);
             }
             _cache.Set(info.Path, media);
         }
 
         return Apply(info, media);
     }
+
+    /// <summary>
+    /// No probe data: a container family that usually carries encumbered streams goes to the system transcoder,
+    /// which cannot strip metadata (<see cref="InputWarning.MetadataNotStrippable"/>).
+    /// </summary>
+    private static InputInfo WithoutProbeData(InputInfo info) =>
+        EncumberedCodecs.IsSystemDecodingFamily(info.Format) ? info.WithWarning(InputWarning.MetadataNotStrippable) : info;
 
     /// <summary>Merges ffprobe findings into <paramref name="info"/>. Pure; exposed for tests.</summary>
     public static InputInfo Apply(InputInfo info, MediaInfo media)
@@ -101,6 +113,11 @@ public sealed class MediaProber : IMediaProber
         if (result.Duration is null)
         {
             result = result.WithWarning(InputWarning.DurationUnknown);
+        }
+        if (media.RequiresSystemDecoding)
+        {
+            // Routed to the system transcoder (ADR-015), which cannot drop container metadata.
+            result = result.WithWarning(InputWarning.MetadataNotStrippable);
         }
         return result;
     }

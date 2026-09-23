@@ -162,4 +162,11 @@ public interface IConverterResolver
 {
     IConverter? Resolve(InputInfo input, FormatId output);
     IReadOnlyList<IConverter> All { get; }
+
+    /// <summary>
+    /// True when some converter accepts this concrete input for <paramref name="output"/>. The static format
+    /// matrix lists what a format family can become; this answers for the actual file (e.g. an MKV with H.264
+    /// cannot become WebM in Phase 1). The UI filters its output list with it.
+    /// </summary>
+    bool CanConvert(InputInfo input, FormatId output) => Resolve(input, output) is not null;
 }

@@ -6,6 +6,9 @@ namespace Kvertis.Engine.Conversion.Audio;
 /// <summary>
 /// Audio → audio and video → audio (sound track extraction, <c>-vn</c>) through ffmpeg as a separate
 /// process. AAC only via aac_mf; see <see cref="FfmpegArguments"/> for the encoder table.
+/// Inputs with a patent-encumbered stream (AAC, WMA, E-AC-3, …; <see cref="EncumberedCodecs"/>) are never
+/// handled here: <see cref="Supports"/> is false when cached probe data says so or when there is no probe data
+/// for a container that may carry them, and the conversion re-checks after probing (ADR-015). Media Foundation converts those.
 /// </summary>
 public sealed class AudioConverter : IConverter
 {
@@ -23,13 +26,12 @@ public sealed class AudioConverter : IConverter
     public bool Supports(InputInfo input, FormatId output)
     {
         ArgumentNullException.ThrowIfNull(input);
-        if (input.Kind is not (MediaKind.Audio or MediaKind.Video))
-        {
-            return false;
-        }
-        var descriptor = _tools.Registry.Get(output);
-        return descriptor is { Kind: MediaKind.Audio, CanWrite: true };
+        return HandlesKinds(input, output) && _tools.MayUseFfmpeg(input);
     }
+
+    /// <summary>Kind and output check only; the decoder rule is applied by <see cref="Supports"/> and after probing.</summary>
+    private bool HandlesKinds(InputInfo input, FormatId output) =>
+        input.Kind is (MediaKind.Audio or MediaKind.Video) && _tools.Registry.Get(output) is { Kind: MediaKind.Audio, CanWrite: true };
 
     public Task<ConversionResult> ConvertAsync(
         InputInfo input,
@@ -42,11 +44,16 @@ public sealed class AudioConverter : IConverter
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(progress);
-        if (!Supports(input, settings.Output))
+        if (_tools.IsKnownToRequireSystemDecoding(input))
+        {
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", FfmpegToolset.RequiresSystemDecodingDetail);
+        }
+        if (!HandlesKinds(input, settings.Output))
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", $"{input.Format} -> {settings.Output}");
         }
 
+        // Without cached probe data PrepareAsync probes first and refuses unknown or encumbered streams (ADR-015).
         return _tools.ConvertAsync(input, outputPath, settings, progress,
             (context, tempPath) => FfmpegArguments.Build(input, context.Media, tempPath, settings, _tools.Registry, _tools.Codecs, context.Features),
             ct);
@@ -57,7 +64,8 @@ public sealed class AudioConverter : IConverter
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentNullException.ThrowIfNull(settings);
-        if (!Supports(input, settings.Output) || !_tools.Locator.IsAvailable)
+        // Uncached inputs are probed by PrepareAsync, which applies the decoder rule (ADR-015).
+        if (!HandlesKinds(input, settings.Output) || _tools.IsKnownToRequireSystemDecoding(input) || !_tools.Locator.IsAvailable)
         {
             return null;
         }
@@ -71,7 +79,7 @@ public sealed class AudioConverter : IConverter
             var options = new FfmpegJobOptions { ExcerptStart = start, ExcerptDuration = length, ReportProgress = false };
             var arguments = FfmpegArguments.Build(input, context.Media, previewPath, settings, _tools.Registry, _tools.Codecs, context.Features, options);
 
-            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct, context.Media).ConfigureAwait(false);
+            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct).ConfigureAwait(false);
 
             var excerptBytes = new FileInfo(previewPath) is { Exists: true } file ? file.Length : 0;
             if (excerptBytes == 0)

@@ -3,7 +3,7 @@ using Kvertis.Engine.Validation;
 
 namespace Kvertis.Engine.Ffmpeg;
 
-/// <summary>License-relevant facts about an ffmpeg build (docs/02-rechtssicherheit.md §2).</summary>
+/// <summary>License- and patent-relevant facts about an ffmpeg build (docs/02-rechtssicherheit.md §2, ADR-015).</summary>
 public sealed record ComplianceReport(
     bool IsGplBuild,
     bool HasNonFree,
@@ -11,12 +11,54 @@ public sealed record ComplianceReport(
     string Configuration,
     IReadOnlyList<string> ForbiddenEncodersFound)
 {
-    public bool IsCompliant => !IsGplBuild && !HasNonFree && !HasForbiddenEncoders;
+    /// <summary>Decoders for patent-encumbered formats found in <c>ffmpeg -decoders</c>.</summary>
+    public IReadOnlyList<string> ForbiddenDecodersFound { get; init; } = [];
+
+    /// <summary>Network protocols found in <c>ffmpeg -protocols</c>.</summary>
+    public IReadOnlyList<string> NetworkProtocolsFound { get; init; } = [];
+
+    public bool HasForbiddenDecoders => ForbiddenDecodersFound.Count > 0;
+
+    public bool HasNetworkProtocols => NetworkProtocolsFound.Count > 0;
+
+    public bool IsCompliant => !IsGplBuild && !HasNonFree && !HasForbiddenEncoders && !HasForbiddenDecoders && !HasNetworkProtocols;
+
+    /// <summary>Short machine-readable reasons ("gpl build", "forbidden decoders: …"); empty when compliant.</summary>
+    public IReadOnlyList<string> Reasons
+    {
+        get
+        {
+            var reasons = new List<string>(5);
+            if (IsGplBuild)
+            {
+                reasons.Add("gpl build");
+            }
+            if (HasNonFree)
+            {
+                reasons.Add("nonfree build");
+            }
+            if (HasForbiddenEncoders)
+            {
+                reasons.Add("forbidden encoders: " + string.Join(", ", ForbiddenEncodersFound));
+            }
+            if (HasForbiddenDecoders)
+            {
+                reasons.Add("forbidden decoders: " + string.Join(", ", ForbiddenDecodersFound));
+            }
+            if (HasNetworkProtocols)
+            {
+                reasons.Add("network protocols: " + string.Join(", ", NetworkProtocolsFound));
+            }
+            return reasons;
+        }
+    }
 }
 
 /// <summary>
-/// Checks that the located ffmpeg is an LGPL build without forbidden encoders, and refuses to work
-/// with anything else. Register one instance per process (singleton); the result is cached.
+/// Checks that the located ffmpeg is the Kvertis allowlist build (LGPL, no forbidden encoders, no decoders for
+/// patent-encumbered formats per <see cref="EncumberedCodecs.IsForbiddenDecoder"/> including hardware variants, no
+/// network protocols; same rules as <c>tools/ffmpeg/check-build.sh</c>) and
+/// refuses to work with anything else. Register one instance per process (singleton); the result is cached.
 /// </summary>
 public sealed class FfmpegCompliance
 {
@@ -39,6 +81,13 @@ public sealed class FfmpegCompliance
         "--enable-" + "lib" + "xvid",
     ];
 
+    // Network protocols that must not be compiled in (--disable-network; only "file" and "pipe" exist).
+    private static readonly string[] NetworkProtocolNames =
+    [
+        "http", "https", "tcp", "udp", "tls", "rtmp", "rtp", "srt", "ftp", "sftp",
+        "rtmps", "rtmpt", "rtmpe", "rtsp", "udplite", "sctp", "mmsh", "mmst", "gopher", "icecast", "httpproxy",
+    ];
+
     // Built from parts for the same reason: tools/compliance/check.sh greps for the literal flags.
     private static readonly string GplFlag = "--enable-" + "gpl";
     private static readonly string NonFreeFlag = "--enable-" + "nonfree";
@@ -57,8 +106,9 @@ public sealed class FfmpegCompliance
     }
 
     /// <summary>
-    /// Throws <c>ConversionException(ToolMissing)</c> when ffmpeg is missing or not compliant
-    /// (detail "gpl build", "nonfree build" or "forbidden encoders"). Runs the check once; later calls reuse it.
+    /// Throws <c>ConversionException(ToolMissing)</c> when ffmpeg is missing or not compliant (detail
+    /// "ffmpeg build not compliant: &lt;reasons&gt;", see <see cref="ComplianceReport.Reasons"/>). Runs the check
+    /// once; later calls reuse it.
     /// </summary>
     public async Task EnsureCompliantAsync(CancellationToken ct)
     {
@@ -73,22 +123,14 @@ public sealed class FfmpegCompliance
         }
 
         var report = await task.WaitAsync(ct).ConfigureAwait(false);
-        if (report.IsGplBuild)
-        {
-            throw new ConversionException(ConversionErrorCode.ToolMissing, step: "ffmpeg-compliance", detail: "gpl build");
-        }
-        if (report.HasNonFree)
-        {
-            throw new ConversionException(ConversionErrorCode.ToolMissing, step: "ffmpeg-compliance", detail: "nonfree build");
-        }
-        if (report.HasForbiddenEncoders)
+        if (!report.IsCompliant)
         {
             throw new ConversionException(ConversionErrorCode.ToolMissing, step: "ffmpeg-compliance",
-                detail: "forbidden encoders: " + string.Join(", ", report.ForbiddenEncodersFound));
+                detail: "ffmpeg build not compliant: " + string.Join("; ", report.Reasons));
         }
     }
 
-    /// <summary>Runs <c>ffmpeg -version</c> and <c>ffmpeg -hide_banner -encoders</c> and evaluates them.</summary>
+    /// <summary>Runs <c>ffmpeg -version</c>, <c>-encoders</c>, <c>-decoders</c> and <c>-protocols</c> and evaluates them.</summary>
     public static async Task<ComplianceReport> CheckAsync(IFfmpegLocator locator, IProcessRunner runner, CancellationToken ct = default)
     {
         ArgumentNullException.ThrowIfNull(locator);
@@ -101,19 +143,31 @@ public sealed class FfmpegCompliance
         {
             throw FfmpegErrorMapper.Map(version, null, "ffmpeg-compliance");
         }
-        var encoders = await runner.RunAsync(new ProcessRequest(ffmpeg, ["-hide_banner", "-encoders"], CheckTimeout) { CaptureStdout = true }, null, ct).ConfigureAwait(false);
-        if (!encoders.Succeeded)
-        {
-            throw FfmpegErrorMapper.Map(encoders, null, "ffmpeg-compliance");
-        }
-        return Parse(version.StandardOutput, encoders.StandardOutput);
+        var encoders = await RunListAsync(runner, ffmpeg, "-encoders", ct).ConfigureAwait(false);
+        var decoders = await RunListAsync(runner, ffmpeg, "-decoders", ct).ConfigureAwait(false);
+        var protocols = await RunListAsync(runner, ffmpeg, "-protocols", ct).ConfigureAwait(false);
+        return Parse(version.StandardOutput, encoders, decoders, protocols);
     }
 
-    /// <summary>Evaluates the text of <c>ffmpeg -version</c> and <c>ffmpeg -encoders</c>.</summary>
-    public static ComplianceReport Parse(string versionOutput, string encodersOutput)
+    private static async Task<string> RunListAsync(IProcessRunner runner, string ffmpeg, string option, CancellationToken ct)
+    {
+        var outcome = await runner.RunAsync(new ProcessRequest(ffmpeg, ["-hide_banner", option], CheckTimeout) { CaptureStdout = true }, null, ct).ConfigureAwait(false);
+        if (!outcome.Succeeded)
+        {
+            throw FfmpegErrorMapper.Map(outcome, null, "ffmpeg-compliance");
+        }
+        return outcome.StandardOutput;
+    }
+
+    /// <summary>
+    /// Evaluates the text of <c>ffmpeg -version</c>, <c>-encoders</c>, <c>-decoders</c> and <c>-protocols</c>.
+    /// </summary>
+    public static ComplianceReport Parse(string versionOutput, string encodersOutput, string decodersOutput, string protocolsOutput)
     {
         ArgumentNullException.ThrowIfNull(versionOutput);
         ArgumentNullException.ThrowIfNull(encodersOutput);
+        ArgumentNullException.ThrowIfNull(decodersOutput);
+        ArgumentNullException.ThrowIfNull(protocolsOutput);
 
         var configuration = versionOutput.Split('\n')
             .Select(l => l.Trim())
@@ -131,6 +185,32 @@ public sealed class FfmpegCompliance
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        return new ComplianceReport(gpl, nonFree, found.Count > 0, configuration, found);
+        var decoders = FfmpegFeatures.ParseDecoders(decodersOutput)
+            .Where(EncumberedCodecs.IsForbiddenDecoder)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var protocols = ParseProtocols(protocolsOutput)
+            .Where(p => NetworkProtocolNames.Contains(p, StringComparer.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return new ComplianceReport(gpl, nonFree, found.Count > 0, configuration, found)
+        {
+            ForbiddenDecodersFound = decoders,
+            NetworkProtocolsFound = protocols,
+        };
+    }
+
+    /// <summary>
+    /// Parses <c>ffmpeg -hide_banner -protocols</c>: a "Supported file protocols:" header, then "Input:" and
+    /// "Output:" sections with one protocol name per line.
+    /// </summary>
+    public static IReadOnlyList<string> ParseProtocols(string output)
+    {
+        ArgumentNullException.ThrowIfNull(output);
+        return output.Split('\n')
+            .Select(l => l.Trim())
+            .Where(l => l.Length > 0 && !l.EndsWith(':') && !l.Contains(' ', StringComparison.Ordinal))
+            .ToList();
     }
 }

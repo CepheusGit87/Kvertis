@@ -23,6 +23,8 @@ public sealed record OutputSuggestion(FormatId Default, IReadOnlyList<FormatId> 
 /// <summary>
 /// The format matrix from docs/05-formate.md, as code. Pure data; converters decide the details.
 /// Formats that need a system codec are filtered at runtime via <see cref="ISystemCodecCapabilities"/>.
+/// Whether a concrete file can become a listed output depends on its stream codecs (ADR-015); the UI asks
+/// <see cref="IConverterResolver.CanConvert"/> for that.
 /// </summary>
 public sealed class FormatRegistry
 {
@@ -141,20 +143,26 @@ public sealed class FormatRegistry
         [Flac] = [Mp3, Wav, Ogg, Opus, M4a],
         [Ogg] = [Mp3, Wav, Flac, Opus, M4a],
         [Opus] = [Mp3, Wav, Flac, Ogg, M4a],
-        [M4a] = [Mp3, Wav, Flac, Ogg, Opus],
-        [Wma] = [Mp3, Wav, Flac, Ogg, Opus, M4a],
+        // AAC/WMA inputs are decoded by Media Foundation only (ADR-015), which writes MP3, WAV, FLAC and M4A.
+        [M4a] = [Mp3, Wav, Flac, M4a],
+        [Wma] = [Mp3, Wav, Flac, M4a],
         [Aiff] = [Mp3, Wav, Flac, Ogg, Opus, M4a],
 
-        [Mp4] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [Mov] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
+        // Container families that usually carry H.264/HEVC/AAC/MPEG-4/WMV: Media Foundation, MP4/M4A/MP3/WAV/FLAC
+        // only. H.264/HEVC → WebM/MKV is Phase 2 (ADR-015). MPEG/TS with MPEG-2 video would also work through
+        // ffmpeg, but the matrix stays simple; the converters decide per stream codec.
+        [Mp4] = [Mp4, Mp3, M4a, Wav, Flac],
+        [Mov] = [Mp4, Mp3, M4a, Wav, Flac],
+        [Avi] = [Mp4, Mp3, M4a, Wav, Flac],
+        [Wmv] = [Mp4, Mp3, M4a, Wav, Flac],
+        [ThreeGp] = [Mp4, Mp3, M4a, Wav, Flac],
+        [Mpeg] = [Mp4, Mp3, M4a, Wav, Flac],
+        [Ts] = [Mp4, Mp3, M4a, Wav, Flac],
+        // MKV can hold anything: the static list is the union; IConverterResolver.CanConvert decides per file
+        // (VP9/AV1 → all, H.264/HEVC → MP4/M4A/MP3/WAV/FLAC only).
         [Mkv] = [Mp4, WebM, Mkv, Mp3, Wav, Flac, M4a],
         [WebM] = [Mp4, Mkv, Mp3, Wav, Flac, M4a],
-        [Avi] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [Wmv] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [Flv] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [ThreeGp] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [Mpeg] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
-        [Ts] = [Mp4, Mkv, WebM, Mp3, Wav, Flac, M4a],
+        // FLV: recognized only. The FFmpeg build has no FLV demuxer and Media Foundation cannot read FLV.
 
         [Pdf] = [Txt, Png, Jpg],
         [Docx] = [Txt, Markdown, Html],
@@ -217,7 +225,11 @@ public sealed class FormatRegistry
             return null;
         }
 
-        var @default = options.First(o => o != input.Format);
+        // Same-format output is never the default, except for video: "MP4 → MP4, but smaller" is the most
+        // common wish of lay users, and the encumbered families offer few alternatives.
+        var @default = input.Kind == MediaKind.Video && options[0] == input.Format
+            ? options[0]
+            : options.First(o => o != input.Format);
         return new OutputSuggestion(@default, options);
     }
 

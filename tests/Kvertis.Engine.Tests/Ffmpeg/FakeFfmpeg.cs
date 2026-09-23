@@ -35,6 +35,15 @@ internal sealed class FakeFfmpeg : IDisposable
         "h264_mf", "hevc_mf", "aac_mf", "mp3_mf", "libmp3lame", "libopus", "libvorbis", "flac", "pcm_s16le", "pcm_s16be", "libvpx-vp9", "png",
     ];
 
+    /// <summary>Decoders of the Kvertis allowlist build (patent-free only).</summary>
+    public static readonly string[] AllowlistDecoders =
+    [
+        "vp8", "vp9", "libdav1d", "theora", "mpeg1video", "mpeg2video", "mjpeg", "png", "libopus", "libvorbis", "flac", "mp3", "ac3", "alac", "pcm_s16le",
+    ];
+
+    /// <summary><c>ffmpeg -protocols</c> of the allowlist build: only file and pipe.</summary>
+    public const string AllowlistProtocols = "Supported file protocols:\nInput:\n  file\n  pipe\nOutput:\n  file\n  pipe\n";
+
     private readonly List<string> _tempFiles = [];
 
     public FakeFfmpeg()
@@ -55,9 +64,16 @@ internal sealed class FakeFfmpeg : IDisposable
 
     public string VersionOutput { get; set; } = LgplVersion;
     public IReadOnlyList<string> Encoders { get; set; } = DefaultEncoders;
-    public IReadOnlyList<string> Hwaccels { get; set; } = [];
+    public IReadOnlyList<string> Decoders { get; set; } = AllowlistDecoders;
+    public string ProtocolsOutput { get; set; } = AllowlistProtocols;
     public string ProbeJson { get; set; } = TestMedia.AudioJson(60);
     public ProcessOutcome? ConversionOutcome { get; set; }
+
+    /// <summary>When set, every ffprobe run answers with this outcome instead of <see cref="ProbeJson"/>.</summary>
+    public ProcessOutcome? ProbeOutcome { get; set; }
+
+    /// <summary>A failed ffprobe run (unreadable header).</summary>
+    public static readonly ProcessOutcome FailedProbe = new(1, string.Empty, "Invalid data found when processing input", TimeSpan.FromMilliseconds(5), false);
     public IReadOnlyList<string> StderrLines { get; set; } = [];
     public int OutputBytes { get; set; } = 1000;
 
@@ -77,6 +93,9 @@ internal sealed class FakeFfmpeg : IDisposable
 
     public static string EncodersOutput(IEnumerable<string> encoders) =>
         EncodersHeader + string.Concat(encoders.Select(e => $" A....D {e,-20} Some encoder\n"));
+
+    public static string DecodersOutput(IEnumerable<string> decoders) =>
+        "Decoders:\n V..... = Video\n A..... = Audio\n S..... = Subtitle\n ------\n" + string.Concat(decoders.Select(d => $" VFS..D {d,-20} Some decoder\n"));
 
     /// <summary>A real, non-empty file in the temp folder, deleted on Dispose.</summary>
     public string CreateInputFile(string extension, int bytes = 4096)
@@ -120,7 +139,7 @@ internal sealed class FakeFfmpeg : IDisposable
         var args = request.Arguments;
         if (request.ExecutablePath == FfprobePath)
         {
-            return Ok(ProbeJson);
+            return ProbeOutcome ?? Ok(ProbeJson);
         }
         if (args.Contains("-version"))
         {
@@ -130,9 +149,13 @@ internal sealed class FakeFfmpeg : IDisposable
         {
             return Ok(EncodersOutput(Encoders));
         }
-        if (args.Contains("-hwaccels"))
+        if (args.Contains("-decoders"))
         {
-            return Ok("Hardware acceleration methods:\n" + string.Join('\n', Hwaccels) + "\n");
+            return Ok(DecodersOutput(Decoders));
+        }
+        if (args.Contains("-protocols"))
+        {
+            return Ok(ProtocolsOutput);
         }
 
         foreach (var line in StderrLines)
@@ -163,8 +186,12 @@ internal static class TestMedia
     public static MediaInfo AudioInfo(double seconds = 60) =>
         new(TimeSpan.FromSeconds(seconds), null, null, null, "pcm_s16le", false, true, 1, false, false, false, SampleRateHz: 44100);
 
-    public static MediaInfo VideoInfo(string codec = "h264", int width = 1920, int height = 1080, double seconds = 60, bool vfr = false, bool hasAudio = true) =>
-        new(TimeSpan.FromSeconds(seconds), width, height, codec, hasAudio ? "aac" : null, true, hasAudio, hasAudio ? 1 : 0, vfr, false, false, 30);
+    /// <summary>Probe data of a video; patent-free VP9/Opus by default (the ffmpeg path).</summary>
+    public static MediaInfo VideoInfo(string codec = "vp9", int width = 1920, int height = 1080, double seconds = 60, bool vfr = false, bool hasAudio = true, string audioCodec = "opus") =>
+        new(TimeSpan.FromSeconds(seconds), width, height, codec, hasAudio ? audioCodec : null, true, hasAudio, hasAudio ? 1 : 0, vfr, false, false, 30)
+        {
+            StreamCodecs = hasAudio ? [codec, audioCodec] : [codec],
+        };
 
     public static string AudioJson(double seconds) => $$"""
         {
@@ -175,13 +202,14 @@ internal static class TestMedia
         }
         """;
 
-    public static string VideoJson(string codec = "h264", int height = 1080, string rRate = "30/1", string avgRate = "30/1", string fieldOrder = "progressive", string duration = "\"60.000000\"") => $$"""
+    /// <summary>ffprobe JSON of a video; patent-free VP9/Opus by default (the ffmpeg path).</summary>
+    public static string VideoJson(string codec = "vp9", string audioCodec = "opus", int height = 1080, string rRate = "30/1", string avgRate = "30/1", string fieldOrder = "progressive", string duration = "\"60.000000\"") => $$"""
         {
           "streams": [
             { "index": 0, "codec_name": "{{codec}}", "codec_type": "video", "width": 1920, "height": {{height}},
               "r_frame_rate": "{{rRate}}", "avg_frame_rate": "{{avgRate}}", "field_order": "{{fieldOrder}}", "bit_rate": "8000000",
               "disposition": { "default": 1, "attached_pic": 0 } },
-            { "index": 1, "codec_name": "aac", "codec_type": "audio", "sample_rate": "48000", "channels": 2, "bit_rate": "128000" }
+            { "index": 1, "codec_name": "{{audioCodec}}", "codec_type": "audio", "sample_rate": "48000", "channels": 2, "bit_rate": "128000" }
           ],
           "format": { "format_name": "mov,mp4,m4a,3gp,3g2,mj2", "duration": {{duration}}, "size": "50000000" }
         }

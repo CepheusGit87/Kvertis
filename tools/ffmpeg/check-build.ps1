@@ -19,6 +19,7 @@ foreach ($enc in @('libx264','libx265','libfdk_aac','libxvid','libkvazaar')) {
 }
 foreach ($dec in @('h264','hevc','aac','aac_fixed','aac_latm','mpeg4','msmpeg4v1','msmpeg4v2','msmpeg4v3','wmv1','wmv2','wmv3','vc1',
                    'wmav1','wmav2','wmapro','wmalossless','wmavoice','h263','prores','dnxhd','eac3','dca','truehd','amrnb','amrwb',
+                   'vvc','flv','h263p','h263i','mlp','wmv3image','vc1image',
                    'h264_qsv','hevc_qsv','h264_cuvid','hevc_cuvid')) {
   if ($decoders -match "(?m)^\s*[VAS][A-Z.]{5}\s+$dec(\s|$)") { Write-Host "FAIL: patentbelasteter Decoder $dec"; $fail = $true }
 }
