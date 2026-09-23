@@ -291,7 +291,12 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
 .st-teller .mini { transition: left .7s var(--sanft), bottom .7s var(--sanft), transform .7s var(--sanft), opacity .7s; transform-origin: 50% 100%; }
 .st-teller { width: 250px; }
 .mini { --k: var(--muted); }
-.korn2 { position: absolute; width: 4px; height: 4px; border-radius: 50%; z-index: 9; pointer-events: none; }
+.kippbox { perspective: 1000px; }
+.kipp { position: absolute; inset: 0; transform-style: preserve-3d; }
+.kipp.an { transition: transform 1.2s cubic-bezier(.55,-0.15,.3,1.15); }
+.kipp .flaeche { position: absolute; inset: 0; backface-visibility: hidden; }
+.kipp .flaeche.b { transform: rotateX(180deg); }
+.korn2 { left: 0; top: 0;  position: absolute; width: 4px; height: 4px; border-radius: 50%; z-index: 9; pointer-events: none; }
 </style>
 
 <main class="seite">
@@ -300,8 +305,8 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
     <h1>Hinein, drehen, heraus: fünf Sanduhr-Stationen</h1>
     <p class="lead">Jedes Blatt geht in die Glas-Sanduhr, der Sand rieselt, die Sanduhr dreht sich, und das Blatt kommt mit neuem Etikett zurück aufs Band. Am Ende wartet der neu gestaltete Ordner: Die Reiter am Ordner wählen den Speicherort, das Papier-Etikett vorn zeigt den Pfad. Unten läuft die Liste mit. Jede Variante hat eine Demo.</p>
   </header>
-  <section class="idee"><div class="idee-kopf"><h2 id="i1">1 · Einwurf und Wende <small>oben hinein, umdrehen, unten heraus</small></h2><button class="demo" data-demo="1">▶ Demo abspielen</button></div>
-    <p>Das Blatt wird nach oben in die Sanduhr gezogen und liegt als kleines Blatt im oberen Glas. Der Sand rieselt, die Sanduhr dreht sich, das Blatt ist jetzt unten, bekommt sein neues Etikett und fällt aufs Band. Der Sand bleibt so, wie er nach dem Drehen liegt, und läuft beim nächsten Blatt weiter.</p>
+  <section class="idee"><div class="idee-kopf"><h2 id="i1">1 · Einwurf und Wende <small>zu Sand, hindurch, nach vorn kippen</small></h2><button class="demo" data-demo="1">▶ Demo abspielen</button></div>
+    <p>Das Blatt zerfällt in Körner in der Farbe seiner Dateiart, die oben in die Sanduhr fliegen. Der Sand sickert durch, unten kommen Mint-Körner heraus und setzen sich zum neuen Blatt mit neuem Etikett zusammen. Danach kippt die Sanduhr nach vorn über. Sie springt nie zurück: Die nächste Datei beginnt genau so, wie die Sanduhr gerade steht, mit dem Sand, der gerade oben liegt.</p>
     <div class="buehne" id="w1"></div>
     <div class="urteil"><span class="plus"><b>Stärke:</b> physikalisch stimmig, man sieht das Blatt im Glas</span><span class="minus"><b>Schwäche:</b> das Blatt im Glas ist klein</span></div></section>
   <section class="idee"><div class="idee-kopf"><h2 id="i2">2 · Liegende Sanduhr <small>rollt einmal um, wie eine Trommel</small></h2><button class="demo" data-demo="2">▶ Demo abspielen</button></div>
@@ -451,20 +456,42 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
 
   const FARBE = { bild: 'var(--blue)', audio: 'var(--violet)', video: 'var(--amber)', dok: 'var(--cyan)' };
   const faerbe = (el, f) => el.querySelectorAll('.mini').forEach(m => m.style.setProperty('--k', FARBE[f.k]));
+  function partikel(bahn, von, nach, farbe, n, ms, bogen) {
+    return Promise.all(Array.from({ length: n }, (_, i) => {
+      const d = document.createElement('span'); d.className = 'korn2'; d.style.background = farbe; d.style.boxShadow = `0 0 6px ${farbe}`; bahn.appendChild(d);
+      const sx = von.x + (Math.random() - .5) * (bogen ? 70 : 12), sy = von.y + (Math.random() - .5) * (bogen ? 40 : 8);
+      const ex = nach.x + (Math.random() - .5) * (bogen ? 10 : 70), ey = nach.y + (Math.random() - .5) * (bogen ? 6 : 36);
+      const mx = (sx + ex) / 2 + (Math.random() - .5) * 30, my = Math.min(sy, ey) - (bogen ? 60 + Math.random() * 40 : 10);
+      return d.animate([{ transform: `translate(${sx}px,${sy}px) scale(1)`, opacity: 1 }, { transform: `translate(${mx}px,${my}px) scale(1.2)`, opacity: 1, offset: .5 }, { transform: `translate(${ex}px,${ey}px) scale(.6)`, opacity: bogen ? 0 : 1 }],
+        { duration: leise ? 1 : ms, delay: leise ? 0 : i * 14, easing: 'cubic-bezier(.45,.05,.4,1)' }).finished.then(() => d.remove());
+    }));
+  }
   const STATIONEN = {
-    1: { w: 101, html: () => `<div class="st st-s1">${miniUhr('<div class="innen-blatt"></div>')}</div>`,
+    1: { w: 101, html: () => `<div class="st st-s1"><div class="mini"><div class="skal uhr3d kippbox"><div class="kipp"><div class="flaeche a">${glasSvg()}</div><div class="flaeche b">${glasSvg()}</div></div></div></div></div>`,
       async run(st, b, f, prog) {
         faerbe(st, f);
-        const svg = st.querySelector('svg'), dreh = st.querySelector('.dreh'), ib = st.querySelector('.innen-blatt');
-        st._L = st._L ?? 1;
-        ib.className = 'innen-blatt k-' + f.k; ib.dataset.f = f.von;
-        await reinHoch(b, -150); b.style.opacity = 0; ib.style.opacity = 1;
-        const bis = Math.max(.25, st._L - .45);
-        await Promise.all([sandLauf(svg, st._L, bis, 800), prog(800)]);
-        setTimeout(() => { ib.dataset.f = f.nach; ib.classList.add('fertig'); }, leise ? 0 : 450);
-        await drehe(dreh, 180, 950, 0);
-        st._L = 1 - bis; sandZeichnen(svg, st._L, false); ib.style.opacity = 0;
-        await rausRunter(b, f, -40);
+        st._L = st._L ?? 1; st._seite = st._seite ?? 0; st._winkel = st._winkel ?? 0;
+        const flaechen = st.querySelectorAll('.kipp svg'), svg = flaechen[st._seite], kipp = st.querySelector('.kipp');
+        const bahn = st.parentElement, pr = bahn.getBoundingClientRect(), sr = st.getBoundingClientRect(), br = b.getBoundingClientRect();
+        const mitteX = sr.left - pr.left + sr.width / 2;
+        const oben = { x: mitteX, y: sr.top - pr.top + 26 }, unten = { x: mitteX, y: sr.top - pr.top + 150 };
+        const blatt = { x: br.left - pr.left + br.width / 2, y: br.top - pr.top + br.height / 2 };
+        // 1. Blatt zerfällt, Körner fliegen oben hinein
+        b.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'scale(.8)' }], { duration: leise ? 1 : 380, fill: 'forwards' });
+        await partikel(bahn, blatt, oben, FARBE[f.k], 26, 700, true);
+        b.style.opacity = 0; b.getAnimations().forEach(x => x.cancel());
+        // 2. Sand sickert durch
+        const bis = Math.max(0, st._L - .5);
+        await Promise.all([sandLauf(svg, st._L, bis, 1000), prog(1000)]);
+        // 3. Mint-Körner kommen unten heraus und werden zum neuen Blatt
+        await partikel(bahn, unten, blatt, 'var(--mint)', 22, 560, false);
+        await rausRunter(b, f, 0);
+        // 4. Nach vorn kippen, ohne Rücksprung: die andere Seite zeigt den Sand so, wie er nach dem Kippen liegt
+        const neuL = 1 - bis;
+        sandZeichnen(flaechen[1 - st._seite], neuL, false);
+        st._winkel -= 180; kipp.classList.add('an'); kipp.style.transform = `rotateX(${st._winkel}deg)`;
+        await warteK(1250); kipp.classList.remove('an');
+        st._seite = 1 - st._seite; st._L = neuL;
       } },
     2: { w: 168, html: () => `<div class="st st-liegend" style="bottom:36px;height:101px"><div class="mini" style="left:33px;top:-33px">${'<div class="skal uhr3d"><div class="dreh">' + glasSvg() + '</div></div>'}</div></div>`,
       async run(st, b, f, prog) {
