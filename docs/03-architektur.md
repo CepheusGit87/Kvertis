@@ -237,3 +237,24 @@ public interface IJobQueue
 **Alternativen:** Eigenes Layout-Rendering (Monate Arbeit), externe Office-Suite als Prozess (sehr groß, eigene Lizenzfragen), Bezahlbibliotheken.
 **Grund:** Layouttreues Rendering von Office-Dokumenten ist ohne Renderer nicht seriös machbar. Lieber wenige Dokument-Funktionen, die zuverlässig sind.
 **Folgen:** Die Formatmatrix in `05-formate.md` zeigt das ehrlich. Office → PDF steht als offener Punkt in der Roadmap.
+
+### ADR-011 · 2026-09-23 · HEVC: Software-Fallback von ffmpeg aktiv verhindern
+
+**Entscheidung:** HEVC-Quellen werden nur mit `-hwaccel d3d11va` dekodiert. Da ffmpeg bei fehlgeschlagener Hardware-Initialisierung still auf seinen Software-Decoder zurückfällt und es dafür keine Verbotsoption gibt, überwacht `HevcFallbackGuard` die stderr-Ausgabe und beendet den Prozess beim ersten Fallback-Hinweis mit `MissingSystemCodec`.
+**Alternativen:** (a) Software-Fallback dulden; (b) HEVC-Eingaben ganz ablehnen.
+**Grund:** ADR-003 verlangt, dass kein mitgelieferter HEVC-Software-Decoder benutzt wird. Die Media-Foundation-Abfrage (`CanDecodeHevc`) ist nur ein Näherungswert; was ffmpeg tatsächlich nutzt, ist der D3D11-Decoder des Grafiktreibers.
+**Folgen:** Auf Rechnern ohne HEVC-Hardware-Dekodierung sind HEVC-Videos nicht konvertierbar (klare Meldung). Stream-Copy (Archiv) und reine Tonspur-Extraktion bleiben möglich, weil dort nicht dekodiert wird.
+
+### ADR-012 · 2026-09-23 · ImageMagick mit Sicherheitsrichtlinie betreiben
+
+**Entscheidung:** Vor dem ersten Bildzugriff wird eine `policy.xml` gesetzt (`MagickSecurity`): keine Delegates (externe Programme), keine URL-/Netzwerk- und Skript-Coder (URL, HTTPS, HTTP, FTP, MVG, MSL, TEXT, PS, PDF …), keine Pipes oder `@`-Pfade, feste Ressourcengrenzen (Speicher, Fläche, Zeit). Jeder Lesevorgang übergibt den Coder explizit; Magick darf ihn nie selbst per Inhalt wählen.
+**Grund:** Kvertis verspricht „kein Netzwerk“. Eine SVG mit externem Verweis oder ein manipuliertes Bild dürfen die mitgelieferte Bibliothek nicht zu Netzwerkzugriffen oder Ressourcenerschöpfung bringen. Explizite Coder verhindern zudem, dass HEIC/AVIF je über Magicks HEIF-Coder (libde265) laufen.
+
+### ADR-013 · 2026-09-23 · AVIF gesperrt, Entscheidung über Bildbibliothek offen (O-01)
+
+**Entscheidung:** AVIF-Eingaben werden erkannt, aber mit `UnsupportedFormat` („avif blocked until O-01“) abgelehnt, weil ImageMagick AVIF über denselben HEIF-Coder liest, an dem `libde265` hängt. HEIC läuft ausschließlich über Windows Imaging Component.
+**Kontext:** Der Prüfbericht in `04-bibliotheken.md` zeigt, dass `Magick.Native` keinen GPL-Code, aber `libde265` (HEVC-Decoder) und `openh264` statisch enthält. Ob das Patentrisiko akzeptiert oder der Bildpfad auf SkiaSharp (MIT, keine Video-Codecs) plus WIC umgestellt wird, entscheidet der Projektinhaber (O-01).
+
+### Ergänzung zu ADR-005 (Umsetzung)
+
+Die Parallelitätsgrenzen sind Zähler unter dem Queue-Lock statt `SemaphoreSlim`, weil ein Semaphor bei einer Verkleinerung von `MaxParallel` zur Laufzeit nicht schrumpfen kann. Pause eines laufenden Jobs: Prozess-Suspend über `NtSuspendProcess` (Windows); wo das nicht geht, wird der Job abgebrochen und mit Zustand „Pausiert“ an den Anfang der Warteschlange gestellt (Neustart bei Fortsetzen). Der Prozess-Timeout zählt während einer Suspendierung nicht weiter. `IConverter` hat keinen Pause-Haken; Pause zwischen Arbeitseinheiten (Seiten, Bilder) ist Phase 2.

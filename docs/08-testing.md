@@ -1,5 +1,9 @@
 # 08 – Testing
 
+## Stand 2026-09-23
+
+Engine 353 Tests (1 Integrationstest übersprungen ohne ffmpeg), Queue 47 Tests, alle grün unter Linux. Alle Eingaben werden im Code erzeugt. Die App (WinUI 3) ist noch nicht unter Windows gebaut; ihre C#-Teile wurden gegen die WinUI-Assemblies kompiliert, XAML wird erst der Windows-CI-Job prüfen. `tools/compliance/check.sh` (inkl. `check-resw.py`) besteht.
+
 ## Strategie
 
 | Ebene | Was | Werkzeug | Läuft wo |
@@ -39,27 +43,27 @@ Unter `tests/TestFiles/`, jede Datei unter 200 KB, selbst erzeugt (Skript `tools
 
 | Fall | Erwartetes Verhalten | Status |
 |---|---|---|
-| Datei mit falscher Endung | Erkennung per Inhalt, Hinweis in der Karte, Konvertierung möglich | geplant |
-| 0-Byte- oder abgeschnittene Datei | `CorruptFile` mit Lösungsvorschlag | geplant |
-| VFR-Video (Bildschirmaufnahme, Handy) | Warnung, automatisch `-vsync cfr`, Hinweis auf mögliche Asynchronität | geplant |
-| HEIC ohne HEIF-Bilderweiterung | `MissingSystemCodec`, Hinweis auf Store-Erweiterung | geplant |
-| HEVC-Video ohne HEVC-Videoerweiterung | `MissingSystemCodec` | geplant |
-| Passwortgeschütztes PDF / verschlüsselte Office-Datei | `ProtectedFile`, keine Umgehung, klare Meldung | geplant |
-| Zielordner voll oder schreibgeschützt | Vorab-Warnung (Größenschätzung vs. freier Platz), sonst `InsufficientDiskSpace` / `OutputNotWritable` | geplant |
-| Zieldatei existiert | Nummerierung `_1`, `_2`; Überschreiben nur nach Wahl | geplant |
-| Abbruch während FFmpeg läuft | Prozess innerhalb 2 s beendet, `.kvertis-tmp` gelöscht | geplant |
+| Datei mit falscher Endung | Erkennung per Inhalt, Hinweis in der Karte, Konvertierung möglich | umgesetzt (Unit-Test) |
+| 0-Byte- oder abgeschnittene Datei | `CorruptFile` mit Lösungsvorschlag | umgesetzt (Unit-Test) |
+| VFR-Video (Bildschirmaufnahme, Handy) | Warnung, automatisch `-vsync cfr`, Hinweis auf mögliche Asynchronität | umgesetzt (Unit-Test) |
+| HEIC ohne HEIF-Bilderweiterung | `MissingSystemCodec`, Hinweis auf Store-Erweiterung | umgesetzt (Unit-Test) |
+| HEVC-Video ohne HEVC-Videoerweiterung | `MissingSystemCodec` | umgesetzt (Unit-Test) |
+| Passwortgeschütztes PDF / verschlüsselte Office-Datei | `ProtectedFile`, keine Umgehung, klare Meldung | umgesetzt (Unit-Test) |
+| Zielordner voll oder schreibgeschützt | Vorab-Warnung (Größenschätzung vs. freier Platz), sonst `InsufficientDiskSpace` / `OutputNotWritable` | Engine umgesetzt, UI-Warnung offen |
+| Zieldatei existiert | Nummerierung `_1`, `_2`; Überschreiben nur nach Wahl | umgesetzt (Unit-Test) |
+| Abbruch während FFmpeg läuft | Prozess innerhalb 2 s beendet, `.kvertis-tmp` gelöscht | umgesetzt (Unit-Test) |
 | App-Absturz während Konvertierung | Beim nächsten Start werden `.kvertis-tmp`-Dateien im Verlauf bekannter Zielordner gelöscht | geplant |
-| Pause eines FFmpeg-Jobs | Prozess suspendiert, CPU-Last fällt; Resume setzt fort | geplant |
-| Pfade mit Umlauten, Leerzeichen, sehr langen Namen (> 260 Zeichen) | Funktioniert; lange Pfade über `\\?\`-Präfix | geplant |
+| Pause eines FFmpeg-Jobs | Prozess suspendiert, CPU-Last fällt; Resume setzt fort | umgesetzt (Unit-Test) |
+| Pfade mit Umlauten, Leerzeichen, sehr langen Namen (> 260 Zeichen) | Funktioniert; lange Pfade über `\\?\`-Präfix; Windows-Gerätenamen (CON, NUL …) werden mit `_` entschärft | teilweise (Gerätenamen getestet, lange Pfade offen) |
 | Sehr große Datei (> Limit) | Rückfrage statt Ablehnung | geplant |
-| Animiertes GIF/WebP → Einzelbild | Erstes Bild, Hinweis | geplant |
-| Bild mit Transparenz → JPG | Hinweis, weißer Hintergrund | geplant |
-| Mehrseitiges TIFF → PNG | Nummerierte Dateien | geplant |
-| Audio ohne Dauer-Metadaten (Stream-Dump) | Schätzung über Dateigröße, Fortschritt aus verarbeiteter Zeit | geplant |
-| Video mit mehreren Tonspuren | Erste Spur, Hinweis; Auswahl Phase 2 | geplant |
+| Animiertes GIF/WebP → Einzelbild | Erstes Bild, Hinweis | umgesetzt (Unit-Test) |
+| Bild mit Transparenz → JPG | Hinweis, weißer Hintergrund | umgesetzt (Unit-Test) |
+| Mehrseitiges TIFF → PNG | Nummerierte Dateien | umgesetzt (Unit-Test) |
+| Audio ohne Dauer-Metadaten (Stream-Dump) | Schätzung über Dateigröße, Fortschritt aus verarbeiteter Zeit | umgesetzt (Unit-Test) |
+| Video mit mehreren Tonspuren | Erste Spur, Hinweis; Auswahl Phase 2 | umgesetzt (Unit-Test) |
 | Interlaced-Video | Hinweis, Deinterlace unter „Mehr“ | geplant |
-| Zielgröße kleiner als technisch möglich | Meldung mit erreichbarer Mindestgröße | geplant |
-| `MaxParallel` während laufender Jobs geändert | Gilt für neue Starts, laufende bleiben | geplant |
+| Zielgröße kleiner als technisch möglich | Meldung mit erreichbarer Mindestgröße | umgesetzt (Unit-Test) |
+| `MaxParallel` während laufender Jobs geändert | Gilt für neue Starts, laufende bleiben | umgesetzt (Unit-Test) |
 | Zwischenablage enthält kein Bild | Strg+V ohne Effekt, kurze Meldung | geplant |
 | Ordner mit Unterordnern abgelegt | Rekursiv einlesen, Rückfrage ab 500 Dateien | geplant |
 | Systemsprache weder DE noch EN | Fallback EN | geplant |
@@ -67,10 +71,17 @@ Unter `tests/TestFiles/`, jede Datei unter 200 KB, selbst erzeugt (Skript `tools
 ## Compliance-Tests (automatisch)
 
 - `FfmpegBuildComplianceTests` (Integration): `ffmpeg -version` enthält `--disable-gpl`, nicht `--enable-gpl`, nicht `--enable-nonfree`; `ffmpeg -encoders` enthält kein `libx264`, `libx265`, `libfdk_aac`.
-- `NoNetworkCodeTests`: Quelltext von `src/` enthält keine Verwendung von `HttpClient`, `WebRequest`, `Socket`, `Windows.Networking`, `System.Net.Http`.
-- `NoForeignBrandTests`: Ressourcen, Presets und Store-Texte enthalten keine Einträge aus einer gepflegten Markenliste (`tools/compliance/brands.txt`, Liste selbst nicht in Ressourcen).
-- `LibraryRegistryTests`: Jede `PackageReference` in `Directory.Packages.props` hat eine Zeile in `docs/04-bibliotheken.md`.
+- `tools/compliance/check.sh` Schritt 2 (statt `NoNetworkCodeTests`): Quelltext von `src/` enthält keine Verwendung von `HttpClient`, `WebRequest`, `Socket`, `Windows.Networking`, `System.Net.Http`.
+- `check.sh` Schritt 4 (statt `NoForeignBrandTests`): Ressourcen, Presets und Store-Texte enthalten keine Einträge aus einer gepflegten Markenliste (`tools/compliance/brands.txt`, Liste selbst nicht in Ressourcen).
+- `check.sh` Schritt 1 (statt `LibraryRegistryTests`): Jede `PackageReference` in `Directory.Packages.props` hat eine Zeile in `docs/04-bibliotheken.md`.
 
 ## Abdeckung
 
 Ziel: Engine und Queue ≥ 80 % Zeilenabdeckung (coverlet). UI-ViewModels ≥ 60 %. Zahlen werden im CI-Bericht ausgegeben, nicht als Merge-Blocker in Phase 1.
+
+## Zusätzliche Compliance-Tests im Code
+
+- `ForbiddenEncoderSourceScanTests`: kein `libx264`/`libx265`/`libfdk_aac` im Engine-Quelltext.
+- `HevcFallbackGuard`-Tests: Software-Fallback von ffmpeg wird erkannt und abgebrochen.
+- `MagickSecurityTests`: Richtlinie aktiv, URL-Coder blockiert.
+- `DocumentSafetyTests`: keine Passwortversuche, kein Netzwerkcode in Dokument-Konvertern, Timeout deterministisch.

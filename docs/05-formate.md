@@ -15,13 +15,13 @@ Legende Engine: `Magick` = Magick.NET, `FFmpeg` = ffmpeg-Prozess, `MF` = Media-F
 | BMP | PNG, JPG, WebP | PNG | Magick | |
 | TIFF (auch mehrseitig) | PNG, JPG, WebP, PDF | PNG | Magick | Mehrseitig → nummerierte Dateien oder PDF |
 | HEIC/HEIF | JPG, PNG, WebP | JPG | WIC → Magick | Nur mit HEIF-Bilderweiterung; sonst `MissingSystemCodec` |
-| AVIF | JPG, PNG, WebP | JPG | Magick (dav1d/aom) | Verfügbarkeit im Magick-Paket prüfen |
+| AVIF | — | — | — | **Gesperrt bis O-01** (ADR-013): Magick liest AVIF über den HEIF-Coder mit libde265. Meldung `UnsupportedFormat`. |
 | SVG | PNG, JPG, WebP | PNG | Magick | Nur lesen; Größe wählbar unter „Mehr“ |
 | ICO | PNG | PNG | Magick | |
 | RAW (DNG, CR2, CR3, NEF, ARW, ORF, RAF, RW2) | JPG, PNG, TIFF | JPG | Magick (libraw, LGPL/CDDL) | Alternativ WIC mit Raw-Bilderweiterung; Entscheidung offen |
 | PSD | PNG, JPG | PNG | Magick | Nur zusammengeführtes Bild |
 
-Ausgabe-Encoder für Bilder: JPG, PNG, WebP (libwebp, BSD), GIF, TIFF, BMP, ICO. AVIF-Schreiben (libaom) erst, wenn die Paketprüfung abgeschlossen ist.
+Ausgabe-Encoder für Bilder: JPG, PNG, WebP (libwebp, BSD), GIF, TIFF, BMP, ICO. AVIF (Lesen und Schreiben) erst nach Entscheidung O-01.
 
 Zielgröße bei Bildern: Kvertis sucht per Halbierung die höchste Qualität, deren Ergebnis unter der Zielgröße liegt; falls nötig zusätzlich Verkleinerung der Auflösung in 10-%-Schritten. Metadaten werden standardmäßig entfernt (EXIF, GPS, XMP, ICC bleibt erhalten, damit Farben stimmen).
 
@@ -67,8 +67,10 @@ Encoder: H.264 nur `h264_mf`, HEVC nur `hevc_mf`, AAC nur `aac_mf`, VP9 `libvpx-
 | TXT, Markdown | PDF, HTML, TXT (Zeichensatz-Umwandlung) | PDF | PDFsharp | Markdown-Rendering: einfache Teilmenge |
 | HTML | TXT, Markdown | TXT | eigener Parser (klein) | Nur lokale Dateien, keine externen Ressourcen laden |
 | Bilder (mehrere) | PDF | PDF | PDFsharp | „Sammeln“ laut Briefing Phase 2; als Ausgabeformat einzelner Bilder schon Phase 1 |
-| DOC, XLS, PPT (alte Binärformate) | — | — | — | Nicht unterstützt, klare Meldung |
+| DOC, XLS, PPT (alte Binärformate) | — | — | — | Nicht unterstützt (`UnsupportedFormat`); verschlüsselte OOXML-Dateien im OLE-Container werden als `ProtectedFile` erkannt |
 | Verschlüsselte Office-Dateien | — | — | — | `ProtectedFile` |
+
+Vorschau (Vorher/Nachher) gibt es für Bilder, Audio und Video-Standbild; Dokument-Konverter liefern in Phase 1 keine Vorschau.
 
 ## Presets
 

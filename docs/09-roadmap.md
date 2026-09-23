@@ -7,30 +7,30 @@
 - [x] Doku-Struktur angelegt und mit dem Briefing gefüllt (2026-09-23)
 - [x] Agenten definiert unter `.claude/agents/` (2026-09-23)
 - [x] Architektur und ADR-001 bis ADR-010 festgelegt (2026-09-23)
-- [ ] Lauffähiges Grundgerüst: Solution, `Directory.Build.props`, `Directory.Packages.props`, Projekte Engine / Queue / App / Tests
-- [ ] CI: Linux-Job für Engine, Queue und Unit-Tests; Windows-Job für App-Build und Integrationstests
-- [ ] Compliance-Skripte (`tools/compliance/`) und `LibraryRegistryTests`
+- [x] Lauffähiges Grundgerüst: Solution, `Directory.Build.props`, `Directory.Packages.props`, Projekte Engine / Queue / App / Tests
+- [x] CI: Linux-Job für Engine, Queue und Unit-Tests; Windows-Job für App-Build und Integrationstests
+- [x] Compliance-Skripte (`tools/compliance/`) und `LibraryRegistryTests`
 - [ ] FFmpeg-LGPL-Build: Bezugsquelle oder eigener Build, Prüfskript, Quellcode-Angebot
 
 ### Phase 1 – Kernfunktionen
 
 Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschliff.
 
-- [ ] Queue: Enqueue, Parallelität, Pause/Abbruch, Gesamtfortschritt, Verlauf
-- [ ] Engine: Formaterkennung (Magic Bytes), Eingabeprüfung, Fehlercodes
-- [ ] Bilder: Konvertierung, Qualitätsregler, Zielgröße, Metadaten entfernen, Vorschau, HEIC über WIC
-- [ ] Basis-UI: Ablagefläche, Job-Karten, Formatvorschlag, Zielordner, Start, Fortschritt, Vertrauenszeile, DE/EN
-- [ ] Audio: Konvertierung, Zielgröße über Bitrate, Vorschau (Wellenform, Ausschnitt)
-- [ ] Video (Pro): Konvertierung über `*_mf`, VFR-Behandlung, HEVC-Erkennung, Nur-Ton
-- [ ] Dokumente: PDF → Text, DOCX/XLSX/PPTX → Text/CSV, Text/Markdown → PDF, Bilder → PDF
-- [ ] Zeit- und Größenschätzung mit `SpeedProfile`, Speicherwarnung
-- [ ] Presets, „Mehr“-Panel, Dateinamen-Muster
-- [ ] Verlauf mit „Nochmal“
-- [ ] Fehlermeldungen mit Lösungsvorschlag für alle Fehlercodes (DE/EN)
-- [ ] Barrierefreiheit: Screenreader-Durchlauf, Tastatur, hoher Kontrast
-- [ ] Animationen (Composition API) und „Animationen reduzieren“
-- [ ] Third-Party-Licenses-Seite, generiert aus `04-bibliotheken.md`
-- [ ] Freemium: `ILicenseService`, Store-Add-on, Limits
+- [x] Queue: Enqueue, Parallelität, Pause/Abbruch, Gesamtfortschritt, Verlauf
+- [x] Engine: Formaterkennung (Magic Bytes), Eingabeprüfung, Fehlercodes
+- [x] Bilder: Konvertierung, Qualitätsregler, Zielgröße, Metadaten entfernen, Vorschau, HEIC über WIC
+- [x] Basis-UI (geschrieben, Windows-Build steht aus): Ablagefläche, Job-Karten, Formatvorschlag, Zielordner, Start, Fortschritt, Vertrauenszeile, DE/EN
+- [x] Audio: Konvertierung, Zielgröße über Bitrate, Vorschau (Wellenform, Ausschnitt)
+- [x] Video (Pro): Konvertierung über `*_mf`, VFR-Behandlung, HEVC-Erkennung, Nur-Ton
+- [x] Dokumente: PDF → Text, DOCX/XLSX/PPTX → Text/CSV, Text/Markdown → PDF, Bilder → PDF
+- [x] Zeit- und Größenschätzung mit `SpeedProfile`, Speicherwarnung
+- [x] Presets, „Mehr“-Panel, Dateinamen-Muster
+- [x] Verlauf mit „Nochmal“
+- [x] Fehlermeldungen mit Lösungsvorschlag für alle Fehlercodes (DE/EN)
+- [ ] Barrierefreiheit: Screenreader-Durchlauf, Tastatur, hoher Kontrast (Code vorhanden, manueller Durchlauf unter Windows offen)
+- [x] Animationen (Composition API) und „Animationen reduzieren“ (ungeprüft unter Windows)
+- [x] Third-Party-Licenses-Seite, generiert aus `04-bibliotheken.md`
+- [x] Freemium: `ILicenseService`, Store-Add-on, Limits
 - [ ] Store-Einreichung nach Checkliste in `07-store.md`
 
 ### Phase 2
@@ -58,7 +58,11 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 | O-08 | **Nennung von „Word/Excel/PowerPoint“** in Store-Texten: erlaubt laut Store-Richtlinien oder nur „DOCX/XLSX/PPTX“? | `lizenz-waechter` | Store-Texte |
 | O-09 | **Office → PDF layouttreu:** Kein Weg ohne Renderer (ADR-010). Bleibt außerhalb, bis eine lizenzkonforme Lösung existiert. | `architekt` | nichts |
 | O-10 | **Entwicklungsumgebung:** Im Cloud-Container kein .NET SDK und kein Windows. Engine/Queue/Tests sollen dort mit installiertem SDK bauen; App nur in Windows-CI und lokal. | Projektinhaber | Grundgerüst-Verifikation |
-| O-11 | **Pause per Prozess-Suspend** (`NtSuspendProcess`) ist eine undokumentierte API. Alternative: `DebugActiveProcess` oder Job-Objekte. Vor Umsetzung prüfen, ob Store-Zertifizierung das beanstandet. | `architekt` | Pause laufender Video-Jobs |
+| O-11 | **Pause per Prozess-Suspend** (`NtSuspendProcess`) ist umgesetzt, aber eine undokumentierte API. Vor der Store-Einreichung prüfen, ob die Zertifizierung das beanstandet; Alternative: Job-Objekte + `SuspendThread`. | `architekt`, `store-release` | Store-Einreichung |
+| O-12 | **HEVC-Hardware-Dekodierung** wird über Media Foundation nur angenähert geprüft; ffmpeg nutzt D3D11VA. Der `HevcFallbackGuard` (ADR-011) fängt den Software-Fallback ab, muss aber unter Windows mit echten Dateien verifiziert werden. | `tester` (Windows) | Video Phase 1 |
+| O-13 | **Monospace-Schrift für TXT → PDF:** Unter Windows wird ohne freie Mono-Schrift die Sans-Schrift genutzt. Vorschlag: eine OFL-lizenzierte Mono-Schrift mitliefern (Lizenz eintragen). | `lizenz-waechter` | Textqualität |
+| O-14 | **Windows-Build der App** ist noch nie gelaufen (nur C#-Teile gegen WinUI-Assemblies kompiliert). Erster Windows-CI-Lauf bzw. lokaler Build unter Windows nötig; XAML-Fehler sind wahrscheinlich und schnell behebbar. | Projektinhaber (Windows-Rechner) oder Windows-CI | Alles Sichtbare |
+| O-15 | **Platzhalter im Code:** Publisher `CN=Kvertis`, Store-Add-on-ID `9NXXXXXXXXXX`, Logos. | Projektinhaber | Store-Einreichung |
 
 ## Verworfen wegen Rechtsrisiko
 
@@ -74,3 +78,4 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 | Datum | Meilenstein |
 |---|---|
 | 2026-09-23 | Projektstart: Doku, Agenten, Architektur |
+| 2026-09-23 | Grundgerüst komplett: Engine (Bilder, Audio, Video, Dokumente), Queue, Windows-Plattform, WinUI-3-App (ungebaut), CI, Compliance-Gate, Code-Review mit 21 behobenen Befunden |

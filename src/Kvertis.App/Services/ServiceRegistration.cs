@@ -2,6 +2,7 @@ using Kvertis.App.ViewModels;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion;
 using Kvertis.Engine.Conversion.Audio;
+using Kvertis.Engine.Conversion.Documents;
 using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Conversion.Video;
 using Kvertis.Engine.Estimation;
@@ -93,15 +94,19 @@ public static class ServiceRegistration
         // Engine: detection and probing
         services.AddSingleton<IMediaProber, ImageProber>();
         services.AddSingleton<IMediaProber, MediaProber>();
+        services.AddSingleton<IMediaProber, DocumentProber>();
         services.AddSingleton<IFormatDetector, FormatDetector>();
 
         // Engine: converters. Registration order is priority for ConverterResolver.
         services.AddSingleton<IConverter, ImageConverter>();
         services.AddSingleton<IConverter, AudioConverter>();
         services.AddSingleton<IConverter, VideoConverter>();
-        // TODO(wiring): document converters (Conversion/Documents/*: PDF, Office, text) are being written in
-        // parallel. Register them here as IConverter once they exist, plus the Windows PDF rasterizer adapter
-        // (state.Platform.Pdf) for PDF -> image.
+        // Documents: PDF pages are rasterized by the Windows PDF engine (system component, no library).
+        services.AddSingleton<IPdfRasterizer>(state.Platform.Pdf);
+        services.AddSingleton<IConverter, PdfConverter>();
+        services.AddSingleton<IConverter, OfficeConverter>();
+        services.AddSingleton<IConverter, TextConverter>();
+        services.AddSingleton<IConverter, ImageToPdfConverter>();
         services.AddSingleton<IConverterResolver, ConverterResolver>();
 
         // Queue

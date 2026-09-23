@@ -28,15 +28,10 @@ if grep -rnE --include='*.cs' --include='*.xaml' \
 fi
 
 echo "[3/6] Verbotene Bibliotheken"
+# Strict on purpose: the engine's own build checker assembles these strings from parts.
 if grep -rniE --include='*.cs' --include='*.csproj' --include='*.props' --include='*.xaml' \
-     'libx264|libx265|libfdk[_-]?aac|libxvid|QuestPDF|FluentAssertions' src/ tests/ ; then
-  bad "Verbotene Bibliothek referenziert"
-fi
-# The GPL/nonfree configure flags may only appear in the build checker that rejects them
-# (src/Kvertis.Engine/Ffmpeg/FfmpegCompliance.cs) and in test fixtures that feed such builds to it.
-if grep -rniE --include='*.cs' --include='*.csproj' --include='*.props' --include='*.xaml' \
-     --exclude='FfmpegCompliance.cs' 'enable-gpl|enable-nonfree' src/ ; then
-  bad "GPL-/Nonfree-Option ausserhalb der Build-Pruefung referenziert"
+     'libx264|libx265|libfdk[_-]?aac|libxvid|enable-gpl|enable-nonfree|QuestPDF|FluentAssertions' src/ tests/ ; then
+  bad "Verbotene Bibliothek oder GPL-Option referenziert"
 fi
 
 echo "[4/6] Markennamen"

@@ -30,6 +30,8 @@ dotnet build Kvertis.sln
 dotnet test tests/Kvertis.Engine.Tests
 dotnet test tests/Kvertis.Queue.Tests
 dotnet test --filter Category!=Integration      # ohne FFmpeg/Magick-Binärdateien
+bash tools/compliance/check.sh                    # Lizenz-, Marken-, Netzwerk- und Ressourcen-Gate (Pflicht vor Merge)
+dotnet build Kvertis.Core.slnf                    # Linux: alles außer der WinUI-App
 ```
 
 Engine, Queue und Tests bauen auf Linux und Windows. `Kvertis.App` (WinUI 3, MSIX) baut nur unter Windows. CI: siehe `.github/workflows/`.
