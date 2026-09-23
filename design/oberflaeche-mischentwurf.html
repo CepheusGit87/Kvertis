@@ -181,6 +181,54 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .raus span { padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); transform: rotate(var(--r, 0deg)); box-shadow: 0 2px 0 #0003, 0 4px 8px -4px #0006; transition: transform .3s var(--feder); }
 .fach:hover .raus span { transform: rotate(0deg) translateY(-2px); }
 .raus .mehr-r { background: transparent; color: var(--muted); box-shadow: none; border: 1px dashed var(--line-stark); font-weight: 500; }
+/* Kiste aufmachen: zeigt, was darin liegt */
+.fach { cursor: default; }
+.fach-knopf { border: 0; background: transparent; padding: 0; display: grid; justify-items: center; gap: 2px; border-radius: 14px; cursor: pointer; }
+.fach-knopf:disabled { cursor: default; }
+.ansehen { font: 500 11px var(--mono); color: var(--k); min-height: 16px; display: inline-flex; gap: 5px; align-items: center; }
+.ansehen::after { content: '▾'; font-size: 10px; transition: transform .3s; }
+.fach.offen .ansehen::after { transform: rotate(180deg); }
+.fach-knopf:disabled .ansehen { visibility: hidden; }
+.fach.offen .kiste { transform: rotateX(-46deg) rotateY(-10deg) translateY(12px); }
+.fach.offen .blatt { transform: translate(-50%, -50%) translateY(-36px) translateZ(var(--z)); }
+.fach.offen .wandel { display: none; }
+.inhalt { width: 100%; max-width: 212px; display: grid; gap: 4px; padding: 8px 8px 6px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--k) 45%, var(--line)); background: color-mix(in srgb, var(--k) 6%, var(--panel)); max-height: 190px; overflow: auto; animation: rein2 .35s var(--feder); text-align: left; }
+.inh-kopf { display: flex; justify-content: space-between; font: 500 10.5px var(--mono); color: var(--muted); padding: 0 2px 2px; }
+.inh-kopf b { color: var(--ink); font-weight: 600; }
+.datei { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 4px; align-items: center; margin-top: 12px; padding: 5px 4px 5px 8px; border-radius: 2px 4px 4px 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 2px 0 #0003; }
+.datei::before { content: attr(data-f); position: absolute; top: -11px; left: 6px; padding: 0 6px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font: 600 8.5px/12px var(--mono); }
+.datei b { display: block; font-size: 11.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.datei small { display: block; font: 10px var(--mono); color: #5b646a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.datei em { display: block; font: 500 10px var(--schrift); font-style: normal; color: #095c78; }
+.weg { width: 22px; height: 22px; border-radius: 6px; border: 0; background: transparent; color: #5b646a; font-size: 14px; line-height: 1; display: grid; place-items: center; }
+.weg:hover { background: #9e312318; color: #9e3123; }
+
+/* Auftragsliste in Schritt 3 */
+.auftrag { display: grid; gap: 6px; width: 100%; }
+.az { display: grid; grid-template-columns: 34px 1fr auto auto; gap: 4px 10px; align-items: center; padding: 8px 10px; border-radius: 11px; border: 1px solid var(--line); background: var(--panel); text-align: left; transition: border-color .2s, background .2s; }
+.az:hover { border-color: var(--line-stark); }
+.az .stapel { position: relative; width: 30px; height: 26px; }
+.az .stapel i { position: absolute; width: 22px; height: 16px; border-radius: 2px; background: var(--paper); box-shadow: 0 1px 0 #0003; }
+.az .stapel i:nth-child(1) { left: 0; top: 8px; } .az .stapel i:nth-child(2) { left: 3px; top: 5px; } .az .stapel i:nth-child(3) { left: 6px; top: 2px; }
+.az .stapel i::before { content: ''; position: absolute; top: -3px; left: 3px; width: 8px; height: 3px; border-radius: 2px 2px 0 0; background: var(--k); }
+.az .stapel span { position: absolute; right: -4px; bottom: -3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--k); color: #0b0f12; font: 700 9.5px/16px var(--mono); text-align: center; }
+.az .was b { display: block; font-size: 12.5px; font-weight: 600; }
+.az .was small { display: block; font: 10.5px var(--mono); color: var(--muted); }
+.az .pf { color: var(--mint); font-size: 14px; }
+.az.fertig .pf { font-size: 13px; }
+.az .etikett { transform: rotate(-1.5deg); }
+.az .spur { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+.az .balken { position: relative; height: 5px; border-radius: 3px; background: var(--tief); overflow: hidden; }
+.az .balken i { position: absolute; inset: 0 auto 0 0; width: var(--nach); border-radius: 3px; background: color-mix(in srgb, var(--mint) 45%, transparent); }
+.az .balken b { position: absolute; inset: 0 auto 0 0; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); transition: width .3s; }
+.az .spur small { font: 500 10.5px var(--mono); color: var(--muted); white-space: nowrap; }
+.az .spur small em { font-style: normal; color: var(--mint); }
+.az.fertig { border-color: var(--mint-rahmen); background: var(--mint-flaeche); }
+.summe { display: flex; justify-content: space-between; gap: 10px; padding: 4px 4px 0; font: 500 11.5px var(--mono); color: var(--muted); }
+.summe b { color: var(--mint); }
+.lauf { grid-template-columns: 1fr 310px 1fr !important; }
+.los { width: 124px !important; height: 124px !important; }
+.los .knopf { inset: 16px !important; font-size: 17px !important; }
 .wird { font-size: 11px; color: var(--muted); max-width: 190px; }
 .wird b { color: var(--ink); font-weight: 500; font-family: var(--mono); font-size: 10.5px; }
 .abweis { align-self: stretch; margin-top: 30px; display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: 12px; border: 1px dashed var(--line-stark); text-align: left; }
@@ -438,7 +486,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
                   <svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="75" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="bogen" cx="80" cy="80" r="75" fill="none" stroke="var(--mint)" stroke-width="6" stroke-linecap="round" stroke-dasharray="471.2" stroke-dashoffset="471.2"/></svg>
                   <span class="knopf" id="knopf">Los</span>
                 </button>
-                <div class="zusammen" id="zusammen"></div>
+                <div class="auftrag" id="auftrag" aria-label="Was umgewandelt wird"></div>
               </div>
               <div class="spalte" id="aus-spalte">
                 <span class="label">Ausgang</span>
@@ -563,23 +611,57 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   // ===== Regal
   const faecher = $('faecher');
   faecher.innerHTML = KATS.map(k => `
-    <button class="fach k-${k}" id="fach-${k}" data-k="${k}" aria-label="${KAT[k].name}">
+    <div class="fach k-${k}" id="fach-${k}" data-k="${k}">
+      <button class="fach-knopf" id="fk-${k}" aria-expanded="false" aria-controls="inh-${k}" disabled>
       <div class="szene"><span class="zaehler" id="z-${k}">0</span>
         <div class="kiste"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="b-${k}"></span><span class="f rt"></span><span class="f fr" data-t="${KAT[k].kiste}"></span></div>
       </div>
       <h5>${KAT[k].name}</h5>
+      <span class="ansehen" id="an-${k}">ansehen</span>
+      </button>
+      <div class="inhalt" id="inh-${k}" hidden></div>
       <div class="wandel">
         <span class="w-titel">liest</span>
         <div class="formate">${KAT[k].formate.slice(0, 6).map(f => `<span>${f}</span>`).join('')}${KAT[k].formate.length > 6 ? `<span class="mehr-f" title="${KAT[k].formate.slice(6).join(', ')}">+${KAT[k].formate.length - 6}</span>` : ''}</div>
         <span class="w-pfeil" aria-hidden="true"><i></i><em>wird zu</em><i></i></span>
         <div class="raus">${KAT[k].raus.slice(0, 5).map((f, i) => `<span style="--r:${[-2, 1.5, -1, 2, -1.5][i]}deg">${f}</span>`).join('')}${KAT[k].raus.length > 5 ? `<span class="mehr-r" title="${KAT[k].raus.slice(5).join(', ')}">+${KAT[k].raus.length - 5}</span>` : ''}</div>
       </div>
-    </button>`).join('') + `
+    </div>`).join('') + `
     <div class="abweis" id="abweis"><span class="label">Nicht umwandelbar</span><div class="leer" id="abweis-leer">Hier landet, was Kvertis nicht umwandeln kann, immer mit Grund.</div><ul id="abweis-liste"></ul></div>`;
+  let offen = null;
+  function oeffne(k) {
+    offen = offen === k ? null : k;
+    KATS.forEach(x => {
+      const auf = x === offen;
+      $('fach-' + x).classList.toggle('offen', auf);
+      $('fk-' + x).setAttribute('aria-expanded', auf);
+      $('inh-' + x).hidden = !auf;
+    });
+    KATS.forEach(x => { $('an-' + x).textContent = x === offen ? 'zuklappen' : 'ansehen'; });
+    if (offen) renderInhalt(offen);
+  }
+  function renderInhalt(k) {
+    const liste = dateien.filter(d => d.kat === k);
+    if (!liste.length) { if (offen === k) oeffne(k); return; }
+    $('inh-' + k).innerHTML = `<div class="inh-kopf"><b>${liste.length} ${liste.length === 1 ? 'Datei' : 'Dateien'}</b><span>${mb(liste.reduce((s, d) => s + d.mb, 0))} MB</span></div>` +
+      liste.map(d => `<div class="datei" data-f="${esc(d.fmt)}"><span style="min-width:0"><b title="${esc(d.name)}">${esc(d.name)}</b><small>${mb(d.mb)} MB${d.ordner ? ' · ' + esc(d.ordner) : ''}</small>${d.hinweis ? `<em>${esc(d.hinweis)}</em>` : ''}</span><button class="weg" data-i="${dateien.indexOf(d)}" aria-label="${esc(d.name)} herausnehmen" title="Herausnehmen">✕</button></div>`).join('');
+  }
   faecher.addEventListener('click', e => {
-    const f = e.target.closest('.fach');
-    if (f && dateien.some(d => d.kat === f.dataset.k)) { aktiv = f.dataset.k; geheZu(1); }
+    const weg = e.target.closest('.weg');
+    if (weg) {
+      const d = dateien[+weg.dataset.i];
+      dateien = dateien.filter(x => x !== d);
+      renderFach(d.kat); renderInhalt(d.kat); nachZaehlen();
+      return;
+    }
+    const knopf = e.target.closest('.fach-knopf');
+    if (knopf && !knopf.disabled) oeffne(knopf.closest('.fach').dataset.k);
   });
+  function nachZaehlen() {
+    const n = dateien.filter(d => d.kat).length;
+    $('log').innerHTML = dateien.length ? `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · Kiste anklicken, um hineinzuschauen` : '<span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span>';
+    renderFaden(); renderLeiste();
+  }
 
   function blattHtml(d, i, fmt) {
     return `<span class="blatt k-${d.kat}" data-f="${esc(fmt || d.fmt)}" style="--z:${-34 + (i % 5) * 16}px;--tab:${8 + (i % 3) * 40}px"></span>`;
@@ -588,6 +670,9 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const liste = dateien.filter(d => d.kat === k);
     $('z-' + k).textContent = liste.length;
     $('fach-' + k).classList.toggle('voll', liste.length > 0);
+    $('fk-' + k).disabled = !liste.length;
+    $('an-' + k).textContent = offen === k ? 'zuklappen' : 'ansehen';
+    if (offen === k) renderInhalt(k);
     $('b-' + k).innerHTML = liste.slice(0, 5).map((d, i) => blattHtml(d, i)).join('');
     if (hupf) { const z = $('z-' + k); z.classList.remove('hupf'); void z.offsetWidth; z.classList.add('hupf'); }
   }
@@ -775,12 +860,22 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     $('ein-zahl').textContent = `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
     const nein = dateien.filter(d => !d.kat).length;
     $('ein-klein').textContent = nein ? `${nein} nicht umwandelbar` : '';
-    $('zusammen').innerHTML = gruppen().map(k => `<div><span>${KAT[k].name}</span><b>→ ${ziele(k)[wahl[k]][0]}${zweck[k] ? ' · ' + zweck[k] : ''}</b></div>`).join('') +
-      `<div><span>Speichern</span><b>${esc(wohinKurz() || 'Ordner fehlt')}</b></div>` +
-      `<div><span>Ergebnis</span><b style="color:var(--mint)">≈ ${mb(summeNachher())} MB</b></div>`;
+    $('auftrag').innerHTML = gruppen().map(k => {
+      const l = dateien.filter(d => d.kat === k), vor = l.reduce((s, d) => s + d.mb, 0), nach = schaetze(k);
+      const fm = [...new Set(l.map(d => d.fmt))].join(', ');
+      const p = Math.round((1 - nach / vor) * 100);
+      return `<button class="az k-${k}" id="az-${k}" data-k="${k}" title="Ziel ändern">
+        <span class="stapel" aria-hidden="true"><i></i><i></i><i></i><span>${l.length}</span></span>
+        <span class="was"><b>${KAT[k].name}</b><small>${fm}</small></span>
+        <span class="pf" aria-hidden="true">→</span>
+        <span class="etikett">${ziele(k)[wahl[k]][0]}</span>
+        <span class="spur"><span class="balken" style="--nach:${Math.min(100, nach / vor * 100)}%"><i></i><b></b></span><small>${zweck[k] ? esc(zweck[k]) + ' · ' : ''}<em>${p >= 0 ? '−' + p : '+' + -p} %</em></small></span>
+      </button>`;
+    }).join('') + `<div class="summe"><span>Zusammen</span><span><b>≈ ${mb(summeNachher())} MB</b> statt ${mb(summeVorher())} MB</span></div>`;
     renderWohin();
     if (!fertig) { $('aus-blaetter').innerHTML = ''; $('aus-zahl').textContent = 'Noch leer'; $('knopf').textContent = 'Los'; $('knopf').classList.remove('ok'); $('bogen').style.strokeDashoffset = 471.2; }
   }
+  $('auftrag').addEventListener('click', e => { const z = e.target.closest('.az'); if (z && !laeuft) { aktiv = z.dataset.k; geheZu(1); } });
   let laeuft = false;
   async function los() {
     if (laeuft || !umwandelbar().length || (wohin === 'eigen' && !eigener)) return;
@@ -800,6 +895,10 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       $('bogen').style.strokeDashoffset = 471.2 * (1 - p);
       $('knopf').textContent = Math.round(p * 100) + ' %';
       $('aus-zahl').textContent = `${i + 1} von ${u.length} fertig`;
+      const gl = u.filter(x => x.kat === d.kat), fertigG = u.slice(0, i + 1).filter(x => x.kat === d.kat).length;
+      const zeile = $('az-' + d.kat);
+      zeile.querySelector('.balken b').style.setProperty('--p', (fertigG / gl.length) * parseFloat(zeile.querySelector('.balken').style.getPropertyValue('--nach')) + '%');
+      if (fertigG === gl.length) { zeile.classList.add('fertig'); zeile.querySelector('.pf').textContent = '✓'; }
     }
     $('lauf').classList.remove('aktiv');
     const vor = summeVorher(), nach = summeNachher();
@@ -844,7 +943,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       d.kat ? renderFach(d.kat, true) : renderAbweis();
     }
     const n = dateien.filter(d => d.kat).length;
-    $('log').innerHTML = `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · ${gruppen().map(k => KAT[k].name).join(', ')}`;
+    $('log').innerHTML = `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · Kiste anklicken, um hineinzuschauen`;
     aktiv = gruppen()[0] || 'bild';
     renderFaden(); renderLeiste();
   }
@@ -952,6 +1051,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   function leeren() {
     if (laeuft) return;
     dateien = []; fertig = null;
+    if (offen) oeffne(offen);
     renderRegal();
     $('log').innerHTML = '<span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span>';
     geheZu(0);
