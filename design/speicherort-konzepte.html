@@ -1,0 +1,909 @@
+<title>Kvertis Speicherort-Konzepte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.buehne { overflow-x: auto; padding: 6px 2px 16px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+.k-mix { --k: var(--muted); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Fenster */
+.win { position: relative; width: 100%; min-width: 960px; height: 580px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 42px 54px 1fr auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.platz { flex: 1; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+.faden { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.kn { display: grid; grid-template-columns: 26px auto; gap: 0 9px; align-items: center; }
+.kn i { grid-row: span 2; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.kn.an i { background: var(--mint); color: var(--auf-mint); border-color: var(--mint); }
+.kn b { font-size: 12.5px; } .kn small { font: 500 10.5px var(--mono); color: var(--mint); } .kn.an small { color: var(--leise); }
+.sg { flex: 1; height: 2px; margin: 0 12px; background: var(--mint); border-radius: 1px; }
+.leiste { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.taste { border: 0; border-radius: 12px; padding: 11px 20px; font-weight: 600; font-size: 14px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 12px 24px -8px color-mix(in srgb, var(--mint) 60%, transparent), inset 0 1px 0 #ffffff55; transform: translateY(-2px); transition: transform .12s, box-shadow .12s; display: inline-flex; gap: 10px; align-items: center; }
+.taste:hover { transform: translateY(-3px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 45%, #000); }
+.taste small { font: 500 11px var(--mono); opacity: .75; }
+.segment { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.segment button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.segment button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.label { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); }
+.kz { position: relative; display: grid; grid-template-columns: 52px 1fr 14px 50px 240px 110px 76px; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.kz::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); transition: width .2s linear; }
+.kz .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kz .pf { color: var(--mint); text-align: center; }
+.balken3d { position: relative; height: 22px; display: grid; gap: 3px; align-content: center; }
+.balken3d i { display: block; height: 8px; border-radius: 2px; width: var(--w); min-width: 3px; }
+.balken3d .vor { background: linear-gradient(180deg, var(--line-stark), color-mix(in srgb, var(--line-stark) 55%, var(--karton-tief))); box-shadow: 0 2px 0 var(--tief); }
+.balken3d .nach { background: linear-gradient(180deg, var(--mint), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.kz .gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.kz .gr b { color: var(--ink); }
+.kz .st2 { font: 500 11px var(--schrift); color: var(--muted); display: inline-flex; gap: 5px; align-items: center; justify-content: flex-end; }
+.kz.ok .st2 { color: var(--mint); }
+.kz.ok { border-color: var(--mint-rahmen); }
+.liste2 { display: grid; grid-template-rows: auto 1fr; gap: 6px; padding: 6px 22px 10px; min-height: 0; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 30%, transparent); }
+.liste2-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 4px; }
+.liste2-kopf .gross { font: 600 18px var(--mono); }
+.liste2-kopf .gross span { color: var(--muted); font-size: 13px; }
+.liste2-kopf .gross b { color: var(--mint); }
+.kp-liste { gap: 3px; }
+.kz { padding: 5px 12px; }
+/* Neuer Ordner: Reiter am Ordner = Speicherort, Etikett vorn = Pfad */
+.ziel2 { width: 236px; gap: 4px; }
+.ordner3 { position: relative; width: 224px; height: 196px; perspective: 800px; margin-top: 4px; }
+.ordner3 .reiterleiste { position: absolute; left: 10px; right: 10px; top: 0; height: 30px; display: flex; gap: 4px; z-index: 1; }
+.oreiter { flex: 1; height: 30px; border: 0; border-radius: 9px 9px 0 0; padding: 0 4px 6px; font: 600 9.5px var(--schrift); color: color-mix(in srgb, var(--ink) 70%, transparent); background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 22%, var(--panel2)), color-mix(in srgb, var(--mint) 16%, var(--karton-tief))); transform: translateY(6px); transition: transform .3s var(--feder), background .3s, color .3s; cursor: pointer; pointer-events: auto; }
+.oreiter:hover { transform: translateY(3px); }
+.oreiter.an { transform: translateY(0); color: #0b0f12; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 80%, #fff 10%), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); }
+.ordner3 .rueck { position: absolute; left: 0; right: 0; top: 24px; bottom: 0; border-radius: 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 38%, var(--karton-tief)), color-mix(in srgb, var(--mint) 22%, var(--karton-tief))); box-shadow: inset 0 1px 0 #ffffff22; z-index: 2; }
+.ordner3 .papiere { position: absolute; left: 16px; right: 16px; top: 38px; bottom: 16px; z-index: 3; }
+.ordner3 .papiere i { position: absolute; left: 0; right: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transform-origin: bottom; transition: transform .4s var(--feder); }
+.ordner3 .papiere i::before { content: attr(data-f); position: absolute; top: -9px; left: var(--x, 8px); padding: 0 5px; border-radius: 3px 3px 0 0; font: 600 7.5px/10px var(--mono); background: var(--mint); color: var(--auf-mint); }
+.ordner3 .vorn { position: absolute; left: -4px; right: -4px; bottom: 0; height: 128px; border-radius: 12px 12px 14px 14px; transform-origin: bottom; transform: rotateX(-12deg); transition: transform .5s var(--feder); z-index: 4;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 70%, #fff 6%), color-mix(in srgb, var(--mint) 48%, var(--karton-tief)));
+  box-shadow: inset 0 1.5px 0 #ffffff55, inset 0 -10px 18px -10px #0006, 0 22px 30px -14px var(--schatten); display: grid; place-items: center; }
+.ordner3 .vorn::before { content: ''; position: absolute; left: 12px; right: 12px; top: 10px; height: 1px; background: #ffffff40; }
+.ordner3.offen .vorn { transform: rotateX(-34deg); }
+.ordner3.offen .papiere i:last-child { transform: translateY(-6px); }
+.o-etikett { width: 170px; padding: 7px 10px 8px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); transform: rotate(-1.5deg); box-shadow: 0 2px 0 #0003, 0 6px 10px -6px #0008; text-align: left; }
+.o-etikett b { display: block; font: 700 12px var(--mono); letter-spacing: .04em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.o-etikett small { display: block; font: 500 9.5px var(--mono); color: #5b646a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px; }
+.o-etikett small em { font-style: normal; color: #0a6851; font-weight: 600; }
+.ordner3 .zaehl { position: absolute; right: -8px; top: 18px; z-index: 6; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; background: var(--mint); color: var(--auf-mint); font: 700 13px/30px var(--mono); text-align: center; box-shadow: 0 4px 10px -4px var(--mint); }
+
+/* ---------- Speicherort-Konzepte ---------- */
+.kp-liste { display: grid; align-content: start; gap: 3px; min-height: 0; }
+.win { height: auto; min-height: 640px; grid-template-rows: 42px 54px 1fr auto; }
+.inhalt { display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+.klein { font-size: 11px; color: var(--leise); }
+.bandende { display: grid; grid-template-columns: minmax(180px, 1fr) auto; gap: 22px; align-items: end; padding: 14px 22px 12px; }
+.liste2 { padding-top: 8px; }
+.liste2-kopf { align-items: center; }
+.liste2-kopf .rechts { display: flex; gap: 10px; align-items: center; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn-mint { background: var(--mint); color: var(--auf-mint); border-color: var(--mint); font-weight: 600; }
+.btn-mint:hover { border-color: var(--mint); filter: brightness(1.06); }
+
+/* Band-Stumpf */
+.band-k { position: relative; height: 150px; min-width: 180px; }
+.band-k .schild-k { position: absolute; left: 0; top: 0; display: grid; gap: 1px; }
+.band-k .schild-k b { font-size: 13px; }
+.gurt-k { position: absolute; left: 0; right: 0; bottom: 22px; height: 14px; border-radius: 7px; background: var(--tief); border: 1px solid var(--line-stark); overflow: hidden; }
+.gurt-k::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--line-stark) 0 2px, transparent 2px 18px); }
+.rolle-k { position: absolute; bottom: 10px; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--line-stark); background: radial-gradient(circle, var(--panel2) 30%, var(--tief)); }
+.rolle-k.l { left: -8px; } .rolle-k.r { right: -8px; }
+.blatt-k { position: absolute; bottom: 38px; width: 64px; height: 48px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 14px -8px #000a; padding: 13px 4px 0; font: 600 8.5px var(--mono); text-align: center; }
+.blatt-k::before { content: attr(data-f); position: absolute; top: -11px; left: 5px; padding: 1px 6px; border-radius: 4px 4px 0 0; background: var(--mint); color: var(--auf-mint); font-size: 8.5px; }
+.blatt-k span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blatt-k small { display: block; font-weight: 500; opacity: .6; margin-top: 2px; }
+
+/* Zeilen mit Ziel */
+.kz.z { grid-template-columns: 52px minmax(110px, 1fr) 14px 44px 64px 104px minmax(0, 2.3fr) 172px; }
+.kz.z3 { grid-template-columns: 14px 52px minmax(100px, 1fr) 14px 44px 64px 104px minmax(0, 2.2fr) 172px; cursor: grab; }
+.kz.z5 { grid-template-columns: 18px 52px minmax(100px, 1fr) 14px 44px 64px 104px minmax(0, 2.6fr) 28px; }
+.kz { transition: border-color .2s, background .2s, transform .2s var(--feder), box-shadow .2s; }
+.kz.ausnahme { border-color: var(--mint-rahmen); }
+.kz.ausnahme::before { content: ''; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px; border-radius: 0 3px 3px 0; background: var(--mint); }
+.kz.hl { border-color: var(--mint-rahmen); background: color-mix(in srgb, var(--mint) 6%, var(--panel)); }
+.pfad-z { font: 11px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.pfad-z em, .vorschau em, .ak-pfad em, .fach .ziel-pfad em { font-style: normal; color: var(--mint); }
+.zk { justify-self: end; max-width: 100%; display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 8px; border: 1px dashed var(--line-stark); background: transparent; color: var(--leise); font: 500 11.5px var(--schrift); white-space: nowrap; overflow: hidden; }
+.zk svg { width: 13px; height: 13px; flex: none; }
+.zk span { overflow: hidden; text-overflow: ellipsis; }
+.zk:hover { color: var(--ink); border-color: var(--muted); }
+.zk.eigen { border-style: solid; border-color: var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); font-weight: 600; }
+.zk .punkt { width: 8px; height: 8px; border-radius: 3px; background: var(--k); flex: none; }
+.zk .pfeil { opacity: .7; }
+.zk.fest { border-style: solid; color: var(--ink); background: var(--panel2); border-color: var(--line); }
+
+/* Popover und Menü */
+.pop { position: absolute; z-index: 60; width: 330px; padding: 12px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line-stark); box-shadow: 0 28px 50px -18px var(--schatten), 0 2px 0 var(--line); display: grid; gap: 10px; font-size: 13px; color: var(--ink); animation: pop-auf .18s var(--sanft); }
+@keyframes pop-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.pop-kopf { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.pop-kopf b { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ico { width: 26px; height: 26px; flex: none; border-radius: 7px; border: 1px solid var(--line); background: var(--panel2); display: inline-grid; place-items: center; padding: 0; color: var(--muted); }
+.ico:hover { color: var(--ink); border-color: var(--line-stark); }
+.ico:disabled { opacity: .35; cursor: default; }
+.ico svg { width: 13px; height: 13px; }
+.opts { display: grid; gap: 3px; }
+.opt { display: grid; grid-template-columns: 16px 1fr; gap: 0 9px; align-items: center; text-align: left; padding: 7px 9px; border-radius: 9px; border: 1px solid transparent; background: transparent; }
+.opt:hover { background: var(--hover); }
+.opt .rad { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--line-stark); }
+.opt small { grid-column: 2; font: 10.5px var(--mono); color: var(--muted); }
+.opt[aria-pressed="true"] { border-color: var(--mint-rahmen); background: var(--mint-flaeche); }
+.opt[aria-pressed="true"] .rad { border-color: var(--mint); background: var(--mint); box-shadow: inset 0 0 0 3px var(--mint-flaeche); }
+.opt.erbe span:not(.rad) { color: var(--muted); }
+.chips-o { display: flex; flex-wrap: wrap; gap: 5px; padding-left: 25px; }
+.ochip { display: inline-flex; gap: 5px; align-items: center; border: 1px solid var(--line); background: var(--panel2); border-radius: 999px; padding: 3px 10px; font-size: 11.5px; }
+.ochip svg { width: 12px; height: 12px; color: var(--muted); }
+.ochip:hover { border-color: var(--line-stark); }
+.ochip[aria-pressed="true"] { border-color: var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); }
+.ochip[aria-pressed="true"] svg { color: var(--mint); }
+.ochip.w { border-style: dashed; color: var(--muted); }
+.baum { display: grid; gap: 1px; margin-left: 25px; padding: 8px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); max-height: 200px; overflow: auto; }
+.baum .label { margin-bottom: 4px; }
+.bo { display: flex; gap: 7px; align-items: center; text-align: left; border: 0; background: transparent; border-radius: 6px; padding: 3px 6px 3px calc(6px + var(--t, 0) * 16px); font-size: 12px; }
+.bo svg { width: 13px; height: 13px; color: var(--muted); flex: none; }
+.bo:hover { background: var(--hover); }
+.bo[aria-pressed="true"] { color: var(--mint); } .bo[aria-pressed="true"] svg { color: var(--mint); }
+.vorschau { display: grid; gap: 3px; padding: 8px 10px; border-radius: 9px; background: var(--tief); border: 1px solid var(--line); font: 10.5px var(--mono); color: var(--muted); }
+.vorschau span:not(.label) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pop-fuss { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.menue { width: 260px; gap: 2px; padding: 6px; }
+.menue .label { padding: 4px 8px 2px; }
+.mi { display: grid; grid-template-columns: 16px 1fr auto; gap: 8px; align-items: center; text-align: left; border: 0; background: transparent; padding: 7px 9px; border-radius: 8px; font-size: 12.5px; }
+.mi svg { width: 14px; height: 14px; color: var(--muted); }
+.mi small { font: 10px var(--mono); color: var(--muted); }
+.mi:hover, .mi:focus-visible { background: var(--hover); }
+.mi[aria-checked="true"] { color: var(--mint); } .mi[aria-checked="true"] svg { color: var(--mint); }
+.trenn { height: 1px; background: var(--line); margin: 4px 6px; }
+
+.toast { position: absolute; left: 50%; bottom: 74px; transform: translate(-50%, 8px); opacity: 0; pointer-events: none; padding: 9px 14px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--mint-rahmen); font-size: 12.5px; box-shadow: 0 16px 30px -12px var(--schatten); transition: opacity .2s, transform .25s var(--feder); z-index: 20; white-space: nowrap; }
+.toast.an { opacity: 1; transform: translate(-50%, 0); }
+
+/* Mini-Ordner */
+.mo { --oc: var(--mint); position: relative; width: 118px; height: 94px; perspective: 500px; flex: none; }
+.mo .rueck { position: absolute; left: 0; right: 0; top: 12px; bottom: 0; border-radius: 7px; background: linear-gradient(180deg, color-mix(in srgb, var(--oc) 38%, var(--karton-tief)), color-mix(in srgb, var(--oc) 22%, var(--karton-tief))); }
+.mo .rueck::before { content: ''; position: absolute; left: 0; top: -10px; width: 46px; height: 12px; border-radius: 6px 6px 0 0; background: color-mix(in srgb, var(--oc) 38%, var(--karton-tief)); }
+.mo .papiere { position: absolute; left: 10px; right: 10px; top: 22px; bottom: 10px; }
+.mo .papiere i { position: absolute; inset: 0; border-radius: 2px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transition: transform .35s var(--feder); }
+.mo .papiere i::before { content: attr(data-f); position: absolute; top: -8px; left: var(--x, 6px); padding: 0 4px; border-radius: 3px 3px 0 0; font: 600 7px/9px var(--mono); background: var(--oc); color: var(--auf-mint); }
+.mo .vorn { position: absolute; left: -3px; right: -3px; bottom: 0; height: 60px; border-radius: 8px 8px 10px 10px; transform-origin: bottom; transform: rotateX(-12deg); transition: transform .4s var(--feder); background: linear-gradient(180deg, color-mix(in srgb, var(--oc) 70%, #fff 6%), color-mix(in srgb, var(--oc) 48%, var(--karton-tief))); box-shadow: inset 0 1.5px 0 #ffffff55, 0 14px 20px -10px var(--schatten); display: grid; place-items: center; }
+.mo .o-etikett { width: 98px; padding: 4px 6px 5px; }
+.mo .o-etikett b { font-size: 9px; }
+.mo .o-etikett small { font-size: 7.5px; }
+.zaehl-m { position: absolute; right: -6px; top: 6px; z-index: 5; min-width: 24px; height: 24px; padding: 0 7px; border-radius: 12px; background: var(--oc, var(--mint)); color: var(--auf-mint); font: 700 11.5px/24px var(--mono); text-align: center; box-shadow: 0 4px 10px -4px var(--oc, var(--mint)); }
+
+/* 1 · Global + Ausnahmen */
+.ziel-g { display: flex; gap: 18px; align-items: end; }
+.ziel-g .ordner3 { width: 250px; }
+.ziel-g .oreiter { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+.ziel-g .ordner3.ueber .vorn { transform: rotateX(-34deg); }
+.ziel-g .ordner3.ueber .rueck { box-shadow: 0 0 0 2px var(--mint), inset 0 1px 0 #ffffff22; }
+.ziel-info { width: 236px; display: grid; gap: 6px; align-content: end; padding-bottom: 6px; }
+.ziel-info b { font-size: 14px; }
+.ziel-info .hinweis-o { text-align: left; font-size: 12px; }
+.eigen-wahl { display: flex; flex-wrap: wrap; gap: 5px; }
+.aus-info { font-size: 12px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.aus-info svg { width: 12px; height: 12px; color: var(--mint); }
+
+/* 2 · Je Dateiart */
+.arten { display: grid; gap: 8px; }
+.arten-kopf { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.arten-reihe { display: flex; gap: 12px; }
+.artkarte { --oc: var(--k); position: relative; width: 152px; display: grid; justify-items: center; gap: 4px; padding: 14px 8px 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--k) 32%, var(--line)); background: linear-gradient(180deg, color-mix(in srgb, var(--k) 9%, var(--panel)), var(--panel)); text-align: center; transition: transform .25s var(--feder), box-shadow .25s; box-shadow: 0 2px 0 var(--line); }
+.artkarte .mo { --oc: var(--k); }
+.artkarte:hover, .artkarte[aria-expanded="true"] { transform: translateY(-4px); box-shadow: 0 18px 28px -14px var(--schatten), 0 2px 0 var(--line); }
+.artkarte:hover .mo .vorn, .artkarte[aria-expanded="true"] .mo .vorn { transform: rotateX(-28deg); }
+.ak-titel { font-weight: 600; font-size: 13px; margin-top: 4px; }
+.ak-titel small { font: 500 10.5px var(--mono); color: var(--muted); margin-left: 3px; }
+.ak-ziel { font-size: 11.5px; display: inline-flex; gap: 4px; align-items: center; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ak-ziel .pfeil { color: var(--muted); }
+.ak-pfad { font: 9.5px var(--mono); color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 3 · Regal */
+.bandende.b3 { grid-template-columns: minmax(120px, 1fr) auto; }
+.regal { display: flex; gap: 12px; align-items: stretch; padding-top: 12px; }
+.fach { position: relative; width: 150px; display: grid; justify-items: center; align-content: start; gap: 6px; padding: 18px 8px 10px; border-radius: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); transition: transform .25s var(--feder), border-color .2s, box-shadow .2s; }
+.fach.std { border-color: var(--mint-rahmen); background: color-mix(in srgb, var(--mint) 5%, var(--panel)); }
+.fach.ueber { border-color: var(--mint); transform: translateY(-5px); box-shadow: 0 18px 30px -14px color-mix(in srgb, var(--mint) 55%, transparent); }
+.fach.ueber .mo .vorn { transform: rotateX(-32deg); }
+.std-marke { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); font: 600 9.5px/16px var(--mono); padding: 0 8px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); letter-spacing: .08em; white-space: nowrap; }
+.fach .x-btn { position: absolute; top: 5px; right: 5px; width: 22px; height: 22px; border-radius: 6px; }
+.fach .ziel-pfad { font: 9.5px var(--mono); color: var(--muted); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fach .btn { padding: 4px 10px; font-size: 11.5px; }
+.link-btn { border: 0; background: transparent; padding: 1px 4px; border-radius: 5px; font-size: 11px; color: var(--muted); text-decoration: underline; text-underline-offset: 2px; }
+.link-btn:hover { color: var(--ink); }
+.fach .std-text { font-size: 11px; color: var(--mint); padding: 1px 4px; }
+.fach.neu { border-style: dashed; align-content: center; gap: 4px; color: var(--muted); font-size: 12.5px; }
+.fach.neu .plus { width: 44px; height: 44px; border-radius: 12px; border: 1.5px dashed var(--line-stark); display: grid; place-items: center; font-size: 22px; line-height: 1; }
+.fach.neu:hover { border-color: var(--mint-rahmen); color: var(--ink); }
+.fach.neu small { font-size: 10.5px; color: var(--leise); text-align: center; }
+.griff { width: 14px; height: 18px; color: var(--leise); }
+.kz.zieht { opacity: .45; transform: scale(.98); }
+
+/* 4 · Regeln */
+.bandende.b4 { grid-template-columns: 1fr 180px; align-items: stretch; }
+.regeln { padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line); background: var(--panel); box-shadow: 0 16px 30px -20px var(--schatten); display: grid; gap: 8px; }
+.regeln-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.regeln ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.regel { display: grid; grid-template-columns: 24px auto auto auto 1fr auto; gap: 8px; align-items: center; padding: 6px 8px; border-radius: 10px; background: var(--panel2); border: 1px solid var(--line); transition: border-color .2s, background .2s; }
+.regel.hl { border-color: var(--mint); background: color-mix(in srgb, var(--mint) 7%, var(--panel2)); }
+.regel.sonst { background: transparent; border-style: dashed; }
+.rnr { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font: 600 11px var(--mono); background: var(--tief); color: var(--muted); border: 1px solid var(--line); }
+.wort { color: var(--muted); font-size: 12.5px; }
+.sel { position: relative; display: inline-block; }
+.sel select { appearance: none; -webkit-appearance: none; font: 500 12.5px var(--schrift); color: var(--ink); background: var(--tief); border: 1px solid var(--line-stark); border-radius: 8px; padding: 5px 26px 5px 9px; cursor: pointer; }
+.sel select:hover { border-color: var(--muted); }
+.sel::after { content: '▾'; position: absolute; right: 9px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: 11px; }
+.sel option { background: var(--panel); color: var(--ink); }
+.treffer { font: 500 11px var(--mono); color: var(--muted); justify-self: end; white-space: nowrap; }
+.rk { display: flex; gap: 4px; }
+.rb { font: 600 10px var(--mono); padding: 1px 6px; border-radius: 5px; background: var(--tief); border: 1px solid var(--line-stark); color: var(--ink); }
+.regel-ordner { display: grid; justify-items: center; align-content: end; gap: 8px; padding-bottom: 4px; }
+.regel-ordner .hinweis-o { font-size: 11.5px; color: var(--muted); text-align: center; }
+
+/* 5 · Pfad-Spalte */
+.bandende.b5 { grid-template-columns: minmax(180px, 1fr) auto; padding-block: 8px 10px; }
+.b5 .band-k { height: 110px; }
+.b5-ziel { display: flex; gap: 14px; align-items: end; }
+.b5-ziel .txt { display: grid; gap: 3px; width: 210px; padding-bottom: 8px; }
+.tkopf { display: grid; grid-template-columns: 18px 1fr auto; gap: 10px; align-items: center; padding: 2px 12px; }
+.fuer-alle { display: inline-flex; gap: 8px; align-items: center; }
+.dd { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line-stark); background: var(--panel2); border-radius: 9px; padding: 5px 10px; font-size: 12.5px; font-weight: 600; }
+.dd svg { width: 13px; height: 13px; }
+.dd:hover { border-color: var(--muted); }
+.auswahl { display: flex; gap: 10px; align-items: center; min-height: 38px; padding: 4px 12px; border-radius: 10px; border: 1px solid transparent; font-size: 12.5px; color: var(--muted); }
+.auswahl.aktiv { background: var(--mint-flaeche); border-color: var(--mint-rahmen); color: var(--ink); }
+.auswahl b { color: var(--mint); }
+.cb { display: grid; place-items: center; cursor: pointer; }
+.cb input { accent-color: var(--mint); width: 15px; height: 15px; margin: 0; cursor: pointer; }
+.kz.gewaehlt { background: color-mix(in srgb, var(--mint) 6%, var(--panel)); }
+.krumen-w { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.krumen-w > svg { width: 12px; height: 12px; color: var(--mint); flex: none; }
+.krumen { display: flex; align-items: center; min-width: 0; overflow: hidden; font: 11px var(--mono); color: var(--muted); white-space: nowrap; }
+.seg { border: 0; background: transparent; padding: 2px 4px; border-radius: 5px; font: inherit; color: var(--muted); flex: none; }
+.seg:hover { background: var(--hover); color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+.seg.neu { color: var(--mint); }
+.sep { opacity: .45; flex: none; }
+.datei { color: var(--ink); overflow: hidden; text-overflow: ellipsis; padding-left: 4px; min-width: 0; }
+.aendern { flex: none; margin-left: auto; width: 24px; height: 22px; border-radius: 6px; }
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Schritt 3 · Speicherort</div>
+    <h1>Wohin mit den fertigen Dateien? Fünf Konzepte</h1>
+    <p class="lead">Eine Einstellung für alle Dateien reicht meistens. Manchmal soll aber das Video auf den Desktop und der Rest neben dem Original bleiben. Jedes Konzept verbindet eine globale Vorgabe mit Ausnahmen je Datei, manche auch je Dateiart. Die sechs Beispieldateien kommen aus fünf verschiedenen Ordnern, jede Zeile zeigt den echten Zielpfad. Alles ist anklickbar.</p>
+  </header>
+
+  <section class="idee"><div class="idee-kopf"><h2>1 · Global mit Ausnahmen <small>ein Ordner für alle, einzelne Dateien abweichend</small></h2></div>
+    <p>Oben steht wie bisher der Ordner mit den drei Reitern, er gilt für alle Dateien. Jede Zeile hat rechts ein unauffälliges Ordner-Schild „wie oben“. Ein Klick darauf öffnet ein kleines Fenster direkt an der Zeile, dort bekommt die Datei ein eigenes Ziel. Solche Ausnahmen bekommen eine Mint-Markierung und eine Nadel und lassen sich gesammelt zurücksetzen.</p>
+    <div class="buehne" id="w1"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> der einfache Fall bleibt ein einziger Klick, Ausnahmen sind klar sichtbar</span><span class="minus"><b>Schwäche:</b> bei vielen Ausnahmen muss man jede Zeile einzeln anfassen</span></div></section>
+
+  <section class="idee"><div class="idee-kopf"><h2>2 · Ziel je Dateiart <small>vier Ordner in den Farben der Dateiarten</small></h2></div>
+    <p>Statt eines Ordners stehen am Bandende vier kleine Ordner: Bilder, Audio, Video, Dokumente. Jede Dateiart hat ihr eigenes Ziel, die Dateien folgen ihrer Art. Einzelne Dateien können trotzdem abweichen. „Allen dasselbe geben“ setzt alle vier Ordner auf einmal.</p>
+    <div class="buehne" id="w2"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> passt zu wiederkehrenden Gewohnheiten, etwa Fotos immer auf den Desktop</span><span class="minus"><b>Schwäche:</b> vier Entscheidungen statt einer, auch wenn nur eine Art im Auftrag ist</span></div></section>
+
+  <section class="idee"><div class="idee-kopf"><h2>3 · Ordner-Regal <small>Dateien auf Ordner ziehen</small></h2></div>
+    <p>Am Ende des Bands steht ein Regal mit mehreren Zielordnern nebeneinander. Man zieht Zeilen aus der Liste auf einen Ordner, oder wählt über „Ziel“ an der Zeile per Tastatur. Jeder Ordner zeigt, wie viele Dateien er bekommt, und hat „Alle hierher“. Der Standard-Ordner nimmt alle Dateien, die nicht verschoben wurden. Neue Ordner kommen über „Ordner hinzufügen“ oder indem man einen Ordner aus dem Explorer auf das Regal zieht.</p>
+    <div class="buehne" id="w3"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> sehr anschaulich, man sieht alle Ziele gleichzeitig</span><span class="minus"><b>Schwäche:</b> Ziehen ist für viele ungewohnt, das Regal braucht viel Breite</span></div></section>
+
+  <section class="idee"><div class="idee-kopf"><h2>4 · Regeln in Alltagssprache <small>„Bilder speichern nach …“</small></h2></div>
+    <p>Eine kurze Liste von Sätzen legt fest, wohin was kommt. Die erste passende Regel gilt, die letzte Zeile „Alles andere“ ist die globale Vorgabe. Regeln lassen sich mit Auswahllisten ändern, verschieben und löschen. Die Liste zeigt live, welche Regel für jede Datei greift. Fährt man über eine Regel, leuchten ihre Dateien auf. Einzelne Dateien können die Regeln übergehen.</p>
+    <div class="buehne" id="w4"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> am mächtigsten, Regeln könnten dauerhaft gespeichert werden</span><span class="minus"><b>Schwäche:</b> „erste passende Regel“ muss man verstehen, für Einsteiger zu viel</span></div></section>
+
+  <section class="idee"><div class="idee-kopf"><h2>5 · Pfad-Spalte mit Mehrfachauswahl <small>wie im Datei-Explorer</small></h2></div>
+    <p>Die Liste bekommt eine Pfad-Spalte. Über der Liste steht „Für alle: …“. Jeder Pfad ist eine Brotkrumen-Leiste: Ein Klick auf einen Ordner im Pfad speichert die Datei genau dort, der Pfeil daneben öffnet die volle Auswahl. Mit Häkchen (auch Umschalt-Klick für Bereiche) wählt man mehrere Dateien und ändert ihr Ziel gemeinsam.</p>
+    <div class="buehne" id="w5"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> vertraut aus Datei-Programmen, gut für viele Dateien auf einmal</span><span class="minus"><b>Schwäche:</b> wirkt technischer, der Pfad dominiert die Liste</span></div></section>
+
+  <section class="idee"><h2>Mein Vorschlag</h2>
+    <div class="empf"><p><b>1 · Global mit Ausnahmen</b> als Standard. Wer nichts ändern will, sieht nur den bekannten Ordner mit drei Reitern. Das Schild „wie oben“ an jeder Zeile verrät leise, dass es auch einzeln geht, ohne die Liste zu überladen.</p>
+      <p><b>2 · Ziel je Dateiart</b> als erweiterte Option in den Einstellungen („Ziel je Dateiart festlegen“). Ist sie an, werden aus dem einen Ordner vier, und das Schild in der Zeile heißt „wie Bilder“ statt „wie oben“. Aus <b>5</b> übernehmen wir die Mehrfachauswahl (Häkchen + „Ziel für Auswahl ändern“), sobald die Liste mehr als etwa zehn Dateien hat.</p>
+      <p class="muted">Die Auflösung „Datei → Zielpfad“ gehört in <span class="mono">Kvertis.Queue</span> (plattformneutral, testbar): globale Vorgabe, optional je Dateiart, dann Ausnahme je Datei. Namenskonflikte (hier <span class="mono">Scan.jpg</span> neben dem Original) löst sie mit „ (2)“ und zeigt das vor dem Start.</p>
+      <p class="muted"><b>In WinUI:</b></p>
+      <p class="muted">1 · Reiter als SelectorBar oder RadioButtons, das Zeilen-Schild als Button mit Flyout, „Wählen …“ über den FolderPicker. Nur Standard-Steuerelemente, geringer Aufwand.<br>
+      2 · Vier Karten in einem ItemsRepeater, gleiches Flyout; Vorgaben je Dateiart in den lokalen Einstellungen. Geringer bis mittlerer Aufwand.<br>
+      3 · ListView mit CanDragItems, Ordner mit AllowDrop; Ordner aus dem Explorer kommen als StorageItems an. Tastaturweg über MenuFlyout ist Pflicht. Höchster Aufwand, Barrierefreiheit extra prüfen.<br>
+      4 · Regeln als ListView mit ComboBoxen, Reihenfolge per Schaltflächen; Regel-Logik in Kvertis.Queue gut testbar. Mittlerer Aufwand.<br>
+      5 · ListView mit SelectionMode „Multiple“ und das fertige BreadcrumbBar-Steuerelement je Zeile. Mittlerer Aufwand, bei vielen Zeilen auf Leistung achten.</p></div></section>
+</main>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: n < 0.1 ? 2 : 1, maximumFractionDigits: n < 0.1 ? 2 : 1 });
+  const F = [
+    { n: 'IMG_2041.heic', k: 'bild', von: 'HEIC', nach: 'JPG', mb: 8.4, neu: 1.1, dir: 'Bilder\\Urlaub 2026' },
+    { n: 'Scan.jpg', k: 'bild', von: 'PNG', nach: 'JPG', mb: 2.2, neu: 0.5, dir: 'Downloads' },
+    { n: 'Probe_03.wav', k: 'audio', von: 'WAV', nach: 'MP3', mb: 19.7, neu: 2.6, dir: 'Musik\\Proben' },
+    { n: 'Interview.m4a', k: 'audio', von: 'M4A', nach: 'MP3', mb: 6.1, neu: 4.8, dir: 'Musik\\Proben' },
+    { n: 'Urlaub_Clip.mov', k: 'video', von: 'MOV', nach: 'MP4', mb: 148, neu: 66, dir: 'Videos' },
+    { n: 'Protokoll.docx', k: 'dok', von: 'DOCX', nach: 'TXT', mb: 0.4, neu: 0.02, dir: 'Dokumente\\Verein' }
+  ];
+  F.forEach(f => { f.out = f.n.replace(/\.[^.]+$/, '') + '.' + f.nach.toLowerCase(); });
+  const VOR = F.reduce((s, f) => s + f.mb, 0), NACH = F.reduce((s, f) => s + f.neu, 0);
+  const maxMb = Math.sqrt(Math.max(...F.map(f => f.mb)));
+  const ART = { bild: 'Bilder', audio: 'Audio', video: 'Video', dok: 'Dokumente' };
+  const ARTS = Object.keys(ART);
+  let RECENT = ['Desktop', 'Dokumente\\Export', 'Bilder\\Konvertiert'];
+  const DIALOG = ['Desktop', 'Desktop\\Fotos', 'Bilder', 'Bilder\\Konvertiert', 'Dokumente', 'Dokumente\\Export', 'Musik', 'Musik\\MP3', 'Videos', 'Videos\\Fertig'];
+  const merke = o => { RECENT = [o, ...RECENT.filter(x => x !== o)].slice(0, 4); };
+
+  const ORDNER = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1.8 4.2c0-.7.5-1.2 1.2-1.2h3l1.4 1.5H13c.7 0 1.2.5 1.2 1.2v6.1c0 .7-.5 1.2-1.2 1.2H3c-.7 0-1.2-.5-1.2-1.2z"/></svg>';
+  const PIN = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M9.8 1.2l5 5-1.5.5-2.5 2.5.2 3.1-1.2 1.2-2.6-2.6-3.8 3.8-.9-.9 3.8-3.8L3.7 7.6l1.2-1.2 3.1.2 2.5-2.5z"/></svg>';
+  const PFEIL = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>';
+  const X = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8"/></svg>';
+  const HOCH = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 10l4-4 4 4"/></svg>';
+  const RESET = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 8a5 5 0 105-5H5"/><path d="M6.5 1L4.5 3l2 2"/></svg>';
+  const GRIFF = '<svg class="griff" viewBox="0 0 14 18" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="1.3"/><circle cx="10" cy="4" r="1.3"/><circle cx="4" cy="9" r="1.3"/><circle cx="10" cy="9" r="1.3"/><circle cx="4" cy="14" r="1.3"/><circle cx="10" cy="14" r="1.3"/></svg>';
+  const SCHLOSS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>';
+
+  // Ziele: {t:'neben'} | {t:'unter'} | {t:'eigen', o:'Desktop'}
+  const gleich = (a, b) => !!a && !!b && a.t === b.t && (a.t !== 'eigen' || a.o === b.o);
+  const dateiName = (f, z) => z.t === 'neben' && f.out.toLowerCase() === f.n.toLowerCase() ? f.out.replace(/(\.[^.]+)$/, ' (2)$1') : f.out;
+  const teile = (f, z) => ({ segs: z.t === 'eigen' ? z.o.split('\\') : f.dir.split('\\').concat(z.t === 'unter' ? ['Kvertis'] : []), datei: dateiName(f, z) });
+  const zielOrdner = (f, z) => teile(f, z).segs.join('\\');
+  const pfadText = (f, z) => { const t = teile(f, z); return '…\\' + t.segs.concat(t.datei).join('\\'); };
+  const pfadHtml = (f, z) => { const t = teile(f, z); const s = t.segs.map((x, j) => z.t !== 'neben' && j === t.segs.length - 1 ? `<em>${x}</em>` : x); return '…\\' + s.concat(z.t === 'neben' ? `<em>${t.datei}</em>` : t.datei).join('\\'); };
+  const zielKurz = z => z.t === 'neben' ? 'Neben dem Original' : z.t === 'unter' ? 'Unterordner „Kvertis“' : z.o;
+  const zielChip = z => z.t === 'neben' ? 'Neben Original' : z.t === 'unter' ? 'Unterordner' : z.o;
+  const zielEtiK = z => z.t === 'neben' ? 'NEBEN ORIGINAL' : z.t === 'unter' ? 'UNTERORDNER' : z.o.split('\\').pop().toUpperCase();
+  const zielEti = z => z.t === 'neben' ? 'NEBEN DEM ORIGINAL' : z.t === 'unter' ? 'UNTERORDNER KVERTIS' : z.o.split('\\').pop().toUpperCase();
+  const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+  const hinweis = (z, fs) => z.t === 'neben' ? `Jede Datei bleibt in ihrem Ordner · ${new Set(fs.map(f => f.dir)).size} Ordner` : z.t === 'unter' ? 'Neuer Ordner „Kvertis“ neben jedem Original' : `Alles in einen Ordner: …\\${z.o}`;
+  const papiere = fs => fs.slice(0, 5).map((f, j) => `<i data-f="${f.nach}" style="--x:${6 + (j % 3) * 26}px;top:${-j * 2}px;transform:rotate(${(j % 2 ? 1 : -1) * (j * .6 + .4)}deg)"></i>`).join('');
+  function ordnerAusDrop(e) {
+    const it = [...(e.dataTransfer?.items || [])].find(x => x.kind === 'file');
+    const en = it && it.webkitGetAsEntry ? it.webkitGetAsEntry() : null;
+    return en && en.isDirectory ? en.name : null;
+  }
+  function mitFokus(root, fn) {
+    const a = document.activeElement, key = a && root.contains(a) ? a.dataset.fokus : null;
+    fn();
+    if (key && !root.contains(a)) root.querySelector(`[data-fokus="${CSS.escape(key)}"]`)?.focus();
+  }
+
+  // ---------- Popover-Infrastruktur ----------
+  let offen = null;
+  function schliesse(fokus = true) {
+    if (!offen) return;
+    const o = offen; offen = null;
+    o.el.remove(); o.anchor.setAttribute('aria-expanded', 'false');
+    if (fokus && o.anchor.isConnected) o.anchor.focus();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && offen) { e.preventDefault(); schliesse(); } });
+  document.addEventListener('pointerdown', e => { if (offen && !offen.el.contains(e.target) && !offen.anchor.contains(e.target)) schliesse(false); }, true);
+  window.addEventListener('resize', () => schliesse(false));
+  function platziere(el, anchor) {
+    if (!el.isConnected) document.body.appendChild(el);
+    const r = anchor.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight, vw = document.documentElement.clientWidth;
+    let x = Math.max(12, Math.min(r.right - w, vw - w - 12));
+    if (r.left + w < vw - 12 && r.right - w < 12) x = r.left;
+    let y = r.bottom + 6;
+    if (y + h > innerHeight - 8 && r.top - h - 6 > 8) y = r.top - h - 6;
+    el.style.left = (x + scrollX) + 'px'; el.style.top = (y + scrollY) + 'px';
+  }
+  function oeffne(anchor, el) {
+    if (offen && offen.anchor === anchor) { schliesse(); return false; }
+    schliesse(false);
+    offen = { el, anchor }; anchor.setAttribute('aria-expanded', 'true');
+    return true;
+  }
+  const baumHtml = akt => `<div class="baum" role="group" aria-label="Ordner wählen"><span class="label">Ordner wählen · im Programm der System-Dialog</span>${DIALOG.map(d => `<button class="bo" data-key="bo" data-o="${d}" data-fokus="bo-${d}" style="--t:${d.split('\\').length - 1}" aria-pressed="${d === akt}">${ORDNER}${d.split('\\').pop()}</button>`).join('')}</div>`;
+
+  // o: { titel, dateien, wert() -> Ziel | null (erbt) | undefined (gemischt), erbe() -> {label, z} | null, setze(z|null), eff(f) }
+  function zielPopover(anchor, o) {
+    const el = document.createElement('div');
+    if (!oeffne(anchor, el)) return;
+    el.className = 'pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', o.titel);
+    let baum = false;
+    function male(fokus) {
+      const v = o.wert(), erbe = o.erbe ? o.erbe() : null;
+      const an = k => v === undefined ? false : k === 'erbe' ? v === null : !!v && v.t === k;
+      const opt = (k, t, s) => `<button class="opt ${k}" data-key="${k}" data-fokus="o-${k}" aria-pressed="${an(k)}"><span class="rad" aria-hidden="true"></span><span>${t}</span><small>${s}</small></button>`;
+      const eig = v && v.t === 'eigen';
+      const fs = o.dateien;
+      el.innerHTML = `<div class="pop-kopf"><b>${o.titel}</b><button class="ico" data-key="zu" aria-label="Schließen">${X}</button></div>
+        <div class="opts">
+          ${erbe ? opt('erbe', erbe.label, 'folgt: ' + zielKurz(erbe.z)) : ''}
+          ${opt('neben', 'Neben dem Original', 'jede Datei bleibt in ihrem Ordner')}
+          ${opt('unter', 'Unterordner „Kvertis“', 'neuer Ordner neben dem Original')}
+          ${opt('eigen', 'Eigener Ordner', 'alles an einen Ort')}
+        </div>
+        ${eig ? `<div class="chips-o" role="group" aria-label="Zuletzt benutzte Ordner">${RECENT.map(r => `<button class="ochip" data-key="r" data-o="${r}" data-fokus="r-${r}" aria-pressed="${v.o === r}">${ORDNER}${r}</button>`).join('')}<button class="ochip w" data-key="baum" data-fokus="baum" aria-expanded="${baum}">Wählen …</button></div>` : ''}
+        ${eig && baum ? baumHtml(v.o) : ''}
+        <div class="vorschau"><span class="label">Wird gespeichert als</span>${fs.slice(0, 3).map(f => `<span title="${pfadText(f, o.eff(f))}">${pfadHtml(f, o.eff(f))}</span>`).join('')}${fs.length > 3 ? `<span>+ ${fs.length - 3} weitere</span>` : ''}</div>
+        <div class="pop-fuss"><span class="klein">Esc oder Klick daneben schließt</span><button class="btn btn-mint" data-key="zu" data-fokus="fertig">Fertig</button></div>`;
+      platziere(el, anchor);
+      (fokus && el.querySelector(`[data-fokus="${CSS.escape(fokus)}"]`) || el.querySelector('.opt[aria-pressed="true"]') || el.querySelector('.opt'))?.focus();
+    }
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-key]'); if (!b) return;
+      const k = b.dataset.key, v = o.wert();
+      let fokus = b.dataset.fokus;
+      if (k === 'zu') return schliesse();
+      if (k === 'erbe') o.setze(null);
+      else if (k === 'neben' || k === 'unter') o.setze({ t: k });
+      else if (k === 'eigen') o.setze({ t: 'eigen', o: v && v.t === 'eigen' ? v.o : RECENT[0] });
+      else if (k === 'r') o.setze({ t: 'eigen', o: b.dataset.o });
+      else if (k === 'baum') baum = !baum;
+      else if (k === 'bo') { merke(b.dataset.o); o.setze({ t: 'eigen', o: b.dataset.o }); baum = false; fokus = 'r-' + b.dataset.o; }
+      male(fokus);
+    });
+    male();
+  }
+  function ordnerDialog(anchor, titel, gewaehlt) {
+    const el = document.createElement('div');
+    if (!oeffne(anchor, el)) return;
+    el.className = 'pop'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', titel);
+    el.innerHTML = `<div class="pop-kopf"><b>${titel}</b><button class="ico" data-key="zu" aria-label="Schließen">${X}</button></div>
+      <span class="label">Zuletzt benutzt</span>
+      <div class="chips-o" style="padding-left:0">${RECENT.map(r => `<button class="ochip" data-key="bo" data-o="${r}">${ORDNER}${r}</button>`).join('')}</div>
+      ${baumHtml('').replace('class="baum"', 'class="baum" style="margin-left:0"')}
+      <span class="klein">Im Programm: Ordner auch direkt aus dem Explorer hierher ziehen.</span>`;
+    el.addEventListener('click', e => {
+      const b = e.target.closest('[data-key]'); if (!b) return;
+      if (b.dataset.key === 'zu') return schliesse();
+      merke(b.dataset.o); schliesse(); gewaehlt(b.dataset.o);
+    });
+    platziere(el, anchor);
+    el.querySelector('.ochip')?.focus();
+  }
+  // items: [{label, sub, an, fn}] oder {trenn:true}
+  function menue(anchor, titel, items) {
+    const el = document.createElement('div');
+    if (!oeffne(anchor, el)) return;
+    el.className = 'pop menue'; el.setAttribute('role', 'menu'); el.setAttribute('aria-label', titel);
+    el.innerHTML = `<span class="label">${titel}</span>` + items.map((it, n) => it.trenn ? '<div class="trenn" role="separator"></div>' : `<button class="mi" role="menuitemradio" aria-checked="${!!it.an}" data-n="${n}" tabindex="-1">${it.icon || ORDNER}<span>${it.label}</span><small>${it.sub || ''}</small></button>`).join('');
+    const knoepfe = $$('.mi', el);
+    el.addEventListener('keydown', e => {
+      const i = knoepfe.indexOf(document.activeElement);
+      const zu = { ArrowDown: i + 1, ArrowUp: i - 1, Home: 0, End: knoepfe.length - 1 }[e.key];
+      if (zu !== undefined) { e.preventDefault(); knoepfe[(zu + knoepfe.length) % knoepfe.length].focus(); }
+      if (e.key === 'Tab') schliesse(false);
+    });
+    el.addEventListener('click', e => { const b = e.target.closest('.mi'); if (!b) return; schliesse(); items[+b.dataset.n].fn(); });
+    platziere(el, anchor);
+    (el.querySelector('.mi[aria-checked="true"]') || knoepfe[0]).focus();
+  }
+
+  // ---------- Bausteine ----------
+  const band = (n = 3) => `<div class="band-k" aria-hidden="true"><div class="schild-k"><span class="label">Förderband</span><b>6 Dateien · ${mb(VOR)} → ${mb(NACH)} MB</b></div>
+    <div class="gurt-k"></div><span class="rolle-k l"></span><span class="rolle-k r"></span>
+    ${[F[0], F[2], F[4]].slice(0, n).map((f, j) => `<div class="blatt-k" data-f="${f.nach}" style="right:${14 + j * 76}px"><span>${f.out}</span><small>${mb(f.neu)} MB</small></div>`).join('')}</div>`;
+  const zeilen = (cls, vorne, hinten) => F.map((f, i) => `<div class="kz z ${cls} k-${f.k}" data-i="${i}">${vorne ? vorne(f, i) : ''}<span class="chip">${f.von}</span><span class="nm" title="${f.n}">${f.n}</span><span class="pf" aria-hidden="true">→</span><span class="eti">${f.nach}</span>
+    <span class="balken3d" aria-hidden="true"><i class="vor" style="--w:${Math.sqrt(f.mb) / maxMb * 100}%"></i><i class="nach" style="--w:${Math.sqrt(f.neu) / maxMb * 100}%"></i></span>
+    <span class="gr">${mb(f.mb)} → <b>${mb(f.neu)} MB</b></span><span class="pfad-z"></span>${hinten ? hinten(f, i) : ''}</div>`).join('');
+  function fenster(w, inhalt, eff) {
+    w.innerHTML = `<div class="win">
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div></div>
+      <div class="faden"><span class="kn"><i>✓</i><b>Dateien</b><small>6 erkannt</small></span><span class="sg"></span><span class="kn"><i>✓</i><b>Ziel</b><small>JPG · MP3 · MP4 · TXT</small></span><span class="sg"></span><span class="kn an"><i>3</i><b>Umwandeln</b><small>≈ ${mb(NACH)} MB</small></span></div>
+      <div class="inhalt">${inhalt}</div>
+      <div class="leiste"><span class="vertrauen">${SCHLOSS}Ihre Dateien verlassen nie diesen PC.</span><span class="platz"></span><button class="btn zurueck">Zurück</button><button class="taste los">Umwandeln <small>6 Dateien</small></button></div>
+      <div class="toast" role="status" aria-live="polite"></div>
+    </div>`;
+    const toast = $('.toast', w); let t;
+    const zeig = txt => { toast.textContent = txt; toast.classList.add('an'); clearTimeout(t); t = setTimeout(() => toast.classList.remove('an'), 2800); };
+    $('.los', w).addEventListener('click', () => { const n = new Set(F.map((f, i) => zielOrdner(f, eff(i)))).size; zeig(`Demo: 6 Dateien würden jetzt in ${plural(n, 'Ordner', 'verschiedene Ordner')} gespeichert.`); });
+    $('.zurueck', w).addEventListener('click', () => zeig('Demo: Hier ginge es zurück zu Schritt 2.'));
+  }
+  const setzePfad = (w, eff) => $$('.kz', w).forEach((z, i) => { const p = $('.pfad-z', z); if (p) { p.innerHTML = pfadHtml(F[i], eff(i)); p.title = pfadText(F[i], eff(i)); } });
+
+  // ---------- 1 · Global mit Ausnahmen ----------
+  (function c1() {
+    const w = $('#w1');
+    let glob = { t: 'neben' };
+    const aus = [null, null, null, null, { t: 'eigen', o: 'Desktop' }, null];
+    const eff = i => aus[i] || glob;
+    const TABS = [['neben', 'Neben Original'], ['unter', 'Unterordner'], ['eigen', 'Eigener …']];
+    fenster(w, `<div class="bandende">${band(3)}
+      <div class="ziel-g">
+        <div class="ordner3">
+          <div class="reiterleiste" role="group" aria-label="Speicherort für alle Dateien">${TABS.map(([t, l]) => `<button class="oreiter" data-t="${t}" aria-pressed="false">${l}</button>`).join('')}</div>
+          <span class="rueck"></span><div class="papiere"></div>
+          <span class="vorn"><span class="o-etikett"><b class="o-name"></b><small class="o-pfad"></small></span></span>
+          <span class="zaehl"></span>
+        </div>
+        <div class="ziel-info">
+          <span class="label">Für alle Dateien</span>
+          <b class="zi-titel"></b>
+          <span class="hinweis-o"></span>
+          <div class="eigen-wahl" role="group" aria-label="Zuletzt benutzte Ordner"><span class="chips"></span><button class="ochip w waehlen" aria-haspopup="dialog" aria-expanded="false">Wählen …</button></div>
+          <span class="klein">Oder einen Ordner direkt auf den Ordner links ziehen.</span>
+        </div>
+      </div></div>
+      <div class="liste2"><div class="liste2-kopf"><span class="label">Dateien in diesem Auftrag</span><span class="rechts"><span class="aus-info"></span><button class="btn reset">Ausnahmen zurücksetzen</button></span></div>
+      <div class="kp-liste">${zeilen('', null, (f, i) => `<button class="zk" data-i="${i}" aria-haspopup="dialog" aria-expanded="false"></button>`)}</div></div>`, eff);
+    const ordner = $('.ordner3', w);
+    function update() {
+      $$('.oreiter', w).forEach(b => { const an = b.dataset.t === glob.t; b.classList.toggle('an', an); b.setAttribute('aria-pressed', an); });
+      const erben = F.filter((f, i) => !aus[i]), bsp = erben[0] || F[0];
+      $('.o-name', w).textContent = zielEti(glob); $('.o-pfad', w).innerHTML = pfadHtml(bsp, glob);
+      const z = $('.zaehl', ordner); z.textContent = erben.length; z.hidden = !erben.length;
+      $('.papiere', ordner).innerHTML = papiere(erben.slice(0, 4));
+      $('.zi-titel', w).textContent = zielKurz(glob);
+      $('.hinweis-o', w).textContent = hinweis(glob, erben.length ? erben : F);
+      const ew = $('.eigen-wahl', w); ew.hidden = glob.t !== 'eigen';
+      mitFokus(ew, () => { $('.chips', ew).innerHTML = RECENT.map(r => `<button class="ochip" data-o="${r}" data-fokus="c-${r}" aria-pressed="${glob.o === r}">${ORDNER}${r}</button>`).join(' '); });
+      setzePfad(w, eff);
+      $$('.zk', w).forEach(b => {
+        const i = +b.dataset.i, a = aus[i];
+        b.classList.toggle('eigen', !!a); b.closest('.kz').classList.toggle('ausnahme', !!a);
+        b.innerHTML = a ? `${PIN}<span>${zielChip(a)}</span>` : `${ORDNER}<span>wie oben</span>`;
+        b.setAttribute('aria-label', `Speicherort für ${F[i].n}: ${a ? 'eigenes Ziel, ' + zielKurz(a) : 'wie oben'}. Ändern`);
+      });
+      const n = aus.filter(Boolean).length;
+      $('.aus-info', w).innerHTML = n ? `${PIN}${plural(n, 'Datei hat', 'Dateien haben')} ein eigenes Ziel` : 'Alle Dateien folgen „für alle“';
+      $('.reset', w).disabled = !n;
+    }
+    $('.reiterleiste', w).addEventListener('click', e => { const b = e.target.closest('.oreiter'); if (!b) return; const t = b.dataset.t; glob = t === 'eigen' ? { t, o: glob.t === 'eigen' ? glob.o : RECENT[0] } : { t }; update(); });
+    $('.eigen-wahl', w).addEventListener('click', e => { const b = e.target.closest('.ochip[data-o]'); if (b) { glob = { t: 'eigen', o: b.dataset.o }; update(); } });
+    $('.waehlen', w).addEventListener('click', e => ordnerDialog(e.currentTarget, 'Ordner für alle Dateien', o => { glob = { t: 'eigen', o }; update(); }));
+    $('.reset', w).addEventListener('click', () => { aus.fill(null); update(); $('.oreiter.an', w).focus(); });
+    $('.kp-liste', w).addEventListener('click', e => {
+      const b = e.target.closest('.zk'); if (!b) return; const i = +b.dataset.i;
+      zielPopover(b, { titel: `Ziel für ${F[i].n}`, dateien: [F[i]], wert: () => aus[i], erbe: () => ({ label: 'Wie oben (für alle)', z: glob }), setze: z => { aus[i] = z; update(); }, eff: () => eff(i) });
+    });
+    ordner.addEventListener('dragover', e => { if (e.dataTransfer.types.includes('Files')) { e.preventDefault(); ordner.classList.add('ueber'); } });
+    ordner.addEventListener('dragleave', () => ordner.classList.remove('ueber'));
+    ordner.addEventListener('drop', e => { e.preventDefault(); ordner.classList.remove('ueber'); const n = ordnerAusDrop(e); if (n) { merke(n); glob = { t: 'eigen', o: n }; update(); } });
+    update();
+  })();
+
+  // ---------- 2 · Ziel je Dateiart ----------
+  (function c2() {
+    const w = $('#w2');
+    const art = { bild: { t: 'eigen', o: 'Desktop' }, audio: { t: 'neben' }, video: { t: 'unter' }, dok: { t: 'neben' } };
+    const aus = Array(6).fill(null);
+    const eff = i => aus[i] || art[F[i].k];
+    fenster(w, `<div class="bandende">${band(2)}
+      <div class="arten"><div class="arten-kopf"><span class="label">Ziel je Dateiart</span><button class="btn alle-gleich" aria-haspopup="dialog" aria-expanded="false">Allen dasselbe geben …</button></div>
+      <div class="arten-reihe">${ARTS.map(k => { const n = F.filter(f => f.k === k).length; return `<button class="artkarte k-${k}" data-k="${k}" aria-haspopup="dialog" aria-expanded="false">
+        <span class="mo"><span class="rueck"></span><span class="papiere"></span><span class="vorn"><span class="o-etikett"><b></b><small></small></span></span><span class="zaehl-m"></span></span>
+        <span class="ak-titel">${ART[k]}<small>${plural(n, 'Datei', 'Dateien')}</small></span>
+        <span class="ak-ziel"></span><span class="ak-pfad"></span></button>`; }).join('')}</div></div></div>
+      <div class="liste2"><div class="liste2-kopf"><span class="label">Dateien in diesem Auftrag</span><span class="rechts"><span class="aus-info"></span><button class="btn reset">Ausnahmen zurücksetzen</button></span></div>
+      <div class="kp-liste">${zeilen('', null, (f, i) => `<button class="zk" data-i="${i}" aria-haspopup="dialog" aria-expanded="false"></button>`)}</div></div>`, eff);
+    function update() {
+      $$('.artkarte', w).forEach(c => {
+        const k = c.dataset.k, z = art[k], fs = F.filter((f, i) => f.k === k && !aus[i]), bsp = fs[0] || F.find(f => f.k === k);
+        $('.papiere', c).innerHTML = papiere(fs);
+        $('.o-etikett b', c).textContent = zielEtiK(z); $('.o-etikett small', c).textContent = z.t === 'eigen' ? '…\\' + z.o : z.t === 'unter' ? '…\\Kvertis' : 'je Datei';
+        const zm = $('.zaehl-m', c); zm.textContent = fs.length; zm.hidden = !fs.length;
+        $('.ak-ziel', c).innerHTML = `<span>${zielKurz(z)}</span><span class="pfeil">▾</span>`;
+        $('.ak-pfad', c).innerHTML = pfadHtml(bsp, z); $('.ak-pfad', c).title = pfadText(bsp, z);
+        c.setAttribute('aria-label', `${ART[k]}: ${zielKurz(z)}. Ändern`);
+      });
+      setzePfad(w, eff);
+      $$('.zk', w).forEach(b => {
+        const i = +b.dataset.i, a = aus[i], k = F[i].k;
+        b.classList.toggle('eigen', !!a); b.closest('.kz').classList.toggle('ausnahme', !!a);
+        b.innerHTML = a ? `${PIN}<span>${zielChip(a)}</span>` : `<i class="punkt" aria-hidden="true"></i><span>wie ${ART[k]}</span>`;
+        b.setAttribute('aria-label', `Speicherort für ${F[i].n}: ${a ? 'eigenes Ziel, ' + zielKurz(a) : 'wie ' + ART[k]}. Ändern`);
+      });
+      const n = aus.filter(Boolean).length;
+      $('.aus-info', w).innerHTML = n ? `${PIN}${plural(n, 'Datei weicht', 'Dateien weichen')} von ihrer Art ab` : 'Alle Dateien folgen ihrer Dateiart';
+      $('.reset', w).disabled = !n;
+    }
+    $('.arten-reihe', w).addEventListener('click', e => {
+      const c = e.target.closest('.artkarte'); if (!c) return; const k = c.dataset.k;
+      zielPopover(c, { titel: `Ziel für alle ${ART[k] === 'Audio' ? 'Audio-Dateien' : ART[k] === 'Video' ? 'Videos' : ART[k]}`, dateien: F.filter(f => f.k === k), wert: () => art[k], erbe: null, setze: z => { art[k] = z; update(); }, eff: f => eff(F.indexOf(f)) });
+    });
+    $('.alle-gleich', w).addEventListener('click', e => {
+      zielPopover(e.currentTarget, { titel: 'Ein Ziel für alle Dateiarten', dateien: F, wert: () => ARTS.every(k => gleich(art[k], art.bild)) ? art.bild : undefined, erbe: null, setze: z => { ARTS.forEach(k => art[k] = { ...z }); update(); }, eff: f => eff(F.indexOf(f)) });
+    });
+    $('.reset', w).addEventListener('click', () => { aus.fill(null); update(); $('.artkarte', w).focus(); });
+    $('.kp-liste', w).addEventListener('click', e => {
+      const b = e.target.closest('.zk'); if (!b) return; const i = +b.dataset.i;
+      zielPopover(b, { titel: `Ziel für ${F[i].n}`, dateien: [F[i]], wert: () => aus[i], erbe: () => ({ label: `Wie ${ART[F[i].k]}`, z: art[F[i].k] }), setze: z => { aus[i] = z; update(); }, eff: () => eff(i) });
+    });
+    update();
+  })();
+
+  // ---------- 3 · Ordner-Regal ----------
+  (function c3() {
+    const w = $('#w3');
+    let faecher = [{ id: 'neben', z: { t: 'neben' } }, { id: 'unter', z: { t: 'unter' } }, { id: 'f1', z: { t: 'eigen', o: 'Desktop' } }];
+    let std = 'neben', zaehler = 1;
+    const zu = [null, null, null, null, 'f1', null];
+    const fach = id => faecher.find(x => x.id === id);
+    const fachVon = i => fach(zu[i]) ? zu[i] : std;
+    const eff = i => fach(fachVon(i)).z;
+    fenster(w, `<div class="bandende b3">${band(1)}<div class="regal" role="group" aria-label="Zielordner"></div></div>
+      <div class="liste2"><div class="liste2-kopf"><span class="label">Dateien in diesem Auftrag · auf einen Ordner ziehen</span><span class="klein">Tastatur: „Ziel“ an der Zeile öffnen, mit Pfeiltasten wählen</span></div>
+      <div class="kp-liste">${zeilen('z3', () => GRIFF, (f, i) => `<button class="zk fest" data-i="${i}" aria-haspopup="menu" aria-expanded="false"></button>`)}</div></div>`, eff);
+    $$('.kz', w).forEach(z => z.setAttribute('draggable', 'true'));
+    const regal = $('.regal', w);
+    function neuerOrdner(o) {
+      const da = faecher.find(x => x.z.t === 'eigen' && x.z.o === o);
+      if (da) return da.id;
+      const id = 'f' + (++zaehler); faecher.push({ id, z: { t: 'eigen', o } }); return id;
+    }
+    function update() {
+      mitFokus(regal, () => {
+        regal.innerHTML = faecher.map(x => {
+          const fs = F.filter((f, i) => fachVon(i) === x.id), s = x.id === std, bsp = fs[0] || F[0];
+          return `<div class="fach ${s ? 'std' : ''}" data-id="${x.id}" role="group" aria-label="${zielKurz(x.z)}, ${plural(fs.length, 'Datei', 'Dateien')}${s ? ', Standard' : ''}">
+            ${s ? '<span class="std-marke">STANDARD</span>' : ''}
+            ${x.z.t === 'eigen' ? `<button class="ico x-btn" data-a="weg" data-fokus="weg-${x.id}" aria-label="Ordner ${x.z.o} aus dem Regal entfernen">${X}</button>` : ''}
+            <span class="mo"><span class="rueck"></span><span class="papiere">${papiere(fs)}</span><span class="vorn"><span class="o-etikett"><b>${zielEtiK(x.z)}</b><small>${plural(fs.length, 'Datei', 'Dateien')}</small></span></span>${fs.length ? `<span class="zaehl-m">${fs.length}</span>` : ''}</span>
+            <span class="ziel-pfad" title="${pfadText(bsp, x.z)}">${pfadHtml(bsp, x.z)}</span>
+            <button class="btn" data-a="alle" data-fokus="alle-${x.id}">Alle hierher</button>
+            ${s ? '<span class="std-text">nimmt den Rest</span>' : `<button class="link-btn" data-a="std" data-fokus="std-${x.id}">Als Standard</button>`}
+          </div>`;
+        }).join('') + `<button class="fach neu" data-a="neu" data-fokus="neu" aria-haspopup="dialog" aria-expanded="false"><span class="plus" aria-hidden="true">+</span>Ordner hinzufügen<small>oder Ordner hierher ziehen</small></button>`;
+      });
+      setzePfad(w, eff);
+      $$('.zk', w).forEach(b => { const i = +b.dataset.i, x = fach(fachVon(i)); b.innerHTML = `${ORDNER}<span>${zielChip(x.z)}${x.id === std && !fach(zu[i]) ? ' · Standard' : ''}</span><span class="pfeil">▾</span>`; b.setAttribute('aria-label', `Ziel für ${F[i].n}: ${zielKurz(x.z)}. Ändern`); });
+    }
+    regal.addEventListener('click', e => {
+      const b = e.target.closest('[data-a]'); if (!b) return;
+      const id = b.closest('.fach')?.dataset.id, a = b.dataset.a;
+      if (a === 'alle') { zu.fill(id); update(); }
+      else if (a === 'std') { std = id; zu.forEach((v, i) => { if (v === id) zu[i] = null; }); update(); $(`.fach[data-id="${id}"] [data-a="alle"]`, regal).focus(); }
+      else if (a === 'weg') { if (std === id) std = 'neben'; faecher = faecher.filter(x => x.id !== id); zu.forEach((v, i) => { if (v === id) zu[i] = null; }); update(); $('.fach.neu', regal).focus(); }
+      else if (a === 'neu') ordnerDialog(b, 'Ordner zum Regal hinzufügen', o => { neuerOrdner(o); update(); $('.fach.neu', regal).focus(); });
+    });
+    // Ziehen: Zeilen auf Ordner, oder Ordner von außen aufs Regal
+    let ziehe = null;
+    $('.kp-liste', w).addEventListener('dragstart', e => { const z = e.target.closest('.kz'); if (!z) return; ziehe = +z.dataset.i; z.classList.add('zieht'); e.dataTransfer.setData('text/plain', F[ziehe].n); e.dataTransfer.effectAllowed = 'move'; });
+    $('.kp-liste', w).addEventListener('dragend', e => { e.target.closest('.kz')?.classList.remove('zieht'); ziehe = null; $$('.ueber', regal).forEach(x => x.classList.remove('ueber')); });
+    regal.addEventListener('dragover', e => {
+      const f = e.target.closest('.fach'); if (!f) return;
+      if (ziehe !== null ? !f.classList.contains('neu') : e.dataTransfer.types.includes('Files')) { e.preventDefault(); $$('.ueber', regal).forEach(x => x !== f && x.classList.remove('ueber')); f.classList.add('ueber'); }
+    });
+    regal.addEventListener('dragleave', e => { const f = e.target.closest('.fach'); if (f && !f.contains(e.relatedTarget)) f.classList.remove('ueber'); });
+    regal.addEventListener('drop', e => {
+      const f = e.target.closest('.fach'); if (!f) return; e.preventDefault(); f.classList.remove('ueber');
+      if (ziehe !== null) { zu[ziehe] = f.dataset.id; ziehe = null; update(); return; }
+      const n = ordnerAusDrop(e); if (n) { merke(n); const id = neuerOrdner(n); update(); }
+    });
+    $('.kp-liste', w).addEventListener('click', e => {
+      const b = e.target.closest('.zk'); if (!b) return; const i = +b.dataset.i;
+      menue(b, `Ziel für ${F[i].n}`, [
+        ...faecher.map(x => ({ label: zielKurz(x.z), sub: x.id === std ? 'Standard' : '', an: fachVon(i) === x.id, fn: () => { zu[i] = x.id; update(); } })),
+        { trenn: true },
+        { label: 'Neuer Ordner …', icon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>', fn: () => ordnerDialog(b, `Neuer Ordner für ${F[i].n}`, o => { zu[i] = neuerOrdner(o); update(); }) }
+      ]);
+    });
+    update();
+  })();
+
+  // ---------- 4 · Regeln ----------
+  (function c4() {
+    const w = $('#w4');
+    const BED = { bild: ['Bilder', f => f.k === 'bild'], audio: ['Audio-Dateien', f => f.k === 'audio'], video: ['Videos', f => f.k === 'video'], dok: ['Dokumente', f => f.k === 'dok'], gross: ['Dateien über 50 MB', f => f.mb > 50], dl: ['Dateien aus „Downloads“', f => f.dir === 'Downloads'] };
+    const ZW = [['neben', 'neben dem Original'], ['unter', 'in den Unterordner „Kvertis“'], ['e:Desktop', 'auf den Desktop'], ['e:Desktop\\Fotos', 'nach Desktop\\Fotos'], ['e:Dokumente\\Export', 'nach Dokumente\\Export'], ['e:Musik\\MP3', 'nach Musik\\MP3'], ['e:Videos\\Fertig', 'nach Videos\\Fertig']];
+    const zv = v => v.startsWith('e:') ? { t: 'eigen', o: v.slice(2) } : { t: v };
+    let regeln = [{ c: 'bild', z: 'e:Desktop\\Fotos' }, { c: 'gross', z: 'e:Videos\\Fertig' }];
+    let sonst = 'neben';
+    const aus = Array(6).fill(null);
+    const regelVon = i => regeln.findIndex(r => BED[r.c][1](F[i]));
+    const regelZiel = i => { const r = regelVon(i); return zv(r < 0 ? sonst : regeln[r].z); };
+    const eff = i => aus[i] || regelZiel(i);
+    const optionen = (liste, wert) => liste.map(([v, l]) => `<option value="${v}" ${v === wert ? 'selected' : ''}>${l}</option>`).join('');
+    fenster(w, `<div class="bandende b4">
+        <div class="regeln"><div class="regeln-kopf"><span class="label">So wird gespeichert · die erste passende Regel gilt</span><button class="btn neu-regel" data-fokus="neu-regel">+ Regel hinzufügen</button></div><ol></ol></div>
+        <div class="regel-ordner"><span class="mo"><span class="rueck"></span><span class="papiere"></span><span class="vorn"><span class="o-etikett"><b>NACH REGELN</b><small class="ro-n"></small></span></span><span class="zaehl-m">6</span></span><span class="hinweis-o"></span></div>
+      </div>
+      <div class="liste2"><div class="liste2-kopf"><span class="label">Dateien in diesem Auftrag</span><span class="klein">Über eine Regel fahren zeigt ihre Dateien</span></div>
+      <div class="kp-liste">${zeilen('', null, (f, i) => `<button class="zk fest" data-i="${i}" aria-haspopup="dialog" aria-expanded="false"></button>`)}</div></div>`, eff);
+    const ol = $('ol', w);
+    function male() {
+      mitFokus(ol, () => {
+        ol.innerHTML = regeln.map((r, n) => `<li class="regel" data-r="${n}"><span class="rnr">${n + 1}</span>
+          <span class="sel"><select data-a="c" data-fokus="c-${n}" aria-label="Regel ${n + 1}: welche Dateien">${optionen(Object.entries(BED).map(([k, v]) => [k, v[0]]), r.c)}</select></span>
+          <span class="wort">speichern</span>
+          <span class="sel"><select data-a="z" data-fokus="z-${n}" aria-label="Regel ${n + 1}: wohin">${optionen(ZW, r.z)}</select></span>
+          <span class="treffer"></span>
+          <span class="rk"><button class="ico" data-a="hoch" data-fokus="hoch-${n}" aria-label="Regel ${n + 1} nach oben" ${n ? '' : 'disabled'}>${HOCH}</button><button class="ico" data-a="runter" data-fokus="runter-${n}" aria-label="Regel ${n + 1} nach unten" ${n < regeln.length - 1 ? '' : 'disabled'} style="transform:scaleY(-1)">${HOCH}</button><button class="ico" data-a="weg" data-fokus="weg-${n}" aria-label="Regel ${n + 1} löschen">${X}</button></span></li>`).join('')
+          + `<li class="regel sonst" data-r="-1"><span class="rnr">·</span><span class="wort" style="color:var(--ink)">Alles andere</span><span class="wort">speichern</span><span class="sel"><select data-a="sonst" data-fokus="sonst" aria-label="Alles andere: wohin">${optionen(ZW, sonst)}</select></span><span class="treffer"></span><span></span></li>`;
+      });
+      update();
+    }
+    function update() {
+      $$('.regel', ol).forEach(li => { const r = +li.dataset.r, n = F.filter((f, i) => regelVon(i) === r).length; $('.treffer', li).textContent = n ? plural(n, 'Datei', 'Dateien') : 'keine Datei'; });
+      const ordnerN = new Set(F.map((f, i) => zielOrdner(f, eff(i)))).size;
+      $('.ro-n', w).textContent = plural(ordnerN, 'Zielordner', 'Zielordner');
+      $('.regel-ordner .papiere', w).innerHTML = papiere(F.slice(0, 4));
+      $('.regel-ordner .hinweis-o', w).textContent = `${regeln.length + 1} Regeln · ${ordnerN} Ordner`;
+      $('.neu-regel', w).disabled = regeln.length >= 5;
+      setzePfad(w, eff);
+      $$('.zk', w).forEach(b => {
+        const i = +b.dataset.i, a = aus[i], r = regelVon(i);
+        b.classList.toggle('eigen', !!a); b.classList.toggle('fest', !a); b.closest('.kz').classList.toggle('ausnahme', !!a);
+        b.innerHTML = a ? `${PIN}<span>Eigene Wahl · ${zielChip(a)}</span>` : r < 0 ? '<span class="rb">·</span><span>Alles andere</span>' : `<span class="rb">${r + 1}</span><span>Regel ${r + 1}</span>`;
+        b.setAttribute('aria-label', `Speicherort für ${F[i].n}: ${a ? 'eigene Wahl, ' + zielKurz(a) : r < 0 ? 'Regel Alles andere' : 'Regel ' + (r + 1)}. Ändern`);
+      });
+    }
+    ol.addEventListener('change', e => {
+      const s = e.target.closest('select'); if (!s) return; const n = +s.closest('.regel').dataset.r;
+      if (s.dataset.a === 'c') regeln[n].c = s.value; else if (s.dataset.a === 'z') regeln[n].z = s.value; else sonst = s.value;
+      update();
+    });
+    ol.addEventListener('click', e => {
+      const b = e.target.closest('button[data-a]'); if (!b) return; const n = +b.closest('.regel').dataset.r, a = b.dataset.a;
+      if (a === 'weg') { regeln.splice(n, 1); male(); (ol.querySelector(`[data-fokus="weg-${Math.min(n, regeln.length - 1)}"]`) || $('.neu-regel', w)).focus(); return; }
+      const m = a === 'hoch' ? n - 1 : n + 1;
+      [regeln[n], regeln[m]] = [regeln[m], regeln[n]]; male();
+      (ol.querySelector(`[data-fokus="${a}-${m}"]:not(:disabled)`) || ol.querySelector(`[data-fokus="c-${m}"]`)).focus();
+    });
+    $('.neu-regel', w).addEventListener('click', () => {
+      const frei = Object.keys(BED).find(k => !regeln.some(r => r.c === k)) || 'dok';
+      regeln.push({ c: frei, z: 'e:Desktop' }); male(); ol.querySelector(`[data-fokus="c-${regeln.length - 1}"]`).focus();
+    });
+    const markiere = r => { $$('.regel', ol).forEach(li => li.classList.toggle('hl', r !== null && +li.dataset.r === r)); $$('.kz', w).forEach((z, i) => z.classList.toggle('hl', r !== null && !aus[i] && regelVon(i) === r)); };
+    ol.addEventListener('mouseover', e => { const li = e.target.closest('.regel'); markiere(li ? +li.dataset.r : null); });
+    ol.addEventListener('focusin', e => { const li = e.target.closest('.regel'); markiere(li ? +li.dataset.r : null); });
+    ol.addEventListener('mouseleave', () => markiere(null));
+    ol.addEventListener('focusout', () => markiere(null));
+    $('.kp-liste', w).addEventListener('mouseover', e => { const z = e.target.closest('.kz'); if (!z) return markiere(null); const i = +z.dataset.i; $$('.regel', ol).forEach(li => li.classList.toggle('hl', !aus[i] && +li.dataset.r === regelVon(i))); });
+    $('.kp-liste', w).addEventListener('mouseleave', () => markiere(null));
+    $('.kp-liste', w).addEventListener('click', e => {
+      const b = e.target.closest('.zk'); if (!b) return; const i = +b.dataset.i;
+      zielPopover(b, { titel: `Ziel für ${F[i].n}`, dateien: [F[i]], wert: () => aus[i], erbe: () => { const r = regelVon(i); return { label: r < 0 ? 'Nach „Alles andere“' : `Nach Regel ${r + 1}`, z: regelZiel(i) }; }, setze: z => { aus[i] = z; update(); }, eff: () => eff(i) });
+    });
+    male();
+  })();
+
+  // ---------- 5 · Pfad-Spalte mit Mehrfachauswahl ----------
+  (function c5() {
+    const w = $('#w5');
+    let alle = { t: 'neben' };
+    const aus = [null, { t: 'eigen', o: 'Desktop' }, null, null, null, null];
+    const sel = new Set(); let letzte = null;
+    const eff = i => aus[i] || alle;
+    const norm = (f, o) => o === f.dir ? { t: 'neben' } : o === f.dir + '\\Kvertis' ? { t: 'unter' } : { t: 'eigen', o };
+    fenster(w, `<div class="bandende b5">${band(3)}
+        <div class="b5-ziel"><span class="mo"><span class="rueck"></span><span class="papiere"></span><span class="vorn"><span class="o-etikett"><b class="o-name"></b><small class="o-sub"></small></span></span></span>
+        <span class="txt"><span class="label">Speicherort</span><b class="b5-t" style="font-size:13px"></b><span class="klein b5-h"></span></span></div>
+      </div>
+      <div class="liste2" style="grid-template-rows:auto auto auto 1fr">
+        <div class="tkopf"><span class="cb"><input type="checkbox" class="alle-cb" aria-label="Alle Dateien auswählen"></span><span class="label">Dateien in diesem Auftrag · Pfad anklicken, um dort zu speichern</span>
+          <span class="fuer-alle"><span class="label">Für alle:</span><button class="dd" aria-haspopup="dialog" aria-expanded="false"></button></span></div>
+        <div class="auswahl" aria-live="polite"></div>
+        <div class="kp-liste">${zeilen('z5', (f, i) => `<span class="cb"><input type="checkbox" data-i="${i}" aria-label="${f.n} auswählen"></span>`, (f, i) => `<span class="mk" data-i="${i}"></span>`)}</div></div>`, eff);
+    // Pfad-Spalte durch Brotkrumen ersetzen
+    $$('.kz', w).forEach((z, i) => { const p = $('.pfad-z', z); p.className = 'krumen-w'; p.innerHTML = `<span class="krumen" role="group" aria-label="Speicherort von ${F[i].n}"></span><button class="ico aendern" data-i="${i}" aria-haspopup="dialog" aria-expanded="false" aria-label="Speicherort für ${F[i].n} ändern">${PFEIL}</button>`; });
+    const liste = $('.kp-liste', w);
+    function update() {
+      $('.dd', w).innerHTML = `${ORDNER}<span>${zielKurz(alle)}</span>${PFEIL}`;
+      const n = aus.filter(Boolean).length, erben = F.filter((f, i) => !aus[i]);
+      $('.o-name', w).textContent = zielEtiK(alle);
+      $('.o-sub', w).textContent = n ? `+ ${plural(n, 'Ausnahme', 'Ausnahmen')}` : 'für alle';
+      $('.b5-ziel .papiere', w).innerHTML = papiere(erben);
+      $('.b5-t', w).textContent = `Für alle: ${zielKurz(alle)}`;
+      $('.b5-h', w).textContent = n ? `${plural(n, 'Datei hat', 'Dateien haben')} ein eigenes Ziel` : hinweis(alle, F);
+      $$('.kz', w).forEach((z, i) => {
+        const f = F[i], zz = eff(i), t = teile(f, zz), a = aus[i];
+        z.classList.toggle('ausnahme', !!a); z.classList.toggle('gewaehlt', sel.has(i));
+        $('input', z).checked = sel.has(i);
+        const kr = $('.krumen', z);
+        mitFokus(kr, () => {
+          let acc = [];
+          kr.innerHTML = '<span class="sep">…\\</span>' + t.segs.map((s, j) => { acc.push(s); const o = acc.join('\\'); const neu = zz.t !== 'neben' && j === t.segs.length - 1; return `<button class="seg ${neu ? 'neu' : ''}" data-i="${i}" data-o="${o}" data-fokus="s-${j}" title="Hier speichern: …\\${o}">${s}</button><span class="sep">\\</span>`; }).join('') + `<span class="datei" title="${pfadText(f, zz)}">${t.datei}</span>`;
+        });
+        const wr = $('.krumen-w', z); const pin = wr.querySelector(':scope > svg'); if (a && !pin) wr.insertAdjacentHTML('afterbegin', PIN); if (!a && pin) pin.remove();
+        const mk = $('.mk', z);
+        mitFokus(mk, () => { mk.innerHTML = a ? `<button class="ico" data-a="reset" data-i="${i}" data-fokus="reset" aria-label="${f.n}: zurück auf „Für alle“">${RESET}</button>` : ''; });
+      });
+      const ac = $('.alle-cb', w); ac.checked = sel.size === F.length; ac.indeterminate = sel.size > 0 && sel.size < F.length;
+      const al = $('.auswahl', w); al.classList.toggle('aktiv', sel.size > 0);
+      const fokusAuswahl = document.activeElement && al.contains(document.activeElement) ? document.activeElement.dataset.a : null;
+      if (sel.size) {
+        if (!$('.aw-n', al)) al.innerHTML = `<span class="aw-n"></span><button class="btn btn-mint" data-a="ziel" aria-haspopup="dialog" aria-expanded="false">Ziel für Auswahl ändern ▾</button><button class="btn" data-a="zurueck">Auf „Für alle“ zurücksetzen</button><span class="platz"></span><button class="btn" data-a="weg">Auswahl aufheben</button>`;
+        $('.aw-n', al).innerHTML = `<b>${sel.size}</b> ${sel.size === 1 ? 'Datei' : 'Dateien'} ausgewählt`;
+        $('[data-a="zurueck"]', al).disabled = ![...sel].some(i => aus[i]);
+      } else {
+        al.innerHTML = '<span>Tipp: Mehrere Dateien anhaken (Umschalt-Klick für einen Bereich), um ihr Ziel gemeinsam zu ändern.</span>';
+        if (fokusAuswahl) $('.alle-cb', w).focus();
+      }
+    }
+    liste.addEventListener('click', e => {
+      const cb = e.target.closest('input[type="checkbox"]');
+      if (cb) {
+        const i = +cb.dataset.i;
+        if (e.shiftKey && letzte !== null) { const [a, b] = [Math.min(letzte, i), Math.max(letzte, i)]; for (let j = a; j <= b; j++) cb.checked ? sel.add(j) : sel.delete(j); }
+        else cb.checked ? sel.add(i) : sel.delete(i);
+        letzte = i; update(); return;
+      }
+      const s = e.target.closest('.seg');
+      if (s) { const i = +s.dataset.i, z = norm(F[i], s.dataset.o); aus[i] = gleich(z, alle) ? null : z; update(); return; }
+      const r = e.target.closest('[data-a="reset"]');
+      if (r) { const i = +r.dataset.i; aus[i] = null; update(); $$('.aendern', w)[i].focus(); return; }
+      const b = e.target.closest('.aendern');
+      if (b) { const i = +b.dataset.i; zielPopover(b, { titel: `Ziel für ${F[i].n}`, dateien: [F[i]], wert: () => aus[i], erbe: () => ({ label: 'Wie „Für alle“', z: alle }), setze: z => { aus[i] = z; update(); }, eff: () => eff(i) }); }
+    });
+    $('.alle-cb', w).addEventListener('change', e => { sel.clear(); if (e.target.checked) F.forEach((f, i) => sel.add(i)); update(); });
+    $('.dd', w).addEventListener('click', e => zielPopover(e.currentTarget, { titel: 'Ziel für alle Dateien', dateien: F, wert: () => alle, erbe: null, setze: z => { alle = z; update(); }, eff: f => eff(F.indexOf(f)) }));
+    $('.auswahl', w).addEventListener('click', e => {
+      const b = e.target.closest('[data-a]'); if (!b) return;
+      if (b.dataset.a === 'weg') { sel.clear(); update(); return; }
+      if (b.dataset.a === 'zurueck') { sel.forEach(i => aus[i] = null); update(); return; }
+      const idx = [...sel].sort();
+      zielPopover(b, { titel: `Ziel für ${plural(idx.length, 'ausgewählte Datei', 'ausgewählte Dateien')}`, dateien: idx.map(i => F[i]),
+        wert: () => { const v = idx.map(i => aus[i]); return v.every(x => x === null) ? null : v.every(x => gleich(x, v[0])) ? v[0] : undefined; },
+        erbe: () => ({ label: 'Wie „Für alle“', z: alle }), setze: z => { idx.forEach(i => aus[i] = z ? { ...z } : null); update(); }, eff: f => eff(F.indexOf(f)) });
+    });
+    update();
+  })();
+})();
+</script>
