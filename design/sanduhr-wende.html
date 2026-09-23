@@ -1,0 +1,343 @@
+<title>Kvertis Sanduhr-Wende</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.lead b { color: var(--ink); font-weight: 600; }
+
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.reihe-rahmen { overflow-x: auto; padding: 6px 2px 10px; }
+.reihe { display: grid; grid-template-columns: repeat(4, minmax(240px, 1fr)); gap: 12px; min-width: 1000px; }
+.zelle { position: relative; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 14px; display: grid; gap: 10px; align-content: start; }
+.zelle h3 { margin: 0; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.zelle h3 i { width: 11px; height: 11px; border-radius: 3px; background: var(--k); }
+.zelle h3 small { margin-left: auto; font: 500 10.5px var(--mono); color: var(--leise); }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Bausteine */
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; cursor: default; transition: transform .2s var(--feder), background .2s, color .2s, opacity .2s; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; transition: opacity .25s, transform .3s var(--feder), box-shadow .25s; }
+.zelle.fokus .chip { opacity: .35; }
+.zelle.fokus .chip.aktiv { opacity: 1; background: var(--k); color: #0b0f12; transform: translateY(-1px) scale(1.06); }
+.zelle.fokus .eti { opacity: .18; box-shadow: none; }
+.zelle.fokus .eti.ja { opacity: 1; transform: translateY(-2px); box-shadow: 0 0 0 2px var(--mint), 0 6px 14px -6px var(--mint); }
+.antwort { min-height: 18px; font: 500 11.5px var(--mono); color: var(--muted); text-align: center; }
+.antwort b { color: var(--k); }
+.antwort em { font-style: normal; color: var(--mint); }
+.logo-m { width: 26px; height: 26px; border-radius: 8px; background: var(--mint); position: relative; box-shadow: 0 0 0 5px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); flex: none; }
+.logo-m::before, .logo-m::after { content: ''; position: absolute; width: 9px; height: 9px; border-radius: 3px; }
+.logo-m::before { left: 6px; top: 6px; background: var(--auf-mint); opacity: .8; }
+.logo-m::after { right: 6px; bottom: 6px; border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.linien { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.linien path { fill: none; stroke-width: 1.2; transition: opacity .25s, stroke .25s; }
+.linien .rein { stroke: color-mix(in srgb, var(--k) 50%, transparent); }
+.linien .raus { stroke: var(--mint); stroke-dasharray: 4 5; animation: fluss 1s linear infinite; opacity: .7; }
+.linien .direkt { stroke: var(--mint); stroke-width: 1.6; opacity: 0; }
+.zelle.fokus .linien .rein, .zelle.fokus .linien .raus { opacity: .04; }
+.zelle.fokus .linien .rein.an { opacity: 1; stroke: var(--k); }
+.zelle.fokus .linien .direkt.an { opacity: .95; }
+@keyframes fluss { to { stroke-dashoffset: -9; } }
+
+/* Glas-Sanduhr in 3D */
+.uhr3d { --dx: 0; position: relative; width: 240px; height: 400px; justify-self: center; }
+.uhr3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.uhr3d .p-vorn, .uhr3d .p-hinten, .uhr3d .glanz { transition: transform .25s ease-out; }
+.uhr3d .p-vorn { transform: translateX(calc(var(--dx) * 6px)); }
+.uhr3d .p-hinten { transform: translateX(calc(var(--dx) * -9px)); }
+.uhr3d .glanz { transform: translateX(calc(var(--dx) * 3px)); }
+.uhr3d .u-schatten { fill: var(--schatten); filter: blur(5px); }
+.uhr3d .u-kontur { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.2; }
+.uhr3d .u-rand { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; }
+.uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--k) 45%, var(--panel2)); stroke: color-mix(in srgb, var(--k) 60%, transparent); stroke-width: .8; }
+.uhr3d .u-bodenflaeche { fill: color-mix(in srgb, var(--mint) 22%, transparent); }
+.uhr3d .u-glanz { fill: none; stroke: #fff; stroke-opacity: .2; stroke-width: 5; stroke-linecap: round; }
+.uhr3d .u-glanz.d { stroke-width: 2; stroke-opacity: .12; }
+.uhr3d .u-deckel { fill: color-mix(in srgb, var(--line-stark) 55%, var(--panel2)); stroke: var(--line-stark); stroke-width: 1; }
+.uhr3d .u-strom { stroke-width: 2.2; stroke-dasharray: 3 5; stroke-linecap: round; animation: strom3d .6s linear infinite; }
+@keyframes strom3d { to { stroke-dashoffset: -8; } }
+.uhr3d .sand-o, .uhr3d .sand-u { position: absolute; left: 30px; right: 30px; display: grid; gap: 5px; justify-items: center; }
+.uhr3d .sand-o { top: 58px; } .uhr3d .sand-u { bottom: 40px; }
+.uhr3d .zeile { display: flex; gap: 4px; justify-content: center; }
+.uhr3d .hals-m { position: absolute; left: 50%; top: 188px; transform: translateX(-50%); display: grid; place-items: center; }
+.uhr3d .hals-m .logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.uhr3d .hals-m .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .uhr3d .hals-m .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.uhr3d .sand-o .chip { background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; box-shadow: 0 2px 5px -1px #0009; }
+.uhr3d .sand-u .eti { box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; }
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .001s !important; }
+  .korn { display: none; }
+}
+code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+
+.reihe { grid-template-columns: repeat(4, minmax(262px, 1fr)); min-width: 1080px; }
+.steuer { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.segment { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.segment button { border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; font: inherit; font-size: 13px; color: var(--muted); cursor: pointer; }
+.segment button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.drehen { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 7px 14px; border-radius: 10px; font: inherit; font-weight: 600; font-size: 13px; cursor: pointer; }
+.drehen:hover { border-color: var(--mint); }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.uhr3d { perspective: 1100px; }
+.glas-dreh { position: absolute; inset: 0; transform-origin: 50% 50%; }
+.glas-dreh.dreht { transition: transform 1.15s cubic-bezier(.62,-0.18,.3,1.18); }
+.uhr3d .sand-o, .uhr3d .sand-u { transition: opacity .3s, transform .5s var(--feder), filter .3s; z-index: 2; }
+.uhr3d .zeile > * { transition: opacity .3s, transform .3s; }
+.zeitchip { position: absolute; left: 50%; bottom: -24px; transform: translateX(-50%); font: 600 10px var(--mono); color: var(--leise); background: var(--panel); padding: 1px 7px; border-radius: 999px; border: 1px solid var(--line); z-index: 3; }
+/* 1 ausblenden */
+.k1.wende .sand-o > .zeile > *, .k1.wende .sand-u > .zeile > * { opacity: 0; transform: scale(.7); }
+/* 2 stehen bleiben */
+.k2.wende .sand-o, .k2.wende .sand-u { filter: blur(1.2px); opacity: .55; }
+/* 3 schweben */
+.k3 .sand-o, .k3 .sand-u { transform-style: preserve-3d; }
+.k3.wende .sand-o { transform: translateY(-34px) translateZ(90px) scale(1.12); filter: drop-shadow(0 16px 14px #000a); }
+.k3.wende .sand-u { transform: translateY(34px) translateZ(90px) scale(1.12); filter: drop-shadow(0 16px 14px #000a); }
+/* 4 kippen */
+.kipp { position: absolute; inset: 0; transform-style: preserve-3d; }
+.kipp.dreht { transition: transform 1.3s cubic-bezier(.55,-0.15,.3,1.15); }
+.kipp .flaeche { position: absolute; inset: 0; backface-visibility: hidden; }
+.kipp .flaeche.b { transform: rotateX(180deg); }
+/* 5 Fallblatt */
+.k5 .zeile > * { transform-origin: 50% 50%; backface-visibility: hidden; }
+.k5.wende .zeile > * { animation: klapp .5s ease-in-out both; animation-delay: calc(var(--j) * 45ms); }
+@keyframes klapp { 0% { transform: rotateX(0); } 45% { transform: rotateX(-90deg); filter: brightness(.6); } 55% { transform: rotateX(90deg); filter: brightness(.6); } 100% { transform: rotateX(0); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .001s !important; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Sortierregal · Sanduhr</div>
+    <h1>Die Sanduhr läuft ab und dreht sich</h1>
+    <p class="lead">In jeder Sanduhr rieselt der Sand in etwa 25 Sekunden nach unten: oben wird es weniger, unten wächst der Haufen. Dann dreht sich die Sanduhr und alles beginnt von vorn. <b>Die Formate bleiben dabei immer richtig: Eingänge oben, Ergebnisse unten.</b> Die fünf Konzepte unterscheiden sich darin, was die Formate beim Drehen tun.</p>
+    <div class="steuer">
+      <div class="segment" id="tempo" role="group" aria-label="Geschwindigkeit"><button class="an" data-t="25">Echtzeit · 25 s</button><button data-t="6">Zeitraffer · 6 s</button></div>
+      <span class="muted" style="font-size:13.5px">Zum Anschauen den Zeitraffer wählen oder bei jedem Konzept „Jetzt drehen“ drücken.</span>
+    </div>
+  </header>
+  <section class="idee"><div class="idee-kopf"><h2>1 · Ausblenden, drehen, einblenden <small>ruhig und klar</small></h2><button class="drehen" data-k="1">↻ Jetzt drehen</button></div>
+    <p>Kurz vor dem Drehen verblassen die Formate, die Sanduhr dreht sich einmal um, dann erscheinen die Formate nacheinander wieder an ihrem Platz.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r1"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> einfach, nie verwirrend</span><span class="minus"><b>Schwäche:</b> für eine Sekunde sind keine Formate zu sehen</span></div></section>
+  <section class="idee"><div class="idee-kopf"><h2>2 · Formate bleiben stehen <small>nur das Glas dreht sich dahinter</small></h2><button class="drehen" data-k="2">↻ Jetzt drehen</button></div>
+    <p>Die Formate schweben vor dem Glas und bleiben an Ort und Stelle. Dahinter dreht sich die Sanduhr, die Formate werden dabei kurz etwas unscharf, als würde der Blick auf das Glas springen.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r2"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> Formate immer lesbar, wirkt wie echtes Glas mit Beschriftung davor</span><span class="minus"><b>Schwäche:</b> das Drehen ist etwas versteckt</span></div></section>
+  <section class="idee"><div class="idee-kopf"><h2>3 · Formate schweben heraus <small>3D: nach vorn, Glas wendet, zurück</small></h2><button class="drehen" data-k="3">↻ Jetzt drehen</button></div>
+    <p>Vor dem Drehen heben sich die Formate in 3D aus dem Glas heraus zum Betrachter und warten dort mit Schatten. Die Sanduhr dreht sich darunter um, danach sinken die Formate wieder hinein.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r3"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> der eindrucksvollste 3D-Moment</span><span class="minus"><b>Schwäche:</b> braucht etwas Platz über und unter der Sanduhr</span></div></section>
+  <section class="idee"><div class="idee-kopf"><h2>4 · Nach vorn kippen <small>die Sanduhr überschlägt sich in 3D</small></h2><button class="drehen" data-k="4">↻ Jetzt drehen</button></div>
+    <p>Statt sich in der Fläche zu drehen, kippt die Sanduhr nach vorn über, wie man sie auf dem Tisch umdreht. Auf ihrer Rückseite stehen die Formate schon richtig herum, deshalb landen sie nach dem Kippen genau an ihrem Platz.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r4"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> echte 3D-Bewegung, Formate „reisen mit“</span><span class="minus"><b>Schwäche:</b> während des Kippens kurz verkürzt</span></div></section>
+  <section class="idee"><div class="idee-kopf"><h2>5 · Fallblatt <small>die Formate klappen wie eine Anzeigetafel</small></h2><button class="drehen" data-k="5">↻ Jetzt drehen</button></div>
+    <p>Während sich das Glas dreht, klappen die Formate nacheinander wie die Blätter einer Bahnhofs-Anzeigetafel einmal um und stehen danach wieder an ihrem Platz. Macht aus dem Drehen einen kleinen Rhythmus.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r5"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> verspielt, aber die Formate bleiben sichtbar</span><span class="minus"><b>Schwäche:</b> viel Bewegung auf einmal, wenn alle vier Kisten gleichzeitig drehen</span></div></section>
+  <section class="idee"><h2>Mein Vorschlag</h2>
+    <div class="empf"><p><b>3 · Formate schweben heraus</b> für den besonderen Moment, oder <b>2 · Formate bleiben stehen</b>, wenn es ruhiger sein soll. Beide halten die Formate lesbar.</p>
+    <p class="muted">Im Programm drehen die vier Sanduhren versetzt, nie gleichzeitig. Sie laufen nur, solange das Fenster sichtbar ist, und bei „Animationen reduzieren“ stehen sie still. Während einer echten Umwandlung könnte der Sand statt der 25 Sekunden den Fortschritt zeigen.</p></div></section>
+</main>
+
+<script>
+(() => {
+  const ALLE_AUDIO = ['MP3','M4A','FLAC','WAV','OGG','OPUS'];
+  const VID = ['MP4','MKV','WEBM','TON'];
+  const K = {
+    bild: { name: 'Bilder', rein: ['JPG','PNG','HEIC','WEBP','GIF','BMP','TIFF','SVG','ICO','PSD','RAW'], raus: ['JPG','PNG','WEBP','TIFF','BMP','GIF','ICO','PDF'],
+      map: { JPG: ['PNG','WEBP','TIFF','BMP','GIF','PDF'], PNG: ['JPG','WEBP','TIFF','BMP','GIF','ICO','PDF'], HEIC: ['JPG','PNG','WEBP'], WEBP: ['JPG','PNG','TIFF','GIF'], GIF: ['PNG','JPG','WEBP'], BMP: ['PNG','JPG','WEBP'], TIFF: ['PNG','JPG','WEBP','PDF'], SVG: ['PNG','JPG','WEBP'], ICO: ['PNG'], PSD: ['PNG','JPG'], RAW: ['JPG','PNG','TIFF'] },
+      titel: { RAW: 'DNG, CR2, CR3, NEF, ARW, ORF, RAF, RW2' } },
+    audio: { name: 'Audio', rein: ['MP3','WAV','M4A','AAC','FLAC','OGG','OPUS','WMA','AIFF'], raus: ALLE_AUDIO,
+      map: { MP3: ['WAV','FLAC','OGG','OPUS','M4A'], WAV: ['MP3','FLAC','OGG','OPUS','M4A'], M4A: ['MP3','WAV','FLAC','OGG','OPUS'], AAC: ['MP3','WAV','FLAC','OGG','OPUS'], FLAC: ['MP3','WAV','OGG','OPUS','M4A'], OGG: ['MP3','WAV','FLAC','OPUS','M4A'], OPUS: ['MP3','WAV','FLAC','OGG','M4A'], WMA: ALLE_AUDIO, AIFF: ALLE_AUDIO } },
+    video: { name: 'Video', rein: ['MP4','MOV','M4V','MKV','WEBM','AVI','WMV','FLV','3GP','MPG','TS'], raus: VID,
+      map: { MP4: VID, MOV: VID, M4V: VID, MKV: ['MP4','WEBM','TON'], WEBM: ['MP4','MKV','TON'], AVI: VID, WMV: VID, FLV: VID, '3GP': VID, MPG: VID, TS: VID },
+      titel: { TS: 'TS, MTS, M2TS', MPG: 'MPG, MPEG' } },
+    dok: { name: 'Dokumente', rein: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','HTML','CSV','PDF'],
+      map: { PDF: ['TXT'], DOCX: ['TXT','MD','HTML'], XLSX: ['CSV','TXT'], PPTX: ['TXT','MD'], TXT: ['PDF','HTML'], MD: ['PDF','HTML','TXT'], HTML: ['TXT','MD'] } }
+  };
+  const KS = ['bild', 'audio', 'video', 'dok'];
+  const lab = f => f === 'TON' ? 'nur Ton' : f;
+  const ein = (k, f) => `<span class="chip" tabindex="0" data-in="${f}"${K[k].titel && K[k].titel[f] ? ` title="${K[k].titel[f]}"` : ''}>${f}</span>`;
+  const aus = f => `<span class="eti" data-out="${f}">${lab(f)}</span>`;
+  const zeilen = (liste, caps) => { const out = []; let i = 0, c = 0; while (i < liste.length) { const n = caps[Math.min(c, caps.length - 1)]; out.push(liste.slice(i, i + n)); i += n; c++; } return out; };
+  const kopf = k => `<h3><i></i>${K[k].name}<small>${K[k].rein.length} → ${K[k].raus.length}</small></h3>`;
+  const zelle = (k, inhalt) => `<div class="zelle k-${k}" data-k="${k}">${kopf(k)}${inhalt}<div class="antwort">Maus auf ein Format</div></div>`;
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let T = 25;
+  let nr = 0;
+  const st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+  function glasSvg() {
+    const n = ++nr;
+    return `<svg viewBox="0 0 240 400" aria-hidden="true">
+      <defs>
+        <linearGradient id="gl${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+        <linearGradient id="sa${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .6)}/><stop offset="1" ${st('var(--k)', .25)}/></linearGradient>
+        <radialGradient id="su${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .55)}/><stop offset="1" ${st('var(--mint)', .14)}/></radialGradient>
+        <linearGradient id="sl${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', 1)}/><stop offset="1" ${st('var(--mint)', 1)}/></linearGradient>
+        <linearGradient id="sae${n}" x1="0" x2="1"><stop offset="0" ${st('var(--tief)', 1)}/><stop offset=".35" ${st('var(--line-stark)', 1)}/><stop offset=".55" ${st('var(--muted)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+        <linearGradient id="de${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--line-stark)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+      </defs>
+      <ellipse class="u-schatten" cx="120" cy="392" rx="112" ry="7"/>
+      <g class="p-hinten"><rect x="116" y="26" width="8" height="348" rx="4" fill="url(#sae${n})" opacity=".45"/></g>
+      <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#gl${n})"/>
+      <path class="s-oben" fill="url(#sa${n})"/>
+      <ellipse class="u-sandflaeche s-flaeche" cx="120"/>
+      <line class="u-strom s-strom" x1="120" y1="198" x2="120" stroke="url(#sl${n})"/>
+      <path class="s-unten" fill="url(#su${n})"/>
+      <ellipse cx="120" cy="366" rx="94" ry="7" class="u-bodenflaeche"/>
+      <path class="u-kontur" d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z"/>
+      <ellipse cx="120" cy="32" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="368" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="200" rx="8" ry="2.5" class="u-rand"/>
+      <g class="glanz"><path d="M36,52 C38,112 70,150 100,176" class="u-glanz"/><path d="M36,350 C40,296 70,258 100,226" class="u-glanz"/><path d="M204,62 C202,104 180,132 160,152" class="u-glanz d"/></g>
+      <path d="M8,20 V30 A112,10 0 0 0 232,30 V20 Z" fill="url(#de${n})"/><ellipse cx="120" cy="20" rx="112" ry="10" class="u-deckel"/>
+      <path d="M8,372 V384 A112,10 0 0 0 232,384 V372 Z" fill="url(#de${n})"/><ellipse cx="120" cy="372" rx="112" ry="10" class="u-deckel"/>
+      <g class="p-vorn"><rect x="13" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/><rect x="217" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/></g>
+    </svg>`;
+  }
+  const breite = y => 4 + 86 * Math.pow(Math.max(0, (196 - y) / 152), 1.25);
+  function sandZeichnen(svg, L, laeuft) {
+    const ys = 44 + 150 * Math.pow(1 - L, 1.8);
+    let pts = [];
+    if (L > .005) {
+      for (let i = 0; i <= 10; i++) { const y = ys + (196 - ys) * i / 10; pts.push(`${(120 - breite(y)).toFixed(1)},${y.toFixed(1)}`); }
+      for (let i = 10; i >= 0; i--) { const y = ys + (196 - ys) * i / 10; pts.push(`${(120 + breite(y)).toFixed(1)},${y.toFixed(1)}`); }
+    }
+    svg.querySelector('.s-oben').setAttribute('d', pts.length ? 'M' + pts.join(' L') + ' Z' : '');
+    const f = svg.querySelector('.s-flaeche');
+    f.setAttribute('cy', ys.toFixed(1)); f.setAttribute('rx', L > .005 ? (breite(ys) - 1).toFixed(1) : 0); f.setAttribute('ry', Math.max(1.2, breite(ys) * .085).toFixed(1));
+    const h = 8 + (1 - L) * 100;
+    svg.querySelector('.s-unten').setAttribute('d', `M26,366 C58,354 88,${(366 - h * .45).toFixed(1)} 120,${(364 - h).toFixed(1)} C152,${(366 - h * .45).toFixed(1)} 182,354 214,366 Z`);
+    const s = svg.querySelector('.s-strom');
+    s.setAttribute('y2', (364 - h).toFixed(1)); s.style.opacity = laeuft && L > .005 ? 1 : 0;
+  }
+  const reihenO = k => zeilen(K[k].rein, [4, 4, 3, 2, 2]);
+  const reihenU = k => zeilen([...K[k].raus].reverse(), [4, 3, 2, 2]).map(z => z.reverse()).reverse();
+  const formate = k => {
+    let j = 0;
+    return { o: reihenO(k).map(z => `<div class="zeile">${z.map(f => ein(k, f).replace('<span ', `<span style="--j:${j++}" `)).join('')}</div>`).join(''),
+             u: reihenU(k).map(z => `<div class="zeile">${z.map(f => aus(f).replace('<span ', `<span style="--j:${j++}" `)).join('')}</div>`).join('') };
+  };
+  const innen = k => { const f = formate(k); return `<div class="sand-o">${f.o}</div><div class="hals-m"><span class="logo-m" aria-hidden="true"></span></div><div class="sand-u">${f.u}</div>`; };
+
+  const UHREN = [];
+  function baue(konzept) {
+    document.getElementById('r' + konzept).innerHTML = KS.map((k, i) => {
+      const inhalt = konzept === 4
+        ? `<div class="kipp"><div class="flaeche a">${glasSvg()}${innen(k)}</div><div class="flaeche b">${glasSvg()}${innen(k)}</div></div>`
+        : `<div class="glas-dreh">${glasSvg()}</div>${innen(k)}`;
+      return zelle(k, `<div class="uhr3d k${konzept} k-${k}" data-i="${i}">${inhalt}<span class="zeitchip"></span></div>`);
+    }).join('');
+    document.querySelectorAll(`#r${konzept} .uhr3d`).forEach((el, i) => {
+      const u = { el, konzept, L: 1 - i * .22, dreht: false, seite: 0, winkel: 0 };
+      u.svgs = () => konzept === 4 ? [el.querySelectorAll('.flaeche svg')[u.seite]] : [el.querySelector('svg')];
+      if (konzept === 4) el.querySelectorAll('.flaeche svg').forEach(s => sandZeichnen(s, 1, false));
+      UHREN.push(u);
+    });
+  }
+  async function wende(u) {
+    if (u.dreht) return; u.dreht = true;
+    const el = u.el, warte = ms => new Promise(r => setTimeout(r, ms));
+    if (u.konzept === 4) {
+      const kipp = el.querySelector('.kipp'), andere = el.querySelectorAll('.flaeche svg')[1 - u.seite];
+      sandZeichnen(andere, 1, false);
+      u.winkel += 180; kipp.classList.add('dreht'); kipp.style.transform = `rotateX(${u.winkel}deg)`;
+      await warte(1350); kipp.classList.remove('dreht');
+      u.seite = 1 - u.seite; u.L = 1; u.dreht = false; return;
+    }
+    el.classList.add('wende');
+    if (u.konzept === 1 || u.konzept === 3) await warte(380);
+    const g = el.querySelector('.glas-dreh');
+    g.classList.add('dreht'); g.style.transform = 'rotate(180deg)';
+    await warte(1200);
+    g.classList.remove('dreht'); g.style.transform = 'rotate(0deg)'; u.L = 1; sandZeichnen(g.querySelector('svg'), 1, false);
+    if (u.konzept === 5) await warte(200);
+    el.classList.remove('wende');
+    await warte(400); u.dreht = false;
+  }
+  [1, 2, 3, 4, 5].forEach(baue);
+  let letzt = performance.now();
+  function schleife(t) {
+    const dt = Math.min(.1, (t - letzt) / 1000); letzt = t;
+    UHREN.forEach(u => {
+      if (!u.dreht && !leise) { u.L -= dt / T; if (u.L <= 0) { u.L = 0; wende(u); } }
+      if (!u.dreht) u.svgs().forEach(s => sandZeichnen(s, Math.max(0, u.L), true));
+      u.el.querySelector('.zeitchip').textContent = u.dreht ? 'dreht …' : `noch ${Math.ceil(Math.max(0, u.L) * T)} s`;
+    });
+    requestAnimationFrame(schleife);
+  }
+  UHREN.forEach(u => u.svgs().forEach(s => sandZeichnen(s, u.L, false)));
+  requestAnimationFrame(schleife);
+  document.getElementById('tempo').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; [...b.parentElement.children].forEach(x => x.classList.toggle('an', x === b)); T = +b.dataset.t; });
+  document.querySelectorAll('.drehen').forEach(b => b.addEventListener('click', () => UHREN.filter(u => u.konzept === +b.dataset.k).forEach((u, i) => setTimeout(() => wende(u), i * 250))));
+  if (!leise) document.querySelectorAll('.uhr3d').forEach(u => {
+    u.addEventListener('pointermove', e => { const r = u.getBoundingClientRect(); u.style.setProperty('--dx', ((e.clientX - r.left) / r.width - .5) * 2); });
+    u.addEventListener('pointerleave', () => u.style.setProperty('--dx', 0));
+  });
+
+  document.querySelectorAll('.zelle').forEach(z => {
+    const k = z.dataset.k, antwort = z.querySelector('.antwort');
+    const an = chip => {
+      const f = chip.dataset.in, m = K[k].map[f] || [];
+      z.classList.add('fokus');
+      z.querySelectorAll('span[data-in]').forEach(c => c.classList.toggle('aktiv', c.dataset.in === f));
+      z.querySelectorAll('[data-out]').forEach(e => e.classList.toggle('ja', m.includes(e.dataset.out)));
+      antwort.innerHTML = `<b>${f}</b> wird zu <em>${m.map(lab).join(', ')}</em>`;
+    };
+    const weg = () => { z.classList.remove('fokus'); antwort.textContent = 'Maus auf ein Format'; };
+    z.querySelectorAll('span[data-in]').forEach(c => { c.addEventListener('mouseenter', () => an(c)); c.addEventListener('focus', () => an(c)); c.addEventListener('blur', weg); });
+    z.addEventListener('mouseleave', weg);
+  });
+})();
+</script>
