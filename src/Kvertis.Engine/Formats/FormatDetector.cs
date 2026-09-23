@@ -48,6 +48,11 @@ public sealed class FormatDetector : IFormatDetector
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect");
         }
+        if (format.Value == FormatRegistry.LegacyOffice && Conversion.Documents.OfficeProtection.IsEncryptedOfficeFile(path))
+        {
+            // An OLE container holding EncryptedPackage/EncryptionInfo is a password-protected OOXML file.
+            throw new ConversionException(ConversionErrorCode.ProtectedFile, path, "detect", "encrypted office document");
+        }
         if (!descriptor.CanRead)
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect", $"format '{format}' is recognized but not readable");

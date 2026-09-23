@@ -20,7 +20,7 @@ internal interface IWindowsPdfRasterizer
 /// own PDF probe remains the authority on encryption and runs before this class.
 /// </summary>
 [SupportedOSPlatform("windows10.0.17763.0")]
-public sealed class WindowsPdfRasterizer : IWindowsPdfRasterizer
+public sealed class WindowsPdfRasterizer : IWindowsPdfRasterizer, Kvertis.Engine.Conversion.Documents.IPdfRasterizer
 {
     public const int MinDpi = 1;
     public const int MaxDpi = 1200;
