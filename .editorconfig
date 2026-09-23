@@ -44,6 +44,10 @@ dotnet_diagnostic.CA5394.severity = none
 dotnet_diagnostic.CA1308.severity = none
 dotnet_diagnostic.CA1508.severity = none
 dotnet_diagnostic.CA1515.severity = none
+# Performance hints that fight readability in UI/service code; kept as suggestions, not errors.
+dotnet_diagnostic.CA1822.severity = suggestion
+dotnet_diagnostic.CA1859.severity = suggestion
+dotnet_diagnostic.CA1873.severity = suggestion
 
 [tests/**.cs]
 dotnet_diagnostic.CA1707.severity = none

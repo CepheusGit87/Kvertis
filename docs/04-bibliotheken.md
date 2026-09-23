@@ -58,6 +58,10 @@ Untersucht: `Magick.NET-Q16-AnyCPU 14.17.1`, Datei `runtimes/win-x64/native/Magi
 
 Folgerung: Kein GPL-Verstoß. Das Patentrisiko liegt in den mitgelieferten Codecs libde265 und openh264. Entscheidung O-01 (Projektinhaber): (a) Risiko akzeptieren und dokumentieren, oder (b) Bildpfad auf eine Bibliothek ohne Video-Codecs umstellen (Kandidat: SkiaSharp, MIT, plus Windows Imaging Component für HEIC/RAW/TIFF-Mehrseitig). Bis zur Entscheidung bleibt Magick.NET im Code, HEIC läuft ausschließlich über WIC.
 
+## Prüfbericht SkiaSharp (2026-09-23, lizenz-waechter)
+
+Untersucht: `SkiaSharp.NativeAssets.Win32 4.152.1`, `runtimes/win-x64/native/libSkiaSharp.dll` (13 MB), `LICENSE.txt` (MIT) und `THIRD-PARTY-NOTICES.txt`. Enthalten: skia (BSD-3), libjpeg-turbo (IJG/BSD), libpng (zlib/libpng), libwebp (BSD), zlib, freetype (FTL), harfbuzz (MIT), expat (MIT), ICU (Unicode), piex (Apache 2.0), DNG SDK (Adobe, lizenzfrei), wuffs (Apache 2.0), sfntly, ANGLE, SPIR-V, etc1, jsoncpp, imgui, sdl (alle permissiv). Der GIF-Decoder stammt aus mozilla.org-Code unter **Tri-Lizenz MPL 1.1 / GPL 2.0 / LGPL 2.1**; Kvertis nutzt ihn unter der **MPL 1.1** (dateiweise Copyleft, keine Änderung, Lizenztext liegt bei). Zeichenkettensuche in der DLL: keine Spur von libde265, x265, openh264, libheif, dav1d, aom oder anderen Video-Codecs. **Urteil: OK.**
+
 ## Abgelehnt oder gesperrt
 
 | Bibliothek | Grund | Alternative |
