@@ -362,6 +362,69 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .zuletzt button.an { border-color: var(--mint); color: var(--mint); }
 .zuletzt button:hover { border-color: var(--line-stark); }
 
+/* ===== Verlauf ===== */
+.verlauf { position: absolute; inset: 42px 0 0 0; z-index: 12; display: grid; grid-template-rows: auto 1fr; min-height: 0;
+  background: radial-gradient(900px 400px at 10% 0%, color-mix(in srgb, var(--mint) 7%, transparent), transparent 60%), var(--bg);
+  opacity: 0; transform: translateY(24px) scale(.985); pointer-events: none; transition: opacity .3s, transform .5s var(--feder); }
+.win.verlauf-offen .verlauf { opacity: 1; transform: none; pointer-events: auto; }
+.win.verlauf-offen #verlauf-knopf { background: var(--mint-flaeche); color: var(--mint); }
+.v-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 22px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 45%, transparent); }
+.v-kopf h4 { margin: 0; font-size: 17px; font-weight: 600; }
+.v-kopf .sub { display: inline-flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.v-kopf .sub svg { width: 13px; height: 13px; color: var(--mint); }
+.segment { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.segment button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-size: 12px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.segment button i { width: 8px; height: 8px; border-radius: 2px; background: var(--k); }
+.segment button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.v-liste { overflow: auto; padding: 6px 22px 28px; min-height: 0; }
+.tag-titel { margin: 18px 0 8px 76px; font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.tag-block { position: relative; display: grid; gap: 10px; }
+.tag-block::before { content: ''; position: absolute; left: 60px; top: 6px; bottom: 6px; width: 2px; border-radius: 1px; background: linear-gradient(180deg, var(--mint-rahmen), color-mix(in srgb, var(--mint-rahmen) 30%, transparent)); }
+.runde { display: grid; grid-template-columns: 50px 1fr; gap: 26px; align-items: start; }
+.runde .zeit { position: relative; text-align: right; font: 600 12px var(--mono); padding-top: 14px; }
+.runde .zeit small { display: block; font-weight: 500; font-size: 10px; color: var(--leise); }
+.runde .zeit::after { content: ''; position: absolute; right: -16px; top: 17px; width: 10px; height: 10px; border-radius: 50%; background: var(--bg); border: 2px solid var(--mint); box-shadow: 0 0 0 3px var(--bg); }
+.runde.neu .zeit::after { background: var(--mint); box-shadow: 0 0 0 3px var(--bg), 0 0 12px var(--mint); }
+.rk { border: 1px solid var(--line); border-radius: 13px; background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: inset 0 1px 0 var(--karton-kante), 0 8px 18px -14px var(--schatten); transition: transform .3s var(--feder), box-shadow .3s, border-color .2s; }
+.rk:hover { transform: translateY(-2px); border-color: var(--line-stark); box-shadow: inset 0 1px 0 var(--karton-kante), 0 18px 28px -18px var(--schatten); }
+.rk-kopf { display: grid; grid-template-columns: 36px 1fr auto auto; gap: 12px; align-items: center; padding: 10px 12px; }
+.rk-kopf .stapel { position: relative; width: 32px; height: 28px; }
+.rk-kopf .stapel i { position: absolute; width: 23px; height: 17px; border-radius: 2px; background: var(--paper); box-shadow: 0 1px 0 #0003; }
+.rk-kopf .stapel i:nth-child(1) { left: 0; top: 9px; } .rk-kopf .stapel i:nth-child(2) { left: 3px; top: 6px; } .rk-kopf .stapel i:nth-child(3) { left: 6px; top: 3px; }
+.rk-kopf .stapel i::before { content: ''; position: absolute; top: -3px; left: 3px; width: 8px; height: 3px; border-radius: 2px 2px 0 0; background: var(--k); }
+.rk-kopf .stapel span { position: absolute; right: -4px; bottom: -3px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: var(--k); color: #0b0f12; font: 700 9.5px/16px var(--mono); text-align: center; }
+.rk-titel b { display: block; font-size: 13.5px; font-weight: 600; }
+.rk-titel small { display: block; font: 11px var(--mono); color: var(--muted); }
+.ersparnis { font: 600 12px var(--mono); color: var(--mint); padding: 3px 8px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.v-akt { display: flex; gap: 6px; align-items: center; }
+.vk { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 6px 10px; font-size: 12px; font-weight: 500; }
+.vk svg { width: 14px; height: 14px; }
+.vk:hover:not(:disabled) { border-color: var(--line-stark); }
+.vk.haupt { border-color: var(--mint-rahmen); color: var(--mint); background: var(--mint-flaeche); }
+.vk.haupt:hover:not(:disabled) { border-color: var(--mint); }
+.vk:disabled { opacity: .4; cursor: not-allowed; }
+.vk.rund { width: 30px; height: 30px; padding: 0; justify-content: center; }
+.vk.auf svg { transition: transform .3s; }
+.rk.offen .vk.auf svg { transform: rotate(180deg); }
+.rk-dateien { display: grid; gap: 1px; margin: 0 12px 12px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: var(--line); }
+.vd { display: grid; grid-template-columns: 50px 14px 58px 1fr auto 104px auto; gap: 8px; align-items: center; padding: 7px 10px; background: var(--panel); font-size: 12px; }
+.vd .chip-k { justify-self: start; font: 500 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 25%, transparent); }
+.vd .pfl { color: var(--mint); text-align: center; }
+.vd .etikett { justify-self: start; font-size: 10.5px; padding: 2px 7px; }
+.vd .dn { min-width: 0; }
+.vd .dn b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd .dn small { display: block; font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vd .groesse { font: 500 11px var(--mono); color: var(--muted); white-space: nowrap; text-align: right; }
+.vd .groesse b { color: var(--ink); font-weight: 600; }
+.status-v { display: inline-flex; gap: 5px; align-items: center; font-size: 11px; white-space: nowrap; color: var(--muted); }
+.status-v svg { width: 13px; height: 13px; }
+.status-v.da svg { color: var(--mint); }
+.status-v.weg { color: var(--coral); }
+.vd.fehlt .dn b { text-decoration: line-through; text-decoration-color: color-mix(in srgb, var(--coral) 60%, transparent); color: var(--muted); }
+.vd-akt { display: flex; gap: 4px; }
+.v-leer { display: grid; justify-items: center; gap: 8px; padding: 70px 20px; color: var(--muted); text-align: center; }
+.v-leer b { color: var(--ink); font-size: 15px; }
+
 /* Fußleiste */
 .leiste { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
 .vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
@@ -414,6 +477,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   <section class="abschnitt" aria-labelledby="h-her">
     <h2 id="h-her">Was woher kommt</h2>
     <div class="herkunft">
+      <div class="neu"><small>Neu</small><h3>Verlauf</h3><p>Hinter dem Uhr-Symbol: jede Umwandlung mit Zeit, Formaten und Einstellungen. Ist das Original noch da, startet „Nochmal“ sie erneut, „Anpassen“ führt zu Schritt 2.</p></div>
       <div class="neu"><small>Neu</small><h3>Sortierregal</h3><p>Vier Kisten für Bilder, Audio, Video und Dokumente, jede mit ihren Formaten. Abgelegte Dateien fliegen in die richtige Kiste; was nicht geht, landet mit Begründung daneben.</p></div>
       <div><small>aus C · Tiefenebenen</small><h3>Roter Faden</h3><p>Oben die Leiste Dateien → Ziel → Umwandeln. Jeder erledigte Schritt zeigt sein Ergebnis und bleibt anklickbar. Die Schritte wechseln in die Tiefe.</p></div>
       <div><small>aus A · Durchlauf</small><h3>Karussell und Kisten</h3><p>Das Format-Karussell je Dateiart und am Ende der Flug von der Eingangs- in die Ausgangskiste.</p></div>
@@ -434,7 +498,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
         <div class="tb">
           <span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span>
           <button class="ikon" aria-label="Was kann ich umwandeln?" id="hilfe"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.2"/><path d="M6.3 6.2a1.8 1.8 0 113 1.4c-.7.4-1.3.8-1.3 1.6M8 11.3v.2"/></svg></button>
-          <button class="ikon" aria-label="Verlauf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
+          <button class="ikon" id="verlauf-knopf" aria-label="Verlauf" aria-pressed="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
           <button class="ikon" aria-label="Einstellungen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>
           <div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div>
         </div>
@@ -497,6 +561,20 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
             </div>
           </section>
         </div>
+
+        <section class="verlauf" id="verlauf" aria-label="Verlauf" inert>
+          <div class="v-kopf">
+            <button class="btn" id="v-zurueck">← Zurück</button>
+            <h4>Verlauf</h4>
+            <span class="sub"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Nur auf diesem PC gespeichert</span>
+            <span class="platz"></span>
+            <div class="segment" id="v-filter" role="group" aria-label="Nach Dateiart filtern">
+              <button class="an" data-f="alle">Alle</button><button data-f="bild" class="k-bild"><i></i>Bilder</button><button data-f="audio" class="k-audio"><i></i>Audio</button><button data-f="video" class="k-video"><i></i>Video</button><button data-f="dok" class="k-dok"><i></i>Dokumente</button>
+            </div>
+            <span id="v-leeren-bereich"><button class="btn" id="v-leeren">Verlauf leeren</button></span>
+          </div>
+          <div class="v-liste" id="v-liste"></div>
+        </section>
 
         <div class="leiste">
           <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
@@ -905,6 +983,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     fertig = { vor, nach, p: Math.round((1 - nach / vor) * 100) };
     $('knopf').textContent = '✓'; $('knopf').classList.add('ok');
     $('aus-zahl').innerHTML = `${u.length} fertig · <span style="color:var(--mint)">${mb(nach)} MB</span>`;
+    inVerlauf();
     renderFaden(); renderLeiste();
     laeuft = false;
   }
@@ -1071,6 +1150,127 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     await warte(900); await los();
     demoLaeuft = false;
   });
+
+  // ===== Verlauf
+  const I_NOCHMAL = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 8a5 5 0 1 1-1.5-3.6"/><path d="M13 2.5v3h-3"/></svg>';
+  const I_STIFT = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 13l.8-3.2L11 2.6l2.4 2.4-7.2 7.2z"/></svg>';
+  const I_ORDNER = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M1.5 4.5h5l1.5 1.5h6.5v7h-13z"/></svg>';
+  const I_AUF = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6l4 4 4-4"/></svg>';
+  const I_DA = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 2h5l3 3v9H4z"/><path d="M6 9.5l1.5 1.5 3-3"/></svg>';
+  const I_WEG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h5l3 3v9H4z"/><path d="M2.5 14.5l11-13"/></svg>';
+  const V = (name, mb, kat, fmt, nach, mbNach, ordner, original = true, ergebnis = true) => ({ name, mb, kat, fmt, nach, mbNach, ordner, original, ergebnis });
+  let verlauf = [
+    { tag: 'Heute', zeit: '09:42', zweck: 'Für E-Mail', wohin: 'Neben dem Original', dateien: [
+      V('IMG_1988.heic', 8.1, 'bild', 'HEIC', 'JPG', 1.0, 'Bilder\\Geburtstag'), V('IMG_1989.heic', 7.6, 'bild', 'HEIC', 'JPG', 0.9, 'Bilder\\Geburtstag'), V('IMG_1990.heic', 7.9, 'bild', 'HEIC', 'JPG', 1.0, 'Bilder\\Geburtstag', false) ] },
+    { tag: 'Gestern', zeit: '18:15', zweck: 'Für Website', wohin: 'Neben dem Original', dateien: [
+      V('Podcast_Folge12.wav', 214, 'audio', 'WAV', 'MP3', 28, 'Musik\\Podcast') ] },
+    { tag: 'Gestern', zeit: '14:03', zweck: 'Nur Text', wohin: 'Unterordner „Kvertis“', dateien: [
+      V('Angebot_Garten.docx', 0.6, 'dok', 'DOCX', 'TXT', 0.02, 'Dokumente\\Angebote'), V('Preise_2026.xlsx', 0.3, 'dok', 'XLSX', 'CSV', 0.05, 'Dokumente\\Angebote', true, false) ] },
+    { tag: 'Sonntag, 20. September', zeit: '11:20', zweck: 'Für Messenger', wohin: 'Desktop', dateien: [
+      V('Hochzeit_Clip.mov', 1240, 'video', 'MOV', 'MP4', 182, 'Videos\\Hochzeit') ] },
+    { tag: 'Sonntag, 20. September', zeit: '10:02', zweck: 'Zum Archivieren', wohin: 'Neben dem Original', dateien: [
+      V('Scan_01.png', 3.4, 'bild', 'PNG', 'PDF', 0.8, 'Downloads', false, true), V('Scan_02.png', 3.1, 'bild', 'PNG', 'PDF', 0.7, 'Downloads', false, true) ] }
+  ];
+  let vFilter = 'alle', vOffen = new Set([0]), vFrage = false;
+  const katNamen = { bild: ['Bild', 'Bilder'], audio: ['Audiodatei', 'Audiodateien'], video: ['Video', 'Videos'], dok: ['Dokument', 'Dokumente'] };
+  function rundenTitel(r) {
+    const ks = [...new Set(r.dateien.map(d => d.kat))], ziele_ = [...new Set(r.dateien.map(d => d.nach))];
+    const n = r.dateien.length;
+    const was = ks.length === 1 ? `${n} ${katNamen[ks[0]][n === 1 ? 0 : 1]}` : `${n} Dateien`;
+    return n === 1 ? `${r.dateien[0].name} → ${ziele_[0]}` : `${was} → ${ziele_.join(', ')}`;
+  }
+  function renderVerlauf() {
+    const liste = $('v-liste');
+    const sichtbar = verlauf.map((r, i) => [r, i]).filter(([r]) => vFilter === 'alle' || r.dateien.some(d => d.kat === vFilter));
+    if (!sichtbar.length) {
+      liste.innerHTML = `<div class="v-leer"><b>${verlauf.length ? 'Nichts in dieser Dateiart' : 'Noch nichts umgewandelt'}</b><span>${verlauf.length ? 'Wählen Sie oben „Alle“.' : 'Hier erscheint jede Umwandlung mit Datum, Formaten und Einstellungen.'}</span></div>`;
+      return;
+    }
+    let html = '', tag = null;
+    sichtbar.forEach(([r, i]) => {
+      if (r.tag !== tag) { if (tag !== null) html += '</div>'; tag = r.tag; html += `<div class="tag-titel">${esc(tag)}</div><div class="tag-block">`; }
+      const vor = r.dateien.reduce((s, d) => s + d.mb, 0), nach = r.dateien.reduce((s, d) => s + d.mbNach, 0);
+      const da = r.dateien.filter(d => d.original).length;
+      const hauptKat = r.dateien[0].kat, offen = vOffen.has(i);
+      const grund = da ? '' : ' title="Die Originale sind nicht mehr vorhanden"';
+      html += `<div class="runde ${r.neu ? 'neu' : ''}"><div class="zeit">${esc(r.zeit)}${r.neu ? '<small>gerade eben</small>' : ''}</div>
+        <div class="rk ${offen ? 'offen' : ''}" data-i="${i}">
+          <div class="rk-kopf">
+            <span class="stapel k-${hauptKat}" aria-hidden="true"><i></i><i></i><i></i><span>${r.dateien.length}</span></span>
+            <span class="rk-titel"><b>${esc(rundenTitel(r))}</b><small>${esc(r.zweck)} · ${esc(r.wohin)} · ${mb(vor)} → ${mb(nach)} MB${da < r.dateien.length ? ` · <span style="color:var(--coral)">${r.dateien.length - da} Original${r.dateien.length - da === 1 ? ' fehlt' : 'e fehlen'}</span>` : ''}</small></span>
+            <span class="ersparnis">−${Math.round((1 - nach / vor) * 100)} %</span>
+            <span class="v-akt">
+              <button class="vk haupt" data-a="nochmal" ${da ? '' : 'disabled'}${grund}>${I_NOCHMAL}Nochmal</button>
+              <button class="vk" data-a="anpassen" ${da ? '' : 'disabled'}${grund}>${I_STIFT}Anpassen</button>
+              <button class="vk rund auf" data-a="auf" aria-expanded="${offen}" aria-label="Dateien ${offen ? 'ausblenden' : 'zeigen'}">${I_AUF}</button>
+            </span>
+          </div>
+          ${offen ? `<div class="rk-dateien">${r.dateien.map((d, j) => `<div class="vd k-${d.kat} ${d.original ? '' : 'fehlt'}">
+              <span class="chip-k">${esc(d.fmt)}</span><span class="pfl" aria-hidden="true">→</span><span class="etikett">${esc(d.nach)}</span>
+              <span class="dn"><b>${esc(d.name)}</b><small>…\\${esc(d.ordner)}</small></span>
+              <span class="groesse">${mb(d.mb)} → <b>${mb(d.mbNach)} MB</b></span>
+              <span class="status-v ${d.original ? 'da' : 'weg'}" title="${d.original ? 'Original ist noch vorhanden' : 'Original wurde gelöscht oder verschoben'}">${d.original ? I_DA : I_WEG}${d.original ? 'Original da' : 'Original fehlt'}</span>
+              <span class="vd-akt">
+                <button class="vk rund" data-a="datei" data-j="${j}" ${d.original ? '' : 'disabled'} aria-label="${esc(d.name)} nochmal umwandeln" title="${d.original ? 'Nochmal umwandeln' : 'Original fehlt'}">${I_NOCHMAL}</button>
+                <button class="vk rund" data-a="ordner" ${d.ergebnis ? '' : 'disabled'} aria-label="Ordner des Ergebnisses öffnen" title="${d.ergebnis ? 'Ordner öffnen' : 'Ergebnis nicht mehr vorhanden'}">${I_ORDNER}</button>
+              </span></div>`).join('')}</div>` : ''}
+        </div></div>`;
+    });
+    liste.innerHTML = html + '</div>';
+  }
+  function nochmal(r, dateienListe, anpassen) {
+    if (laeuft) return;
+    const neu = dateienListe.filter(d => d.original).map(d => ({ name: d.name, mb: d.mb, kat: d.kat, fmt: d.fmt, ordner: d.ordner, meta: 'aus dem Verlauf' }));
+    if (!neu.length) return;
+    if (offen) oeffne(offen);
+    dateien = neu; fertig = null;
+    neu.forEach(d => {
+      const i = ziele(d.kat).findIndex(z => z[0] === (dateienListe.find(x => x.name === d.name).nach));
+      if (i >= 0) wahl[d.kat] = i;
+      if (ZWECK[d.kat] && ZWECK[d.kat].includes(r.zweck)) zweck[d.kat] = r.zweck;
+    });
+    aktiv = neu[0].kat;
+    renderRegal(); nachZaehlen();
+    verlaufZu();
+    geheZu(anpassen ? 1 : 2);
+  }
+  function verlaufAuf() { win.classList.add('verlauf-offen'); $('verlauf').inert = false; $('verlauf-knopf').setAttribute('aria-pressed', 'true'); renderVerlauf(); }
+  function verlaufZu() { win.classList.remove('verlauf-offen'); $('verlauf').inert = true; $('verlauf-knopf').setAttribute('aria-pressed', 'false'); }
+  $('verlauf-knopf').addEventListener('click', () => win.classList.contains('verlauf-offen') ? verlaufZu() : verlaufAuf());
+  $('v-zurueck').addEventListener('click', verlaufZu);
+  $('v-filter').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    vFilter = b.dataset.f;
+    [...b.parentElement.children].forEach(x => x.classList.toggle('an', x === b));
+    renderVerlauf();
+  });
+  $('v-leeren-bereich').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.id === 'v-leeren') vFrage = true;
+    else if (b.dataset.ja) { verlauf = []; vFrage = false; }
+    else vFrage = false;
+    $('v-leeren-bereich').innerHTML = vFrage ? `<span class="klein" style="font-size:12px;color:var(--muted)">Alles löschen?</span> <button class="btn" data-ja="1" style="color:var(--coral)">Ja, leeren</button> <button class="btn">Abbrechen</button>` : `<button class="btn" id="v-leeren">Verlauf leeren</button>`;
+    renderVerlauf();
+  });
+  $('v-liste').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b || b.disabled) return;
+    const i = +b.closest('.rk').dataset.i, r = verlauf[i];
+    if (b.dataset.a === 'auf') { vOffen.has(i) ? vOffen.delete(i) : vOffen.add(i); renderVerlauf(); }
+    if (b.dataset.a === 'nochmal') nochmal(r, r.dateien, false);
+    if (b.dataset.a === 'anpassen') nochmal(r, r.dateien, true);
+    if (b.dataset.a === 'datei') nochmal(r, [r.dateien[+b.dataset.j]], false);
+  });
+  function inVerlauf() {
+    const u = umwandelbar();
+    const jetzt = new Date(), zeit = String(jetzt.getHours()).padStart(2, '0') + ':' + String(jetzt.getMinutes()).padStart(2, '0');
+    verlauf.forEach(r => r.neu = false);
+    verlauf.unshift({ tag: 'Heute', zeit, neu: true, zweck: zweck[u[0].kat] || 'Original', wohin: wohinKurz() || 'Eigener Ordner', dateien: u.map(d => {
+      const z = ziele(d.kat)[wahl[d.kat]][0];
+      const faktor = schaetze(d.kat) / dateien.filter(x => x.kat === d.kat).reduce((s, x) => s + x.mb, 0);
+      return V(d.name, d.mb, d.kat, d.fmt, z === 'TON' ? 'MP3' : z, d.mb * faktor, d.ordner || 'Ursprungsordner');
+    }) });
+    vOffen = new Set([...vOffen].map(i => i + 1)); vOffen.add(0);
+  }
 
   // Ruhezustand: Beispieldateien liegen schon im Regal
   renderRegal();
