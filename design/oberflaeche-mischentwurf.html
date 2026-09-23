@@ -1,0 +1,839 @@
+<title>Kvertis Mischentwurf</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (src/renderer/src/styles/tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --coral-rahmen: #5e2f29; --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --boden: #080a0b; --boden-schein: #0009;
+  --glas: #14181bcc; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c;
+    --glas: #ffffffcc; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c;
+  --glas: #ffffffcc; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.muted { color: var(--muted); }
+
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 52px; }
+.kopf { display: grid; gap: 14px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 20ch; }
+h2 { margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+h3 { margin: 0; font-size: 15px; font-weight: 600; }
+.lead { margin: 0; max-width: 66ch; color: var(--muted); font-size: 17px; }
+.abschnitt { display: grid; gap: 18px; }
+.abschnitt > p { margin: 0; color: var(--muted); max-width: 72ch; }
+
+.herkunft { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.herkunft > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.herkunft small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.herkunft p { margin: 0; font-size: 14px; color: var(--muted); }
+.herkunft .neu small { color: var(--mint); }
+
+.steuer { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; }
+.demo-knopf { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 9px 16px; border-radius: 10px; font-weight: 600; display: inline-flex; gap: 8px; align-items: center; }
+.demo-knopf:hover { border-color: var(--mint); }
+.steuer .btn { font-size: 13.5px; padding: 9px 14px; }
+.steuer .tipp { font-size: 13.5px; color: var(--muted); }
+.buehne { overflow-x: auto; padding: 8px 4px 28px; margin-inline: -4px; }
+
+/* ===== Fenster ===== */
+.win { position: relative; width: 100%; min-width: 980px; height: 660px; border-radius: 14px; border: 1px solid var(--line-stark);
+  background: radial-gradient(1200px 500px at 15% -10%, color-mix(in srgb, var(--mint) 9%, transparent), transparent 60%),
+              radial-gradient(900px 400px at 110% 110%, color-mix(in srgb, var(--violet) 7%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); overflow: hidden; display: grid; grid-template-rows: 42px 62px 1fr auto; font-size: 13px; }
+.win.drag::after { content: 'Loslassen – Kvertis sortiert selbst'; position: absolute; inset: 8px; z-index: 20; border: 2px dashed var(--mint); border-radius: 12px; background: color-mix(in srgb, var(--mint-flaeche) 80%, transparent); display: grid; place-items: center; font-size: 18px; font-weight: 600; color: var(--mint); pointer-events: none; }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-weight: 600; font-size: 13px; }
+.platz { flex: 1; }
+.ikon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; border: 0; background: transparent; color: var(--muted); }
+.ikon:hover { background: var(--hover); color: var(--ink); }
+.ikon svg { width: 16px; height: 16px; }
+.pro { font: 600 10.5px var(--mono); letter-spacing: .08em; padding: 2px 7px; border-radius: 6px; border: 1px solid var(--amber-rahmen); color: var(--amber); }
+.wk { display: flex; height: 100%; }
+.wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden */
+.faden { display: flex; align-items: center; padding: 0 22px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; border: 0; background: transparent; text-align: left; padding: 7px 12px 7px 8px; border-radius: 10px; }
+.knoten:not(:disabled):hover { background: var(--hover); }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--line-stark); color: var(--muted); transition: background .3s, color .3s, border-color .3s; }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--leise); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.fertig i { border-color: var(--mint-rahmen); color: var(--mint); }
+.knoten.fertig small { color: var(--mint); }
+.knoten:disabled { opacity: .5; }
+.knoten.an.fertig i { color: var(--auf-mint); }
+.ziel .band { display: none; }
+.seg { flex: 1; height: 2px; margin: 0 6px; border-radius: 1px; background: var(--line-stark); position: relative; overflow: hidden; }
+.seg::after { content: ''; position: absolute; inset: 0; background: var(--mint); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--sanft); }
+.seg.voll::after { transform: scaleX(1); }
+
+/* Ebenen (aus Entwurf C): die aktuelle vorn, die übrigen in der Tiefe */
+.ebenen { position: relative; perspective: 1400px; overflow: hidden; }
+.ebene { position: absolute; inset: 0; transition: transform .65s var(--feder), opacity .4s; }
+.ebene[data-pos="0"] { transform: none; opacity: 1; }
+.ebene[data-pos="-1"] { transform: translateY(-24px) translateZ(-240px); opacity: 0; pointer-events: none; }
+.ebene[data-pos="1"] { transform: translateY(40px) translateZ(170px); opacity: 0; pointer-events: none; }
+
+/* 3D-Kiste (aus ShoeBox) */
+.szene { position: relative; perspective: 900px; display: grid; place-items: center; }
+.kiste { --W: 190px; --D: 130px; --H: 84px; --c: var(--mint); position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-24deg) rotateY(-30deg); transition: transform .5s var(--feder); }
+.szene:hover .kiste { transform: rotateX(-26deg) rotateY(-22deg) translateY(-8px); }
+.kiste .f { position: absolute; left: 0; top: 0; border: 1px solid var(--karton-kante); transition: background .4s; }
+.kiste .fr { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / 2)); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 46%, var(--karton-tief)), color-mix(in srgb, var(--c) 24%, var(--karton-tief))); }
+.kiste .bk { width: var(--W); height: var(--H); transform: translate(-50%, -50%) translateZ(calc(var(--D) / -2)); background: color-mix(in srgb, var(--c) 16%, var(--karton-tief)); }
+.kiste .lf { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 36%, var(--karton-tief)); }
+.kiste .rt { width: var(--D); height: var(--H); transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--W) / 2)); background: color-mix(in srgb, var(--c) 22%, var(--karton-tief)); }
+.kiste .bt { width: var(--W); height: var(--D); transform: translate(-50%, -50%) translateY(calc(var(--H) / 2)) rotateX(90deg); background: var(--boden); box-shadow: 0 0 50px 18px var(--boden-schein); }
+.kiste .fr::after { content: attr(data-t); position: absolute; inset: auto 8px 9px; font: 600 10px var(--mono); letter-spacing: .28em; color: #0000005c; text-align: center; }
+.blaetter { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.blatt { position: absolute; left: 0; top: 0; width: calc(var(--W) - 30px); height: calc(var(--H) + 4px); transform: translate(-50%, -50%) translateY(-12px) translateZ(var(--z)); border-radius: 5px 5px 2px 2px; background: var(--paper); box-shadow: 0 -1px 0 #0002; animation: rein .45s var(--feder) both; }
+.blatt::before { content: attr(data-f); position: absolute; top: -13px; left: var(--tab, 10px); padding: 2px 7px 3px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font: 600 9px var(--mono); letter-spacing: .05em; }
+.szene:hover .blatt { transform: translate(-50%, -50%) translateY(-20px) translateZ(var(--z)); }
+@keyframes rein { from { transform: translate(-50%, -50%) translateY(-90px) translateZ(var(--z)); opacity: 0; } }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); } .k-nein { --k: var(--coral); }
+
+.flieger { position: absolute; left: 0; top: 0; z-index: 15; width: 104px; height: 58px; border-radius: 7px; background: var(--paper); box-shadow: 0 20px 30px -10px #000a; pointer-events: none; display: grid; place-items: center; padding: 14px 6px 0; font: 600 10px var(--mono); color: var(--paper-ink); text-align: center; overflow: visible; }
+.flieger::before { content: attr(data-f); position: absolute; top: -14px; left: 8px; padding: 2px 8px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; }
+
+/* ===== Schritt 1: Sortierregal ===== */
+.regal { height: 100%; display: grid; grid-template-rows: auto 1fr; padding: 18px 24px 4px; gap: 4px; }
+.einwurf { justify-self: center; width: min(620px, 92%); display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 12px 14px 12px 16px; border-radius: 16px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 65%, transparent); position: relative; }
+.einwurf .pfeil { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--mint-flaeche); color: var(--mint); border: 1px solid var(--mint-rahmen); }
+.einwurf b { display: block; font-size: 14px; }
+.einwurf span { font-size: 12px; color: var(--muted); }
+.einwurf .knoepfe { display: flex; gap: 6px; }
+.erkannt-log { justify-self: center; min-height: 20px; font: 500 11.5px var(--mono); color: var(--muted); display: flex; gap: 8px; align-items: center; }
+.erkannt-log .punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--k, var(--mint)); box-shadow: 0 0 10px var(--k, var(--mint)); }
+.faecher { display: grid; grid-template-columns: repeat(4, 1fr) 150px; gap: 8px; align-items: start; padding-top: 6px; }
+.fach { display: grid; justify-items: center; gap: 6px; text-align: center; border: 0; background: transparent; padding: 0; border-radius: 14px; }
+.fach .szene { width: 190px; height: 150px; transition: filter .4s; }
+.fach .kiste { --W: 140px; --D: 96px; --H: 60px; --c: var(--k); transform: rotateX(-26deg) rotateY(-22deg); }
+.fach .szene:hover .kiste { transform: rotateX(-28deg) rotateY(-14deg) translateY(-8px); }
+.fach .kiste .fr::after { letter-spacing: .18em; }
+.fach.voll .szene { filter: drop-shadow(0 0 16px color-mix(in srgb, var(--k) 40%, transparent)); }
+.zaehler { position: absolute; top: 4px; right: 18px; min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px; display: grid; place-items: center; background: var(--k); color: #0b0f12; font: 700 12px var(--mono); transform: scale(0); transition: transform .35s var(--feder); z-index: 2; }
+.fach.voll .zaehler { transform: scale(1); }
+.zaehler.hupf { animation: hupf .35s var(--feder); }
+@keyframes hupf { 50% { transform: scale(1.35); } }
+.fach h5 { margin: 0; font-size: 13.5px; font-weight: 600; display: flex; gap: 6px; align-items: center; }
+.formate { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; max-width: 200px; }
+.formate span { font: 500 10px var(--mono); padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 22%, transparent); }
+.wird { font-size: 11px; color: var(--muted); max-width: 190px; }
+.wird b { color: var(--ink); font-weight: 500; font-family: var(--mono); font-size: 10.5px; }
+.abweis { align-self: stretch; margin-top: 30px; display: grid; gap: 8px; align-content: start; padding: 12px; border-radius: 12px; border: 1px dashed var(--line-stark); text-align: left; }
+.abweis .label { color: var(--leise); }
+.abweis ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.abweis li { display: grid; gap: 1px; font-size: 12px; animation: rein2 .4s var(--feder); }
+.abweis li b { font-weight: 600; color: var(--coral); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.abweis li span { color: var(--muted); font-size: 11px; line-height: 1.35; }
+.abweis .leer { font-size: 11.5px; color: var(--leise); line-height: 1.4; }
+@keyframes rein2 { from { opacity: 0; transform: translateY(-6px); } }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+
+/* ===== Schritt 2: Ziel ===== */
+.ziel { height: 100%; display: grid; grid-template-columns: 260px 1fr 280px; min-height: 0; }
+.gruppen { border-right: 1px solid var(--line); padding: 14px; display: grid; gap: 6px; align-content: start; overflow: auto; }
+.grp { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 11px; border: 1px solid transparent; background: transparent; text-align: left; }
+.grp:hover { background: var(--hover); }
+.grp.an { background: var(--panel2); border-color: var(--line-stark); box-shadow: 0 8px 18px -12px var(--schatten); }
+.grp .mk { width: 28px; height: 22px; position: relative; }
+.grp .mk::before { content: ''; position: absolute; inset: 7px 0 0; border-radius: 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--k) 70%, var(--bg)), color-mix(in srgb, var(--k) 40%, var(--bg))); }
+.grp .mk::after { content: ''; position: absolute; left: 5px; right: 5px; top: 0; height: 13px; border-radius: 2px 2px 0 0; background: var(--paper); }
+.grp b { font-size: 13px; font-weight: 600; display: block; }
+.grp small { font: 500 11px var(--mono); color: var(--muted); }
+.etikett { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: var(--paper); color: var(--paper-ink); border-radius: 3px; font: 600 11px var(--mono); transform: rotate(-1.2deg); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.etikett.gesperrt { background: transparent; color: var(--amber); box-shadow: none; border: 1px solid var(--amber-rahmen); transform: none; }
+.dateien-kopf { margin-top: 10px; display: flex; justify-content: space-between; align-items: baseline; }
+.mkarte { position: relative; display: grid; gap: 2px; padding: 9px 10px 8px; margin-top: 9px; border-radius: 10px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); transition: transform .3s var(--feder); }
+.mkarte:hover { transform: translateY(-2px); }
+.mkarte::before { content: attr(data-f); position: absolute; top: -9px; left: 10px; padding: 0 6px; border-radius: 4px 4px 0 0; font: 600 9px var(--mono); background: color-mix(in srgb, var(--k) 85%, var(--bg)); color: #0b0f12; }
+.mkarte b { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mkarte small { font: 11px var(--mono); color: var(--muted); }
+.mkarte .hinw { font: 500 11px var(--schrift); color: var(--cyan); display: flex; gap: 5px; align-items: center; }
+
+.wandler { display: grid; justify-items: center; align-content: center; gap: 16px; padding: 10px 18px; position: relative; }
+.band { position: absolute; left: 0; right: 0; top: 36%; height: 2px; background: repeating-linear-gradient(90deg, var(--mint-rahmen) 0 8px, transparent 8px 16px); }
+.karussell { width: 300px; height: 150px; perspective: 700px; display: grid; place-items: center; position: relative; z-index: 1; }
+.ring { --rot: 0deg; position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-14deg) rotateY(var(--rot)); transition: transform .7s var(--feder); }
+.ring button { position: absolute; left: -40px; top: -28px; width: 80px; height: 56px; border-radius: 12px; border: 1px solid var(--line-stark); background: linear-gradient(180deg, var(--panel2), var(--panel)); font: 600 15px var(--mono); color: var(--muted);
+  transform: rotateY(calc(var(--i) * 48deg)) translateZ(140px); backface-visibility: hidden; transition: color .3s, border-color .3s, box-shadow .3s, opacity .3s; display: grid; place-items: center; align-content: center; line-height: 1.15; }
+.ring button small { font: 500 9.5px var(--schrift); color: var(--leise); }
+.ring button.an { color: var(--mint); border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-flaeche), 0 18px 30px -12px var(--mint); }
+.ring button.weit { opacity: .0; }
+.teller { position: absolute; left: 50%; bottom: 4px; width: 270px; height: 60px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--mint) 22%, transparent), transparent); border: 1px solid var(--mint-rahmen); }
+.zweck { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; position: relative; z-index: 1; }
+.zweck-frage { font-size: 13px; font-weight: 600; position: relative; z-index: 1; }
+.zweck button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 12px; color: var(--muted); }
+.zweck button:hover { border-color: var(--line-stark); }
+.zweck button.an { border-color: var(--mint); color: var(--mint); background: var(--mint-flaeche); }
+.schaetzung { font: 500 12px var(--mono); color: var(--muted); text-align: center; }
+.schaetzung b { color: var(--mint); }
+.pro-karte { display: grid; gap: 8px; justify-items: center; text-align: center; max-width: 300px; padding: 18px; border-radius: 14px; border: 1px solid var(--amber-rahmen); background: color-mix(in srgb, var(--amber) 8%, var(--panel)); }
+.pro-karte b { color: var(--amber); }
+.pro-karte p { margin: 0; font-size: 12.5px; color: var(--muted); }
+
+.mehr { border-left: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); padding: 14px 18px; display: grid; gap: 14px; align-content: start; overflow: auto; }
+.mehr h4 { margin: 0; font-size: 13.5px; font-weight: 600; }
+.saeulen { height: 140px; perspective: 600px; display: flex; gap: 40px; align-items: end; justify-content: center; padding-top: 24px; }
+.saeule { --h: 100px; --c: var(--line-stark); position: relative; width: 48px; height: var(--h); transform-style: preserve-3d; transform: rotateX(-14deg) rotateY(-28deg); transition: height .5s var(--feder); }
+.saeule .vo { position: absolute; inset: 0; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 45%, var(--karton-tief))); border-radius: 2px; }
+.saeule .se { position: absolute; top: 0; right: 0; width: 20px; height: 100%; transform-origin: right; transform: rotateY(90deg); background: color-mix(in srgb, var(--c) 35%, var(--karton-tief)); }
+.saeule .ob { position: absolute; top: 0; left: 0; width: 100%; height: 20px; transform-origin: top; transform: rotateX(90deg); background: color-mix(in srgb, var(--c) 100%, #fff 18%); }
+.saeule span { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 500 11px var(--mono); color: var(--muted); }
+.saeule em { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font: 600 12px var(--mono); font-style: normal; white-space: nowrap; }
+.saeule.nach { --c: var(--mint); }
+.saeule.nach em { color: var(--mint); }
+.feld { display: grid; gap: 6px; }
+.feld label { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+.feld label b { color: var(--ink); font: 600 12px var(--mono); }
+input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
+.eingabe { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 10px; font: 12.5px var(--mono); color: var(--ink); width: 100%; }
+.schalter { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; }
+.schalter span { color: var(--muted); display: block; font-size: 11.5px; }
+.toggle { width: 38px; height: 22px; border-radius: 11px; background: var(--mint); position: relative; flex: none; border: 0; }
+.toggle::after { content: ''; position: absolute; top: 3px; left: 19px; width: 16px; height: 16px; border-radius: 50%; background: var(--auf-mint); transition: left .2s var(--feder); }
+.toggle[aria-pressed="false"] { background: var(--line-stark); }
+.toggle[aria-pressed="false"]::after { left: 3px; background: var(--panel); }
+
+/* ===== Schritt 3: Durchlauf ===== */
+.lauf { height: 100%; display: grid; grid-template-columns: 1fr 270px 1fr; align-items: center; padding: 0 20px; position: relative; }
+.lauf .band { top: 44%; left: 16%; right: 16%; }
+.lauf.aktiv .band { background: repeating-linear-gradient(90deg, var(--mint) 0 8px, transparent 8px 16px); animation: band 1.2s linear infinite; }
+@keyframes band { to { background-position: 16px 0; } }
+.spalte { display: grid; justify-items: center; gap: 12px; position: relative; z-index: 1; }
+.spalte .szene { width: 250px; height: 210px; }
+.kiste.aus { --c: var(--line-stark); transform: rotateX(-24deg) rotateY(30deg); }
+.szene:hover .kiste.aus { transform: rotateX(-26deg) rotateY(22deg) translateY(-8px); }
+.unter { display: grid; justify-items: center; gap: 6px; text-align: center; }
+.unter .zahl { font: 600 13px var(--mono); }
+.unter .klein { font-size: 11.5px; color: var(--muted); max-width: 220px; }
+.los { position: relative; width: 160px; height: 160px; border-radius: 50%; border: 0; background: none; padding: 0; }
+.los svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.los .knopf.ok { font-size: 34px; }
+.los .knopf { position: absolute; inset: 20px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: 19px; color: var(--auf-mint);
+  background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--mint) 70%, #fff), var(--mint) 55%, color-mix(in srgb, var(--mint) 60%, #000));
+  box-shadow: 0 9px 0 color-mix(in srgb, var(--mint) 40%, #000), 0 22px 30px -8px color-mix(in srgb, var(--mint) 55%, transparent); transform: translateY(-5px); transition: transform .12s, box-shadow .12s; }
+.los:hover .knopf { transform: translateY(-7px); }
+.los:active .knopf { transform: translateY(2px); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 40%, #000), 0 8px 14px -6px var(--mint); }
+.zusammen { display: grid; gap: 6px; width: 100%; }
+.zusammen div { display: flex; justify-content: space-between; gap: 10px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); font-size: 12px; }
+.zusammen span { color: var(--muted); }
+.zusammen b { font: 600 12px var(--mono); text-align: right; }
+
+/* Fußleiste */
+.leiste { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.taste { border: 0; border-radius: 12px; padding: 11px 20px; font-weight: 600; font-size: 14px; background: var(--mint); color: var(--auf-mint);
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 12px 24px -8px color-mix(in srgb, var(--mint) 60%, transparent), inset 0 1px 0 #ffffff55;
+  transform: translateY(-2px); transition: transform .12s, box-shadow .12s, opacity .2s; display: inline-flex; gap: 10px; align-items: center; }
+.taste:hover:not(:disabled) { transform: translateY(-3px); }
+.taste:active:not(:disabled) { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 45%, #000); }
+.taste:disabled { opacity: .4; box-shadow: none; transform: none; }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.link { border: 0; background: none; color: var(--mint); font-weight: 500; font-size: 12.5px; padding: 6px 8px; border-radius: 8px; }
+.link:hover { background: var(--mint-flaeche); }
+
+/* Übersicht unten */
+.uebersicht { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.ue { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 16px; display: grid; gap: 10px; align-content: start; }
+.ue h3 { display: flex; gap: 8px; align-items: center; }
+.ue h3 i { width: 12px; height: 12px; border-radius: 3px; background: var(--k); }
+.ue .formate { justify-content: flex-start; max-width: none; }
+.ue .formate span { font-size: 11px; padding: 2px 6px; }
+.ue p { margin: 0; font-size: 13px; color: var(--muted); }
+.ue dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 12.5px; }
+.ue dt { font-family: var(--mono); font-weight: 600; }
+.ue dd { margin: 0; color: var(--muted); }
+.ue.nein { border-style: dashed; }
+.ue.nein ul { margin: 0; padding-left: 16px; display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+.notizen { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+.notizen > div { display: grid; gap: 8px; align-content: start; }
+.notizen h3 { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.notizen ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; display: grid; gap: 6px; }
+.notizen li::marker { color: var(--mint); }
+.notizen code { font: 12px var(--mono); color: var(--ink); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+.hinweis { font-size: 13px; color: var(--leise); margin: 0; }
+.hinweis a { color: var(--mint); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Mischentwurf · 23. September 2026</div>
+    <h1>Hineinwerfen, Kvertis sortiert</h1>
+    <p class="lead">Die Stärken der drei Entwürfe in einem Fenster. Dazu kommt ein Sortierregal als Startansicht: Es zeigt, was Kvertis umwandeln kann, und ordnet abgelegte Dateien selbst ein. Kvertis erkennt die Dateien am Inhalt, nicht an der Endung.</p>
+  </header>
+
+  <section class="abschnitt" aria-labelledby="h-her">
+    <h2 id="h-her">Was woher kommt</h2>
+    <div class="herkunft">
+      <div class="neu"><small>Neu</small><h3>Sortierregal</h3><p>Vier Kisten für Bilder, Audio, Video und Dokumente, jede mit ihren Formaten. Abgelegte Dateien fliegen in die richtige Kiste; was nicht geht, landet mit Begründung daneben.</p></div>
+      <div><small>aus C · Tiefenebenen</small><h3>Roter Faden</h3><p>Oben die Leiste Dateien → Ziel → Umwandeln. Jeder erledigte Schritt zeigt sein Ergebnis und bleibt anklickbar. Die Schritte wechseln in die Tiefe.</p></div>
+      <div><small>aus A · Durchlauf</small><h3>Karussell und Kisten</h3><p>Das Format-Karussell je Dateiart und am Ende der Flug von der Eingangs- in die Ausgangskiste.</p></div>
+      <div><small>aus B · Kartei</small><h3>Einstellungen</h3><p>Rechts Vorher/Nachher als 3D-Säulen, Qualität, Zielgröße und Metadaten, jeweils für die gewählte Gruppe.</p></div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-demo">
+    <h2 id="h-demo">Ausprobieren</h2>
+    <div class="steuer">
+      <button class="demo-knopf" id="demo"><svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>Demo abspielen</button>
+      <button class="btn" id="beispiel">Beispieldateien einlegen</button>
+      <button class="btn" id="leeren">Leeren</button>
+      <span class="tipp">Oder echte Dateien ins Fenster ziehen. Die Erkennung läuft nur in Ihrem Browser, es wird nichts hochgeladen.</span>
+    </div>
+    <div class="buehne">
+      <div class="win" id="win">
+        <div class="tb">
+          <span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span>
+          <button class="ikon" aria-label="Was kann ich umwandeln?" id="hilfe"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6.2"/><path d="M6.3 6.2a1.8 1.8 0 113 1.4c-.7.4-1.3.8-1.3 1.6M8 11.3v.2"/></svg></button>
+          <button class="ikon" aria-label="Verlauf"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/></svg></button>
+          <button class="ikon" aria-label="Einstellungen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg></button>
+          <span class="pro">PRO</span>
+          <div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div>
+        </div>
+
+        <nav class="faden" aria-label="Ablauf">
+          <button class="knoten an" data-s="0"><i>1</i><b>Dateien</b><small id="f-0">hineinwerfen</small></button>
+          <span class="seg" id="seg-0"></span>
+          <button class="knoten" data-s="1"><i>2</i><b>Ziel</b><small id="f-1">Format und Zweck</small></button>
+          <span class="seg" id="seg-1"></span>
+          <button class="knoten" data-s="2"><i>3</i><b>Umwandeln</b><small id="f-2">los geht’s</small></button>
+        </nav>
+
+        <div class="ebenen">
+          <!-- Schritt 1 -->
+          <section class="ebene" data-pos="0" data-s="0" aria-label="Schritt 1: Dateien">
+            <div class="regal">
+              <div style="display:grid;gap:8px">
+                <div class="einwurf" id="einwurf">
+                  <span class="pfeil" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M2.5 13.5h11"/></svg></span>
+                  <div><b>Alles hier hineinwerfen</b><span>Bilder, Musik, Videos, Dokumente, auch gemischt. Kvertis erkennt die Art selbst.</span></div>
+                  <div class="knoepfe"><button class="btn">Dateien wählen</button><button class="btn">Ordner</button></div>
+                </div>
+                <div class="erkannt-log" id="log" aria-live="polite"><span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span></div>
+              </div>
+              <div class="faecher" id="faecher"></div>
+            </div>
+          </section>
+
+          <!-- Schritt 2 -->
+          <section class="ebene" data-pos="1" data-s="1" aria-label="Schritt 2: Ziel">
+            <div class="ziel">
+              <div class="gruppen" id="gruppen"></div>
+              <div class="wandler" id="wandler"></div>
+              <aside class="mehr" id="mehr" aria-label="Einstellungen der Gruppe"></aside>
+            </div>
+          </section>
+
+          <!-- Schritt 3 -->
+          <section class="ebene" data-pos="1" data-s="2" aria-label="Schritt 3: Umwandeln">
+            <div class="lauf" id="lauf">
+              <div class="band" aria-hidden="true"></div>
+              <div class="spalte">
+                <span class="label">Eingang</span>
+                <div class="szene" id="ein-szene"><div class="kiste"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="ein-blaetter"></span><span class="f rt"></span><span class="f fr" data-t="EINGANG"></span></div></div>
+                <div class="unter"><span class="zahl" id="ein-zahl"></span><span class="klein" id="ein-klein"></span></div>
+              </div>
+              <div class="spalte">
+                <button class="los" id="los" aria-label="Umwandlung starten">
+                  <svg viewBox="0 0 160 160" aria-hidden="true"><circle cx="80" cy="80" r="75" fill="none" stroke="var(--line)" stroke-width="6"/><circle id="bogen" cx="80" cy="80" r="75" fill="none" stroke="var(--mint)" stroke-width="6" stroke-linecap="round" stroke-dasharray="471.2" stroke-dashoffset="471.2"/></svg>
+                  <span class="knopf" id="knopf">Los</span>
+                </button>
+                <div class="zusammen" id="zusammen"></div>
+              </div>
+              <div class="spalte">
+                <span class="label">Ausgang</span>
+                <div class="szene" id="aus-szene"><div class="kiste aus"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="aus-blaetter"></span><span class="f rt"></span><span class="f fr" data-t="AUSGANG"></span></div></div>
+                <div class="unter"><span class="zahl" id="aus-zahl">Noch leer</span><span class="klein">Gleicher Ordner wie die Originale · <u>ändern</u></span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="leiste">
+          <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+          <span class="platz"></span>
+          <button class="link" id="direkt">Direkt umwandeln mit Vorschlägen</button>
+          <button class="btn" id="zurueck">Zurück</button>
+          <button class="taste" id="weiter">Weiter: Ziel wählen</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-ue">
+    <h2 id="h-ue">Was Kvertis erkennt</h2>
+    <p>Dieselbe Übersicht liegt in der App hinter dem Fragezeichen oben und im leeren Sortierregal. Grundlage ist docs/05-formate.md, Stand Phase 1.</p>
+    <div class="uebersicht">
+      <div class="ue k-bild"><h3><i></i>Bilder</h3>
+        <div class="formate"><span>JPG</span><span>PNG</span><span>WEBP</span><span>GIF</span><span>BMP</span><span>TIFF</span><span>HEIC</span><span>SVG</span><span>ICO</span><span>PSD</span><span>RAW</span></div>
+        <p>RAW umfasst DNG, CR2, CR3, NEF, ARW, ORF, RAF und RW2. HEIC braucht die HEIF-Bilderweiterung von Windows.</p>
+        <dl><dt>wird zu</dt><dd>JPG, PNG, WebP, TIFF, BMP, GIF, ICO, PDF</dd></dl>
+      </div>
+      <div class="ue k-audio"><h3><i></i>Audio</h3>
+        <div class="formate"><span>MP3</span><span>WAV</span><span>FLAC</span><span>OGG</span><span>OPUS</span><span>M4A</span><span>AAC</span><span>WMA</span><span>AIFF</span></div>
+        <p>Aus Videos lässt sich auch nur die Tonspur holen.</p>
+        <dl><dt>wird zu</dt><dd>MP3, WAV, FLAC, OGG, OPUS, M4A</dd></dl>
+      </div>
+      <div class="ue k-video"><h3><i></i>Video <span class="pro">PRO</span></h3>
+        <div class="formate"><span>MP4</span><span>MOV</span><span>M4V</span><span>MKV</span><span>WEBM</span><span>AVI</span><span>WMV</span><span>FLV</span><span>3GP</span><span>MPG</span><span>TS</span><span>MTS</span></div>
+        <p>HEVC-Quellen brauchen die HEVC-Videoerweiterung von Windows.</p>
+        <dl><dt>wird zu</dt><dd>MP4, MKV, WebM, nur Ton</dd></dl>
+      </div>
+      <div class="ue k-dok"><h3><i></i>Dokumente</h3>
+        <dl><dt>PDF</dt><dd>TXT</dd><dt>DOCX</dt><dd>TXT, Markdown, HTML</dd><dt>XLSX</dt><dd>CSV je Blatt, TXT</dd><dt>PPTX</dt><dd>TXT, Markdown</dd><dt>TXT, MD</dt><dd>PDF, HTML</dd><dt>HTML</dt><dd>TXT, Markdown</dd><dt>Bilder</dt><dd>zusammen als PDF</dd></dl>
+      </div>
+      <div class="ue nein k-nein"><h3><i></i>Geht nicht (mit Begründung)</h3>
+        <ul><li>DOC, XLS, PPT: alte Binärformate</li><li>Dateien mit Kennwort: keine Umgehung</li><li>AVIF: vorerst gesperrt (offene Lizenzfrage O-01)</li><li>Archive wie ZIP: werden nicht entpackt (Vorschlag)</li><li>Fehlende Windows-Erweiterung: Kvertis sagt, welche</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="abschnitt" aria-labelledby="h-not">
+    <h2 id="h-not">Warum so, und wie in WinUI 3</h2>
+    <div class="notizen">
+      <div><h3>Bedienung</h3><ul><li>Man muss vorher nichts wissen: Das Regal zeigt die Möglichkeiten, bevor die erste Datei da ist.</li><li>Gemischte Stapel werden automatisch gruppiert. Jede Gruppe bekommt ihr eigenes Ziel und ihre eigenen Einstellungen.</li><li>„Wozu?“ steht vor dem Format. Wer das Format kennt, dreht direkt am Karussell.</li><li>Geübte springen mit „Direkt umwandeln“ von Schritt 1 zu Schritt 3; die Vorschläge aus docs/05 gelten.</li></ul></div>
+      <div><h3>Erkennung</h3><ul><li>Magic Bytes wie in docs/05: <code>Scan.jpg</code> mit PNG-Inhalt landet trotzdem richtig, mit Hinweis.</li><li>Nicht Umwandelbares fliegt nicht still heraus, sondern steht mit Grund in „Nicht umwandelbar“.</li><li>Video ohne Pro: Die Kiste füllt sich trotzdem, die Gruppe zeigt den Pro-Hinweis (kein Dialog).</li></ul></div>
+      <div><h3>Umsetzung</h3><ul><li>Regal und Kisten: <code>PerspectiveTransform3D</code> + <code>CompositeTransform3D</code>, Füllen per <code>Vector3KeyFrameAnimation</code>.</li><li>Faden: eigenes Control über drei Schritt-Knoten, Ebenenwechsel mit <code>Translation</code>/<code>Scale</code> und <code>ImplicitAnimations</code>.</li><li>Gruppierung gehört in den ViewModel, nicht in die Engine; die Engine liefert nur die erkannte Art.</li><li>Hoher Kontrast oder „Animationen reduzieren“: flache Kacheln statt Kisten, Schritte ohne Tiefe.</li></ul></div>
+    </div>
+    <p class="hinweis">Offen wie beim letzten Mal: Mint statt Systemakzent braucht eine ADR; die Schrift Geist (SIL OFL) muss erst der Lizenz-Wächter prüfen. Die drei Einzelentwürfe liegen in design/oberflaeche-konzepte.html. Dateinamen und Größen sind Beispiele.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const warte = ms => new Promise(r => setTimeout(r, leise ? 0 : ms));
+  const $ = id => document.getElementById(id);
+  const win = $('win');
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  const KAT = {
+    bild:  { name: 'Bilder', kiste: 'BILDER', formate: ['JPG','PNG','WEBP','GIF','BMP','TIFF','HEIC','SVG','RAW','PSD','ICO'], wird: 'JPG, PNG, WebP, PDF …', mehrzahl: 'Bilder', meta: 'EXIF/GPS entfernen', metaText: 'Aufnahmeort und Kameradaten werden nicht mitgegeben.' },
+    audio: { name: 'Audio', kiste: 'AUDIO', formate: ['MP3','WAV','FLAC','OGG','OPUS','M4A','WMA','AIFF'], wird: 'MP3, M4A, FLAC, WAV …', mehrzahl: 'Audiodateien', meta: 'Titel-Infos entfernen', metaText: 'Interpret, Album und Kommentare werden nicht mitgegeben.' },
+    video: { name: 'Video', kiste: 'VIDEO', pro: true, formate: ['MP4','MOV','MKV','WEBM','AVI','WMV','3GP','MPG'], wird: 'MP4, MKV, WebM, nur Ton' },
+    dok:   { name: 'Dokumente', kiste: 'DOKUMENTE', formate: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], wird: 'TXT, Markdown, CSV, PDF …', mehrzahl: 'Dokumente', meta: 'Dokument-Infos entfernen', metaText: 'Autor und Bearbeitungsdaten werden nicht mitgegeben.' }
+  };
+  const KATS = ['bild', 'audio', 'video', 'dok'];
+  const KOMPRIMIERT = new Set(['JPG','HEIC','WEBP','GIF','MP3','M4A','OGG','OPUS','WMA','MP4','MOV','MKV','WEBM','PDF','DOCX','XLSX','PPTX']);
+  const ZWECK = { bild: ['Für E-Mail','Für Website','Für Messenger','Zum Archivieren','Original'], audio: ['Für E-Mail','Für Website','Zum Archivieren','Original'], dok: ['Nur Text','Mit Gliederung'] };
+  const ZWECK_F = { 'Für E-Mail': .6, 'Für Website': .75, 'Für Messenger': .55, 'Zum Archivieren': 1.8, 'Original': 1.2, 'Nur Text': 1, 'Mit Gliederung': 1.15 };
+
+  function ziele(k) {
+    if (k === 'bild') return [['JPG','überall lesbar',.13],['PNG','verlustfrei',.6],['WEBP','klein, fürs Web',.09],['TIFF','zum Drucken',1.1],['PDF','als Dokument',.2],['GIF','einfach',.3]];
+    if (k === 'audio') return [['MP3','überall abspielbar',.13],['M4A','klein, gut',.11],['FLAC','verlustfrei',.55],['WAV','unkomprimiert',1],['OGG','offen',.12],['OPUS','sehr klein',.07]];
+    if (k === 'video') return [['MP4','überall abspielbar',.35],['MKV','flexibel',.4],['WEBM','fürs Web',.3],['TON','nur Tonspur',.03]];
+    const f = (dateien.find(d => d.kat === 'dok') || {}).fmt;
+    if (f === 'PDF') return [['TXT','nur Text',.05]];
+    if (f === 'XLSX') return [['CSV','je Blatt',.2],['TXT','nur Text',.2]];
+    if (f === 'PPTX') return [['TXT','Folientexte',.03],['MD','mit Gliederung',.04]];
+    if (f === 'TXT' || f === 'MD') return [['PDF','zum Drucken',3],['HTML','für den Browser',1.3],['TXT','Zeichensatz',1]];
+    if (f === 'HTML') return [['TXT','nur Text',.4],['MD','mit Gliederung',.5]];
+    return [['TXT','nur Text',.05],['MD','mit Gliederung',.06],['HTML','für den Browser',.1]];
+  }
+
+  const BEISPIEL = [
+    { name: 'IMG_2041.heic', mb: 8.4, kat: 'bild', fmt: 'HEIC', meta: '4032 × 3024' },
+    { name: 'Probe_03.wav', mb: 19.7, kat: 'audio', fmt: 'WAV', meta: '1:52 min' },
+    { name: 'Scan.jpg', mb: 2.2, kat: 'bild', fmt: 'PNG', meta: '2480 × 3508', hinweis: 'Endung .jpg, Inhalt ist PNG' },
+    { name: 'Urlaub_Clip.mov', mb: 148, kat: 'video', fmt: 'MOV', meta: '0:48 min' },
+    { name: 'Protokoll.docx', mb: 0.4, kat: 'dok', fmt: 'DOCX', meta: '6 Seiten' },
+    { name: 'Fotos.zip', mb: 54, kat: null, fmt: 'ZIP', grund: 'Archive werden nicht entpackt.' },
+    { name: 'Interview.m4a', mb: 6.1, kat: 'audio', fmt: 'M4A', meta: '12:40 min' }
+  ];
+
+  let dateien = [];
+  let schritt = 0;
+  let aktiv = 'bild';
+  let fertig = null;
+  const wahl = {}, zweck = {}, qual = {}, meta = {};
+  KATS.forEach(k => { wahl[k] = 0; zweck[k] = (ZWECK[k] || [''])[0]; qual[k] = 72; meta[k] = true; });
+
+  const gruppen = () => KATS.filter(k => dateien.some(d => d.kat === k));
+  const umwandelbar = () => dateien.filter(d => d.kat && !KAT[d.kat].pro);
+  function schaetze(k) {
+    const z = ziele(k)[wahl[k]] || ziele(k)[0];
+    const q = .35 + .65 * Math.pow(qual[k] / 100, 1.8);
+    return dateien.filter(d => d.kat === k).reduce((s, d) => s + d.mb * Math.min(1.3, z[2] * (KOMPRIMIERT.has(d.fmt) ? 4 : 1)) * q * (ZWECK_F[zweck[k]] || 1), 0);
+  }
+  const summeVorher = () => umwandelbar().reduce((s, d) => s + d.mb, 0);
+  const summeNachher = () => gruppen().filter(k => !KAT[k].pro).reduce((s, k) => s + schaetze(k), 0);
+
+  // ===== Regal
+  const faecher = $('faecher');
+  faecher.innerHTML = KATS.map(k => `
+    <button class="fach k-${k}" id="fach-${k}" data-k="${k}" aria-label="${KAT[k].name}">
+      <div class="szene"><span class="zaehler" id="z-${k}">0</span>
+        <div class="kiste"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="b-${k}"></span><span class="f rt"></span><span class="f fr" data-t="${KAT[k].kiste}"></span></div>
+      </div>
+      <h5>${KAT[k].name}${KAT[k].pro ? ' <span class="pro">PRO</span>' : ''}</h5>
+      <div class="formate">${KAT[k].formate.map(f => `<span>${f}</span>`).join('')}</div>
+      <div class="wird">wird zu <b>${KAT[k].wird}</b></div>
+    </button>`).join('') + `
+    <div class="abweis" id="abweis"><span class="label">Nicht umwandelbar</span><div class="leer" id="abweis-leer">Hier landet, was Kvertis nicht umwandeln kann, immer mit Grund.</div><ul id="abweis-liste"></ul></div>`;
+  faecher.addEventListener('click', e => {
+    const f = e.target.closest('.fach');
+    if (f && dateien.some(d => d.kat === f.dataset.k)) { aktiv = f.dataset.k; geheZu(1); }
+  });
+
+  function blattHtml(d, i, fmt) {
+    return `<span class="blatt k-${d.kat}" data-f="${esc(fmt || d.fmt)}" style="--z:${-34 + (i % 5) * 16}px;--tab:${8 + (i % 3) * 40}px"></span>`;
+  }
+  function renderFach(k, hupf) {
+    const liste = dateien.filter(d => d.kat === k);
+    $('z-' + k).textContent = liste.length;
+    $('fach-' + k).classList.toggle('voll', liste.length > 0);
+    $('b-' + k).innerHTML = liste.slice(0, 5).map((d, i) => blattHtml(d, i)).join('');
+    if (hupf) { const z = $('z-' + k); z.classList.remove('hupf'); void z.offsetWidth; z.classList.add('hupf'); }
+  }
+  function renderAbweis() {
+    const nein = dateien.filter(d => !d.kat);
+    $('abweis-leer').hidden = nein.length > 0;
+    $('abweis-liste').innerHTML = nein.map(d => `<li><b>${esc(d.name)}</b><span>${esc(d.grund)}</span></li>`).join('');
+  }
+  function renderRegal() { KATS.forEach(k => renderFach(k)); renderAbweis(); }
+
+  // ===== Ziel
+  function renderZiel() {
+    const gs = gruppen();
+    if (!gs.includes(aktiv)) aktiv = gs[0] || 'bild';
+    $('gruppen').innerHTML = `<span class="label" style="padding:0 4px 4px">Erkannt</span>` + gs.map(k => {
+      const n = dateien.filter(d => d.kat === k).length;
+      const z = ziele(k)[wahl[k]];
+      return `<button class="grp k-${k} ${k === aktiv ? 'an' : ''}" data-k="${k}"><span class="mk"></span><span><b>${KAT[k].name}</b><small>${n} ${n === 1 ? 'Datei' : 'Dateien'}</small></span>${KAT[k].pro ? '<span class="etikett gesperrt">PRO</span>' : `<span class="etikett">→ ${z[0]}</span>`}</button>`;
+    }).join('') +
+      `<div class="dateien-kopf"><span class="label" style="padding:0 4px">Dateien · ${KAT[aktiv].name}</span></div>` +
+      dateien.filter(d => d.kat === aktiv).map(d => `<div class="mkarte k-${d.kat}" data-f="${esc(d.fmt)}"><b>${esc(d.name)}</b><small>${mb(d.mb)} MB${d.meta ? ' · ' + esc(d.meta) : ''}</small>${d.hinweis ? `<span class="hinw"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 4.8v.2"/></svg>${esc(d.hinweis)}</span>` : ''}</div>`).join('');
+
+    const w = $('wandler');
+    if (KAT[aktiv].pro) {
+      w.innerHTML = `<div class="band"></div><div class="pro-karte"><b>Video-Umwandlung ist Teil von Kvertis Pro.</b><p>Einmal kaufen, für immer nutzen. Ohne Pro bleiben die Videos liegen, alles andere wird umgewandelt.</p><button class="btn">Mehr erfahren</button></div>`;
+      $('mehr').innerHTML = `<div style="display:grid;gap:4px"><span class="label">Einstellungen</span><h4>Video</h4></div><p class="muted" style="margin:0;font-size:12.5px">Mit Pro: Auflösung, Qualität und „nur Ton“ je Video.</p>`;
+      return;
+    }
+    const zs = ziele(aktiv);
+    w.innerHTML = `<div class="band"></div>
+      <span class="label" style="position:relative;z-index:1">${KAT[aktiv].name} umwandeln in</span>
+      <div class="karussell"><div class="teller"></div><div class="ring" id="ring" role="radiogroup" aria-label="Zielformat" style="--rot:${-wahl[aktiv] * 48}deg">
+        ${zs.map((z, i) => `<button role="radio" aria-checked="${i === wahl[aktiv]}" class="${i === wahl[aktiv] ? 'an' : ''} ${Math.abs(i - wahl[aktiv]) > 1 ? 'weit' : ''}" style="--i:${i}" data-i="${i}">${z[0]}<small>${z[1]}</small></button>`).join('')}
+      </div></div>
+      ${ZWECK[aktiv] ? `<span class="zweck-frage">Wozu brauchen Sie die ${KAT[aktiv].mehrzahl}?</span><div class="zweck" id="zweck">${ZWECK[aktiv].map(z => `<button class="${z === zweck[aktiv] ? 'an' : ''}">${z}</button>`).join('')}</div>` : ''}
+      <span class="schaetzung" id="sch"></span>`;
+    renderMehr();
+  }
+  function renderSchaetzung() {
+    const vor = dateien.filter(d => d.kat === aktiv).reduce((s, d) => s + d.mb, 0);
+    const nach = schaetze(aktiv);
+    const p = Math.round((1 - nach / vor) * 100);
+    const s = $('sch');
+    if (s) s.innerHTML = `≈ ${mb(nach)} MB statt ${mb(vor)} MB · <b>${p >= 0 ? '−' + p : '+' + -p} %</b>`;
+    const sv = $('s-vor'), sn = $('s-nach');
+    if (sv) {
+      sv.textContent = mb(vor) + ' MB'; sn.textContent = mb(nach) + ' MB';
+      const max = Math.max(vor, nach);
+      $('saeule-vor').style.setProperty('--h', Math.max(6, 100 * vor / max) + 'px');
+      $('saeule-nach').style.setProperty('--h', Math.max(6, 100 * nach / max) + 'px');
+    }
+    renderFaden();
+  }
+  function renderMehr() {
+    const n = dateien.filter(d => d.kat === aktiv).length;
+    $('mehr').innerHTML = `
+      <div style="display:grid;gap:4px"><span class="label">Einstellungen</span><h4>${KAT[aktiv].name} · ${n} ${n === 1 ? 'Datei' : 'Dateien'}</h4></div>
+      <div class="saeulen" aria-hidden="true">
+        <div class="saeule" id="saeule-vor"><span class="vo"></span><span class="se"></span><span class="ob"></span><em id="s-vor"></em><span>vorher</span></div>
+        <div class="saeule nach" id="saeule-nach"><span class="vo"></span><span class="se"></span><span class="ob"></span><em id="s-nach"></em><span>nachher</span></div>
+      </div>
+      <div class="feld" style="margin-top:12px"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}"></div>
+      <div class="feld"><label for="zielgroesse">Zielgröße (optional)</label><input id="zielgroesse" class="eingabe" placeholder="z. B. 1 MB"></div>
+      <div class="schalter"><div>${KAT[aktiv].meta}<span>${KAT[aktiv].metaText}</span></div><button class="toggle" id="meta" aria-pressed="${meta[aktiv]}" aria-label="${KAT[aktiv].meta}"></button></div>
+      <span class="muted" style="font-size:11.5px">Gilt für alle ${KAT[aktiv].mehrzahl} dieser Runde. Einzelne Dateien lassen sich links abweichend einstellen.</span>`;
+    renderSchaetzung();
+  }
+  $('gruppen').addEventListener('click', e => { const g = e.target.closest('.grp'); if (g) { aktiv = g.dataset.k; renderZiel(); } });
+  $('wandler').addEventListener('click', e => {
+    const r = e.target.closest('.ring button');
+    if (r) { waehleFormat(+r.dataset.i); return; }
+    const z = e.target.closest('#zweck button');
+    if (z) { zweck[aktiv] = z.textContent; [...z.parentElement.children].forEach(b => b.classList.toggle('an', b === z)); renderSchaetzung(); }
+  });
+  $('wandler').addEventListener('keydown', e => {
+    if (!e.target.closest('.ring') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    e.preventDefault();
+    const n = ziele(aktiv).length;
+    waehleFormat((wahl[aktiv] + (e.key === 'ArrowRight' ? 1 : n - 1)) % n);
+    $('ring').querySelector('.an').focus();
+  });
+  function waehleFormat(i) {
+    wahl[aktiv] = i;
+    const ring = $('ring');
+    ring.style.setProperty('--rot', (-i * 48) + 'deg');
+    [...ring.children].forEach((b, j) => { b.classList.toggle('an', i === j); b.classList.toggle('weit', Math.abs(i - j) > 1); b.setAttribute('aria-checked', i === j); });
+    const g = document.querySelector(`.grp[data-k="${aktiv}"] .etikett`);
+    if (g) g.textContent = '→ ' + ziele(aktiv)[i][0];
+    renderSchaetzung();
+  }
+  $('mehr').addEventListener('input', e => { if (e.target.id === 'q') { qual[aktiv] = +e.target.value; $('q-wert').textContent = e.target.value; renderSchaetzung(); } });
+  $('mehr').addEventListener('click', e => { if (e.target.id === 'meta') { meta[aktiv] = !meta[aktiv]; e.target.setAttribute('aria-pressed', meta[aktiv]); } });
+
+  // ===== Durchlauf
+  function renderLauf() {
+    const u = umwandelbar();
+    $('ein-blaetter').innerHTML = u.slice(0, 6).map((d, i) => blattHtml(d, i)).join('');
+    $('ein-zahl').textContent = `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
+    const video = dateien.filter(d => d.kat === 'video').length, nein = dateien.filter(d => !d.kat).length;
+    $('ein-klein').textContent = [video ? `${video} Video ohne Pro bleibt liegen` : '', nein ? `${nein} nicht umwandelbar` : ''].filter(Boolean).join(' · ');
+    $('zusammen').innerHTML = gruppen().filter(k => !KAT[k].pro).map(k => `<div><span>${KAT[k].name}</span><b>→ ${ziele(k)[wahl[k]][0]}${zweck[k] ? ' · ' + zweck[k] : ''}</b></div>`).join('') +
+      `<div><span>Ergebnis</span><b style="color:var(--mint)">≈ ${mb(summeNachher())} MB</b></div>`;
+    if (!fertig) { $('aus-blaetter').innerHTML = ''; $('aus-zahl').textContent = 'Noch leer'; $('knopf').textContent = 'Los'; $('knopf').classList.remove('ok'); $('bogen').style.strokeDashoffset = 471.2; }
+  }
+  let laeuft = false;
+  async function los() {
+    if (laeuft || !umwandelbar().length) return;
+    laeuft = true; fertig = null;
+    renderLauf();
+    $('lauf').classList.add('aktiv');
+    const u = umwandelbar();
+    const einB = [...$('ein-blaetter').children];
+    const aus = $('aus-blaetter');
+    for (let i = 0; i < u.length; i++) {
+      const d = u[i];
+      const ziel = ziele(d.kat)[wahl[d.kat]][0];
+      if (einB[i]) einB[i].style.opacity = 0;
+      await flug(d, $('ein-szene'), $('aus-szene'), ziel, $('los'));
+      aus.insertAdjacentHTML('beforeend', blattHtml(d, i, ziel));
+      const p = (i + 1) / u.length;
+      $('bogen').style.strokeDashoffset = 471.2 * (1 - p);
+      $('knopf').textContent = Math.round(p * 100) + ' %';
+      $('aus-zahl').textContent = `${i + 1} von ${u.length} fertig`;
+    }
+    $('lauf').classList.remove('aktiv');
+    const vor = summeVorher(), nach = summeNachher();
+    fertig = { vor, nach, p: Math.round((1 - nach / vor) * 100) };
+    $('knopf').textContent = '✓'; $('knopf').classList.add('ok');
+    $('aus-zahl').innerHTML = `${u.length} fertig · <span style="color:var(--mint)">${mb(nach)} MB</span>`;
+    renderFaden(); renderLeiste();
+    laeuft = false;
+  }
+
+  function flug(d, von, nach, fmt, ueber) {
+    const wr = win.getBoundingClientRect();
+    const pos = (el, dy) => { const r = el.getBoundingClientRect(); return `translate(${r.left - wr.left + r.width / 2 - 52}px, ${r.top - wr.top + r.height / 2 - 29 + dy}px)`; };
+    const f = document.createElement('div');
+    f.className = 'flieger k-' + (d.kat || 'nein');
+    f.dataset.f = d.fmt; f.textContent = d.name;
+    win.appendChild(f);
+    const frames = [
+      { transform: pos(von, 0) + ' scale(.9)', opacity: 0 },
+      { transform: pos(von, -60) + ' rotate(-6deg) scale(1)', opacity: 1, offset: .2 }
+    ];
+    if (ueber) frames.push({ transform: pos(ueber, -40) + ' scale(1.12)', offset: .55 });
+    frames.push({ transform: pos(nach, -70) + ' rotate(5deg) scale(1)', opacity: 1, offset: .85 }, { transform: pos(nach, -10) + ' scale(.85)', opacity: 0 });
+    if (fmt) setTimeout(() => { f.dataset.f = fmt; }, leise ? 0 : 700);
+    const a = f.animate(frames, { duration: leise ? 1 : (ueber ? 1100 : 800), easing: 'cubic-bezier(.45,.05,.3,1)' });
+    return a.finished.then(() => f.remove());
+  }
+
+  // ===== Einlegen (mit Flug ins richtige Fach)
+  async function einlegen(liste, animiert) {
+    if (schritt !== 0) geheZu(0);
+    fertig = null;
+    for (const d of liste) {
+      dateien.push(d);
+      const log = $('log');
+      log.style.setProperty('--k', d.kat ? `var(--${{ bild: 'blue', audio: 'violet', video: 'amber', dok: 'cyan' }[d.kat]})` : 'var(--coral)');
+      log.innerHTML = `<span class="punkt"></span>${esc(d.name)} → ${d.kat ? KAT[d.kat].name + (d.hinweis ? ` <span class="muted">(${esc(d.hinweis)})</span>` : '') : `<span style="color:var(--coral)">nicht umwandelbar</span>`}`;
+      if (animiert) {
+        const ziel = d.kat ? $('fach-' + d.kat).querySelector('.szene') : $('abweis');
+        await flug(d, $('einwurf'), ziel);
+      }
+      d.kat ? renderFach(d.kat, true) : renderAbweis();
+    }
+    const n = dateien.filter(d => d.kat).length;
+    $('log').innerHTML = `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · ${gruppen().map(k => KAT[k].name).join(', ')}`;
+    aktiv = gruppen()[0] || 'bild';
+    renderFaden(); renderLeiste();
+  }
+
+  // ===== Echte Dateien: Magic Bytes wie docs/05-formate.md
+  async function erkenne(file) {
+    const b = new Uint8Array(await file.slice(0, 32).arrayBuffer());
+    const hex = (o, n) => [...b.slice(o, o + n)].map(x => x.toString(16).padStart(2, '0')).join('');
+    const asc = (o, n) => String.fromCharCode(...b.slice(o, o + n));
+    const ext = (file.name.includes('.') ? file.name.split('.').pop() : '').toLowerCase();
+    let kat = null, fmt = ext.toUpperCase() || '?', grund = 'Unbekanntes Format.';
+    if (hex(0, 3) === 'ffd8ff') [kat, fmt] = ['bild', 'JPG'];
+    else if (hex(0, 4) === '89504e47') [kat, fmt] = ['bild', 'PNG'];
+    else if (asc(0, 4) === 'GIF8') [kat, fmt] = ['bild', 'GIF'];
+    else if (asc(0, 2) === 'BM') [kat, fmt] = ['bild', 'BMP'];
+    else if (hex(0, 4) === '49492a00' || hex(0, 4) === '4d4d002a') [kat, fmt] = ['bild', 'TIFF'];
+    else if (hex(0, 4) === '00000100') [kat, fmt] = ['bild', 'ICO'];
+    else if (asc(0, 4) === '8BPS') [kat, fmt] = ['bild', 'PSD'];
+    else if (asc(0, 4) === 'RIFF') {
+      const t = asc(8, 4);
+      if (t === 'WEBP') [kat, fmt] = ['bild', 'WEBP'];
+      else if (t === 'WAVE') [kat, fmt] = ['audio', 'WAV'];
+      else if (t === 'AVI ') [kat, fmt] = ['video', 'AVI'];
+    }
+    else if (asc(4, 4) === 'ftyp') {
+      const br = asc(8, 4);
+      if (/heic|heix|mif1|msf1|hevc/.test(br)) [kat, fmt] = ['bild', 'HEIC'];
+      else if (/avi[fs]/.test(br)) { fmt = 'AVIF'; grund = 'AVIF ist vorerst gesperrt (Lizenzfrage offen).'; }
+      else if (/M4A |M4B /.test(br)) [kat, fmt] = ['audio', 'M4A'];
+      else if (br === 'qt  ') [kat, fmt] = ['video', 'MOV'];
+      else [kat, fmt] = ['video', 'MP4'];
+    }
+    else if (asc(0, 3) === 'ID3' || (b[0] === 0xff && (b[1] & 0xe0) === 0xe0)) [kat, fmt] = ['audio', 'MP3'];
+    else if (asc(0, 4) === 'fLaC') [kat, fmt] = ['audio', 'FLAC'];
+    else if (asc(0, 4) === 'OggS') [kat, fmt] = ['audio', ext === 'opus' ? 'OPUS' : 'OGG'];
+    else if (asc(0, 4) === 'FORM' && asc(8, 3) === 'AIF') [kat, fmt] = ['audio', 'AIFF'];
+    else if (hex(0, 4) === '3026b275') [kat, fmt] = ext === 'wma' ? ['audio', 'WMA'] : ['video', 'WMV'];
+    else if (hex(0, 4) === '1a45dfa3') [kat, fmt] = ['video', ext === 'webm' ? 'WEBM' : 'MKV'];
+    else if (asc(0, 4) === '%PDF') [kat, fmt] = ['dok', 'PDF'];
+    else if (hex(0, 4) === '504b0304') {
+      if (['docx', 'xlsx', 'pptx'].includes(ext)) [kat, fmt] = ['dok', ext.toUpperCase()];
+      else { fmt = 'ZIP'; grund = 'Archive werden nicht entpackt.'; }
+    }
+    else if (hex(0, 8) === 'd0cf11e0a1b11ae1') grund = 'Altes Binärformat (DOC, XLS, PPT) wird nicht unterstützt.';
+    else if (['svg'].includes(ext)) [kat, fmt] = ['bild', 'SVG'];
+    else if (['txt', 'md', 'html', 'htm'].includes(ext)) [kat, fmt] = ['dok', ext === 'htm' ? 'HTML' : ext.toUpperCase()];
+    const d = { name: file.name, mb: Math.max(file.size / 1e6, .01), kat, fmt, grund };
+    const gleich = { JPG: ['jpg', 'jpeg', 'jfif'], TIFF: ['tif', 'tiff'], MP4: ['mp4', 'm4v'], HEIC: ['heic', 'heif'], MD: ['md', 'markdown'] }[fmt] || [fmt.toLowerCase()];
+    if (kat && ext && !gleich.includes(ext)) d.hinweis = `Endung .${ext}, Inhalt ist ${fmt}`;
+    return d;
+  }
+  let tiefe = 0;
+  win.addEventListener('dragenter', e => { e.preventDefault(); tiefe++; win.classList.add('drag'); });
+  win.addEventListener('dragleave', () => { if (--tiefe <= 0) { tiefe = 0; win.classList.remove('drag'); } });
+  win.addEventListener('dragover', e => e.preventDefault());
+  win.addEventListener('drop', async e => {
+    e.preventDefault(); tiefe = 0; win.classList.remove('drag');
+    const files = [...(e.dataTransfer?.files || [])];
+    if (!files.length || laeuft) return;
+    const erkannt = await Promise.all(files.map(erkenne));
+    einlegen(erkannt, erkannt.length <= 12);
+  });
+
+  // ===== Faden, Ebenen, Leiste
+  function renderFaden() {
+    const hat = dateien.some(d => d.kat);
+    document.querySelectorAll('.knoten').forEach(k => {
+      const s = +k.dataset.s;
+      k.classList.toggle('an', s === schritt);
+      k.classList.toggle('fertig', s < schritt || (s === 2 && !!fertig));
+      k.disabled = s > 0 && !hat;
+      k.querySelector('i').textContent = (s < schritt || (s === 2 && fertig)) ? '✓' : s + 1;
+    });
+    $('seg-0').classList.toggle('voll', schritt >= 1);
+    $('seg-1').classList.toggle('voll', schritt >= 2);
+    const n = dateien.filter(d => d.kat).length;
+    $('f-0').textContent = dateien.length ? `${n} erkannt${dateien.length > n ? ` · ${dateien.length - n} nicht` : ''}` : 'hineinwerfen';
+    $('f-1').textContent = hat ? gruppen().filter(k => !KAT[k].pro).map(k => ziele(k)[wahl[k]][0]).join(' · ') || 'Format und Zweck' : 'Format und Zweck';
+    $('f-2').textContent = fertig ? `fertig · −${fertig.p} %` : hat ? `≈ ${mb(summeNachher())} MB` : 'los geht’s';
+  }
+  function renderLeiste() {
+    const hat = dateien.some(d => d.kat);
+    const w = $('weiter'), z = $('zurueck'), dr = $('direkt');
+    z.hidden = schritt === 0;
+    dr.hidden = schritt !== 0 || !hat;
+    w.disabled = !hat;
+    if (schritt === 0) { w.hidden = false; w.textContent = 'Weiter: Ziel wählen'; }
+    else if (schritt === 1) { w.hidden = false; w.textContent = 'Weiter: Umwandeln'; }
+    else { w.hidden = !fertig; w.textContent = 'Neue Runde'; }
+  }
+  function geheZu(s) {
+    schritt = s;
+    document.querySelectorAll('.ebene').forEach(e => { const d = +e.dataset.s - s; e.dataset.pos = d > 0 ? 1 : d < 0 ? -1 : 0; e.inert = d !== 0; });
+    if (s === 1) renderZiel();
+    if (s === 2) renderLauf();
+    renderFaden(); renderLeiste();
+  }
+  document.querySelectorAll('.knoten').forEach(k => k.addEventListener('click', () => geheZu(+k.dataset.s)));
+  $('weiter').addEventListener('click', () => { if (schritt === 2) { leeren(); return; } geheZu(schritt + 1); });
+  $('zurueck').addEventListener('click', () => geheZu(Math.max(0, schritt - 1)));
+  $('direkt').addEventListener('click', () => geheZu(2));
+  $('hilfe').addEventListener('click', () => geheZu(0));
+  $('los').addEventListener('click', los);
+
+  function leeren() {
+    if (laeuft) return;
+    dateien = []; fertig = null;
+    renderRegal();
+    $('log').innerHTML = '<span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span>';
+    geheZu(0);
+  }
+  $('leeren').addEventListener('click', leeren);
+  $('beispiel').addEventListener('click', () => { leeren(); einlegen(BEISPIEL.map(d => ({ ...d })), false); });
+  let demoLaeuft = false;
+  $('demo').addEventListener('click', async () => {
+    if (demoLaeuft || laeuft) return; demoLaeuft = true;
+    leeren(); await warte(400);
+    await einlegen(BEISPIEL.map(d => ({ ...d })), true);
+    await warte(1000); geheZu(1);
+    await warte(1400); waehleFormat(2);
+    await warte(1100); waehleFormat(0);
+    await warte(900); aktiv = 'audio'; renderZiel();
+    await warte(1400); geheZu(2);
+    await warte(900); await los();
+    demoLaeuft = false;
+  });
+
+  // Ruhezustand: Beispieldateien liegen schon im Regal
+  renderRegal();
+  einlegen(BEISPIEL.map(d => ({ ...d })), false);
+})();
+</script>
