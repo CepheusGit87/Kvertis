@@ -73,7 +73,24 @@ public static partial class OutputNamePattern
             sb.Append(Array.IndexOf(InvalidChars, c) >= 0 ? '_' : c);
         }
         // Windows forbids trailing dots and spaces in file names.
-        return sb.ToString().TrimEnd('.', ' ');
+        var result = sb.ToString().TrimEnd('.', ' ');
+        return IsReservedDeviceName(result) ? "_" + result : result;
+    }
+
+    /// <summary>
+    /// Windows device names (CON, PRN, AUX, NUL, COM1-9, LPT1-9) are reserved in any case and even with an
+    /// extension ("nul.txt", "Com1.backup"). The part before the first dot decides.
+    /// </summary>
+    internal static bool IsReservedDeviceName(string stem)
+    {
+        var dot = stem.IndexOf('.', StringComparison.Ordinal);
+        var head = (dot >= 0 ? stem[..dot] : stem).TrimEnd(' ').ToUpperInvariant();
+        return head switch
+        {
+            "CON" or "PRN" or "AUX" or "NUL" => true,
+            _ => head.Length == 4 && (head.StartsWith("COM", StringComparison.Ordinal) || head.StartsWith("LPT", StringComparison.Ordinal))
+                 && head[3] is >= '1' and <= '9',
+        };
     }
 
     [GeneratedRegex(@"\{(\w+)\}")]

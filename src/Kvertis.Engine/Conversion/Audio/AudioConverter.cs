@@ -71,7 +71,7 @@ public sealed class AudioConverter : IConverter
             var options = new FfmpegJobOptions { ExcerptStart = start, ExcerptDuration = length, ReportProgress = false };
             var arguments = FfmpegArguments.Build(input, context.Media, previewPath, settings, _tools.Registry, _tools.Codecs, context.Features, options);
 
-            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct).ConfigureAwait(false);
+            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct, context.Media).ConfigureAwait(false);
 
             var excerptBytes = new FileInfo(previewPath) is { Exists: true } file ? file.Length : 0;
             if (excerptBytes == 0)

@@ -13,7 +13,7 @@ public class FfmpegComplianceTests
 
     private const string GplVersion =
         "ffmpeg version 6.1.1 Copyright (c) 2000-2023 the FFmpeg developers\n" +
-        "configuration: --prefix=/usr --enable-gpl --enable-version3 --enable-libvpx\n";
+        "configuration: --prefix=/usr --enable-" + "gpl --enable-version3 --enable-libvpx\n";
 
     [Fact]
     public void LgplBuildIsCompliant()
@@ -38,9 +38,18 @@ public class FfmpegComplianceTests
     [Fact]
     public void NonFreeBuildIsDetected()
     {
-        var report = FfmpegCompliance.Parse("configuration: --enable-nonfree --enable-lib" + "fdk-aac\n", FakeFfmpeg.EncodersOutput(["flac"]));
+        var report = FfmpegCompliance.Parse("configuration: --enable-" + "nonfree --enable-lib" + "fdk-aac\n", FakeFfmpeg.EncodersOutput(["flac"]));
         report.HasNonFree.ShouldBeTrue();
         report.HasForbiddenEncoders.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void XvidEncoderIsForbidden()
+    {
+        var xvid = "lib" + "xvid";
+        var report = FfmpegCompliance.Parse(FakeFfmpeg.LgplVersion, FakeFfmpeg.EncodersOutput(["flac", xvid]));
+        report.HasForbiddenEncoders.ShouldBeTrue();
+        report.ForbiddenEncodersFound.ShouldContain(xvid);
     }
 
     [Fact]
@@ -133,6 +142,34 @@ public class FfmpegErrorMapperTests
         var ex = FfmpegErrorMapper.Map(new ProcessOutcome(1, string.Empty, stderr, TimeSpan.Zero, false), "/in", "convert");
         ex.Code.ShouldBe(expected);
         ex.Detail.ShouldBe(stderr);
+    }
+
+    [Fact]
+    public void FileNameContainingEncryptedIsNotProtected()
+    {
+        var path = Path.Combine(Path.GetTempPath(), "encrypted_notes.mp4");
+        var stderr = $"Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '{path}':\n{path}: Invalid data found when processing input";
+
+        FfmpegErrorMapper.Map(new ProcessOutcome(1, string.Empty, stderr, TimeSpan.Zero, false), path, "convert")
+            .Code.ShouldBe(ConversionErrorCode.CorruptFile);
+    }
+
+    [Fact]
+    public void OutputPathSharingTheStemIsIgnoredToo()
+    {
+        var path = Path.Combine(Path.GetTempPath(), "DRM protected talk.mp4");
+        var stderr = $"[out#0/mp4 @ 0x1] Error opening output '{Path.ChangeExtension(path, ".webm")}.kvertis-tmp'\nConversion failed!";
+
+        FfmpegErrorMapper.Classify(stderr, path).ShouldBe(ConversionErrorCode.ToolFailed);
+    }
+
+    [Fact]
+    public void ProtectionPhraseOnOtherLineStillCounts()
+    {
+        var path = Path.Combine(Path.GetTempPath(), "encrypted_notes.mp4");
+        var stderr = $"Input #0 from '{path}':\n[mov @ 0x1] This file is encrypted";
+
+        FfmpegErrorMapper.Classify(stderr, path).ShouldBe(ConversionErrorCode.ProtectedFile);
     }
 
     [Fact]

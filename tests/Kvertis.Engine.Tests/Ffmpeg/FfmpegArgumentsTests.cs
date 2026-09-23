@@ -152,6 +152,24 @@ public class FfmpegArgumentsTests
     }
 
     [Fact]
+    public void Mp4FromSilentVideoDoesNotNeedAac()
+    {
+        var codecs = new TestCodecs { CanEncodeH264 = true, CanEncodeAac = false };
+        var args = BuildVideo(new ConversionSettings(FormatRegistry.Mp4), TestMedia.VideoInfo(hasAudio: false), codecs: codecs);
+
+        ValueAfter(args, "-c:v").ShouldBe("h264_mf");
+        args.ShouldNotContain("-c:a");
+    }
+
+    [Fact]
+    public void Mp4WithAudioStillNeedsAac()
+    {
+        var codecs = new TestCodecs { CanEncodeH264 = true, CanEncodeAac = false };
+        Should.Throw<ConversionException>(() => BuildVideo(new ConversionSettings(FormatRegistry.Mp4), TestMedia.VideoInfo(hasAudio: true), codecs: codecs))
+            .Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+    }
+
+    [Fact]
     public void Mp4UsesOnlyMediaFoundationEncoders()
     {
         var args = BuildVideo(new ConversionSettings(FormatRegistry.Mp4));

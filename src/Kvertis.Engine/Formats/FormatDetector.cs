@@ -1,4 +1,5 @@
 using Kvertis.Engine.Abstractions;
+using Kvertis.Engine.Validation;
 
 namespace Kvertis.Engine.Formats;
 
@@ -12,11 +13,14 @@ public sealed class FormatDetector : IFormatDetector
 
     private readonly FormatRegistry _registry;
     private readonly IReadOnlyList<IMediaProber> _probers;
+    private readonly InputValidator _validator;
 
-    public FormatDetector(FormatRegistry registry, IEnumerable<IMediaProber> probers)
+    /// <param name="validator">Adds the LargeFile warning; defaults to the standard <see cref="InputLimits"/>.</param>
+    public FormatDetector(FormatRegistry registry, IEnumerable<IMediaProber> probers, InputValidator? validator = null)
     {
         _registry = registry;
         _probers = probers.ToList();
+        _validator = validator ?? new InputValidator();
     }
 
     public async Task<InputInfo> DetectAsync(string path, CancellationToken ct)
@@ -55,7 +59,8 @@ public sealed class FormatDetector : IFormatDetector
         }
         if (!descriptor.CanRead)
         {
-            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect", $"format '{format}' is recognized but not readable");
+            var detail = format.Value == FormatRegistry.Avif ? FormatRegistry.AvifBlockedDetail : $"format '{format}' is recognized but not readable";
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect", detail);
         }
 
         var warnings = new List<InputWarning>();
@@ -77,7 +82,7 @@ public sealed class FormatDetector : IFormatDetector
             info = await prober.ProbeAsync(info, ct).ConfigureAwait(false);
         }
 
-        return info;
+        return _validator.Annotate(info);
     }
 
     private static bool SameFamily(FormatId a, FormatId b)
@@ -112,7 +117,7 @@ public sealed class FormatDetector : IFormatDetector
                 }
                 read += n;
             }
-            var format = MagicBytes.Detect(buffer.AsSpan(0, Math.Min(read, MagicBytes.HeaderLength)), path);
+            var format = MagicBytes.Detect(buffer.AsSpan(0, Math.Min(read, MagicBytes.SampleLength)), path);
             if (format is not null)
             {
                 return format;

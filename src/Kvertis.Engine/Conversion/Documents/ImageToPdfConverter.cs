@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using ImageMagick;
 using Kvertis.Engine.Abstractions;
+using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Formats;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
@@ -123,8 +124,9 @@ public sealed class ImageToPdfConverter : IConverter
             return frames;
         }
 
+        // Explicit coder and the Magick security policy, like every other Magick.NET read (ADR-006).
         using var collection = new MagickImageCollection();
-        collection.Read(input.Path);
+        collection.Read(input.Path, MagickSupport.ReadSettings(input.Format, input.Path, firstFrameOnly: false));
         foreach (var frame in collection)
         {
             ct.ThrowIfCancellationRequested();
@@ -136,9 +138,10 @@ public sealed class ImageToPdfConverter : IConverter
     private static MemoryStream LoadJpeg(string path, bool strip)
     {
         var orientation = OrientationType.Undefined;
+        var readSettings = MagickSupport.ReadSettings(FormatRegistry.Jpg, path, firstFrameOnly: true);
         using (var probe = new MagickImage())
         {
-            probe.Ping(path);
+            probe.Ping(path, readSettings);
             orientation = probe.Orientation;
         }
         if (orientation is OrientationType.Undefined or OrientationType.TopLeft)
@@ -156,7 +159,7 @@ public sealed class ImageToPdfConverter : IConverter
         }
 
         // Rotated by EXIF (or not parseable): apply the orientation and re-encode once.
-        using var image = new MagickImage(path);
+        using var image = new MagickImage(path, readSettings);
         image.AutoOrient();
         if (strip)
         {

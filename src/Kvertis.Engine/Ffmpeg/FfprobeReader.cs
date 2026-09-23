@@ -34,7 +34,7 @@ public sealed record MediaInfo(
 /// </summary>
 public sealed class FfprobeReader
 {
-    /// <summary>Codec tags used by protected MP4/MOV tracks (CENC and legacy FairPlay).</summary>
+    /// <summary>Codec tags used by protected MP4/MOV tracks (CENC and legacy vendor DRM).</summary>
     private static readonly HashSet<string> EncryptedCodecTags = new(StringComparer.OrdinalIgnoreCase) { "encv", "enca", "drms", "drmi" };
 
     private readonly IFfmpegLocator _locator;

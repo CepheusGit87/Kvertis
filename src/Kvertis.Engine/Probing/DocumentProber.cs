@@ -16,10 +16,18 @@ namespace Kvertis.Engine.Probing;
 public sealed class DocumentProber : IMediaProber
 {
     private readonly TimeSpan _timeout;
+    private readonly Func<InputInfo, InputInfo>? _probeOverride;
 
     public DocumentProber(TimeSpan? timeout = null)
+        : this(timeout, null)
+    {
+    }
+
+    /// <summary>Test seam: <paramref name="probeOverride"/> replaces the library calls (e.g. a probe that blocks).</summary>
+    internal DocumentProber(TimeSpan? timeout, Func<InputInfo, InputInfo>? probeOverride)
     {
         _timeout = timeout ?? InputLimits.AnalysisTimeoutFor(MediaKind.Document);
+        _probeOverride = probeOverride;
     }
 
     public bool Supports(MediaKind kind) => kind == MediaKind.Document;
@@ -35,7 +43,8 @@ public sealed class DocumentProber : IMediaProber
             return info;
         }
 
-        var work = Task.Run(() => format == FormatRegistry.Pdf ? ProbePdf(info) : ProbeOffice(info), CancellationToken.None);
+        var probe = _probeOverride ?? (format == FormatRegistry.Pdf ? ProbePdf : ProbeOffice);
+        var work = Task.Run(() => probe(info), CancellationToken.None);
         try
         {
             return await work.WaitAsync(_timeout, ct).ConfigureAwait(false);

@@ -71,12 +71,56 @@ public sealed partial class DocumentSafetyTests : IDisposable
     [Fact]
     public async Task Prober_timeout_is_reported_as_timeout()
     {
-        var path = _dir.File("big.pdf");
-        await File.WriteAllTextAsync(path, "%PDF-1.4\n" + new string('0', 5_000_000));
+        var path = _dir.File("slow.pdf");
+        await File.WriteAllTextAsync(path, "%PDF-1.4\n");
+        using var gate = new ManualResetEventSlim(false);
+        using var release = new CancellationTokenSource();
+        var prober = new DocumentProber(TimeSpan.FromMilliseconds(50), info =>
+        {
+            // Stands in for a library call that never returns in time; released when the test ends.
+            gate.Wait(release.Token);
+            return info;
+        });
 
-        var ex = await Should.ThrowAsync<ConversionException>(() => new DocumentProber(TimeSpan.FromMilliseconds(1)).ProbeAsync(Info(path, FormatRegistry.Pdf), CancellationToken.None));
+        try
+        {
+            var ex = await Should.ThrowAsync<ConversionException>(() => prober.ProbeAsync(Info(path, FormatRegistry.Pdf), CancellationToken.None));
 
-        ex.Code.ShouldBeOneOf(ConversionErrorCode.Timeout, ConversionErrorCode.CorruptFile);
+            ex.Code.ShouldBe(ConversionErrorCode.Timeout);
+            gate.IsSet.ShouldBeFalse();
+        }
+        finally
+        {
+            await release.CancelAsync();
+        }
+    }
+
+    [Fact]
+    public async Task Prober_cancellation_is_reported_as_cancelled()
+    {
+        var path = _dir.File("slow.pdf");
+        await File.WriteAllTextAsync(path, "%PDF-1.4\n");
+        using var gate = new ManualResetEventSlim(false);
+        using var release = new CancellationTokenSource();
+        using var cts = new CancellationTokenSource();
+        var prober = new DocumentProber(TimeSpan.FromHours(1), info =>
+        {
+            gate.Wait(release.Token);
+            return info;
+        });
+
+        try
+        {
+            var probing = prober.ProbeAsync(Info(path, FormatRegistry.Pdf), cts.Token);
+            await cts.CancelAsync();
+            var ex = await Should.ThrowAsync<ConversionException>(() => probing);
+
+            ex.Code.ShouldBe(ConversionErrorCode.Cancelled);
+        }
+        finally
+        {
+            await release.CancelAsync();
+        }
     }
 
     [Fact]

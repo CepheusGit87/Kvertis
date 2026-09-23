@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using ImageMagick;
 using Kvertis.Engine.Abstractions;
+using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Formats;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
@@ -145,7 +146,7 @@ public sealed class PdfConverter : IConverter
         for (var i = 0; i < pages; i++)
         {
             ct.ThrowIfCancellationRequested();
-            var path = pages == 1 ? outputPath : DocumentPaths.PagePath(outputPath, i);
+            var path = pages == 1 ? outputPath : DocumentPaths.UniquePagePath(outputPath, i);
             var expected = input.SizeBytes / pages + 1;
             await outputs.WriteAsync(path, expected, async temp =>
             {
@@ -158,7 +159,7 @@ public sealed class PdfConverter : IConverter
                 try
                 {
                     await _rasterizer.RasterizePageAsync(input.Path, i, dpi, png, ct).ConfigureAwait(false);
-                    using var image = new MagickImage(png);
+                    using var image = new MagickImage(png, MagickSupport.ReadSettings(FormatRegistry.Png, png, firstFrameOnly: true));
                     image.Strip();
                     image.Quality = (uint)Math.Clamp(settings.QualityClamped, 1, 100);
                     image.BackgroundColor = MagickColors.White;

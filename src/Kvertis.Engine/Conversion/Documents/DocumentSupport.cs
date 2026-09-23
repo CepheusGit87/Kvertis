@@ -60,7 +60,7 @@ internal static class DocumentErrors
 }
 
 /// <summary>
-/// Detects encrypted Office files. An encrypted DOCX/XLSX/PPTX is not a ZIP package but an OLE
+/// Detects encrypted office documents. An encrypted DOCX/XLSX/PPTX is not a ZIP package but an OLE
 /// compound file holding the streams "EncryptionInfo" and "EncryptedPackage". We only look for those
 /// stream names; nothing is ever decrypted.
 /// </summary>
@@ -70,7 +70,7 @@ public static class OfficeProtection
     private static readonly byte[] EncryptedPackageName = Encoding.Unicode.GetBytes("EncryptedPackage");
     private static readonly byte[] EncryptionInfoName = Encoding.Unicode.GetBytes("EncryptionInfo");
 
-    /// <summary>True when the file is an OLE compound file (legacy Office or encrypted OOXML).</summary>
+    /// <summary>True when the file is an OLE compound file (legacy DOC/XLS/PPT or encrypted OOXML).</summary>
     public static bool IsOleContainer(string path)
     {
         try
@@ -118,7 +118,7 @@ public static class OfficeProtection
         return false;
     }
 
-    /// <summary>Throws ProtectedFile for encrypted Office files and UnsupportedFormat for other OLE files.</summary>
+    /// <summary>Throws ProtectedFile for encrypted office documents and UnsupportedFormat for other OLE files.</summary>
     internal static void EnsureOpenable(string path, string step)
     {
         if (IsEncryptedOfficeFile(path))
@@ -198,6 +198,16 @@ internal static class DocumentPaths
     /// <summary>"out/report.png", 0 → "out/report_p001.png".</summary>
     public static string PagePath(string outputPath, int pageIndex) =>
         Suffixed(outputPath, "_p" + (pageIndex + 1).ToString("000", System.Globalization.CultureInfo.InvariantCulture));
+
+    /// <summary>
+    /// <see cref="PagePath"/>, made unique like every other output name: an existing "report_p001.png"
+    /// is never overwritten, the page becomes "report_p001_1.png" instead.
+    /// </summary>
+    public static string UniquePagePath(string outputPath, int pageIndex)
+    {
+        var page = PagePath(outputPath, pageIndex);
+        return Naming.OutputNamePattern.EnsureUnique(Path.GetDirectoryName(page) ?? string.Empty, Path.GetFileName(page));
+    }
 
     /// <summary>"out/data.csv", "Sheet 1" → "out/data_Sheet 1.csv".</summary>
     public static string Suffixed(string outputPath, string suffix)

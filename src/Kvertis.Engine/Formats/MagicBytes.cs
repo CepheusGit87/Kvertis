@@ -11,11 +11,22 @@ namespace Kvertis.Engine.Formats;
 /// </summary>
 public static class MagicBytes
 {
-    /// <summary>Bytes needed to classify anything we know. Read at most this much.</summary>
+    /// <summary>Bytes the fixed-offset signatures look at. Everything except MPEG-TS is decided within this prefix.</summary>
     public const int HeaderLength = 64;
 
-    public static FormatId? Detect(ReadOnlySpan<byte> header, string? path = null)
+    /// <summary>Largest sample <see cref="Detect"/> makes use of (MPEG-TS sync bytes at 0, 188 and 376).</summary>
+    public const int SampleLength = 4096;
+
+    private const int TsPacketLength = 188;
+
+    /// <summary>
+    /// Classifies a file by its first bytes. <paramref name="sample"/> should be the file prefix up to
+    /// <see cref="SampleLength"/> bytes; only the first <see cref="HeaderLength"/> bytes are used for
+    /// the fixed signatures, the rest only for the MPEG-TS packet check.
+    /// </summary>
+    public static FormatId? Detect(ReadOnlySpan<byte> sample, string? path = null)
     {
+        var header = sample[..Math.Min(sample.Length, HeaderLength)];
         if (header.Length < 4)
         {
             return null;
@@ -79,7 +90,12 @@ public static class MagicBytes
             // Vorbis and Opus share the container; the first packet header tells them apart.
             return header.Length >= 36 && IndexOf(header, "OpusHead"u8) >= 0 ? FormatRegistry.Opus : FormatRegistry.Ogg;
         }
-        if (StartsWith(header, "ID3"u8) || (header[0] == 0xFF && (header[1] & 0xE0) == 0xE0 && (header[1] & 0x06) != 0))
+        if (HasTextBom(header))
+        {
+            // UTF-8/UTF-16 byte order marks: FF FE would otherwise pass as an MP3 frame sync. DetectText handles these.
+            return null;
+        }
+        if (StartsWith(header, "ID3"u8) || IsMp3FrameHeader(header))
         {
             return FormatRegistry.Mp3;
         }
@@ -100,13 +116,13 @@ public static class MagicBytes
         {
             return FormatRegistry.Mpeg;
         }
-        if (header[0] == 0x47 && header.Length >= 8 && (header.Length < 189 || header[188] == 0x47))
+        if (IsTransportStream(sample))
         {
             return FormatRegistry.Ts;
         }
         if (header.Length >= 12 && header.Slice(4, 4).SequenceEqual("ftyp"u8))
         {
-            return DetectIsoBmff(header.Slice(8), path);
+            return DetectIsoBmff(header, path);
         }
         if (StartsWith(header, "%PDF"u8))
         {
@@ -128,43 +144,70 @@ public static class MagicBytes
         return null;
     }
 
-    private static FormatId? DetectIsoBmff(ReadOnlySpan<byte> afterFtyp, string? path)
+    private static FormatId? DetectIsoBmff(ReadOnlySpan<byte> box, string? path)
     {
-        // Major brand, then compatible brands. Scan all four-char codes we have.
-        var brands = Encoding.ASCII.GetString(afterFtyp);
-        if (brands.Contains("heic", StringComparison.Ordinal) || brands.Contains("heix", StringComparison.Ordinal) ||
-            brands.Contains("hevc", StringComparison.Ordinal) || brands.Contains("mif1", StringComparison.Ordinal) ||
-            brands.Contains("msf1", StringComparison.Ordinal) || brands.Contains("heim", StringComparison.Ordinal))
+        // box = the whole ftyp box: size, "ftyp", major brand, minor version, compatible brands.
+        var size = (int)Math.Min(ReadUInt32BigEndian(box), (uint)box.Length);
+        var major = Encoding.ASCII.GetString(box.Slice(8, 4));
+        var compatible = new List<string>();
+        for (var offset = 16; offset + 4 <= Math.Max(size, 16); offset += 4)
         {
-            return brands.Contains("avif", StringComparison.Ordinal) ? FormatRegistry.Avif : FormatRegistry.Heic;
+            compatible.Add(Encoding.ASCII.GetString(box.Slice(offset, 4)));
         }
-        if (brands.Contains("avif", StringComparison.Ordinal) || brands.Contains("avis", StringComparison.Ordinal))
+
+        // The major brand decides first. Only when it is generic (mif1, isom, ...) do the compatible brands
+        // count, and the HEIF family wins there: a HEIC that lists "avif" as compatible stays HEIC, so it can
+        // never bypass IHeicDecoder.
+        if (ClassifyBrand(major) is { } byMajor)
         {
-            return FormatRegistry.Avif;
+            return byMajor;
         }
-        if (brands.Contains("qt  ", StringComparison.Ordinal))
+        if (compatible.Any(IsHeifBrand))
         {
-            return FormatRegistry.Mov;
+            return FormatRegistry.Heic;
         }
-        if (brands.Contains("3gp", StringComparison.Ordinal) || brands.Contains("3g2", StringComparison.Ordinal))
+        foreach (var brand in compatible)
         {
-            return FormatRegistry.ThreeGp;
+            if (ClassifyBrand(brand) is { } byCompatible)
+            {
+                return byCompatible;
+            }
         }
-        if (brands.Contains("M4A ", StringComparison.Ordinal) || brands.Contains("M4B ", StringComparison.Ordinal))
+        if (IsGenericHeifBrand(major) || compatible.Any(IsGenericHeifBrand))
         {
-            return FormatRegistry.M4a;
-        }
-        if (brands.Contains("crx ", StringComparison.Ordinal))
-        {
-            return FormatRegistry.Raw; // CR3
+            return FormatRegistry.Heic;
         }
         // isom, mp41, mp42, avc1, dash, iso2 ... A .m4a with a generic brand is audio-only; ffprobe sorts that out later.
         return string.Equals(Path.GetExtension(path), ".m4a", StringComparison.OrdinalIgnoreCase) ? FormatRegistry.M4a : FormatRegistry.Mp4;
     }
 
+    private static FormatId? ClassifyBrand(string brand)
+    {
+        if (IsHeifBrand(brand))
+        {
+            return FormatRegistry.Heic;
+        }
+        return brand switch
+        {
+            "avif" or "avis" => FormatRegistry.Avif,
+            "qt  " => FormatRegistry.Mov,
+            "M4A " or "M4B " => FormatRegistry.M4a,
+            "crx " => FormatRegistry.Raw, // CR3
+            _ when brand.StartsWith("3gp", StringComparison.Ordinal) || brand.StartsWith("3g2", StringComparison.Ordinal) => FormatRegistry.ThreeGp,
+            _ => null,
+        };
+    }
+
+    /// <summary>Brands that name HEVC-coded HEIF content.</summary>
+    private static bool IsHeifBrand(string brand) =>
+        brand is "heic" or "heix" or "hevc" or "hevx" or "heim" or "heis" or "hevm" or "hevs";
+
+    /// <summary>Structural HEIF brands shared by HEIC and AVIF; they only decide when nothing more specific is present.</summary>
+    private static bool IsGenericHeifBrand(string brand) => brand is "mif1" or "msf1";
+
     /// <summary>
     /// For ZIP-based files (OOXML): opens the archive and looks at [Content_Types].xml and the top-level folder.
-    /// Returns null for a ZIP that is not an Office document.
+    /// Returns null for a ZIP that is not an office document.
     /// </summary>
     public static FormatId? DetectZipBased(Stream stream)
     {
@@ -242,6 +285,28 @@ public static class MagicBytes
         var text = Encoding.ASCII.GetString(sample[..Math.Min(sample.Length, 256)]).TrimStart();
         return text.StartsWith("<!DOCTYPE html", StringComparison.OrdinalIgnoreCase) || text.StartsWith("<html", StringComparison.OrdinalIgnoreCase);
     }
+
+    private static bool HasTextBom(ReadOnlySpan<byte> header) =>
+        StartsWith(header, [0xEF, 0xBB, 0xBF]) || StartsWith(header, [0xFF, 0xFE]) || StartsWith(header, [0xFE, 0xFF]);
+
+    /// <summary>MPEG audio frame header: 11 sync bits plus valid version, layer, bitrate and sample-rate fields.</summary>
+    private static bool IsMp3FrameHeader(ReadOnlySpan<byte> header)
+    {
+        if (header.Length < 3 || header[0] != 0xFF || (header[1] & 0xE0) != 0xE0)
+        {
+            return false;
+        }
+        var version = (header[1] >> 3) & 0x03;
+        var layer = (header[1] >> 1) & 0x03;
+        var bitrateIndex = (header[2] >> 4) & 0x0F;
+        var sampleRateIndex = (header[2] >> 2) & 0x03;
+        return version != 0x01 && layer != 0 && bitrateIndex is not (0 or 0x0F) && sampleRateIndex != 0x03;
+    }
+
+    /// <summary>MPEG-TS: sync byte 0x47 at the start of three consecutive 188-byte packets.</summary>
+    private static bool IsTransportStream(ReadOnlySpan<byte> sample) =>
+        sample.Length > 2 * TsPacketLength
+        && sample[0] == 0x47 && sample[TsPacketLength] == 0x47 && sample[2 * TsPacketLength] == 0x47;
 
     private static bool IsRawExtension(string? path)
     {

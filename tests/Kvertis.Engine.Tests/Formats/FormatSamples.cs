@@ -60,6 +60,24 @@ internal static class FormatSamples
 
     public static byte[] Avif => Ftyp("avif", "avif", "mif1", "miaf");
 
+    /// <summary>HEIC whose compatible brands also list "avif" (seen in the wild); must stay HEIC.</summary>
+    public static byte[] HeicWithAvifCompatible => Ftyp("heic", "mif1", "avif", "heic");
+
+    /// <summary>Generic major brand; the compatible "heic" decides.</summary>
+    public static byte[] HeicWithGenericMajor => Ftyp("mif1", "mif1", "avif", "heic");
+
+    /// <summary>MPEG-TS packets: 0x47 sync byte every 188 bytes.</summary>
+    public static byte[] TransportStream(int packets)
+    {
+        var data = new byte[188 * packets];
+        for (var i = 0; i < packets; i++)
+        {
+            data[i * 188] = 0x47;
+            data[(i * 188) + 1] = 0x40;
+        }
+        return data;
+    }
+
     public static byte[] Pdf => Pad(Ascii("%PDF-1.7\n1 0 obj\n"));
 
     public static byte[] Svg => Ascii("<?xml version=\"1.0\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"10\"></svg>\n");

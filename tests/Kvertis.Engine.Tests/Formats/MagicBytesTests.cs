@@ -125,4 +125,48 @@ public sealed class MagicBytesTests
         MagicBytes.Detect([], "x.png").ShouldBeNull();
         MagicBytes.DetectText([], "x.txt").ShouldBeNull();
     }
+
+    [Fact]
+    public void Heic_with_avif_compatible_brand_stays_heic()
+    {
+        MagicBytes.Detect(FormatSamples.HeicWithAvifCompatible, "x.avif").ShouldBe(FormatRegistry.Heic);
+        MagicBytes.Detect(FormatSamples.HeicWithGenericMajor, "x.avif").ShouldBe(FormatRegistry.Heic);
+    }
+
+    [Theory]
+    [InlineData(new byte[] { 0xFF, 0xFE, 0x48, 0x00, 0x61, 0x00 })]
+    [InlineData(new byte[] { 0xFE, 0xFF, 0x00, 0x48, 0x00, 0x61 })]
+    [InlineData(new byte[] { 0xEF, 0xBB, 0xBF, 0x48, 0x61, 0x6C })]
+    public void Text_byte_order_marks_are_left_to_text_detection(byte[] content)
+    {
+        MagicBytes.Detect(FormatSamples.Pad(content), "x.bin").ShouldBeNull();
+        MagicBytes.DetectText(content, "x.bin").ShouldBe(FormatRegistry.Txt);
+    }
+
+    [Theory]
+    [InlineData(0xFB, 0xF0)] // bitrate index 15 (bad)
+    [InlineData(0xFB, 0x00)] // bitrate index 0 (free format, not accepted by the heuristic)
+    [InlineData(0xFB, 0x9C)] // sample-rate index 3 (reserved)
+    [InlineData(0xF9, 0x90)] // layer bits 00 (reserved)
+    public void Invalid_mp3_frame_headers_are_rejected(int second, int third)
+    {
+        MagicBytes.Detect(FormatSamples.Pad([0xFF, (byte)second, (byte)third, 0x64]), "x.bin").ShouldBeNull();
+    }
+
+    [Fact]
+    public void Transport_stream_needs_sync_bytes_at_0_188_and_376()
+    {
+        MagicBytes.Detect(FormatSamples.TransportStream(3), "x.bin").ShouldBe(FormatRegistry.Ts);
+        MagicBytes.Detect(FormatSamples.TransportStream(3).AsSpan(0, MagicBytes.HeaderLength), "x.ts").ShouldBeNull();
+
+        var broken = FormatSamples.TransportStream(3);
+        broken[376] = 0x00;
+        MagicBytes.Detect(broken, "x.ts").ShouldBeNull();
+    }
+
+    [Fact]
+    public void Text_starting_with_G_is_not_a_transport_stream()
+    {
+        MagicBytes.Detect(FormatSamples.Ascii("Guten Tag, das ist ein kurzer Brief ohne Signatur."), "brief").ShouldBeNull();
+    }
 }

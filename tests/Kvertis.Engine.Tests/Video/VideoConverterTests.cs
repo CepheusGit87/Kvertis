@@ -1,9 +1,11 @@
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Video;
+using Kvertis.Engine.Ffmpeg;
 using Kvertis.Engine.Formats;
 using Kvertis.Engine.Platform;
 using Kvertis.Engine.Probing;
 using Kvertis.Engine.Tests.Ffmpeg;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -140,5 +142,72 @@ public class VideoConverterTests
         FfmpegArgumentsTests.ValueAfter(args, "-c:v").ShouldBe("png");
         // (2044 + 192) kbit/s over 60 s.
         preview.EstimatedOutputBytes.ShouldBe((2044 + 192) * 1000L / 8 * 60);
+    }
+
+    private const string FallbackLine = "[hevc @ 0000020a] Failed setup for format d3d11va: hwaccel initialisation returned error.";
+
+    [Fact]
+    public async Task HevcSoftwareFallbackIsRefused()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson(codec: "hevc"), Hwaccels = ["d3d11va"], StderrLines = [FallbackLine] };
+        var converter = new VideoConverter(fake.CreateToolset());
+        var input = TestMedia.Video(fake.CreateInputFile(".mp4"));
+        var output = fake.NewOutputPath(".webm");
+
+        var ex = await Should.ThrowAsync<ConversionException>(() =>
+            converter.ConvertAsync(input, output, new ConversionSettings(FormatRegistry.WebM), NoProgress, CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        ex.Detail.ShouldBe("hevc software fallback refused");
+        fake.ConversionRequests.ShouldHaveSingleItem().Arguments.ShouldContain("-hwaccel");
+        File.Exists(output).ShouldBeFalse();
+        File.Exists(output + ".kvertis-tmp").ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task HevcSoftwareFallbackCancelsTheRunningProcess()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson(codec: "hevc"), Hwaccels = ["d3d11va"] };
+        var tools = fake.CreateToolset();
+        var input = TestMedia.Video(fake.CreateInputFile(".mp4"));
+        var context = await tools.PrepareAsync(input, CancellationToken.None);
+        var blocking = Substitute.For<IProcessRunner>();
+        var observedCancel = false;
+        blocking.RunAsync(Arg.Any<ProcessRequest>(), Arg.Any<IProgress<string>?>(), Arg.Any<CancellationToken>())
+            .Returns(async call =>
+            {
+                var ct = call.Arg<CancellationToken>();
+                call.Arg<IProgress<string>?>()!.Report(FallbackLine);
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(30), ct);
+                }
+                catch (OperationCanceledException)
+                {
+                    observedCancel = true;
+                    throw new ConversionException(ConversionErrorCode.Cancelled, step: "ffmpeg");
+                }
+                return new ProcessOutcome(0, string.Empty, string.Empty, TimeSpan.Zero, false);
+            });
+        var guarded = new FfmpegToolset(fake.Locator, blocking, tools.Codecs, tools.Features, tools.Compliance, tools.Reader, tools.Cache, tools.Registry);
+
+        var ex = await Should.ThrowAsync<ConversionException>(() =>
+            guarded.RunFfmpegAsync(FakeFfmpeg.FfmpegPath, ["-hwaccel", "d3d11va", "-i", input.Path, "out"], input, null, "convert", CancellationToken.None, context.Media));
+
+        observedCancel.ShouldBeTrue();
+        ex.Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        ex.Detail.ShouldBe("hevc software fallback refused");
+    }
+
+    [Fact]
+    public async Task H264WithoutHardwareDecodeIsNotGuarded()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson(), Hwaccels = ["d3d11va"], StderrLines = [FallbackLine] };
+        var converter = new VideoConverter(fake.CreateToolset());
+        var input = TestMedia.Video(fake.CreateInputFile(".mp4"));
+
+        var result = await converter.ConvertAsync(input, fake.NewOutputPath(".webm"), new ConversionSettings(FormatRegistry.WebM), NoProgress, CancellationToken.None);
+
+        File.Exists(result.OutputPath).ShouldBeTrue();
     }
 }

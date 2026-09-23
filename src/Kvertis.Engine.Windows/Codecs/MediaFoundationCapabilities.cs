@@ -38,6 +38,11 @@ public sealed class MediaFoundationCapabilities : ISystemCodecCapabilities
         }
     }
 
+    /// <summary>
+    /// The cached snapshot. Known limitation: the very first read, if <see cref="RefreshAsync"/> was not
+    /// awaited at startup, blocks the calling thread for up to <see cref="FirstProbeTimeout"/> (3 s) because
+    /// the capability interface is synchronous; call <see cref="RefreshAsync"/> early to avoid that.
+    /// </summary>
     private Snapshot Current
     {
         get

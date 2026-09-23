@@ -90,17 +90,43 @@ public sealed class FfmpegToolset
         }
     }
 
-    /// <summary>Runs ffmpeg with the conversion timeout of the input's kind and maps failures to error codes.</summary>
-    public async Task RunFfmpegAsync(string ffmpegPath, IReadOnlyList<string> arguments, InputInfo input, IProgress<string>? stderrLines, string step, CancellationToken ct)
+    /// <summary>
+    /// Runs ffmpeg with the conversion timeout of the input's kind and maps failures to error codes.
+    /// With <paramref name="media"/> describing an HEVC source decoded through the system (<c>-hwaccel</c>),
+    /// stderr is watched for ffmpeg's silent software fallback, which is refused (ADR-003) with
+    /// MissingSystemCodec "hevc software fallback refused".
+    /// </summary>
+    public async Task RunFfmpegAsync(string ffmpegPath, IReadOnlyList<string> arguments, InputInfo input, IProgress<string>? stderrLines, string step, CancellationToken ct, MediaInfo? media = null)
     {
         ArgumentNullException.ThrowIfNull(input);
+        ArgumentNullException.ThrowIfNull(arguments);
         var request = new ProcessRequest(ffmpegPath, arguments, InputLimits.ConversionTimeoutFor(input.Kind)) { CaptureStdout = false };
-        var outcome = await Runner.RunAsync(request, stderrLines, ct).ConfigureAwait(false);
+
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        var guard = NeedsHevcGuard(media, arguments) ? new HevcFallbackGuard(stderrLines, linked) : null;
+        ProcessOutcome outcome;
+        try
+        {
+            outcome = await Runner.RunAsync(request, (IProgress<string>?)guard ?? stderrLines, linked.Token).ConfigureAwait(false);
+        }
+        catch (Exception ex) when (guard is { Triggered: true } && !ct.IsCancellationRequested
+                                   && ex is OperationCanceledException or ConversionException { Code: ConversionErrorCode.Cancelled })
+        {
+            throw HevcFallbackGuard.Refused(input.Path, step);
+        }
+        if (guard is { Triggered: true })
+        {
+            throw HevcFallbackGuard.Refused(input.Path, step);
+        }
         if (!outcome.Succeeded)
         {
             throw FfmpegErrorMapper.Map(outcome, input.Path, step);
         }
     }
+
+    /// <summary>True when the run decodes an HEVC source through D3D11VA and must not fall back to software.</summary>
+    internal static bool NeedsHevcGuard(MediaInfo? media, IReadOnlyList<string> arguments) =>
+        media is { IsHevc: true } && arguments.Contains("-hwaccel");
 
     /// <summary>
     /// Full conversion pipeline: prepare, build arguments, write to the temp file, commit.
@@ -130,7 +156,7 @@ public sealed class FfmpegToolset
 
             progress.Report(new ConversionProgress(FfmpegProgressParser.ConvertStart, ConversionPhase.Converting));
             var parser = new FfmpegProgressParser(context.Media?.Duration ?? input.Duration, progress);
-            await RunFfmpegAsync(context.FfmpegPath, arguments, input, parser, "convert", ct).ConfigureAwait(false);
+            await RunFfmpegAsync(context.FfmpegPath, arguments, input, parser, "convert", ct, context.Media).ConfigureAwait(false);
 
             progress.Report(new ConversionProgress(FfmpegProgressParser.ConvertEnd, ConversionPhase.Finalizing));
             var bytes = output.Commit();

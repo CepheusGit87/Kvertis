@@ -152,4 +152,21 @@ public sealed class ImageToPdfConverterTests : IDisposable
         image.Height.ShouldBe(32u);
         JpegMetadataStripper.Strip(Encoding.ASCII.GetBytes("not a jpeg")).ShouldBeNull();
     }
+
+    [Fact]
+    public void Jpeg_stripper_drops_trailing_data_after_end_of_image()
+    {
+        var jpg = CreateJpegWithExif("t.jpg", 16, 16);
+        var clean = JpegMetadataStripper.Strip(File.ReadAllBytes(jpg));
+        clean.ShouldNotBeNull();
+        var trailer = Encoding.ASCII.GetBytes("PK\u0003\u0004hidden appended payload with GPS 52.1,13.4");
+        var withTrailer = File.ReadAllBytes(jpg).Concat(trailer).ToArray();
+
+        var stripped = JpegMetadataStripper.Strip(withTrailer);
+
+        stripped.ShouldNotBeNull();
+        stripped.ShouldBe(clean);
+        stripped[^2..].ShouldBe(new byte[] { 0xFF, 0xD9 });
+        stripped.AsSpan().IndexOf("hidden appended"u8).ShouldBe(-1);
+    }
 }

@@ -182,4 +182,67 @@ public sealed class FormatDetectorTests : IDisposable
         info.Duration.ShouldBe(TimeSpan.FromSeconds(3));
         await image.DidNotReceiveWithAnyArgs().ProbeAsync(default!, default);
     }
+
+    [Fact]
+    public async Task Utf16_text_with_bom_is_text_not_mp3()
+    {
+        var path = Write("notes-utf16.txt", System.Text.Encoding.Unicode.GetPreamble()
+            .Concat(System.Text.Encoding.Unicode.GetBytes("Hallo Welt, das ist Text.\n")).ToArray());
+
+        var info = await _detector.DetectAsync(path, CancellationToken.None);
+
+        info.Format.ShouldBe(FormatRegistry.Txt);
+    }
+
+    [Fact]
+    public async Task Text_starting_with_G_is_not_a_transport_stream()
+    {
+        var path = Write("brief", System.Text.Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("Guten Tag, liebe Leute. ", 40))));
+
+        var info = await _detector.DetectAsync(path, CancellationToken.None);
+
+        info.Format.ShouldBe(FormatRegistry.Txt);
+    }
+
+    [Fact]
+    public async Task Transport_stream_needs_three_sync_bytes_in_the_sample()
+    {
+        var path = Write("clip.ts", FormatSamples.TransportStream(packets: 4));
+
+        var info = await _detector.DetectAsync(path, CancellationToken.None);
+
+        info.Format.ShouldBe(FormatRegistry.Ts);
+    }
+
+    [Fact]
+    public async Task Avif_is_recognized_but_blocked()
+    {
+        var path = Write("photo.avif", FormatSamples.Avif);
+
+        var ex = await Should.ThrowAsync<ConversionException>(() => _detector.DetectAsync(path, CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
+        ex.Detail.ShouldBe(FormatRegistry.AvifBlockedDetail);
+    }
+
+    [Fact]
+    public async Task File_above_the_soft_limit_gets_large_file_warning()
+    {
+        var path = Write("big.png", FormatSamples.Png);
+        var detector = new FormatDetector(new FormatRegistry(), [], new Kvertis.Engine.Validation.InputValidator(new Kvertis.Engine.Validation.InputLimits(MaxImageBytes: 10)));
+
+        var info = await detector.DetectAsync(path, CancellationToken.None);
+
+        info.HasWarning(InputWarning.LargeFile).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task File_below_the_soft_limit_has_no_large_file_warning()
+    {
+        var path = Write("small.png", FormatSamples.Png);
+
+        var info = await _detector.DetectAsync(path, CancellationToken.None);
+
+        info.HasWarning(InputWarning.LargeFile).ShouldBeFalse();
+    }
 }

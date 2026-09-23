@@ -10,15 +10,17 @@ public sealed class ConversionOutput : IDisposable
 {
     public const string TempSuffix = ".kvertis-tmp";
 
+    private readonly bool _allowOverwrite;
     private bool _committed;
 
     public string FinalPath { get; }
     public string TempPath { get; }
 
-    private ConversionOutput(string finalPath)
+    private ConversionOutput(string finalPath, bool allowOverwrite)
     {
         FinalPath = finalPath;
         TempPath = finalPath + TempSuffix;
+        _allowOverwrite = allowOverwrite;
     }
 
     /// <summary>Prepares the target: directory exists, target is free, temp leftover removed, enough space.</summary>
@@ -47,12 +49,16 @@ public sealed class ConversionOutput : IDisposable
             throw new ConversionException(ConversionErrorCode.InsufficientDiskSpace, finalPath, "prepare", $"free={f}, needed={expectedBytes}");
         }
 
-        var output = new ConversionOutput(finalPath);
+        var output = new ConversionOutput(finalPath, allowOverwrite);
         TryDelete(output.TempPath);
         return output;
     }
 
-    /// <summary>Renames the temp file onto the final path. Throws if the converter produced nothing.</summary>
+    /// <summary>
+    /// Renames the temp file onto the final path. Throws if the converter produced nothing, and with
+    /// OutputExists when the target appeared during the conversion and <c>allowOverwrite</c> was not given
+    /// to <see cref="Begin"/> (ADR-007: never overwrite without consent).
+    /// </summary>
     public long Commit()
     {
         var info = new FileInfo(TempPath);
@@ -61,9 +67,20 @@ public sealed class ConversionOutput : IDisposable
             TryDelete(TempPath);
             throw new ConversionException(ConversionErrorCode.ToolFailed, FinalPath, "commit", "no output produced");
         }
+        if (!_allowOverwrite && File.Exists(FinalPath))
+        {
+            TryDelete(TempPath);
+            throw new ConversionException(ConversionErrorCode.OutputExists, FinalPath, "commit", "target appeared during conversion");
+        }
         try
         {
-            File.Move(TempPath, FinalPath, overwrite: true);
+            File.Move(TempPath, FinalPath, overwrite: _allowOverwrite);
+        }
+        catch (IOException ex) when (!_allowOverwrite && File.Exists(FinalPath))
+        {
+            // Lost the race: the target was created between the check and the move.
+            TryDelete(TempPath);
+            throw new ConversionException(ConversionErrorCode.OutputExists, FinalPath, "commit", ex.Message, ex);
         }
         catch (Exception ex)
         {

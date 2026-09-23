@@ -159,6 +159,11 @@ public static class FfmpegArguments
     }
 
     /// <summary>Builds the arguments that extract a single PNG frame at <paramref name="at"/> (video preview).</summary>
+    /// <remarks>
+    /// Known limitation: the frame must always be decoded, so for an Archive stream copy (MKV) of an HEVC
+    /// source on a machine without D3D11VA/HEVC extension the preview reports MissingSystemCodec, although
+    /// the copy itself would work because it never decodes.
+    /// </remarks>
     public static IReadOnlyList<string> BuildFrameExtraction(
         InputInfo input,
         MediaInfo? media,
@@ -351,8 +356,13 @@ public static class FfmpegArguments
 
         if (mp4)
         {
+            // Without an audio stream there is nothing for aac_mf to encode; only an unknown layout (no probe data) needs it.
+            var hasAudio = media is not { HasAudio: false };
             RequireH264(input.Path, codecs, features);
-            RequireAac(input.Path, codecs, features);
+            if (hasAudio)
+            {
+                RequireAac(input.Path, codecs, features);
+            }
             args.AddRange(["-c:v", H264Encoder]);
             var kbps = targetVideoKbps ?? QualityVideoKbps(input, media, settings);
             args.AddRange(["-b:v", Kbps(kbps)]);
@@ -360,7 +370,10 @@ public static class FfmpegArguments
             {
                 args.AddRange(["-maxrate", Kbps(kbps), "-bufsize", Kbps(kbps * 2)]);
             }
-            args.AddRange(["-c:a", AacEncoder, "-b:a", Kbps(audioKbps)]);
+            if (hasAudio)
+            {
+                args.AddRange(["-c:a", AacEncoder, "-b:a", Kbps(audioKbps)]);
+            }
         }
         else
         {

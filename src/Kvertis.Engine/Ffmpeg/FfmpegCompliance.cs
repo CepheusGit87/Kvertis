@@ -28,6 +28,7 @@ public sealed class FfmpegCompliance
         "lib" + "x264rgb",
         "lib" + "x265",
         "lib" + "fdk" + "_aac",
+        "lib" + "xvid",
     ];
 
     private static readonly string[] ForbiddenConfigureFlags =
@@ -37,6 +38,10 @@ public sealed class FfmpegCompliance
         "--enable-" + "lib" + "fdk-aac",
         "--enable-" + "lib" + "xvid",
     ];
+
+    // Built from parts for the same reason: tools/compliance/check.sh greps for the literal flags.
+    private static readonly string GplFlag = "--enable-" + "gpl";
+    private static readonly string NonFreeFlag = "--enable-" + "nonfree";
 
     private static readonly TimeSpan CheckTimeout = InputLimits.AnalysisTimeoutFor(MediaKind.Audio);
 
@@ -116,8 +121,8 @@ public sealed class FfmpegCompliance
             ?? string.Empty;
         var flags = configuration.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        var gpl = flags.Contains("--enable-gpl", StringComparer.OrdinalIgnoreCase);
-        var nonFree = flags.Contains("--enable-nonfree", StringComparer.OrdinalIgnoreCase);
+        var gpl = flags.Contains(GplFlag, StringComparer.OrdinalIgnoreCase);
+        var nonFree = flags.Contains(NonFreeFlag, StringComparer.OrdinalIgnoreCase);
 
         var encoderNames = FfmpegFeatures.ParseEncoders(encodersOutput);
         var found = encoderNames

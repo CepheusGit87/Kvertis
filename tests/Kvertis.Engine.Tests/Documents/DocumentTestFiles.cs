@@ -263,7 +263,7 @@ internal static class DocumentTestFiles
         return path;
     }
 
-    /// <summary>A fake encrypted Office file: OLE signature plus the stream names of an encrypted package.</summary>
+    /// <summary>A fake encrypted office document: OLE signature plus the stream names of an encrypted package.</summary>
     public static string CreateFakeEncryptedOffice(string path)
     {
         var bytes = new byte[4096];

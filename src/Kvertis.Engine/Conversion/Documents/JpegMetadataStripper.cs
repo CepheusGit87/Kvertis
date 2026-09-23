@@ -11,6 +11,7 @@ namespace Kvertis.Engine.Conversion.Documents;
 internal static class JpegMetadataStripper
 {
     private static readonly byte[] IccIdentifier = "ICC_PROFILE\0"u8.ToArray();
+    private static readonly byte[] EndOfImage = [0xFF, 0xD9];
 
     /// <summary>Returns the stripped JPEG, or null if the stream is not a JPEG we can parse safely.</summary>
     public static byte[]? Strip(ReadOnlySpan<byte> jpeg)
@@ -40,11 +41,20 @@ internal static class JpegMetadataStripper
             var marker = jpeg[pos];
             pos++;
 
-            if (marker == 0xDA || marker == 0xD9)
+            if (marker == 0xD9)
             {
-                // Start of scan (or end of image): the rest is entropy-coded data. Copy as is.
                 output.Write([0xFF, marker]);
-                output.Write(jpeg[pos..]);
+                return output.ToArray();
+            }
+            if (marker == 0xDA)
+            {
+                // Start of scan: entropy-coded data up to and including the first EOI (FF D9) is copied as is.
+                // Entropy data never contains FF D9 (FF is stuffed as FF 00), so the first match is the real EOI.
+                // Anything after it (appended archives, trailing vendor data) is dropped.
+                output.Write([0xFF, marker]);
+                var rest = jpeg[pos..];
+                var eoi = rest.IndexOf(EndOfImage);
+                output.Write(eoi >= 0 ? rest[..(eoi + 2)] : rest);
                 return output.ToArray();
             }
             if (marker is >= 0xD0 and <= 0xD7 or 0x01)

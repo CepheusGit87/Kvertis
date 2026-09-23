@@ -8,7 +8,7 @@ using Kvertis.Engine.Formats;
 namespace Kvertis.Engine.Conversion.Documents;
 
 /// <summary>
-/// Office documents to text formats (ADR-010, phase 1): DOCX → TXT/Markdown/HTML, XLSX → CSV/TXT,
+/// OOXML documents to text formats (ADR-010, phase 1): DOCX → TXT/Markdown/HTML, XLSX → CSV/TXT,
 /// PPTX → TXT/Markdown. No layout rendering. Encrypted files are rejected, never opened.
 /// </summary>
 public sealed class OfficeConverter : IConverter

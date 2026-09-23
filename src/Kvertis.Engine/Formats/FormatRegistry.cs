@@ -34,6 +34,12 @@ public sealed class FormatRegistry
     public static readonly FormatId Tiff = new("tiff");
     public static readonly FormatId Heic = new("heic");
     public static readonly FormatId Avif = new("avif");
+
+    /// <summary>
+    /// Detail of the UnsupportedFormat error for AVIF input. Magick.NET would read AVIF through its HEIF
+    /// coder (libheif/libde265 inside Magick.Native); that path stays blocked until open point O-01 is decided.
+    /// </summary>
+    public const string AvifBlockedDetail = "avif blocked until O-01";
     public static readonly FormatId Svg = new("svg");
     public static readonly FormatId Ico = new("ico");
     public static readonly FormatId Raw = new("raw");
@@ -67,7 +73,7 @@ public sealed class FormatRegistry
     public static readonly FormatId Markdown = new("md");
     public static readonly FormatId Html = new("html");
     public static readonly FormatId Csv = new("csv");
-    /// <summary>Legacy binary Office formats: recognized so we can say "not supported" clearly.</summary>
+    /// <summary>Legacy binary office formats (DOC/XLS/PPT): recognized so we can say "not supported" clearly.</summary>
     public static readonly FormatId LegacyOffice = new("doc");
 
     private static readonly IReadOnlyList<FormatDescriptor> Descriptors =
@@ -79,7 +85,8 @@ public sealed class FormatRegistry
         new(Bmp, MediaKind.Image, "BMP", ["bmp", "dib"], true, true, Lossless: true),
         new(Tiff, MediaKind.Image, "TIFF", ["tif", "tiff"], true, true, Lossless: true, SupportsTransparency: true),
         new(Heic, MediaKind.Image, "HEIC", ["heic", "heif", "hif"], true, false, SupportsTransparency: true, PatentEncumbered: true),
-        new(Avif, MediaKind.Image, "AVIF", ["avif"], true, false, SupportsTransparency: true),
+        // CanRead=false: recognized, but blocked until O-01 (see AvifBlockedDetail).
+        new(Avif, MediaKind.Image, "AVIF", ["avif"], false, false, SupportsTransparency: true),
         new(Svg, MediaKind.Image, "SVG", ["svg"], true, false, SupportsTransparency: true),
         new(Ico, MediaKind.Image, "ICO", ["ico"], true, true, SupportsTransparency: true),
         new(Raw, MediaKind.Image, "RAW", ["dng", "cr2", "cr3", "nef", "arw", "orf", "raf", "rw2"], true, false),
@@ -113,7 +120,7 @@ public sealed class FormatRegistry
         new(Markdown, MediaKind.Document, "Markdown", ["md", "markdown"], true, true),
         new(Html, MediaKind.Document, "HTML", ["html", "htm"], true, true),
         new(Csv, MediaKind.Document, "CSV", ["csv"], true, true),
-        new(LegacyOffice, MediaKind.Document, "Legacy Office", ["doc", "xls", "ppt"], false, false),
+        new(LegacyOffice, MediaKind.Document, "DOC/XLS/PPT (legacy)", ["doc", "xls", "ppt"], false, false),
     ];
 
     private static readonly Dictionary<FormatId, IReadOnlyList<FormatId>> Matrix = new()

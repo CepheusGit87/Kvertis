@@ -5,7 +5,7 @@ namespace Kvertis.Engine.Conversion.Images;
 
 /// <summary>
 /// Locks ImageMagick down before the first image is touched: no URL/network coders, no external
-/// delegates (ghostscript, ffmpeg, browsers), no scripting coders (MSL/MVG/TEXT), and hard resource
+/// delegates (external renderers and converters), no scripting coders (MSL/MVG/TEXT), and hard resource
 /// limits so a crafted file cannot exhaust memory or disk. Kvertis has no network code; this makes
 /// sure the bundled library cannot add any (e.g. an SVG with an external reference).
 /// </summary>

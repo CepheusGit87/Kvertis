@@ -60,7 +60,12 @@ public static class JobExecutionContext
 /// Process ids are learned from <see cref="ProcessRunner.ProcessStarted"/> when the injected runner is a
 /// <see cref="ProcessRunner"/>; the job is identified via <see cref="JobExecutionContext.Current"/>, which
 /// flows into the runner because the converter calls it on the job's async flow. Other runners can feed
-/// ids through <see cref="OnProcessStarted(int)"/>.
+/// ids through <see cref="OnProcessStarted(int)"/> and <see cref="OnProcessExited(int)"/>.
+/// </para>
+/// <para>
+/// A process id is forgotten as soon as the process exits (<see cref="ProcessRunner.ProcessExited"/>) or the
+/// job finishes: Windows reuses ids, so a stale id could otherwise suspend an unrelated process. While a
+/// process is suspended the runner's timeout does not count (<see cref="ProcessRunner.NotifySuspended"/>).
 /// </para>
 /// <para>
 /// Returns false (so the queue uses the cancel-and-restart fallback described on <see cref="IJobPauser"/>)
@@ -82,6 +87,7 @@ public sealed class ProcessSuspendJobPauser : IJobPauser, IDisposable
         if (_processRunner is not null)
         {
             _processRunner.ProcessStarted += HandleProcessStarted;
+            _processRunner.ProcessExited += HandleProcessExited;
         }
     }
 
@@ -97,16 +103,44 @@ public sealed class ProcessSuspendJobPauser : IJobPauser, IDisposable
         }
     }
 
+    /// <summary>Forgets <paramref name="processId"/> for whichever job started it; it must never be suspended again.</summary>
+    public void OnProcessExited(int processId)
+    {
+        foreach (var entry in _processIds)
+        {
+            if (entry.Value == processId)
+            {
+                _processIds.TryRemove(entry);
+            }
+        }
+    }
+
     public bool TryPause(ConversionJob job)
     {
         ArgumentNullException.ThrowIfNull(job);
-        return _processIds.TryGetValue(job.Id, out var pid) && _suspender.TrySuspend(pid);
+        if (!_processIds.TryGetValue(job.Id, out var pid))
+        {
+            return false;
+        }
+        // Tell the runner first so its timeout cannot expire while the process is frozen.
+        _processRunner?.NotifySuspended(pid);
+        if (_suspender.TrySuspend(pid))
+        {
+            return true;
+        }
+        _processRunner?.NotifyResumed(pid);
+        return false;
     }
 
     public bool TryResume(ConversionJob job)
     {
         ArgumentNullException.ThrowIfNull(job);
-        return _processIds.TryGetValue(job.Id, out var pid) && _suspender.TryResume(pid);
+        if (!_processIds.TryGetValue(job.Id, out var pid) || !_suspender.TryResume(pid))
+        {
+            return false;
+        }
+        _processRunner?.NotifyResumed(pid);
+        return true;
     }
 
     public void OnJobFinished(ConversionJob job)
@@ -120,8 +154,11 @@ public sealed class ProcessSuspendJobPauser : IJobPauser, IDisposable
         if (_processRunner is not null)
         {
             _processRunner.ProcessStarted -= HandleProcessStarted;
+            _processRunner.ProcessExited -= HandleProcessExited;
         }
     }
 
     private void HandleProcessStarted(object? sender, int processId) => OnProcessStarted(processId);
+
+    private void HandleProcessExited(object? sender, int processId) => OnProcessExited(processId);
 }

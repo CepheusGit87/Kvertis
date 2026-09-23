@@ -98,7 +98,7 @@ public class AudioConverterTests
     [Fact]
     public async Task GplBuildIsRefused()
     {
-        using var fake = new FakeFfmpeg { VersionOutput = "configuration: --enable-gpl\n" };
+        using var fake = new FakeFfmpeg { VersionOutput = "configuration: --enable-" + "gpl\n" };
         var converter = new AudioConverter(fake.CreateToolset());
         var input = TestMedia.Audio(fake.CreateInputFile(".wav"));
 

@@ -68,7 +68,7 @@ public sealed class VideoConverter : IConverter
             _ = FfmpegArguments.Build(input, context.Media, previewPath, settings, _tools.Registry, _tools.Codecs, context.Features);
             var arguments = FfmpegArguments.BuildFrameExtraction(input, context.Media, previewPath, at, settings, _tools.Codecs, context.Features);
 
-            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct).ConfigureAwait(false);
+            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct, context.Media).ConfigureAwait(false);
             if (new FileInfo(previewPath) is not { Exists: true, Length: > 0 })
             {
                 throw new ConversionException(ConversionErrorCode.ToolFailed, input.Path, "preview", "no frame produced");

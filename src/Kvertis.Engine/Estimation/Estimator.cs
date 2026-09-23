@@ -15,7 +15,14 @@ public sealed partial class SpeedProfile
     private readonly Dictionary<string, Entry> _entries = new(StringComparer.Ordinal);
     private readonly object _gate = new();
 
-    public sealed record Entry(double UnitsPerSecond, double SizeRatio, int Samples);
+    public sealed record Entry(double UnitsPerSecond, double SizeRatio, int Samples)
+    {
+        /// <summary>Positive, finite throughput and size ratio and at least one sample. Anything else is ignored.</summary>
+        public bool IsValid =>
+            double.IsFinite(UnitsPerSecond) && UnitsPerSecond > 0
+            && double.IsFinite(SizeRatio) && SizeRatio > 0
+            && Samples > 0;
+    }
 
     public Entry? Get(string key)
     {
@@ -27,7 +34,8 @@ public sealed partial class SpeedProfile
 
     public void Record(string key, double unitsPerSecond, double sizeRatio)
     {
-        if (unitsPerSecond <= 0 || double.IsNaN(unitsPerSecond) || double.IsInfinity(unitsPerSecond))
+        if (unitsPerSecond <= 0 || double.IsNaN(unitsPerSecond) || double.IsInfinity(unitsPerSecond)
+            || !double.IsFinite(sizeRatio) || sizeRatio <= 0)
         {
             return;
         }
@@ -69,7 +77,11 @@ public sealed partial class SpeedProfile
             {
                 foreach (var (k, v) in data)
                 {
-                    profile._entries[k] = v;
+                    // The file is user-writable: skip entries that would break estimates (NaN, 0, negative).
+                    if (!string.IsNullOrEmpty(k) && v is { IsValid: true })
+                    {
+                        profile._entries[k] = v;
+                    }
                 }
             }
         }
@@ -114,7 +126,7 @@ public sealed class Estimator : IEstimator
         double unitsPerSecond;
         double sizeRatio;
         double confidence;
-        if (entry is not null)
+        if (entry is { IsValid: true })
         {
             unitsPerSecond = entry.UnitsPerSecond;
             sizeRatio = entry.SizeRatio;

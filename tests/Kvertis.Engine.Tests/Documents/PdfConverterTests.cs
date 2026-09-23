@@ -146,6 +146,24 @@ public sealed class PdfConverterTests(ITestOutputHelper output) : IDisposable
     }
 
     [Fact]
+    public async Task Existing_page_files_are_never_overwritten()
+    {
+        if (FontsMissing())
+        {
+            return;
+        }
+        var pdf = CreatePdf(_dir.File("doc.pdf"), ["one", "two"]);
+        await File.WriteAllTextAsync(_dir.File("doc_p001.png"), "keep me");
+
+        var result = await new PdfConverter(new FakeRasterizer()).ConvertAsync(Info(pdf, FormatRegistry.Pdf), _dir.File("doc.png"), To(FormatRegistry.Png), new NullProgress(), CancellationToken.None);
+
+        (await File.ReadAllTextAsync(_dir.File("doc_p001.png"))).ShouldBe("keep me");
+        result.OutputPath.ShouldBe(_dir.File("doc_p001_1.png"));
+        File.Exists(_dir.File("doc_p001_1.png")).ShouldBeTrue();
+        File.Exists(_dir.File("doc_p002.png")).ShouldBeTrue();
+    }
+
+    [Fact]
     public async Task Single_page_pdf_to_jpg_writes_target_path()
     {
         if (FontsMissing())

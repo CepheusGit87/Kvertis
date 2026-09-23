@@ -11,6 +11,7 @@ namespace Kvertis.Engine.Conversion.Images;
 /// </summary>
 internal static class MagickSupport
 {
+    // AVIF is deliberately absent: Magick.NET reads it through its HEIF coder (libheif/libde265), blocked until O-01.
     private static readonly Dictionary<FormatId, MagickFormat> ReadFormats = new()
     {
         [FormatRegistry.Jpg] = MagickFormat.Jpeg,
@@ -19,7 +20,6 @@ internal static class MagickSupport
         [FormatRegistry.Gif] = MagickFormat.Gif,
         [FormatRegistry.Bmp] = MagickFormat.Bmp,
         [FormatRegistry.Tiff] = MagickFormat.Tiff,
-        [FormatRegistry.Avif] = MagickFormat.Avif,
         [FormatRegistry.Svg] = MagickFormat.Svg,
         [FormatRegistry.Ico] = MagickFormat.Ico,
         [FormatRegistry.Psd] = MagickFormat.Psd,
@@ -56,6 +56,10 @@ internal static class MagickSupport
     public static MagickReadSettings ReadSettings(FormatId format, string path, bool firstFrameOnly)
     {
         MagickSecurity.EnsureInitialized();
+        if (format == FormatRegistry.Avif)
+        {
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "read", FormatRegistry.AvifBlockedDetail);
+        }
         var coder = ReadFormatFor(format, path)
                     ?? throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "read", $"no image reader for '{format}'");
         var settings = new MagickReadSettings { Format = coder };
