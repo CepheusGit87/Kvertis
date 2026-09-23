@@ -25,6 +25,12 @@ public class EncryptedOfficeDetectionTests : IDisposable
 
     public void Dispose()
     {
+        GC.SuppressFinalize(this);
+        Cleanup();
+    }
+
+    private void Cleanup()
+    {
         try
         {
             Directory.Delete(_dir, recursive: true);
