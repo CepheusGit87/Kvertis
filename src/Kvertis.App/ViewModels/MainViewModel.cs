@@ -339,8 +339,17 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
                 return;
             }
 
-            var options = suggestion.Options
-                .Select(id => new FormatOption(id, _registry.Get(id)?.DisplayName ?? id.Id.ToUpperInvariant(), id == suggestion.Default))
+            // The static matrix lists what a format family can become; the resolver knows what this file can
+            // become (e.g. an MKV with H.264 has no WebM output in Phase 1).
+            var producible = suggestion.Options.Where(id => _resolver.CanConvert(input, id)).ToList();
+            if (producible.Count == 0)
+            {
+                item.SetRejected(_errors.Map(ConversionErrorCode.UnsupportedFormat));
+                return;
+            }
+            var defaultId = producible.Contains(suggestion.Default) ? suggestion.Default : producible[0];
+            var options = producible
+                .Select(id => new FormatOption(id, _registry.Get(id)?.DisplayName ?? id.Id.ToUpperInvariant(), id == defaultId))
                 .ToList();
             var inputLabel = _registry.Get(input.Format)?.DisplayName ?? input.Format.Id.ToUpperInvariant();
             item.Initialize(input, inputLabel, options, Formatting.Bytes(_loc, input.SizeBytes), DescribeInput(input), string.Empty);

@@ -17,6 +17,7 @@ Kurzfassung der Regeln und der Einstieg für Entwickler stehen in [`../CLAUDE.md
 | [07-store.md](07-store.md) | Manifest-Berechtigungen, MSIX, In-App-Kauf, Kryptografie-Deklaration, Store-Texte. |
 | [08-testing.md](08-testing.md) | Teststrategie, Testdateien, bekannte Grenzfälle. |
 | [09-roadmap.md](09-roadmap.md) | Phasen, offene Punkte, erledigte Meilensteine. |
+| [10-rechtsmatrix.md](10-rechtsmatrix.md) | Pro Konverter: Bibliothek, Lizenz, Patentlage, Begründung, Nachweis. Interne Prüfunterlage. |
 | [CHANGELOG.md](CHANGELOG.md) | Was wurde wann geändert, welche Bibliothek mit welcher Lizenz kam hinzu. |
 
 ## Regeln für die Doku

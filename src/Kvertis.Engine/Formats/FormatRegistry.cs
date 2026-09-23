@@ -225,7 +225,11 @@ public sealed class FormatRegistry
             return null;
         }
 
-        var @default = options.First(o => o != input.Format);
+        // Same-format output is never the default, except for video: "MP4 → MP4, but smaller" is the most
+        // common wish of lay users, and the encumbered families offer few alternatives.
+        var @default = input.Kind == MediaKind.Video && options[0] == input.Format
+            ? options[0]
+            : options.First(o => o != input.Format);
         return new OutputSuggestion(@default, options);
     }
 

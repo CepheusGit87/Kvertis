@@ -4,13 +4,13 @@ Offline-Dateikonverter für Windows (Microsoft Store). Bilder, Audio, Video, Dok
 
 ## Oberste Regel: Rechtssicherheit vor Features
 
-Im Zweifel wird ein Feature weggelassen. Nur MIT/Apache/BSD/LGPL-Bibliotheken; LGPL nur als separate DLL oder eigener Prozess. Kein GPL. FFmpeg nur als LGPL-Build ohne libx264/libx265; H.264/HEVC/AAC nur über Media Foundation. Keine fremden Markennamen. Kein Netzwerkcode. Details: `docs/02-rechtssicherheit.md`.
+Im Zweifel wird ein Feature weggelassen. Nur MIT/Apache/BSD/MPL/LGPL-Bibliotheken; LGPL nur als separate DLL oder eigener Prozess. Kein GPL. **Kein mitgelieferter Codec mit Patentpool**: eigener FFmpeg-Allowlist-Build (keine H.264/HEVC/AAC-Decoder), H.264/HEVC/AAC/HEIC nur über Windows (Media Foundation, WIC). Bilder über SkiaSharp. Keine fremden Markennamen. Kein Netzwerkcode. Details: `docs/02-rechtssicherheit.md`.
 
 **Jede neue Bibliothek wird sofort in `docs/04-bibliotheken.md` und `docs/CHANGELOG.md` eingetragen. Ohne Eintrag kein Merge.**
 
 ## Tech-Stack
 
-C# / .NET 8, WinUI 3 (Windows App SDK), MSIX. Magick.NET (Bilder), FFMpegCore + FFmpeg-LGPL (Audio/Video, separater Prozess), Media Foundation (H.264/HEVC/AAC), NAudio, PdfPig, DocumentFormat.OpenXml, CommunityToolkit.Mvvm, xUnit.
+C# / .NET 8, WinUI 3 (Windows App SDK), MSIX. SkiaSharp + Windows Imaging Component (Bilder), eigener FFmpeg-LGPL-Build als Prozess (patentfreie Formate), Media Foundation (H.264/HEVC/AAC), PdfPig, PDFsharp, DocumentFormat.OpenXml, Markdig, CommunityToolkit.Mvvm, xUnit.
 
 ## Projektstruktur
 
@@ -29,7 +29,7 @@ docs/                 Dokumentation (Deutsch)
 dotnet build Kvertis.sln
 dotnet test tests/Kvertis.Engine.Tests
 dotnet test tests/Kvertis.Queue.Tests
-dotnet test --filter Category!=Integration      # ohne FFmpeg/Magick-Binärdateien
+dotnet test --filter Category!=Integration      # ohne FFmpeg-Binärdateien
 bash tools/compliance/check.sh                    # Lizenz-, Marken-, Netzwerk- und Ressourcen-Gate (Pflicht vor Merge)
 dotnet build Kvertis.Core.slnf                    # Linux: alles außer der WinUI-App
 ```
@@ -51,4 +51,4 @@ Engine, Queue und Tests bauen auf Linux und Windows. `Kvertis.App` (WinUI 3, MSI
 
 - [docs/README.md](docs/README.md) – Übersicht
 - [01-anforderungen](docs/01-anforderungen.md) · [02-rechtssicherheit](docs/02-rechtssicherheit.md) · [03-architektur](docs/03-architektur.md) · [04-bibliotheken](docs/04-bibliotheken.md) · [05-formate](docs/05-formate.md)
-- [06-design](docs/06-design.md) · [07-store](docs/07-store.md) · [08-testing](docs/08-testing.md) · [09-roadmap](docs/09-roadmap.md) · [CHANGELOG](docs/CHANGELOG.md)
+- [06-design](docs/06-design.md) · [07-store](docs/07-store.md) · [08-testing](docs/08-testing.md) · [09-roadmap](docs/09-roadmap.md) · [10-rechtsmatrix](docs/10-rechtsmatrix.md) · [CHANGELOG](docs/CHANGELOG.md)

@@ -29,7 +29,8 @@ public class FormatMatrixTests
 
         suggestion.ShouldNotBeNull();
         suggestion.Options.Select(o => o.Id).OrderBy(o => o).ShouldBe(["flac", "m4a", "mp3", "mp4", "wav"]);
-        suggestion.Default.ShouldNotBe(new FormatId(format));
+        // Video: MP4 is the default for every encumbered family, including MP4 itself ("smaller MP4" is the common wish).
+        suggestion.Default.ShouldBe(FormatRegistry.Mp4);
     }
 
     [Theory]

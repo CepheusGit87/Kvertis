@@ -187,6 +187,8 @@ public interface IJobQueue
 
 ### ADR-003 · 2026-09-23 · Patentbelastete Codecs nur über Systemcodecs
 
+> **Ergänzt durch ADR-015:** Die Dekodierung läuft nicht mehr über D3D11VA in ffmpeg, sondern vollständig über Media Foundation; die genannten Decoder sind im FFmpeg-Build nicht mehr enthalten.
+
 **Entscheidung:** H.264, HEVC und AAC werden ausschließlich mit den Media-Foundation-Encodern von FFmpeg (`h264_mf`, `hevc_mf`, `aac_mf`) erzeugt. HEVC-Dekodierung nur über Hardware/System (D3D11VA). HEIC nur über Windows Imaging Component (siehe ADR-006).
 **Alternativen:** (a) libx264/libx265 (GPL, ausgeschlossen); (b) FFmpeg-Software-Decoder für HEVC; (c) OpenH264 (BSD, aber Patentlizenz nur für den Binär-Download von Cisco).
 **Grund:** Die Patentlizenz liegt dann bei Windows oder der vom Nutzer installierten Erweiterung. Kvertis liefert keinen patentbelasteten Encoder mit.
@@ -240,6 +242,8 @@ public interface IJobQueue
 
 ### ADR-011 · 2026-09-23 · HEVC: Software-Fallback von ffmpeg aktiv verhindern
 
+> **Hinfällig seit ADR-015** (kein HEVC-Decoder mehr im Build; `HevcFallbackGuard` entfernt). Bleibt als Historie stehen.
+
 **Entscheidung:** HEVC-Quellen werden nur mit `-hwaccel d3d11va` dekodiert. Da ffmpeg bei fehlgeschlagener Hardware-Initialisierung still auf seinen Software-Decoder zurückfällt und es dafür keine Verbotsoption gibt, überwacht `HevcFallbackGuard` die stderr-Ausgabe und beendet den Prozess beim ersten Fallback-Hinweis mit `MissingSystemCodec`.
 **Alternativen:** (a) Software-Fallback dulden; (b) HEVC-Eingaben ganz ablehnen.
 **Grund:** ADR-003 verlangt, dass kein mitgelieferter HEVC-Software-Decoder benutzt wird. Die Media-Foundation-Abfrage (`CanDecodeHevc`) ist nur ein Näherungswert; was ffmpeg tatsächlich nutzt, ist der D3D11-Decoder des Grafiktreibers.
@@ -247,10 +251,14 @@ public interface IJobQueue
 
 ### ADR-012 · 2026-09-23 · ImageMagick mit Sicherheitsrichtlinie betreiben
 
+> **Hinfällig seit ADR-014** (Magick.NET entfernt). Bleibt als Historie stehen.
+
 **Entscheidung:** Vor dem ersten Bildzugriff wird eine `policy.xml` gesetzt (`MagickSecurity`): keine Delegates (externe Programme), keine URL-/Netzwerk- und Skript-Coder (URL, HTTPS, HTTP, FTP, MVG, MSL, TEXT, PS, PDF …), keine Pipes oder `@`-Pfade, feste Ressourcengrenzen (Speicher, Fläche, Zeit). Jeder Lesevorgang übergibt den Coder explizit; Magick darf ihn nie selbst per Inhalt wählen.
 **Grund:** Kvertis verspricht „kein Netzwerk“. Eine SVG mit externem Verweis oder ein manipuliertes Bild dürfen die mitgelieferte Bibliothek nicht zu Netzwerkzugriffen oder Ressourcenerschöpfung bringen. Explizite Coder verhindern zudem, dass HEIC/AVIF je über Magicks HEIF-Coder (libde265) laufen.
 
 ### ADR-013 · 2026-09-23 · AVIF gesperrt, Entscheidung über Bildbibliothek offen (O-01)
+
+> **Erledigt durch ADR-014:** O-01 ist entschieden (Magick.NET entfernt), AVIF wird über die Windows-Bildkomponente gelesen.
 
 **Entscheidung:** AVIF-Eingaben werden erkannt, aber mit `UnsupportedFormat` („avif blocked until O-01“) abgelehnt, weil ImageMagick AVIF über denselben HEIF-Coder liest, an dem `libde265` hängt. HEIC läuft ausschließlich über Windows Imaging Component.
 **Kontext:** Der Prüfbericht in `04-bibliotheken.md` zeigt, dass `Magick.Native` keinen GPL-Code, aber `libde265` (HEVC-Decoder) und `openh264` statisch enthält. Ob das Patentrisiko akzeptiert oder der Bildpfad auf SkiaSharp (MIT, keine Video-Codecs) plus WIC umgestellt wird, entscheidet der Projektinhaber (O-01).

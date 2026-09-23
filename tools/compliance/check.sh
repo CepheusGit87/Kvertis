@@ -7,6 +7,7 @@
 #   4. app resources, presets or store texts contain a third-party brand name (tools/compliance/brands.txt)
 #   5. the app manifest declares a network or broad file system capability
 #   6. app resources (.resw) and XAML are inconsistent (tools/compliance/check-resw.py)
+#   7. a converter class (": IConverter") is missing from docs/10-rechtsmatrix.md
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -14,27 +15,27 @@ fail=0
 note() { printf '  %s\n' "$*"; }
 bad()  { printf 'FAIL: %s\n' "$*"; fail=1; }
 
-echo "[1/6] Paketregister"
+echo "[1/7] Paketregister"
 while read -r pkg; do
   if ! grep -Fq -- "$pkg" docs/04-bibliotheken.md; then
     bad "Paket '$pkg' fehlt in docs/04-bibliotheken.md"
   fi
 done < <(grep -oE 'PackageVersion Include="[^"]+"' Directory.Packages.props | sed -E 's/.*="([^"]+)"/\1/')
 
-echo "[2/6] Netzwerkcode"
+echo "[2/7] Netzwerkcode"
 if grep -rnE --include='*.cs' --include='*.xaml' \
      'HttpClient|WebRequest|WebClient|System\.Net\.Sockets|Windows\.Networking|HttpWebRequest|Socket\(' src/ ; then
   bad "Netzwerkcode in src/ gefunden"
 fi
 
-echo "[3/6] Verbotene Bibliotheken"
+echo "[3/7] Verbotene Bibliotheken"
 # Strict on purpose: the engine's own build checker assembles these strings from parts.
 if grep -rniE --include='*.cs' --include='*.csproj' --include='*.props' --include='*.xaml' \
      'libx264|libx265|libfdk[_-]?aac|libxvid|enable-gpl|enable-nonfree|QuestPDF|FluentAssertions' src/ tests/ ; then
   bad "Verbotene Bibliothek oder GPL-Option referenziert"
 fi
 
-echo "[4/6] Markennamen"
+echo "[4/7] Markennamen"
 if [ -f tools/compliance/brands.txt ]; then
   pattern=$(grep -vE '^\s*(#|$)' tools/compliance/brands.txt | paste -sd'|' -)
   if [ -n "$pattern" ]; then
@@ -48,19 +49,26 @@ if [ -f tools/compliance/brands.txt ]; then
   fi
 fi
 
-echo "[5/6] Manifest-Berechtigungen"
+echo "[5/7] Manifest-Berechtigungen"
 for m in $(find src -name 'Package.appxmanifest' 2>/dev/null); do
   if grep -nE 'internetClient|internetClientServer|privateNetworkClientServer|broadFileSystemAccess|picturesLibrary|videosLibrary|musicLibrary|documentsLibrary|removableStorage' "$m"; then
     bad "Unerlaubte Berechtigung in $m"
   fi
 done
 
-echo "[6/6] App-Ressourcen (DE/EN, x:Uid, Fehlercodes)"
+echo "[6/7] App-Ressourcen (DE/EN, x:Uid, Fehlercodes)"
 if [ -d src/Kvertis.App ]; then
   if ! python3 tools/compliance/check-resw.py; then
     bad "Ressourcen oder XAML der App inkonsistent"
   fi
 fi
+
+echo "[7/7] Rechtsmatrix (jeder Konverter hat eine Zeile)"
+while read -r cls; do
+  if ! grep -Fq -- "\`$cls\`" docs/10-rechtsmatrix.md; then
+    bad "Konverter '$cls' fehlt in docs/10-rechtsmatrix.md"
+  fi
+done < <(grep -rhoE 'class [A-Za-z0-9_]+ *: *IConverter\b' src/ | sed -E 's/class ([A-Za-z0-9_]+).*/\1/' | sort -u)
 
 if [ $fail -ne 0 ]; then
   echo "Compliance-Prüfung fehlgeschlagen."
