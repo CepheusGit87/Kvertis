@@ -21,6 +21,8 @@ public sealed record FfmpegJobOptions
 /// Pure command builder for ffmpeg. Returns an argument LIST (never a shell string) for
 /// <see cref="ProcessRequest"/>. Encoder policy (docs/02 §3, ADR-003):
 /// H.264 only via h264_mf, HEVC only via hevc_mf, AAC only via aac_mf. Everything else uses free codecs.
+/// Decoder policy (ADR-015): ffmpeg only ever decodes patent-free streams; media that needs system decoding
+/// is refused with UnsupportedFormat "requires system decoding" (also for stream copy and sound extraction).
 /// Throws <see cref="ConversionException"/> (MissingSystemCodec, TargetSizeUnreachable, UnsupportedFormat)
 /// before any process is started.
 /// </summary>
@@ -100,6 +102,7 @@ public static class FfmpegArguments
         ArgumentNullException.ThrowIfNull(codecs);
         ArgumentNullException.ThrowIfNull(features);
         options ??= new FfmpegJobOptions();
+        FfmpegToolset.EnsureNoSystemDecoding(input, media);
 
         var output = settings.Output;
         var audioOut = IsAudioOutput(output, registry);
@@ -116,15 +119,11 @@ public static class FfmpegArguments
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "ffmpeg-args", "input has no audio stream");
         }
 
+        // Stream copy only for patent-free streams: encumbered inputs were refused above.
         var copy = !audioOut && IsStreamCopy(settings);
-        var decodesVideo = !audioOut && !copy;
 
         var args = new List<string>(48);
         AddCommonHead(args, options.ReportProgress);
-        if (decodesVideo)
-        {
-            AddVideoDecode(args, input, media, codecs, features);
-        }
         if (options.ExcerptStart is { } start)
         {
             args.AddRange(["-ss", Seconds(start)]);
@@ -158,30 +157,24 @@ public static class FfmpegArguments
         return args;
     }
 
-    /// <summary>Builds the arguments that extract a single PNG frame at <paramref name="at"/> (video preview).</summary>
-    /// <remarks>
-    /// Known limitation: the frame must always be decoded, so for an Archive stream copy (MKV) of an HEVC
-    /// source on a machine without D3D11VA/HEVC extension the preview reports MissingSystemCodec, although
-    /// the copy itself would work because it never decodes.
-    /// </remarks>
+    /// <summary>
+    /// Builds the arguments that extract a single PNG frame at <paramref name="at"/> (video preview).
+    /// Patent-free sources only, like <see cref="Build"/>.
+    /// </summary>
     public static IReadOnlyList<string> BuildFrameExtraction(
         InputInfo input,
         MediaInfo? media,
         string outputPngPath,
         TimeSpan at,
-        ConversionSettings settings,
-        ISystemCodecCapabilities codecs,
-        FfmpegFeatures features)
+        ConversionSettings settings)
     {
         ArgumentNullException.ThrowIfNull(input);
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPngPath);
         ArgumentNullException.ThrowIfNull(settings);
-        ArgumentNullException.ThrowIfNull(codecs);
-        ArgumentNullException.ThrowIfNull(features);
+        FfmpegToolset.EnsureNoSystemDecoding(input, media);
 
         var args = new List<string>(32);
         AddCommonHead(args, reportProgress: false);
-        AddVideoDecode(args, input, media, codecs, features);
         args.AddRange(["-ss", Seconds(at)]);
         AddInput(args, input.Path);
         args.AddRange(["-map", "0:v:0", "-frames:v", "1"]);
@@ -308,26 +301,6 @@ public static class FfmpegArguments
     {
         // Only local files may be opened: keeps crafted playlists from reaching the network.
         args.AddRange(["-protocol_whitelist", "file", "-i", Path.GetFullPath(path)]);
-    }
-
-    /// <summary>
-    /// Decoder policy (ADR-003): HEVC only through the system (D3D11VA + HEVC extension), otherwise
-    /// MissingSystemCodec. H.264 uses D3D11VA when this ffmpeg build offers it, else software decode.
-    /// </summary>
-    private static void AddVideoDecode(List<string> args, InputInfo input, MediaInfo? media, ISystemCodecCapabilities codecs, FfmpegFeatures features)
-    {
-        if (media is { IsHevc: true })
-        {
-            if (!codecs.CanDecodeHevc || !features.CanUseD3D11Va)
-            {
-                throw new ConversionException(ConversionErrorCode.MissingSystemCodec, input.Path, "ffmpeg-args", "hevc decode");
-            }
-            args.AddRange(["-hwaccel", FfmpegFeatures.D3D11Va]);
-        }
-        else if (media is { IsH264: true } && features.CanUseD3D11Va)
-        {
-            args.AddRange(["-hwaccel", FfmpegFeatures.D3D11Va]);
-        }
     }
 
     private static void AddAudioOnly(List<string> args, InputInfo input, MediaInfo? media, ConversionSettings settings, ISystemCodecCapabilities codecs, FfmpegFeatures features)
@@ -484,7 +457,7 @@ public static class FfmpegArguments
         }
     }
 
-    private static bool IsLosslessAudio(FormatId output) =>
+    internal static bool IsLosslessAudio(FormatId output) =>
         output == FormatRegistry.Wav || output == FormatRegistry.Flac || output == FormatRegistry.Aiff;
 
     private static void RequireH264(string path, ISystemCodecCapabilities codecs, FfmpegFeatures features)
@@ -515,7 +488,7 @@ public static class FfmpegArguments
     }
 
     /// <summary>Priority: target size (audio outputs only) → explicit bitrate → preset → quality slider.</summary>
-    private static int ChooseAudioKbps(InputInfo input, MediaInfo? media, ConversionSettings settings, bool isVideo)
+    internal static int ChooseAudioKbps(InputInfo input, MediaInfo? media, ConversionSettings settings, bool isVideo)
     {
         if (!isVideo && settings.TargetSizeBytes is { } target && !IsLosslessAudio(settings.Output))
         {

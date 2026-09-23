@@ -1,8 +1,11 @@
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Audio;
+using Kvertis.Engine.Ffmpeg;
 using Kvertis.Engine.Formats;
 using Kvertis.Engine.Platform;
+using Kvertis.Engine.Probing;
 using Kvertis.Engine.Tests.Ffmpeg;
+using NSubstitute;
 using Shouldly;
 using Xunit;
 
@@ -106,22 +109,59 @@ public class AudioConverterTests
             converter.ConvertAsync(input, fake.NewOutputPath(".mp3"), new ConversionSettings(FormatRegistry.Mp3), NoProgress, CancellationToken.None));
 
         ex.Code.ShouldBe(ConversionErrorCode.ToolMissing);
-        ex.Detail.ShouldBe("gpl build");
+        ex.Detail.ShouldBe("ffmpeg build not compliant: gpl build");
         fake.ConversionRequests.ShouldBeEmpty();
     }
 
     [Fact]
     public async Task VideoInputExtractsSoundWithVn()
     {
-        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson(codec: "hevc") };
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson(codec: "vp9") };
         var converter = new AudioConverter(fake.CreateToolset(NullSystemCodecCapabilities.Instance));
-        var input = TestMedia.Video(fake.CreateInputFile(".mp4"));
+        var input = TestMedia.Video(fake.CreateInputFile(".webm"), format: FormatRegistry.WebM);
 
         await converter.ConvertAsync(input, fake.NewOutputPath(".mp3"), new ConversionSettings(FormatRegistry.Mp3), NoProgress, CancellationToken.None);
 
         var request = fake.ConversionRequests.ShouldHaveSingleItem();
         request.Arguments.ShouldContain("-vn");
         request.Timeout.ShouldBe(TimeSpan.FromHours(6));
+    }
+
+    [Fact]
+    public async Task ProbedAacInputIsNotSupportedAndNeverStartsAProcess()
+    {
+        using var fake = new FakeFfmpeg { ProbeJson = TestMedia.VideoJson("h264", "aac") };
+        var cache = new MediaInfoCache();
+        var input = TestMedia.Audio(fake.CreateInputFile(".m4a"), format: FormatRegistry.M4a);
+        cache.Set(input.Path, FfprobeReader.Parse(TestMedia.VideoJson("h264", "aac")) with { HasVideo = false });
+        var converter = new AudioConverter(fake.CreateToolset(cache: cache));
+
+        converter.Supports(input, FormatRegistry.Mp3).ShouldBeFalse();
+        var ex = await Should.ThrowAsync<ConversionException>(() =>
+            converter.ConvertAsync(input, fake.NewOutputPath(".mp3"), new ConversionSettings(FormatRegistry.Mp3), NoProgress, CancellationToken.None));
+        (await converter.PreviewAsync(input, new ConversionSettings(FormatRegistry.Mp3), CancellationToken.None)).ShouldBeNull();
+
+        ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
+        ex.Detail.ShouldBe("requires system decoding");
+        fake.Runner.ReceivedCalls().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task UnprobedWmaIsRefusedAfterProbingWithoutRunningFfmpeg()
+    {
+        const string wmaJson = """{ "streams": [ { "codec_type": "audio", "codec_name": "wmav2" } ], "format": { "duration": "30" } }""";
+        using var fake = new FakeFfmpeg { ProbeJson = wmaJson };
+        var converter = new AudioConverter(fake.CreateToolset());
+        var input = TestMedia.Audio(fake.CreateInputFile(".wma"), format: FormatRegistry.Wma);
+
+        converter.Supports(input, FormatRegistry.Mp3).ShouldBeTrue(); // no probe data yet
+        var ex = await Should.ThrowAsync<ConversionException>(() =>
+            converter.ConvertAsync(input, fake.NewOutputPath(".mp3"), new ConversionSettings(FormatRegistry.Mp3), NoProgress, CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
+        ex.Detail.ShouldBe("requires system decoding");
+        fake.Requests.ShouldAllBe(r => r.ExecutablePath == FakeFfmpeg.FfprobePath);
+        converter.Supports(input, FormatRegistry.Mp3).ShouldBeFalse(); // now cached
     }
 
     [Fact]

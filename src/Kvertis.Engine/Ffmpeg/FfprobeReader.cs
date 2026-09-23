@@ -5,7 +5,11 @@ using Kvertis.Engine.Validation;
 
 namespace Kvertis.Engine.Ffmpeg;
 
-/// <summary>What ffprobe told us about an audio/video file. Only the first video and first audio stream count.</summary>
+/// <summary>
+/// What ffprobe told us about an audio/video file. The detail fields describe the first video and the first
+/// audio stream; <see cref="StreamCodecs"/> lists the codecs of every audio and video stream, which decides
+/// the routing (ADR-015).
+/// </summary>
 public sealed record MediaInfo(
     TimeSpan? Duration,
     int? Width,
@@ -24,13 +28,26 @@ public sealed record MediaInfo(
     int? SampleRateHz = null,
     string? ContainerName = null)
 {
-    public bool IsHevc => string.Equals(VideoCodec, "hevc", StringComparison.OrdinalIgnoreCase);
-    public bool IsH264 => string.Equals(VideoCodec, "h264", StringComparison.OrdinalIgnoreCase);
+    /// <summary>Codec names (ffprobe <c>codec_name</c>) of all audio and video streams, including cover art.</summary>
+    public IReadOnlyList<string> StreamCodecs { get; init; } = [];
+
+    /// <summary>
+    /// True when any audio or video stream uses a patent-encumbered codec (<see cref="EncumberedCodecs"/>).
+    /// Such files are decoded only by Windows Media Foundation; the ffmpeg converters refuse them.
+    /// </summary>
+    public bool RequiresSystemDecoding =>
+        EncumberedCodecs.Contains(VideoCodec) || EncumberedCodecs.Contains(AudioCodec) || EncumberedCodecs.ContainsAny(StreamCodecs);
+
+    /// <summary>True when the first video stream is HEVC (needs the system HEVC video extension).</summary>
+    public bool IsHevc => string.Equals(VideoCodec, EncumberedCodecs.Hevc, StringComparison.OrdinalIgnoreCase);
 }
 
 /// <summary>
 /// Runs <c>ffprobe -v error -print_format json -show_format -show_streams &lt;file&gt;</c> through
 /// <see cref="IProcessRunner"/> and parses the JSON. Never loads any FFmpeg library.
+/// Works with the Kvertis allowlist build although it has no H.264/HEVC/AAC decoders: <c>-show_streams</c>
+/// only reads the container and the codec parameters parsed by the demuxer, it never opens a decoder, so
+/// codec names, dimensions and durations of encumbered streams are still reported.
 /// </summary>
 public sealed class FfprobeReader
 {
@@ -91,6 +108,7 @@ public sealed class FfprobeReader
             JsonElement? video = null;
             JsonElement? audio = null;
             var audioCount = 0;
+            var codecs = new List<string>();
             var encrypted = HasEncryptionTags(format);
             double? maxStreamDuration = null;
 
@@ -101,6 +119,11 @@ public sealed class FfprobeReader
                 if (GetDouble(stream, "duration") is { } sd)
                 {
                     maxStreamDuration = Math.Max(maxStreamDuration ?? 0, sd);
+                }
+
+                if ((type is "video" or "audio") && GetString(stream, "codec_name") is { Length: > 0 } codecName)
+                {
+                    codecs.Add(codecName);
                 }
 
                 if (type == "video" && !IsAttachedPicture(stream))
@@ -142,7 +165,10 @@ public sealed class FfprobeReader
                 video is { } vb ? Kbps(GetDouble(vb, "bit_rate")) : null,
                 audio is { } ab ? Kbps(GetDouble(ab, "bit_rate")) : null,
                 audio is { } ar ? GetInt(ar, "sample_rate") : null,
-                GetString(format, "format_name"));
+                GetString(format, "format_name"))
+            {
+                StreamCodecs = codecs,
+            };
         }
     }
 

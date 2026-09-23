@@ -34,12 +34,14 @@ Zielgröße bei Bildern: Kvertis sucht per Halbierung die höchste Qualität, de
 | FLAC | MP3, WAV, OGG, OPUS, M4A | MP3 | FFmpeg / MF | |
 | OGG (Vorbis) | MP3, WAV, FLAC, OPUS, M4A | MP3 | FFmpeg / MF | |
 | OPUS | MP3, WAV, FLAC, OGG, M4A | MP3 | FFmpeg / MF | |
-| M4A / AAC | MP3, WAV, FLAC, OGG, OPUS | MP3 | FFmpeg / MF | Dekodierung mit FFmpeg-nativem AAC-Decoder |
-| WMA | MP3, WAV, FLAC, OGG, OPUS, M4A | MP3 | FFmpeg | |
+| M4A / AAC | MP3, WAV, FLAC, M4A | MP3 | MF (`MediaTranscoder`) | AAC wird nur von Media Foundation dekodiert (ADR-015); kein OGG/OPUS in Phase 1 |
+| WMA | MP3, WAV, FLAC, M4A | MP3 | MF (`MediaTranscoder`) | WMA wird nur von Media Foundation dekodiert |
 | AIFF | MP3, WAV, FLAC, OGG, OPUS, M4A | MP3 | FFmpeg / MF | |
-| Video-Datei (Tonspur extrahieren) | MP3, WAV, FLAC, M4A | MP3 | FFmpeg / MF | Erscheint als „Nur Ton“ in der Formatliste |
+| Video-Datei (Tonspur extrahieren) | MP3, WAV, FLAC, M4A | MP3 | FFmpeg / MF | Erscheint als „Nur Ton“ in der Formatliste; Tonspur mit AAC/WMA/E-AC-3/DTS/AMR: nur MF |
 
-Encoder: MP3 über `libmp3lame` (LGPL) oder `mp3_mf`; AAC nur über `aac_mf`; Opus über `libopus`; Vorbis über `libvorbis`; FLAC und WAV FFmpeg-nativ.
+Encoder: MP3 über `libmp3lame` (LGPL) oder `mp3_mf`; AAC nur über `aac_mf` bzw. den AAC-Encoder von Media Foundation (nur 96, 128, 160, 192 kbit/s; andere Werte werden auf die nächste Stufe gesetzt); Opus über `libopus`; Vorbis über `libvorbis`; FLAC und WAV FFmpeg-nativ oder Media Foundation.
+
+Routing (ADR-015): Entscheidend ist der Codec jeder Ton- und Videospur laut `ffprobe`, nicht die Dateiendung. Enthält eine Spur einen patentbelasteten Codec (`EncumberedCodecs`: H.264, HEVC, AAC, MPEG-4 Part 2, WMV/WMA/VC-1, H.263, ProRes, DNxHD, DTS, E-AC-3, TrueHD, AMR), arbeitet ausschließlich der `MediaFoundationTranscoder`; FFmpeg wird für diese Datei nie gestartet (auch nicht für Stream-Copy oder Tonspur-Extraktion). Ohne `ffprobe`-Daten gelten MP4, MOV, M4A, WMV, WMA, AVI, 3GP, MPEG und TS als Fall für Media Foundation.
 
 Zielgröße bei Audio: Bitrate = Zielgröße / Dauer, abgerundet auf gängige Stufen (64, 96, 128, 160, 192, 256, 320 kbit/s), Warnung unter 64 kbit/s. Bei verlustfreien Zielen ist die Zielgröße deaktiviert.
 
@@ -47,14 +49,19 @@ Zielgröße bei Audio: Bitrate = Zielgröße / Dauer, abgerundet auf gängige St
 
 | Eingabe | Ausgaben (Phase 1) | Standardvorschlag | Engine | Anmerkung |
 |---|---|---|---|---|
-| MP4, MOV, M4V | MP4 (H.264/AAC), MKV, WebM (VP9/Opus), Nur Ton | MP4 | FFmpeg + MF | |
-| MKV | MP4, WebM, Nur Ton | MP4 | FFmpeg + MF | Mehrere Tonspuren: erste wird genommen, Auswahl Phase 2 |
-| AVI, WMV, FLV, 3GP, MPG/MPEG, TS/MTS/M2TS | MP4, MKV, WebM, Nur Ton | MP4 | FFmpeg + MF | Interlaced-Quellen: Hinweis, Deinterlace unter „Mehr“ |
-| WebM | MP4, MKV, Nur Ton | MP4 | FFmpeg + MF | |
-| HEVC-Quellen (in jedem Container) | wie oben | MP4 | D3D11VA → FFmpeg + MF | Ohne HEVC-Videoerweiterung: `MissingSystemCodec` |
-| VFR-Quellen (Bildschirmaufnahmen, Handy) | wie oben | MP4 | FFmpeg | Warnung `VariableFrameRate`; Kvertis setzt `-vsync cfr` automatisch |
+| MP4, MOV, M4V | MP4 (H.264/AAC), Nur Ton (MP3, M4A, WAV, FLAC) | MP3 bei MP4, sonst MP4 | MF (`MediaTranscoder`) | H.264/HEVC/AAC nur über Media Foundation; MP4 mit VP9/AV1 läuft über FFmpeg |
+| AVI, WMV, 3GP, MPG/MPEG, TS/MTS/M2TS | MP4 (H.264/AAC), Nur Ton (MP3, M4A, WAV, FLAC) | MP4 | MF, bei MPEG-2/MP2/AC-3 FFmpeg + MF-Encoder | Interlaced-Quellen: Hinweis, Deinterlace unter „Mehr“ (nur FFmpeg-Weg) |
+| MKV | MP4, WebM, MKV, Nur Ton | MP4 | je Spur: VP9/AV1/Theora → FFmpeg; H.264/HEVC → MF | MKV mit H.264/HEVC: nur MP4 und Nur Ton; die App zeigt, was `IConverterResolver.CanConvert` für die Datei zulässt. Mehrere Tonspuren: erste wird genommen, Auswahl Phase 2 |
+| WebM | MP4, MKV, Nur Ton | MP4 | FFmpeg (MP4 über `h264_mf`/`aac_mf`) | |
+| FLV | — | — | — | Nur erkannt: der FFmpeg-Build hat keinen FLV-Demuxer, Media Foundation liest FLV nicht |
+| HEVC-Quellen (in jedem lesbaren Container) | MP4, Nur Ton | MP4 | MF | Ohne HEVC-Videoerweiterung: `MissingSystemCodec` (Detail `hevc`) |
+| VFR-Quellen (Bildschirmaufnahmen, Handy) | wie oben | MP4 | FFmpeg / MF | Warnung `VariableFrameRate`; der FFmpeg-Weg setzt `-fps_mode cfr`, der MF-Weg eine feste Bildrate |
 
-Encoder: H.264 nur `h264_mf`, HEVC nur `hevc_mf`, AAC nur `aac_mf`, VP9 `libvpx-vp9`, AV1 `libsvtav1` (Phase 2, wenn Tempo akzeptabel), Opus `libopus`. Video → GIF und Bildsequenz: Phase 2. Zielgröße bei Video: Phase 2 (Two-Pass).
+Encoder: H.264 nur `h264_mf` bzw. der H.264-Encoder von Media Foundation, HEVC nur `hevc_mf`, AAC nur `aac_mf` bzw. Media Foundation, VP9 `libvpx-vp9`, AV1 `libsvtav1` (Phase 2, wenn Tempo akzeptabel), Opus `libopus`. Video → GIF und Bildsequenz: Phase 2. Zielgröße bei Video: in Phase 1 eine Näherung mit mittlerer Bitrate in einem Durchgang (beide Wege); exakt mit Two-Pass in Phase 2.
+
+**Phase 2:** H.264/HEVC-Quellen → WebM/MKV (VP9) über Media-Foundation-Dekodierung und Rohdaten an FFmpeg (ADR-015, Variante b). Bis dahin gibt es diesen Weg nicht; auch die Archiv-Vorlage (MKV mit Stream-Copy) gilt nur für patentfreie Spuren.
+
+Bekannte Einschränkung Media-Foundation-Weg: `MediaTranscoder` hat keinen Schalter zum Entfernen von Container-Metadaten; „Metadaten entfernen“ ist dort in Phase 1 nicht garantiert (Titel, Aufnahmedatum können übernommen werden). Vorschau: Standbild aus dem Systemvorschaubild der Datei; für reine Tonausgaben keine Vorschau.
 
 ## Dokumente
 

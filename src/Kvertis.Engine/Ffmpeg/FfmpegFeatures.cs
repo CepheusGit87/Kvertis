@@ -4,34 +4,30 @@ using Kvertis.Engine.Validation;
 namespace Kvertis.Engine.Ffmpeg;
 
 /// <summary>
-/// What the installed ffmpeg build offers: encoder names from <c>ffmpeg -encoders</c> and hardware
-/// decoders from <c>ffmpeg -hwaccels</c>. A snapshot; build arguments against it, never assume.
+/// What the installed ffmpeg build offers: encoder names from <c>ffmpeg -encoders</c>. A snapshot; build
+/// arguments against it, never assume. (Hardware decoding is not used: encumbered inputs never reach
+/// ffmpeg, ADR-015.)
 /// </summary>
 public sealed class FfmpegFeatures
 {
-    public const string D3D11Va = "d3d11va";
-
     private readonly HashSet<string> _encoders;
-    private readonly HashSet<string> _hwaccels;
 
-    public FfmpegFeatures(IEnumerable<string> encoders, IEnumerable<string>? hwaccels = null)
+    public FfmpegFeatures(IEnumerable<string> encoders)
     {
         _encoders = new HashSet<string>(encoders, StringComparer.OrdinalIgnoreCase);
-        _hwaccels = new HashSet<string>(hwaccels ?? [], StringComparer.OrdinalIgnoreCase);
     }
 
     public IReadOnlyCollection<string> Encoders => _encoders;
-    public IReadOnlyCollection<string> HardwareAccelerations => _hwaccels;
 
     public bool HasEncoder(string name) => _encoders.Contains(name);
 
-    public bool HasHardwareAcceleration(string name) => _hwaccels.Contains(name);
-
-    /// <summary>True when ffmpeg can decode through Direct3D 11 (only ever listed by Windows builds).</summary>
-    public bool CanUseD3D11Va => HasHardwareAcceleration(D3D11Va);
-
     /// <summary>Parses the table printed by <c>ffmpeg -hide_banner -encoders</c>.</summary>
-    public static IReadOnlyList<string> ParseEncoders(string output)
+    public static IReadOnlyList<string> ParseEncoders(string output) => ParseCodecTable(output);
+
+    /// <summary>Parses the table printed by <c>ffmpeg -hide_banner -decoders</c> (same layout as the encoder table).</summary>
+    public static IReadOnlyList<string> ParseDecoders(string output) => ParseCodecTable(output);
+
+    private static List<string> ParseCodecTable(string output)
     {
         ArgumentNullException.ThrowIfNull(output);
         var result = new List<string>();
@@ -57,16 +53,6 @@ public sealed class FfmpegFeatures
         }
         return result;
     }
-
-    /// <summary>Parses the list printed by <c>ffmpeg -hide_banner -hwaccels</c>.</summary>
-    public static IReadOnlyList<string> ParseHardwareAccelerations(string output)
-    {
-        ArgumentNullException.ThrowIfNull(output);
-        return output.Split('\n')
-            .Select(l => l.Trim())
-            .Where(l => l.Length > 0 && !l.Contains(':', StringComparison.Ordinal) && !l.Contains(' ', StringComparison.Ordinal))
-            .ToList();
-    }
 }
 
 /// <summary>Provides the (cached) feature set of the located ffmpeg build.</summary>
@@ -76,7 +62,7 @@ public interface IFfmpegFeatures
 }
 
 /// <summary>
-/// Default <see cref="IFfmpegFeatures"/>: runs <c>ffmpeg -hide_banner -encoders</c> and <c>-hwaccels</c> once
+/// Default <see cref="IFfmpegFeatures"/>: runs <c>ffmpeg -hide_banner -encoders</c> once
 /// per instance (register as singleton) and caches the result. A failed probe is not cached.
 /// </summary>
 public sealed class FfmpegFeatureProbe : IFfmpegFeatures
@@ -114,23 +100,12 @@ public sealed class FfmpegFeatureProbe : IFfmpegFeatures
         var ffmpeg = _locator.FfmpegPath
                      ?? throw new ConversionException(ConversionErrorCode.ToolMissing, step: "ffmpeg-features", detail: "ffmpeg not found");
 
-        var encoders = await RunAsync(ffmpeg, "-encoders").ConfigureAwait(false);
-        var hwaccels = await RunAsync(ffmpeg, "-hwaccels").ConfigureAwait(false);
-        return new FfmpegFeatures(ParseOrEmpty(encoders, FfmpegFeatures.ParseEncoders), ParseOrEmpty(hwaccels, FfmpegFeatures.ParseHardwareAccelerations));
-    }
-
-    private static IReadOnlyList<string> ParseOrEmpty(ProcessOutcome? outcome, Func<string, IReadOnlyList<string>> parse) =>
-        outcome is null ? [] : parse(outcome.StandardOutput);
-
-    private async Task<ProcessOutcome?> RunAsync(string ffmpeg, string listOption)
-    {
-        var request = new ProcessRequest(ffmpeg, ["-hide_banner", listOption], ProbeTimeout) { CaptureStdout = true };
+        var request = new ProcessRequest(ffmpeg, ["-hide_banner", "-encoders"], ProbeTimeout) { CaptureStdout = true };
         var outcome = await _runner.RunAsync(request, null, CancellationToken.None).ConfigureAwait(false);
-        if (listOption == "-encoders" && !outcome.Succeeded)
+        if (!outcome.Succeeded)
         {
             throw FfmpegErrorMapper.Map(outcome, null, "ffmpeg-features");
         }
-        // -hwaccels is optional information; a failure only means no hardware decoding.
-        return outcome.Succeeded ? outcome : null;
+        return new FfmpegFeatures(FfmpegFeatures.ParseEncoders(outcome.StandardOutput));
     }
 }

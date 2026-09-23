@@ -5,8 +5,11 @@ using Kvertis.Engine.Formats;
 namespace Kvertis.Engine.Conversion.Video;
 
 /// <summary>
-/// Video → MP4 (H.264/AAC via Media Foundation only), MKV and WebM (VP9/Opus). The Archive preset with
-/// MKV copies the streams unchanged. A target size uses a single-pass average bitrate in phase 1
+/// Video → MP4 (H.264/AAC via Media Foundation only), MKV and WebM (VP9/Opus), for patent-free inputs
+/// (VP8/VP9/AV1/Theora/MPEG-1/2 with Opus/Vorbis/FLAC/MP3/AC-3/PCM). The Archive preset with MKV copies the
+/// streams unchanged. Inputs with a patent-encumbered stream (<see cref="EncumberedCodecs"/>) never reach
+/// ffmpeg, not even for a stream copy: <see cref="Supports"/> is false when cached probe data says so and the
+/// conversion re-checks after probing (ADR-015). A target size uses a single-pass average bitrate in phase 1
 /// (see <see cref="FfmpegArguments.VideoBitrateForTargetSize"/>); exact two-pass encoding is phase 2.
 /// </summary>
 public sealed class VideoConverter : IConverter
@@ -23,7 +26,7 @@ public sealed class VideoConverter : IConverter
     public bool Supports(InputInfo input, FormatId output)
     {
         ArgumentNullException.ThrowIfNull(input);
-        return input.Kind == MediaKind.Video && FfmpegArguments.IsVideoOutput(output);
+        return input.Kind == MediaKind.Video && FfmpegArguments.IsVideoOutput(output) && !_tools.IsKnownToRequireSystemDecoding(input);
     }
 
     public Task<ConversionResult> ConvertAsync(
@@ -37,6 +40,10 @@ public sealed class VideoConverter : IConverter
         ArgumentException.ThrowIfNullOrWhiteSpace(outputPath);
         ArgumentNullException.ThrowIfNull(settings);
         ArgumentNullException.ThrowIfNull(progress);
+        if (_tools.IsKnownToRequireSystemDecoding(input))
+        {
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", FfmpegToolset.RequiresSystemDecodingDetail);
+        }
         if (!Supports(input, settings.Output))
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "convert", $"{input.Format} -> {settings.Output}");
@@ -66,9 +73,9 @@ public sealed class VideoConverter : IConverter
 
             // Validate the real job first so the preview fails the same way the conversion would.
             _ = FfmpegArguments.Build(input, context.Media, previewPath, settings, _tools.Registry, _tools.Codecs, context.Features);
-            var arguments = FfmpegArguments.BuildFrameExtraction(input, context.Media, previewPath, at, settings, _tools.Codecs, context.Features);
+            var arguments = FfmpegArguments.BuildFrameExtraction(input, context.Media, previewPath, at, settings);
 
-            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct, context.Media).ConfigureAwait(false);
+            await _tools.RunFfmpegAsync(context.FfmpegPath, arguments, input, null, "preview", ct).ConfigureAwait(false);
             if (new FileInfo(previewPath) is not { Exists: true, Length: > 0 })
             {
                 throw new ConversionException(ConversionErrorCode.ToolFailed, input.Path, "preview", "no frame produced");

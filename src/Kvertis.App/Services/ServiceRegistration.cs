@@ -82,7 +82,8 @@ public static class ServiceRegistration
         services.AddSingleton<FfmpegCompliance>();
         services.AddSingleton<IFfmpegFeatures, FfmpegFeatureProbe>();
         services.AddSingleton<FfprobeReader>();
-        services.AddSingleton<MediaInfoCache>();
+        // One ffprobe cache for the prober, the ffmpeg converters and the Media Foundation transcoder (routing by stream codec, ADR-015).
+        services.AddSingleton<MediaInfoCache>(state.Platform.MediaInfo);
         services.AddSingleton<FfmpegToolset>();
 
         // Windows platform services (Media Foundation, WIC, process suspend). ISystemImageCodec (WIC) decodes
@@ -100,6 +101,8 @@ public static class ServiceRegistration
 
         // Engine: converters. Registration order is priority for ConverterResolver.
         services.AddSingleton<IConverter, ImageConverter>();
+        // Media Foundation before ffmpeg: inputs with H.264/HEVC/AAC/WMV/… streams are decoded only by the system (ADR-015).
+        services.AddSingleton<IConverter>(state.Platform.Transcoder);
         services.AddSingleton<IConverter, AudioConverter>();
         services.AddSingleton<IConverter, VideoConverter>();
         // Documents: PDF pages are rasterized by the Windows PDF engine (system component, no library).

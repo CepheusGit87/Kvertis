@@ -13,13 +13,15 @@ public class FfprobeReaderTests
     [Fact]
     public void ParsesVideoAndAudioStreams()
     {
-        var info = FfprobeReader.Parse(TestMedia.VideoJson());
+        var info = FfprobeReader.Parse(TestMedia.VideoJson("h264", "aac"));
 
         info.Duration.ShouldBe(TimeSpan.FromSeconds(60));
         info.Width.ShouldBe(1920);
         info.Height.ShouldBe(1080);
         info.VideoCodec.ShouldBe("h264");
         info.AudioCodec.ShouldBe("aac");
+        info.StreamCodecs.ShouldBe(["h264", "aac"]);
+        info.RequiresSystemDecoding.ShouldBeTrue();
         info.HasVideo.ShouldBeTrue();
         info.HasAudio.ShouldBeTrue();
         info.AudioTrackCount.ShouldBe(1);
@@ -47,7 +49,29 @@ public class FfprobeReaderTests
         FfprobeReader.Parse(TestMedia.VideoJson(fieldOrder: fieldOrder)).IsInterlaced.ShouldBe(interlaced);
 
     [Fact]
-    public void DetectsHevc() => FfprobeReader.Parse(TestMedia.VideoJson(codec: "hevc")).IsHevc.ShouldBeTrue();
+    public void DetectsHevc()
+    {
+        var info = FfprobeReader.Parse(TestMedia.VideoJson(codec: "hevc"));
+        info.IsHevc.ShouldBeTrue();
+        info.RequiresSystemDecoding.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void PatentFreeStreamsNeedNoSystemDecoding() =>
+        FfprobeReader.Parse(TestMedia.VideoJson("vp9", "opus")).RequiresSystemDecoding.ShouldBeFalse();
+
+    [Fact]
+    public void EncumberedSecondAudioTrackIsDetected()
+    {
+        const string json = """
+            { "streams": [ { "codec_type": "video", "codec_name": "mpeg2video" }, { "codec_type": "audio", "codec_name": "ac3" },
+                           { "codec_type": "audio", "codec_name": "eac3" }, { "codec_type": "subtitle", "codec_name": "dvd_subtitle" } ], "format": {} }
+            """;
+        var info = FfprobeReader.Parse(json);
+        info.AudioCodec.ShouldBe("ac3");
+        info.StreamCodecs.ShouldBe(["mpeg2video", "ac3", "eac3"]);
+        info.RequiresSystemDecoding.ShouldBeTrue();
+    }
 
     [Fact]
     public void MissingDurationIsNull() => FfprobeReader.Parse(TestMedia.VideoJson(duration: "\"N/A\"")).Duration.ShouldBeNull();
@@ -123,7 +147,7 @@ public class MediaProberTests
         info.HasWarning(InputWarning.VariableFrameRate).ShouldBeTrue();
         info.HasWarning(InputWarning.Interlaced).ShouldBeTrue();
         cache.TryGet(path, out var cached).ShouldBeTrue();
-        cached.VideoCodec.ShouldBe("h264");
+        cached.VideoCodec.ShouldBe("vp9");
     }
 
     [Fact]
