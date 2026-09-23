@@ -1,0 +1,474 @@
+<title>Kvertis Förderband-Kombis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 16px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+.k-mix { --k: var(--muted); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Fenster */
+.win { position: relative; width: 100%; min-width: 960px; height: 580px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 42px 54px 1fr auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.platz { flex: 1; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+.faden { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.kn { display: grid; grid-template-columns: 26px auto; gap: 0 9px; align-items: center; }
+.kn i { grid-row: span 2; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.kn.an i { background: var(--mint); color: var(--auf-mint); border-color: var(--mint); }
+.kn b { font-size: 12.5px; } .kn small { font: 500 10.5px var(--mono); color: var(--mint); } .kn.an small { color: var(--leise); }
+.sg { flex: 1; height: 2px; margin: 0 12px; background: var(--mint); border-radius: 1px; }
+.leiste { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.taste { border: 0; border-radius: 12px; padding: 11px 20px; font-weight: 600; font-size: 14px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 12px 24px -8px color-mix(in srgb, var(--mint) 60%, transparent), inset 0 1px 0 #ffffff55; transform: translateY(-2px); transition: transform .12s, box-shadow .12s; display: inline-flex; gap: 10px; align-items: center; }
+.taste:hover { transform: translateY(-3px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 45%, #000); }
+.taste small { font: 500 11px var(--mono); opacity: .75; }
+.segment { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.segment button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.segment button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.label { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); }
+
+/* Glas-Sanduhr in 3D */
+.uhr3d { --dx: 0; position: relative; width: 240px; height: 400px; justify-self: center; }
+.uhr3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.uhr3d .p-vorn, .uhr3d .p-hinten, .uhr3d .glanz { transition: transform .25s ease-out; }
+.uhr3d .p-vorn { transform: translateX(calc(var(--dx) * 6px)); }
+.uhr3d .p-hinten { transform: translateX(calc(var(--dx) * -9px)); }
+.uhr3d .glanz { transform: translateX(calc(var(--dx) * 3px)); }
+.uhr3d .u-schatten { fill: var(--schatten); filter: blur(5px); }
+.uhr3d .u-kontur { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.2; }
+.uhr3d .u-rand { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; }
+.uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--k) 45%, var(--panel2)); stroke: color-mix(in srgb, var(--k) 60%, transparent); stroke-width: .8; }
+.uhr3d .u-bodenflaeche { fill: color-mix(in srgb, var(--mint) 22%, transparent); }
+.uhr3d .u-glanz { fill: none; stroke: #fff; stroke-opacity: .2; stroke-width: 5; stroke-linecap: round; }
+.uhr3d .u-glanz.d { stroke-width: 2; stroke-opacity: .12; }
+.uhr3d .u-deckel { fill: color-mix(in srgb, var(--line-stark) 55%, var(--panel2)); stroke: var(--line-stark); stroke-width: 1; }
+.uhr3d .u-strom { stroke-width: 2.2; stroke-dasharray: 3 5; stroke-linecap: round; animation: strom3d .6s linear infinite; }
+@keyframes strom3d { to { stroke-dashoffset: -8; } }
+.uhr3d .sand-o, .uhr3d .sand-u { position: absolute; left: 30px; right: 30px; display: grid; gap: 5px; justify-items: center; }
+.uhr3d .sand-o { top: 58px; } .uhr3d .sand-u { bottom: 40px; }
+.uhr3d .zeile { display: flex; gap: 4px; justify-content: center; }
+.uhr3d .hals-m { position: absolute; left: 50%; top: 188px; transform: translateX(-50%); display: grid; place-items: center; }
+.uhr3d .hals-m .logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.uhr3d .hals-m .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .uhr3d .hals-m .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.uhr3d .sand-o .chip { background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; box-shadow: 0 2px 5px -1px #0009; }
+.uhr3d .sand-u .eti { box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; }
+.logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.uhr3d .hals-m .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .uhr3d .hals-m .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.uhr3d .sand-o .chip { background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; box-shadow: 0 2px 5px -1px #0009; }
+.uhr3d .sand-u .eti { box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; }
+.logo-m { width: 22px; height: 22px; border-radius: 7px; background: var(--mint); position: relative; flex: none; }
+.logo-m::before, .logo-m::after { content: ''; position: absolute; }
+.logo-m::before { background: var(--auf-mint); opacity: .8; border-radius: 3px; }
+.logo-m::after { border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.ordnerbox { position: relative; z-index: 1; display: grid; justify-items: center; gap: 10px; }
+.ordner { position: relative; width: 230px; height: 170px; perspective: 700px; }
+.ordner .rueck { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; border-radius: 6px 12px 12px 12px; background: color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.ordner .rueck::before { content: ''; position: absolute; left: 0; top: -16px; width: 90px; height: 20px; border-radius: 8px 8px 0 0; background: color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.ordner .blaetter-o { position: absolute; left: 20px; right: 20px; bottom: 20px; height: 120px; }
+.ordner .blaetter-o i { position: absolute; left: 0; right: 0; height: 110px; border-radius: 3px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transition: transform .4s var(--feder); }
+.ordner .vorn { position: absolute; left: 0; right: 0; bottom: 0; height: 118px; border-radius: 8px 8px 12px 12px; transform-origin: bottom; transform: rotateX(-14deg); transition: transform .5s var(--feder); background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 62%, var(--karton-tief)), color-mix(in srgb, var(--mint) 42%, var(--karton-tief))); box-shadow: 0 -1px 0 #ffffff30 inset, 0 18px 30px -12px var(--schatten); display: grid; place-items: center; }
+.zm.laeuft .ordner .vorn { transform: rotateX(-34deg); }
+.ordner .vorn span { font: 700 13px var(--mono); letter-spacing: .06em; color: #0b0f12cc; text-align: center; line-height: 1.3; }
+.ordner .vorn span small { display: block; font-weight: 500; font-size: 10.5px; opacity: .8; letter-spacing: 0; }
+.ordner .zaehl { position: absolute; right: -8px; top: 0; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; background: var(--mint); color: var(--auf-mint); font: 700 13px/30px var(--mono); text-align: center; z-index: 2; box-shadow: 0 4px 10px -4px var(--mint); }
+.pfad { font: 11px var(--mono); color: var(--muted); max-width: 300px; text-align: center; }
+.pfad em { font-style: normal; color: var(--mint); }
+/* 5 · Kompakt */
+.kp { display: grid; grid-template-rows: auto 1fr; gap: 10px; padding: 14px 24px 8px; min-height: 0; }
+.kp-kopf { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+.kp-kopf .gross { font: 600 30px var(--mono); letter-spacing: -.02em; }
+.kp-kopf .gross span { color: var(--muted); font-size: 20px; }
+.kp-kopf .gross b { color: var(--mint); }
+.kp-liste { display: grid; align-content: start; gap: 4px; overflow: auto; min-height: 0; }
+.kz { position: relative; display: grid; grid-template-columns: 52px 1fr 14px 50px 240px 110px 76px; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.kz::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); transition: width .2s linear; }
+.kz .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kz .pf { color: var(--mint); text-align: center; }
+.balken3d { position: relative; height: 22px; display: grid; gap: 3px; align-content: center; }
+.balken3d i { display: block; height: 8px; border-radius: 2px; width: var(--w); min-width: 3px; }
+.balken3d .vor { background: linear-gradient(180deg, var(--line-stark), color-mix(in srgb, var(--line-stark) 55%, var(--karton-tief))); box-shadow: 0 2px 0 var(--tief); }
+.balken3d .nach { background: linear-gradient(180deg, var(--mint), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.kz .gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.kz .gr b { color: var(--ink); }
+.kz .st2 { font: 500 11px var(--schrift); color: var(--muted); display: inline-flex; gap: 5px; align-items: center; justify-content: flex-end; }
+.kz.ok .st2 { color: var(--mint); }
+.kz.ok { border-color: var(--mint-rahmen); }
+.spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-stark); border-top-color: var(--mint); animation: dreh .7s linear infinite; }
+@keyframes dreh { to { transform: rotate(360deg); } }
+.breit { flex: 1; justify-content: center; padding: 13px 22px; font-size: 15px; }
+
+
+.win { height: 700px; grid-template-rows: 42px 54px 1fr auto; }
+.k-mix { --k: var(--muted); }
+/* Kombi: Band oben, Liste unten */
+.kombi { display: grid; grid-template-rows: 290px 1fr; min-height: 0; }
+.bahn2 { position: relative; margin: 8px 22px 0; }
+.bahn2 .gurt { position: absolute; left: 0; bottom: 30px; height: 16px; border-radius: 8px; background: var(--tief); border: 1px solid var(--line-stark); overflow: hidden; }
+.bahn2 .gurt::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--line-stark) 0 2px, transparent 2px 18px); }
+.kombi.laeuft .gurt::before { animation: gurt .5s linear infinite; }
+@keyframes gurt { to { transform: translateX(18px); } }
+.bahn2 .rolle-e { position: absolute; bottom: 18px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line-stark); background: radial-gradient(circle, var(--panel2) 30%, var(--tief)); }
+.bahn2 .schild { position: absolute; left: 0; top: 0; display: grid; gap: 1px; }
+.bahn2 .schild b { font-size: 13px; }
+.bl2 { position: absolute; bottom: 48px; left: 0; width: 86px; height: 62px; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 14px -8px #000a; padding: 16px 6px 0; font: 600 9.5px var(--mono); text-align: center; transform-origin: 50% 100%; transform: scale(var(--s, 1)); transition: left .7s var(--sanft), transform .35s var(--feder), opacity .3s; z-index: 2; }
+.bl2::before { content: attr(data-f); position: absolute; top: -12px; left: 6px; padding: 1px 7px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; transition: background .4s, color .4s; }
+.bl2.fertig::before { background: var(--mint); color: var(--auf-mint); }
+.bl2 span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bl2 small { display: block; font-weight: 500; opacity: .6; margin-top: 3px; }
+.ziel2 { position: absolute; right: 0; top: 0; width: 236px; display: grid; justify-items: center; gap: 6px; z-index: 3; }
+.ziel2 .segment button { padding: 4px 8px; font-size: 11px; }
+.ziel2 .ordner { width: 190px; height: 150px; }
+.ziel2 .ordner .rueck { height: 128px; }
+.ziel2 .ordner .vorn { height: 100px; }
+.ziel2 .ordner.offen .vorn { transform: rotateX(-34deg); }
+.ziel2 .ordner .blaetter-o { height: 104px; }
+.ziel2 .ordner .blaetter-o i { height: 96px; }
+.ziel2 .pfad { max-width: 236px; font-size: 10.5px; }
+.liste2 { display: grid; grid-template-rows: auto 1fr; gap: 6px; padding: 6px 22px 10px; min-height: 0; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 30%, transparent); }
+.liste2-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 4px; }
+.liste2-kopf .gross { font: 600 18px var(--mono); }
+.liste2-kopf .gross span { color: var(--muted); font-size: 13px; }
+.liste2-kopf .gross b { color: var(--mint); }
+.kp-liste { gap: 3px; }
+.kz { padding: 5px 12px; }
+
+/* Stationen */
+.st { position: absolute; z-index: 4; pointer-events: none; }
+/* 1 Sanduhr */
+.st-uhr { bottom: 112px; width: 101px; height: 168px; }
+.st-uhr .uhr-klein { width: 240px; height: 400px; transform: scale(.42); transform-origin: 0 0; }
+.st-uhr:not(.aktiv) .u-strom { animation-play-state: paused; opacity: .3; }
+.st-uhr.aktiv .uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--mint) 45%, var(--panel2)); }
+/* 2 Presse */
+.st-presse { bottom: 40px; width: 150px; height: 230px; }
+.st-presse .saeule { position: absolute; top: 20px; bottom: 0; width: 12px; border-radius: 4px; background: linear-gradient(90deg, var(--tief), var(--line-stark) 45%, var(--tief)); }
+.st-presse .saeule.l { left: 0; } .st-presse .saeule.r { right: 0; }
+.st-presse .joch { position: absolute; left: -6px; right: -6px; top: 8px; height: 22px; border-radius: 6px; background: linear-gradient(180deg, var(--line-stark), var(--tief)); border: 1px solid var(--line-stark); display: grid; place-items: center; font: 600 9px var(--mono); letter-spacing: .14em; color: var(--mint); }
+.st-presse .kolben { position: absolute; left: 50%; top: 30px; width: 14px; height: 40px; margin-left: -7px; background: linear-gradient(90deg, var(--tief), var(--muted), var(--tief)); transform-origin: top; transition: transform .2s ease-in; }
+.st-presse .platte-p { position: absolute; left: 22px; right: 22px; top: 70px; height: 18px; border-radius: 4px; background: linear-gradient(180deg, var(--mint), color-mix(in srgb, var(--mint) 45%, var(--karton-tief))); box-shadow: 0 6px 12px -4px color-mix(in srgb, var(--mint) 55%, transparent); transition: transform .2s ease-in; }
+.st-presse.unten .platte-p { transform: translateY(54px); } .st-presse.unten .kolben { transform: scaleY(2.35); }
+.st-presse .anzeige { position: absolute; left: -30px; right: -30px; bottom: -26px; text-align: center; font: 600 10.5px var(--mono); color: var(--mint); }
+/* 3 Lichtbogen */
+.st-bogen { bottom: 38px; width: 170px; height: 170px; }
+.st-bogen .arch { position: absolute; inset: 0 0 0 0; border: 3px solid var(--mint-rahmen); border-bottom: 0; border-radius: 85px 85px 0 0; box-shadow: 0 -8px 24px -10px color-mix(in srgb, var(--mint) 50%, transparent), inset 0 8px 24px -12px color-mix(in srgb, var(--mint) 45%, transparent); }
+.st-bogen.aktiv .arch { border-color: var(--mint); }
+.st-bogen .strahl { position: absolute; top: 18px; bottom: 6px; left: 12%; width: 3px; border-radius: 2px; background: linear-gradient(180deg, transparent, var(--mint)); box-shadow: 0 0 14px 3px color-mix(in srgb, var(--mint) 60%, transparent); opacity: 0; }
+.st-bogen.aktiv .strahl { opacity: 1; animation: scan .9s ease-in-out; }
+@keyframes scan { from { left: 12%; } to { left: 86%; } }
+.st-bogen .marke-b { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); font: 600 9px var(--mono); letter-spacing: .14em; color: var(--mint); }
+/* 4 Tunnel */
+.st-tunnel { bottom: 38px; width: 180px; height: 130px; perspective: 600px; }
+.st-tunnel .front { position: absolute; left: 0; right: 30px; top: 30px; bottom: 0; border-radius: 10px 10px 0 0; border: 14px solid; border-bottom: 0; border-color: color-mix(in srgb, var(--mint) 38%, var(--karton-tief)); background: radial-gradient(ellipse at 50% 90%, #0000 40%, #0008); box-shadow: inset 0 0 20px #000a; z-index: 5; }
+.st-tunnel .dach { position: absolute; left: 0; right: 30px; top: 30px; height: 30px; transform-origin: bottom; transform: skewX(-45deg) translateX(15px) translateY(-30px); background: color-mix(in srgb, var(--mint) 55%, var(--karton-tief)); border-radius: 6px 6px 0 0; display: grid; place-items: center; }
+.st-tunnel .seite { position: absolute; right: 0; top: 15px; width: 30px; bottom: 0; transform: skewY(-45deg) translateY(15px); background: color-mix(in srgb, var(--mint) 25%, var(--karton-tief)); }
+.st-tunnel .info { position: absolute; left: 6px; right: 36px; top: -22px; display: grid; gap: 3px; justify-items: center; }
+.st-tunnel .info b { font: 600 11px var(--mono); color: var(--mint); }
+.st-tunnel .info i { width: 100%; height: 4px; border-radius: 2px; background: var(--tief); overflow: hidden; }
+.st-tunnel .info em { display: block; height: 100%; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+.bl2.drin { opacity: .12; }
+/* 5 Walzen */
+.st-walze { bottom: 18px; width: 90px; height: 170px; }
+.st-walze .walze { position: absolute; left: 50%; width: 72px; height: 72px; margin-left: -36px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--mint) 55%, #fff) 0, color-mix(in srgb, var(--mint) 60%, var(--karton-tief)) 45%, color-mix(in srgb, var(--mint) 25%, var(--karton-tief)) 100%); box-shadow: 0 12px 20px -8px #000a; }
+.st-walze .walze::after { content: ''; position: absolute; inset: 8px; border-radius: 50%; background: repeating-conic-gradient(#0000 0 20deg, #0003 20deg 40deg); }
+.st-walze.aktiv .walze.o::after { animation: dreh .5s linear infinite; }
+.st-walze.aktiv .walze.u::after { animation: dreh .5s linear infinite reverse; }
+.st-walze .walze.o { bottom: 94px; } .st-walze .walze.u { bottom: -40px; opacity: .8; }
+.st-walze .marke-w { position: absolute; left: 50%; top: 0; transform: translateX(-50%); font: 600 9px var(--mono); letter-spacing: .14em; color: var(--mint); white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Schritt 3 · Förderband + Ordner + Liste</div>
+    <h1>Fünf Förderbänder mit Ordner und Liste</h1>
+    <p class="lead">Oben das Förderband, am Ende der Zielordner aus Konzept 4 mit Speicherort und Pfad, unten die kompakte Liste aus Konzept 5. Alle fünf haben denselben Aufbau, nur die Station in der Mitte, wo umgewandelt wird, ist jedes Mal anders. Jede Variante hat eine Demo.</p>
+  </header>
+  <section class="idee" aria-labelledby="i1"><div class="idee-kopf"><h2 id="i1">1 · Sanduhr-Station <small>die Datei rieselt durch die Glas-Sanduhr</small></h2><button class="demo" data-demo="1">▶ Demo abspielen</button></div>
+    <p>Über dem Band steht die kleine 3D-Glas-Sanduhr aus dem Sortierregal. Das Blatt wird nach oben hineingezogen, der Sand rieselt, unten fällt es mit neuem Etikett wieder aufs Band. Der rote Faden vom ersten bis zum letzten Bild.</p>
+    <div class="buehne" id="w1"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> durchgehende Bildsprache, sehr eigenständig</span><span class="minus"><b>Schwäche:</b> die Sanduhr ist klein und eher Symbol als Maschine</span></div></section>
+  <section class="idee" aria-labelledby="i2"><div class="idee-kopf"><h2 id="i2">2 · Presse <small>die Datei wird sichtbar kleiner</small></h2><button class="demo" data-demo="2">▶ Demo abspielen</button></div>
+    <p>Eine Presse drückt auf das Blatt. Danach ist es so viel kleiner, wie die Datei tatsächlich schrumpft, und trägt das neue Etikett. Unter der Presse steht kurz „8,4 → 1,1 MB“. Die Ersparnis wird buchstäblich greifbar.</p>
+    <div class="buehne" id="w2"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> zeigt die Größenänderung ohne Zahlen</span><span class="minus"><b>Schwäche:</b> „Pressen“ passt nicht zu Umwandlungen, die größer werden</span></div></section>
+  <section class="idee" aria-labelledby="i3"><div class="idee-kopf"><h2 id="i3">3 · Lichtbogen <small>ein Lichtstrahl tastet das Blatt ab</small></h2><button class="demo" data-demo="3">▶ Demo abspielen</button></div>
+    <p>Ein leuchtender Bogen steht über dem Band. Ein Lichtstrahl fährt über das Blatt, dabei färbt sich der Reiter vom alten Format zum neuen. Ruhig, modern, ohne Mechanik.</p>
+    <div class="buehne" id="w3"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> elegant, leicht, gut in WinUI umsetzbar</span><span class="minus"><b>Schwäche:</b> weniger Charakter als Sanduhr oder Presse</span></div></section>
+  <section class="idee" aria-labelledby="i4"><div class="idee-kopf"><h2 id="i4">4 · Tunnel <small>mit Live-Anzeige auf dem Dach</small></h2><button class="demo" data-demo="4">▶ Demo abspielen</button></div>
+    <p>Das Blatt fährt in einen 3D-Tunnel. Auf dem Dach steht, was gerade passiert („HEIC → JPG“), mit einem eigenen Fortschrittsbalken. Gut für lange Umwandlungen wie Videos, weil man den Stand sieht.</p>
+    <div class="buehne" id="w4"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> zeigt den Fortschritt der aktuellen Datei am Ort des Geschehens</span><span class="minus"><b>Schwäche:</b> das Blatt ist während der Umwandlung verdeckt</span></div></section>
+  <section class="idee" aria-labelledby="i5"><div class="idee-kopf"><h2 id="i5">5 · Walzen <small>zwei Walzen formen das Blatt neu</small></h2><button class="demo" data-demo="5">▶ Demo abspielen</button></div>
+    <p>Das Blatt läuft zwischen zwei sich drehenden Mint-Walzen hindurch, wird kurz gequetscht und kommt in neuer Größe mit neuem Etikett heraus. Verspielt, mit deutlicher Bewegung.</p>
+    <div class="buehne" id="w5"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> deutliche, freundliche Bewegung, zeigt auch die neue Größe</span><span class="minus"><b>Schwäche:</b> am meisten „Maschine“, kann kindlich wirken</span></div></section>
+  <section class="idee" aria-labelledby="i6"><h2 id="i6">Mein Vorschlag</h2>
+    <div class="empf"><p><b>1 · Sanduhr-Station</b>, weil sie die Sanduhr aus dem Sortierregal wieder aufnimmt. So zieht sich ein Bild durch das ganze Programm. Die neue Größe aus der Presse (2) lässt sich übernehmen: Das Blatt kommt unten kleiner heraus.</p>
+    <p class="muted">Liste und Ordner sind in allen fünf gleich: Die Liste zeigt jede Datei mit Vorher/Nachher und läuft mit dem Band mit, der Ordner zeigt Speicherort und Pfad und öffnet sich, sobald Blätter ankommen.</p></div></section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const warte = ms => new Promise(r => setTimeout(r, leise ? 0 : ms));
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: n < 0.1 ? 2 : 1, maximumFractionDigits: n < 0.1 ? 2 : 1 });
+  const F = [
+    { n: 'IMG_2041.heic', k: 'bild', von: 'HEIC', nach: 'JPG', mb: 8.4, neu: 1.1 },
+    { n: 'Scan.jpg', k: 'bild', von: 'PNG', nach: 'JPG', mb: 2.2, neu: 0.5 },
+    { n: 'Probe_03.wav', k: 'audio', von: 'WAV', nach: 'MP3', mb: 19.7, neu: 2.6 },
+    { n: 'Interview.m4a', k: 'audio', von: 'M4A', nach: 'MP3', mb: 6.1, neu: 4.8 },
+    { n: 'Urlaub_Clip.mov', k: 'video', von: 'MOV', nach: 'MP4', mb: 148, neu: 66 },
+    { n: 'Protokoll.docx', k: 'dok', von: 'DOCX', nach: 'TXT', mb: 0.4, neu: 0.02 }
+  ];
+  const VOR = F.reduce((s, f) => s + f.mb, 0), NACH = F.reduce((s, f) => s + f.neu, 0);
+  const SCHLOSS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>';
+  const maxMb = Math.sqrt(Math.max(...F.map(f => f.mb)));
+  const skal = f => Math.max(.5, Math.sqrt(f.neu / f.mb));
+  // Glas-Sanduhr in 3D (SVG + flache, lesbare Formate davor)
+  let uhrNr = 0;
+  function uhr3d(k, oben, unten, mitte = '') {
+    const n = ++uhrNr, st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+    return `<div class="uhr3d k-${k}">
+      <svg viewBox="0 0 240 400" aria-hidden="true">
+        <defs>
+          <linearGradient id="gl${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+          <linearGradient id="sa${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .55)}/><stop offset="1" ${st('var(--k)', .18)}/></linearGradient>
+          <radialGradient id="su${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .5)}/><stop offset="1" ${st('var(--mint)', .12)}/></radialGradient>
+          <linearGradient id="sl${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', 1)}/><stop offset="1" ${st('var(--mint)', 1)}/></linearGradient>
+          <linearGradient id="sae${n}" x1="0" x2="1"><stop offset="0" ${st('var(--tief)', 1)}/><stop offset=".35" ${st('var(--line-stark)', 1)}/><stop offset=".55" ${st('var(--muted)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+          <linearGradient id="de${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--line-stark)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+        </defs>
+        <ellipse class="u-schatten" cx="120" cy="392" rx="112" ry="7"/>
+        <g class="p-hinten"><rect x="116" y="26" width="8" height="348" rx="4" fill="url(#sae${n})" opacity=".45"/></g>
+        <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#gl${n})"/>
+        <path d="M30,44 C34,108 92,158 120,196 C148,158 206,108 210,44 Z" fill="url(#sa${n})"/>
+        <ellipse cx="120" cy="44" rx="90" ry="8" class="u-sandflaeche"/>
+        <line class="u-strom" x1="120" y1="198" x2="120" y2="${366 - 18 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)}" stroke="url(#sl${n})"/>
+        <path d="M26,366 C58,352 88,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 120,${344 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} C152,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 182,352 214,366 Z" fill="url(#su${n})"/>
+        <ellipse cx="120" cy="366" rx="94" ry="7" class="u-bodenflaeche"/>
+        <path class="u-kontur" d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z"/>
+        <ellipse cx="120" cy="32" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="368" rx="98" ry="8" class="u-rand"/>
+        <ellipse cx="120" cy="200" rx="8" ry="2.5" class="u-rand"/>
+        <g class="glanz"><path d="M36,52 C38,112 70,150 100,176" class="u-glanz"/><path d="M36,350 C40,296 70,258 100,226" class="u-glanz"/><path d="M204,62 C202,104 180,132 160,152" class="u-glanz d"/></g>
+        <path d="M8,20 V30 A112,10 0 0 0 232,30 V20 Z" fill="url(#de${n})"/><ellipse cx="120" cy="20" rx="112" ry="10" class="u-deckel"/>
+        <path d="M8,372 V384 A112,10 0 0 0 232,384 V372 Z" fill="url(#de${n})"/><ellipse cx="120" cy="372" rx="112" ry="10" class="u-deckel"/>
+        <g class="p-vorn"><rect x="13" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/><rect x="217" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/></g>
+      </svg>
+      <div class="sand-o">${oben}</div>
+      <div class="hals-m">${mitte || '<span class="logo-m" aria-hidden="true"></span>'}</div>
+      <div class="sand-u">${unten}</div>
+    </div>`;
+  }
+  function uhrParallax(root = document) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    root.querySelectorAll('.uhr3d').forEach(u => {
+      u.addEventListener('pointermove', e => { const r = u.getBoundingClientRect(); u.style.setProperty('--dx', ((e.clientX - r.left) / r.width - .5) * 2); });
+      u.addEventListener('pointerleave', () => u.style.setProperty('--dx', 0));
+    });
+  }
+
+  const PFADE = ['…\\Bilder\\Urlaub 2026\\<em>IMG_2041.jpg</em> · 5 Ordner', '…\\Bilder\\Urlaub 2026\\<em>Kvertis</em>\\IMG_2041.jpg', '…\\<em>Desktop</em>\\IMG_2041.jpg'];
+  const ONAME = ['NEBEN DEM<br>ORIGINAL', 'KVERTIS<small>Unterordner</small>', 'DESKTOP<small>eigener Ordner</small>'];
+
+  const STATIONEN = {
+    1: { w: 101, html: () => `<div class="st st-uhr"><div class="uhr-klein">${uhr3d('mix', '', '')}</div></div>`,
+      async run(st, b, f, prog) {
+        await b.animate([{ opacity: 1, transform: 'scale(1)' }, { opacity: 0, transform: 'translateY(-150px) scale(.3)' }], { duration: leise ? 1 : 450, easing: 'ease-in' }).finished;
+        b.style.opacity = 0; st.classList.add('aktiv'); await prog(800);
+        b.dataset.f = f.nach; b.classList.add('fertig'); b.style.setProperty('--s', skal(f)); b.style.opacity = 1;
+        await b.animate([{ opacity: 0, transform: `translateY(-50px) scale(.4)` }, { opacity: 1, transform: `scale(${skal(f)})` }], { duration: leise ? 1 : 380, easing: 'ease-out' }).finished;
+        st.classList.remove('aktiv');
+      } },
+    2: { w: 150, html: () => `<div class="st st-presse"><span class="saeule l"></span><span class="saeule r"></span><span class="joch">KVERTIS</span><span class="kolben"></span><span class="platte-p"></span><span class="anzeige"></span></div>`,
+      async run(st, b, f, prog) {
+        st.querySelector('.anzeige').textContent = `${f.von} → ${f.nach}`;
+        st.classList.add('unten'); await warte(220);
+        b.style.setProperty('--s', skal(f)); b.dataset.f = f.nach; b.classList.add('fertig');
+        await prog(500);
+        st.classList.remove('unten');
+        st.querySelector('.anzeige').textContent = `${mb(f.mb)} → ${mb(f.neu)} MB`;
+        await warte(350);
+      } },
+    3: { w: 170, html: () => `<div class="st st-bogen"><span class="arch"></span><span class="marke-b">KVERTIS</span><span class="strahl"></span></div>`,
+      async run(st, b, f, prog) {
+        st.classList.remove('aktiv'); void st.offsetWidth; st.classList.add('aktiv');
+        setTimeout(() => { b.dataset.f = f.nach; b.classList.add('fertig'); b.style.setProperty('--s', skal(f)); }, leise ? 0 : 480);
+        await prog(900); st.classList.remove('aktiv');
+      } },
+    4: { w: 180, html: () => `<div class="st st-tunnel"><span class="info"><b>–</b><i><em></em></i></span><span class="dach"></span><span class="seite"></span><span class="front"></span></div>`,
+      async run(st, b, f, prog) {
+        st.querySelector('.info b').textContent = `${f.von} → ${f.nach}`;
+        b.classList.add('drin');
+        await prog(f.k === 'video' ? 1600 : 800, p => st.querySelector('.info em').style.setProperty('--p', p + '%'));
+        b.dataset.f = f.nach; b.classList.add('fertig'); b.style.setProperty('--s', skal(f)); b.classList.remove('drin');
+        st.querySelector('.info b').textContent = `${mb(f.mb)} → ${mb(f.neu)} MB`;
+      } },
+    5: { w: 90, html: () => `<div class="st st-walze"><span class="marke-w">KVERTIS</span><span class="walze o"></span><span class="walze u"></span></div>`,
+      async run(st, b, f, prog) {
+        st.classList.add('aktiv');
+        const quetsch = b.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.12, .55)', offset: .5 }, { transform: `scale(${skal(f)})` }], { duration: leise ? 1 : 800, easing: 'ease-in-out' });
+        setTimeout(() => { b.dataset.f = f.nach; b.classList.add('fertig'); }, leise ? 0 : 400);
+        await prog(800); await quetsch.finished; b.style.setProperty('--s', skal(f));
+        st.classList.remove('aktiv');
+      } }
+  };
+
+  function baue(nr) {
+    const S = STATIONEN[nr], w = document.getElementById('w' + nr);
+    w.innerHTML = `<div class="win">
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div></div>
+      <div class="faden"><span class="kn"><i>✓</i><b>Dateien</b><small>6 erkannt</small></span><span class="sg"></span><span class="kn"><i>✓</i><b>Ziel</b><small>JPG · MP3 · MP4 · TXT</small></span><span class="sg"></span><span class="kn an"><i>3</i><b>Umwandeln</b><small>≈ ${mb(NACH)} MB</small></span></div>
+      <div class="kombi">
+        <div class="bahn2">
+          <div class="schild"><span class="label">Eingang</span><b class="q-text">6 Dateien · ${mb(VOR)} MB</b></div>
+          <span class="rolle-e" style="left:-10px"></span><div class="gurt"></div><span class="rolle-e ende"></span>
+          ${S.html()}
+          ${F.map((f, i) => `<div class="bl2 k-${f.k}" data-f="${f.von}" data-i="${i}"><span>${f.n}</span><small>${mb(f.mb)} MB</small></div>`).join('')}
+          <div class="ziel2">
+            <div class="segment" role="group" aria-label="Wohin speichern"><button class="an" data-w="0">Neben Original</button><button data-w="1">Unterordner</button><button data-w="2">Eigener …</button></div>
+            <div class="ordner"><span class="rueck"></span><div class="blaetter-o"></div><span class="vorn"><span class="oname">${ONAME[0]}</span></span><span class="zaehl" hidden>0</span></div>
+            <span class="pfad">${PFADE[0]}</span>
+          </div>
+        </div>
+        <div class="liste2">
+          <div class="liste2-kopf"><span class="label">Dateien in diesem Auftrag</span><span class="gross">${mb(VOR)} <span>MB →</span> <b>${mb(NACH)} MB</b></span><span class="label stand">bereit</span></div>
+          <div class="kp-liste">${F.map((f, i) => `<div class="kz k-${f.k}" data-i="${i}"><span class="chip">${f.von}</span><span class="nm">${f.n}</span><span class="pf">→</span><span class="eti">${f.nach}</span>
+            <span class="balken3d" aria-hidden="true"><i class="vor" style="--w:${Math.sqrt(f.mb) / maxMb * 100}%"></i><i class="nach" style="--w:${Math.sqrt(f.neu) / maxMb * 100}%"></i></span>
+            <span class="gr">${mb(f.mb)} → <b>${mb(f.neu)} MB</b></span><span class="st2">wartet</span></div>`).join('')}</div>
+        </div>
+      </div>
+      <div class="leiste"><span class="vertrauen">${SCHLOSS}Ihre Dateien verlassen nie diesen PC.</span><span class="platz"></span><button class="btn">Zurück</button><button class="taste" data-demo="${nr}">Umwandeln <small>6 Dateien</small></button></div>
+    </div>`;
+    const win = w.querySelector('.win'), bahn = w.querySelector('.bahn2'), st = w.querySelector('.st'), ordner = w.querySelector('.ordner');
+    const geo = () => { const W = bahn.clientWidth, ende = W - 250; return { W, ende, sx: Math.round(ende * .56) }; };
+    function reset() {
+      const g = geo();
+      bahn.querySelector('.gurt').style.width = g.ende + 'px';
+      bahn.querySelector('.ende').style.left = (g.ende - 26) + 'px';
+      st.style.left = (g.sx - S.w / 2) + 'px';
+      bahn.querySelectorAll('.bl2').forEach((b, i) => { b.style.left = (6 + (5 - i) * 20) + 'px'; b.style.zIndex = 2 + i; b.style.opacity = 1; b.style.setProperty('--s', 1); b.dataset.f = F[i].von; b.classList.remove('fertig', 'drin'); });
+      w.querySelectorAll('.kz').forEach(z => { z.classList.remove('ok'); z.style.setProperty('--p', '0%'); z.querySelector('.st2').textContent = 'wartet'; });
+      ordner.classList.remove('offen'); ordner.querySelector('.blaetter-o').innerHTML = ''; ordner.querySelector('.zaehl').hidden = true;
+      w.querySelector('.stand').textContent = 'bereit'; w.querySelector('.q-text').textContent = `6 Dateien · ${mb(VOR)} MB`;
+    }
+    reset();
+    new ResizeObserver(() => { if (!lauf) reset(); }).observe(bahn);
+    w.querySelector('.segment').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; [...b.parentElement.children].forEach(x => x.classList.toggle('an', x === b)); w.querySelector('.pfad').innerHTML = PFADE[b.dataset.w]; w.querySelector('.oname').innerHTML = ONAME[b.dataset.w]; });
+    let lauf = false;
+    async function demo() {
+      if (lauf) return; lauf = true; reset(); await warte(250);
+      const g = geo(), kombi = w.querySelector('.kombi'); kombi.classList.add('laeuft');
+      const bl = [...bahn.querySelectorAll('.bl2')];
+      let gespart = 0;
+      for (let j = 0; j < bl.length; j++) {
+        const b = bl[j], f = F[+b.dataset.i], zeile = w.querySelector(`.kz[data-i="${b.dataset.i}"]`);
+        b.style.zIndex = 10;
+        b.style.left = (g.sx - 43) + 'px'; await warte(720);
+        zeile.querySelector('.st2').innerHTML = '<span class="spin"></span>läuft';
+        const prog = (ms, extra) => new Promise(res => {
+          const t0 = performance.now(), d = leise ? 1 : ms;
+          const s = t => { const p = Math.min(100, (t - t0) / d * 100); zeile.style.setProperty('--p', p + '%'); if (extra) extra(p); p < 100 ? requestAnimationFrame(s) : res(); };
+          requestAnimationFrame(s);
+        });
+        await S.run(st, b, f, prog);
+        zeile.classList.add('ok'); zeile.querySelector('.st2').textContent = '✓ fertig';
+        b.querySelector('small').textContent = mb(f.neu) + ' MB';
+        gespart += f.mb - f.neu;
+        w.querySelector('.stand').innerHTML = `${j + 1} von 6 · <span style="color:var(--mint)">${mb(gespart)} MB gespart</span>`;
+        w.querySelector('.q-text').textContent = `${5 - j} ${5 - j === 1 ? 'Datei' : 'Dateien'} übrig`;
+        ordner.classList.add('offen');
+        b.style.left = (g.ende - 96) + 'px'; await warte(650);
+        const br = b.getBoundingClientRect(), or = ordner.getBoundingClientRect();
+        const dx = or.left + or.width / 2 - (br.left + br.width / 2), dy = or.top + or.height * .45 - (br.top + br.height / 2), sc = b.style.getPropertyValue('--s') || 1;
+        await b.animate([{ transform: `scale(${sc})`, opacity: 1 }, { transform: `translate(${dx * .5}px, ${dy - 60}px) scale(${sc * .9}) rotate(-8deg)`, opacity: 1, offset: .55 }, { transform: `translate(${dx}px, ${dy}px) scale(.45)`, opacity: 0 }], { duration: leise ? 1 : 650, easing: 'cubic-bezier(.45,.05,.3,1)' }).finished;
+        b.style.opacity = 0;
+        const zaehl = ordner.querySelector('.zaehl'); zaehl.hidden = false; zaehl.textContent = j + 1;
+        ordner.querySelector('.blaetter-o').insertAdjacentHTML('beforeend', `<i style="bottom:${j * 3}px;transform:rotate(${(j % 2 ? 1 : -1) * (j + 1)}deg)"></i>`);
+      }
+      kombi.classList.remove('laeuft'); ordner.classList.remove('offen');
+      w.querySelector('.stand').innerHTML = `<span style="color:var(--mint)">fertig · ${mb(VOR)} → ${mb(NACH)} MB</span>`;
+      w.querySelector('.q-text').textContent = 'alles umgewandelt';
+      lauf = false;
+    }
+    w.querySelector('.taste').addEventListener('click', demo);
+    document.querySelector(`button.demo[data-demo="${nr}"]`).addEventListener('click', demo);
+  }
+  [1, 2, 3, 4, 5].forEach(baue);
+  uhrParallax();
+})();
+</script>
