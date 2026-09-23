@@ -1,0 +1,37 @@
+# Build
+bin/
+obj/
+out/
+*.binlog
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.swp
+
+# MSIX / signing (never commit certificates or packages)
+AppPackages/
+BundleArtifacts/
+*.pfx
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.appxupload
+*.msixupload
+*_TemporaryKey.pfx
+
+# Native tool binaries are fetched by scripts, not committed
+tools/ffmpeg/bin/
+src/Kvertis.App/Tools/
+
+# Local settings / logs
+*.log
+.env
