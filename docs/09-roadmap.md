@@ -48,7 +48,7 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 
 | Nr. | Punkt | Wer entscheidet | Blockiert |
 |---|---|---|---|
-| O-01 | **Magick.Native-Paketvariante:** Welche Drittbibliotheken sind enthalten (libheif, libde265, x265, libaom, libraw)? x265 wäre GPL und damit ein Ausschluss der Variante. | `lizenz-waechter` | Bilder-Konvertierung (Wahl des Pakets), HEIC, AVIF |
+| O-01 | **Magick.Native enthält Video-Codecs:** Prüfung erledigt (`04-bibliotheken.md`): kein GPL, aber `libde265` (HEVC-Decoder) und `openh264` statisch eingebettet, obwohl Kvertis sie nie aufruft. **Entscheidung nötig:** (a) Patentrisiko akzeptieren und dokumentieren oder (b) Bildpfad auf SkiaSharp (MIT, ohne Video-Codecs) + Windows Imaging Component umstellen (Aufwand: Bild-Konverter neu, TIFF/PSD/SVG-Umfang schrumpft). Bis dahin: HEIC nur über WIC, AVIF gesperrt. | **Projektinhaber** | Store-Einreichung |
 | O-02 | **FFmpeg-LGPL-Build:** Fertigen Build mit dokumentierter LGPL-Konfiguration beziehen oder selbst bauen (x64 und ARM64)? Wo wird das Quellcode-Angebot veröffentlicht? | Projektinhaber, `lizenz-waechter` | Audio, Video |
 | O-03 | **Patente bei Software-Dekodierung** von H.264 (FFmpeg-nativ) und AAC: juristische Einschätzung einholen, ob ein Software-Fallback für die Dekodierung vertretbar ist. Bis dahin: H.264-Dekodierung per D3D11VA bevorzugt, Software-Fallback erlaubt (geringes Risiko laut gängiger Praxis, aber ungeprüft); HEVC ohne Software-Fallback. | Projektinhaber (Anwalt) | nichts akut, Risiko-Entscheidung |
 | O-04 | **RAW-Bilder:** Magick.NET/libraw oder WIC mit Raw-Bilderweiterung? | `architekt`, `lizenz-waechter` | RAW-Unterstützung |
