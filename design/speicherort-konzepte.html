@@ -360,7 +360,7 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
     <div class="urteil"><span class="plus"><b>Stärke:</b> passt zu wiederkehrenden Gewohnheiten, etwa Fotos immer auf den Desktop</span><span class="minus"><b>Schwäche:</b> vier Entscheidungen statt einer, auch wenn nur eine Art im Auftrag ist</span></div></section>
 
   <section class="idee"><div class="idee-kopf"><h2>3 · Ordner-Regal <small>Dateien auf Ordner ziehen</small></h2></div>
-    <p>Am Ende des Bands steht ein Regal mit mehreren Zielordnern nebeneinander. Man zieht Zeilen aus der Liste auf einen Ordner, oder wählt über „Ziel“ an der Zeile per Tastatur. Jeder Ordner zeigt, wie viele Dateien er bekommt, und hat „Alle hierher“. Der Standard-Ordner nimmt alle Dateien, die nicht verschoben wurden. Neue Ordner kommen über „Ordner hinzufügen“ oder indem man einen Ordner aus dem Explorer auf das Regal zieht.</p>
+    <p>Am Ende des Bands steht ein Regal mit mehreren Zielordnern nebeneinander. Man zieht Zeilen aus der Liste auf einen Ordner, oder wählt über „Ziel“ an der Zeile per Tastatur. Jeder Ordner zeigt, wie viele Dateien er bekommt, und hat „Alle hierher“. Der Standard-Ordner nimmt alle Dateien, die nicht verschoben wurden. Neue Ordner kommen über „Ordner hinzufügen“ oder indem man einen Ordner aus einem Ordnerfenster auf das Regal zieht.</p>
     <div class="buehne" id="w3"></div>
     <div class="urteil"><span class="plus"><b>Stärke:</b> sehr anschaulich, man sieht alle Ziele gleichzeitig</span><span class="minus"><b>Schwäche:</b> Ziehen ist für viele ungewohnt, das Regal braucht viel Breite</span></div></section>
 
@@ -369,7 +369,7 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
     <div class="buehne" id="w4"></div>
     <div class="urteil"><span class="plus"><b>Stärke:</b> am mächtigsten, Regeln könnten dauerhaft gespeichert werden</span><span class="minus"><b>Schwäche:</b> „erste passende Regel“ muss man verstehen, für Einsteiger zu viel</span></div></section>
 
-  <section class="idee"><div class="idee-kopf"><h2>5 · Pfad-Spalte mit Mehrfachauswahl <small>wie im Datei-Explorer</small></h2></div>
+  <section class="idee"><div class="idee-kopf"><h2>5 · Pfad-Spalte mit Mehrfachauswahl <small>wie in einem Ordnerfenster</small></h2></div>
     <p>Die Liste bekommt eine Pfad-Spalte. Über der Liste steht „Für alle: …“. Jeder Pfad ist eine Brotkrumen-Leiste: Ein Klick auf einen Ordner im Pfad speichert die Datei genau dort, der Pfeil daneben öffnet die volle Auswahl. Mit Häkchen (auch Umschalt-Klick für Bereiche) wählt man mehrere Dateien und ändert ihr Ziel gemeinsam.</p>
     <div class="buehne" id="w5"></div>
     <div class="urteil"><span class="plus"><b>Stärke:</b> vertraut aus Datei-Programmen, gut für viele Dateien auf einmal</span><span class="minus"><b>Schwäche:</b> wirkt technischer, der Pfad dominiert die Liste</span></div></section>
@@ -381,7 +381,7 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
       <p class="muted"><b>In WinUI:</b></p>
       <p class="muted">1 · Reiter als SelectorBar oder RadioButtons, das Zeilen-Schild als Button mit Flyout, „Wählen …“ über den FolderPicker. Nur Standard-Steuerelemente, geringer Aufwand.<br>
       2 · Vier Karten in einem ItemsRepeater, gleiches Flyout; Vorgaben je Dateiart in den lokalen Einstellungen. Geringer bis mittlerer Aufwand.<br>
-      3 · ListView mit CanDragItems, Ordner mit AllowDrop; Ordner aus dem Explorer kommen als StorageItems an. Tastaturweg über MenuFlyout ist Pflicht. Höchster Aufwand, Barrierefreiheit extra prüfen.<br>
+      3 · ListView mit CanDragItems, Ordner mit AllowDrop; Ordner aus einem Ordnerfenster kommen als StorageItems an. Tastaturweg über MenuFlyout ist Pflicht. Höchster Aufwand, Barrierefreiheit extra prüfen.<br>
       4 · Regeln als ListView mit ComboBoxen, Reihenfolge per Schaltflächen; Regel-Logik in Kvertis.Queue gut testbar. Mittlerer Aufwand.<br>
       5 · ListView mit SelectionMode „Multiple“ und das fertige BreadcrumbBar-Steuerelement je Zeile. Mittlerer Aufwand, bei vielen Zeilen auf Leistung achten.</p></div></section>
 </main>
@@ -518,7 +518,7 @@ h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06e
       <span class="label">Zuletzt benutzt</span>
       <div class="chips-o" style="padding-left:0">${RECENT.map(r => `<button class="ochip" data-key="bo" data-o="${r}">${ORDNER}${r}</button>`).join('')}</div>
       ${baumHtml('').replace('class="baum"', 'class="baum" style="margin-left:0"')}
-      <span class="klein">Im Programm: Ordner auch direkt aus dem Explorer hierher ziehen.</span>`;
+      <span class="klein">Im Programm: Ordner auch direkt aus einem Ordnerfenster hierher ziehen.</span>`;
     el.addEventListener('click', e => {
       const b = e.target.closest('[data-key]'); if (!b) return;
       if (b.dataset.key === 'zu') return schliesse();
