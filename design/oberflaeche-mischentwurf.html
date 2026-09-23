@@ -362,6 +362,23 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .zuletzt button.an { border-color: var(--mint); color: var(--mint); }
 .zuletzt button:hover { border-color: var(--line-stark); }
 
+/* Alte Einstellungen aus dem Verlauf */
+.damals-hinweis { position: relative; z-index: 1; width: min(440px, 100%); display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 85%, transparent); }
+.damals-hinweis svg { width: 18px; height: 18px; color: var(--mint); grid-row: span 2; }
+.damals-hinweis b { font-size: 12.5px; font-weight: 600; }
+.damals-hinweis small { font: 11px var(--mono); color: var(--muted); }
+.damals-hinweis small em { font-style: normal; color: var(--ink); }
+.damals-hinweis .btn { grid-row: span 2; font-size: 11.5px; padding: 6px 10px; }
+.damals-tag { position: absolute; top: -9px; right: -8px; display: inline-flex; gap: 3px; align-items: center; padding: 1px 6px; border-radius: 999px; font: 600 8.5px var(--mono); font-style: normal; letter-spacing: .04em; background: var(--panel2); color: var(--muted); border: 1px dashed var(--line-stark); white-space: nowrap; }
+.damals-tag::before { content: '↺'; font-size: 9px; }
+.zweck button { position: relative; }
+.zweck button.damals:not(.an) { border-style: dashed; border-color: var(--line-stark); color: var(--ink); }
+.regler { position: relative; padding-bottom: 16px; }
+.alt-marke { position: absolute; bottom: 0; transform: translateX(-50%); font: 600 9px var(--mono); color: var(--muted); white-space: nowrap; }
+.alt-marke::before { content: ''; position: absolute; left: 50%; bottom: 13px; width: 2px; height: 10px; margin-left: -1px; border-radius: 1px; background: var(--muted); }
+.damals-text { font: 500 10.5px var(--mono); color: var(--muted); }
+.wo .damals-tag { position: static; margin-left: 6px; vertical-align: 1px; }
+
 /* ===== Verlauf ===== */
 .verlauf { position: absolute; inset: 42px 0 0 0; z-index: 12; display: grid; grid-template-rows: auto 1fr; min-height: 0;
   background: radial-gradient(900px 400px at 10% 0%, color-mix(in srgb, var(--mint) 7%, transparent), transparent 60%), var(--bg);
@@ -706,7 +723,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       </div>
     </div>`).join('') + `
     <div class="abweis" id="abweis"><span class="label">Nicht umwandelbar</span><div class="leer" id="abweis-leer">Hier landet, was Kvertis nicht umwandeln kann, immer mit Grund.</div><ul id="abweis-liste"></ul></div>`;
-  let offen = null;
+  let offen = null, damals = null;
   function oeffne(k) {
     offen = offen === k ? null : k;
     KATS.forEach(x => {
@@ -775,12 +792,14 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 
     const w = $('wandler');
     const zs = ziele(aktiv);
+    const dm = damals && damals.nach[aktiv];
     w.innerHTML = `<div class="band"></div>
+      ${damals ? `<div class="damals-hinweis"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v2.8h2.8"/><path d="M8 5v3l2 1.3"/></svg><b>Aus dem Verlauf · ${esc(damals.wann)}</b><button class="btn" id="damals-zurueck">Alte Werte übernehmen</button><small>Damals: <em>${dm ? '→ ' + esc(dm) : '–'}</em> · <em>${esc(damals.zweck)}</em> · Qualität <em>${damals.qual}</em> · <em>${esc(damals.wohin)}</em></small></div>` : ''}
       <span class="label" style="position:relative;z-index:1">${KAT[aktiv].name} umwandeln in</span>
       <div class="karussell"><div class="teller"></div><div class="ring" id="ring" role="radiogroup" aria-label="Zielformat" style="--rot:${-wahl[aktiv] * 48}deg">
-        ${zs.map((z, i) => `<button role="radio" aria-checked="${i === wahl[aktiv]}" class="${i === wahl[aktiv] ? 'an' : ''} ${Math.abs(i - wahl[aktiv]) > 1 ? 'weit' : ''}" style="--i:${i}" data-i="${i}">${z[0]}<small>${z[1]}</small></button>`).join('')}
+        ${zs.map((z, i) => `<button role="radio" aria-checked="${i === wahl[aktiv]}" class="${i === wahl[aktiv] ? 'an' : ''} ${Math.abs(i - wahl[aktiv]) > 1 ? 'weit' : ''}" style="--i:${i}" data-i="${i}">${z[0]}<small>${z[1]}</small>${dm === z[0] ? '<em class="damals-tag">damals</em>' : ''}</button>`).join('')}
       </div></div>
-      ${ZWECK[aktiv] ? `<span class="zweck-frage">Wozu brauchen Sie die ${KAT[aktiv].mehrzahl}?</span><div class="zweck" id="zweck">${ZWECK[aktiv].map(z => `<button class="${z === zweck[aktiv] ? 'an' : ''}">${z}</button>`).join('')}</div>` : ''}
+      ${ZWECK[aktiv] ? `<span class="zweck-frage">Wozu brauchen Sie die ${KAT[aktiv].mehrzahl}?</span><div class="zweck" id="zweck">${ZWECK[aktiv].map(z => `<button class="${z === zweck[aktiv] ? 'an' : ''} ${damals && damals.zweck === z ? 'damals' : ''}">${z}${damals && damals.zweck === z ? '<em class="damals-tag">damals</em>' : ''}</button>`).join('')}</div>` : ''}
       <span class="schaetzung" id="sch"></span>`;
     renderMehr();
   }
@@ -798,7 +817,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     $('mehr').innerHTML = `
       <div style="display:grid;gap:4px"><span class="label">Einstellungen</span><h4>${KAT[aktiv].name} · ${n} ${n === 1 ? 'Datei' : 'Dateien'}</h4></div>
       <div class="glas-rahmen">${GLAS_SVG}<p class="g-satz" id="g-satz" aria-live="polite"></p></div>
-      <div class="feld"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}"></div>
+      <div class="feld"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><div class="regler"><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}">${damals ? `<span class="alt-marke" style="left:calc(8px + (100% - 16px) * ${(damals.qual - 10) / 90})">damals ${damals.qual}</span>` : ''}</div></div>
       <div class="feld"><label for="zielgroesse">Zielgröße (optional)</label><input id="zielgroesse" class="eingabe" placeholder="z. B. 1 MB"></div>
       <div class="schalter"><div>${KAT[aktiv].meta}<span>${KAT[aktiv].metaText}</span></div><button class="toggle" id="meta" aria-pressed="${meta[aktiv]}" aria-label="${KAT[aktiv].meta}"></button></div>
       <span class="muted" style="font-size:11.5px">Gilt für alle ${KAT[aktiv].mehrzahl} dieser Runde. Einzelne Dateien lassen sich links abweichend einstellen.</span>`;
@@ -809,7 +828,13 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const r = e.target.closest('.ring button');
     if (r) { waehleFormat(+r.dataset.i); return; }
     const z = e.target.closest('#zweck button');
-    if (z) { zweck[aktiv] = z.textContent; [...z.parentElement.children].forEach(b => b.classList.toggle('an', b === z)); renderSchaetzung(); }
+    if (z) { zweck[aktiv] = z.firstChild.textContent; [...z.parentElement.children].forEach(b => b.classList.toggle('an', b === z)); renderSchaetzung(); }
+  });
+  $('wandler').addEventListener('click', e => {
+    if (e.target.id !== 'damals-zurueck' || !damals) return;
+    KATS.forEach(k => { const i = damals.nach[k] ? ziele(k).findIndex(z => z[0] === damals.nach[k]) : -1; if (i >= 0) wahl[k] = i; if (ZWECK[k] && ZWECK[k].includes(damals.zweck)) zweck[k] = damals.zweck; qual[k] = damals.qual; });
+    wohin = damals.wohinKey; if (damals.wohinKey === 'eigen') eigener = damals.wohin;
+    renderZiel();
   });
   $('wandler').addEventListener('keydown', e => {
     if (!e.target.closest('.ring') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
@@ -902,9 +927,9 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const ordner = [...new Set(umwandelbar().map(d => d.ordner).filter(Boolean))];
     const mehrere = ordner.length > 1 ? ` <span class="muted">· ${ordner.length} Ordner</span>` : '';
     $('wohin').innerHTML = `<span class="label">Wohin speichern?</span>
-      <button class="wo ${wohin === 'neben' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'neben'}" data-w="neben"><i class="radio"></i><span><b>Neben dem Original${mehrere}</b><small>${beispielPfad('neben')}</small></span></button>
-      <button class="wo ${wohin === 'unter' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'unter'}" data-w="unter"><i class="radio"></i><span><b>In Unterordner „Kvertis“</b><small>${beispielPfad('unter')}</small></span></button>
-      <button class="wo ${wohin === 'eigen' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'eigen'}" data-w="eigen"><i class="radio"></i><span><b>Eigener Ordner</b><small>${eigener ? beispielPfad('eigen') : wohinHinweis || 'Ordner auf die Kiste ziehen oder wählen'}</small></span></button>
+      <button class="wo ${wohin === 'neben' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'neben'}" data-w="neben"><i class="radio"></i><span><b>Neben dem Original${mehrere}${damals && damals.wohinKey === 'neben' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${beispielPfad('neben')}</small></span></button>
+      <button class="wo ${wohin === 'unter' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'unter'}" data-w="unter"><i class="radio"></i><span><b>In Unterordner „Kvertis“${damals && damals.wohinKey === 'unter' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${beispielPfad('unter')}</small></span></button>
+      <button class="wo ${wohin === 'eigen' ? 'an' : ''}" role="radio" aria-checked="${wohin === 'eigen'}" data-w="eigen"><i class="radio"></i><span><b>Eigener Ordner${damals && damals.wohinKey === 'eigen' ? '<em class="damals-tag">damals</em>' : ''}</b><small>${eigener ? beispielPfad('eigen') : wohinHinweis || 'Ordner auf die Kiste ziehen oder wählen'}</small></span></button>
       ${wohin === 'eigen' ? `<div class="zuletzt">${ZULETZT.map(z => `<button data-z="${esc(z)}" class="${z === eigener ? 'an' : ''}">${esc(z)}</button>`).join('')}<button data-z="?">Wählen …</button></div>` : ''}`;
     const front = wohin === 'eigen' && eigener ? eigener.split('\\').pop().toUpperCase().slice(0, 12) : 'AUSGANG';
     $('aus-front').dataset.t = front;
@@ -1008,6 +1033,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 
   // ===== Einlegen (mit Flug ins richtige Fach)
   async function einlegen(liste, animiert) {
+    damals = null;
     if (schritt !== 0) geheZu(0);
     fertig = null;
     for (const d of liste) {
@@ -1128,6 +1154,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   $('los').addEventListener('click', los);
 
   function leeren() {
+    damals = null;
     if (laeuft) return;
     dateien = []; fertig = null;
     if (offen) oeffne(offen);
@@ -1160,13 +1187,13 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   const I_WEG = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h5l3 3v9H4z"/><path d="M2.5 14.5l11-13"/></svg>';
   const V = (name, mb, kat, fmt, nach, mbNach, ordner, original = true, ergebnis = true) => ({ name, mb, kat, fmt, nach, mbNach, ordner, original, ergebnis });
   let verlauf = [
-    { tag: 'Heute', zeit: '09:42', zweck: 'Für E-Mail', wohin: 'Neben dem Original', dateien: [
+    { tag: 'Heute', zeit: '09:42', qual: 60, zweck: 'Für E-Mail', wohin: 'Neben dem Original', dateien: [
       V('IMG_1988.heic', 8.1, 'bild', 'HEIC', 'JPG', 1.0, 'Bilder\\Geburtstag'), V('IMG_1989.heic', 7.6, 'bild', 'HEIC', 'JPG', 0.9, 'Bilder\\Geburtstag'), V('IMG_1990.heic', 7.9, 'bild', 'HEIC', 'JPG', 1.0, 'Bilder\\Geburtstag', false) ] },
-    { tag: 'Gestern', zeit: '18:15', zweck: 'Für Website', wohin: 'Neben dem Original', dateien: [
+    { tag: 'Gestern', zeit: '18:15', qual: 80, zweck: 'Für Website', wohin: 'Neben dem Original', dateien: [
       V('Podcast_Folge12.wav', 214, 'audio', 'WAV', 'MP3', 28, 'Musik\\Podcast') ] },
     { tag: 'Gestern', zeit: '14:03', zweck: 'Nur Text', wohin: 'Unterordner „Kvertis“', dateien: [
       V('Angebot_Garten.docx', 0.6, 'dok', 'DOCX', 'TXT', 0.02, 'Dokumente\\Angebote'), V('Preise_2026.xlsx', 0.3, 'dok', 'XLSX', 'CSV', 0.05, 'Dokumente\\Angebote', true, false) ] },
-    { tag: 'Sonntag, 20. September', zeit: '11:20', zweck: 'Für Messenger', wohin: 'Desktop', dateien: [
+    { tag: 'Sonntag, 20. September', zeit: '11:20', qual: 55, zweck: 'Für Messenger', wohin: 'Desktop', dateien: [
       V('Hochzeit_Clip.mov', 1240, 'video', 'MOV', 'MP4', 182, 'Videos\\Hochzeit') ] },
     { tag: 'Sonntag, 20. September', zeit: '10:02', zweck: 'Zum Archivieren', wohin: 'Neben dem Original', dateien: [
       V('Scan_01.png', 3.4, 'bild', 'PNG', 'PDF', 0.8, 'Downloads', false, true), V('Scan_02.png', 3.1, 'bild', 'PNG', 'PDF', 0.7, 'Downloads', false, true) ] }
@@ -1219,6 +1246,8 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     liste.innerHTML = html + '</div>';
   }
   function nochmal(r, dateienListe, anpassen) {
+    const wohinKey = r.wohin === 'Neben dem Original' ? 'neben' : r.wohin.startsWith('Unterordner') ? 'unter' : 'eigen';
+    damals = anpassen ? { wann: `${r.tag} ${r.zeit}`, zweck: r.zweck, qual: r.qual || 72, wohin: r.wohin, wohinKey, nach: Object.fromEntries(dateienListe.map(d => [d.kat, d.nach])) } : null;
     if (laeuft) return;
     const neu = dateienListe.filter(d => d.original).map(d => ({ name: d.name, mb: d.mb, kat: d.kat, fmt: d.fmt, ordner: d.ordner, meta: 'aus dem Verlauf' }));
     if (!neu.length) return;
@@ -1228,7 +1257,9 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       const i = ziele(d.kat).findIndex(z => z[0] === (dateienListe.find(x => x.name === d.name).nach));
       if (i >= 0) wahl[d.kat] = i;
       if (ZWECK[d.kat] && ZWECK[d.kat].includes(r.zweck)) zweck[d.kat] = r.zweck;
+      qual[d.kat] = r.qual || 72;
     });
+    wohin = wohinKey; if (wohinKey === 'eigen') eigener = r.wohin;
     aktiv = neu[0].kat;
     renderRegal(); nachZaehlen();
     verlaufZu();
@@ -1264,7 +1295,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const u = umwandelbar();
     const jetzt = new Date(), zeit = String(jetzt.getHours()).padStart(2, '0') + ':' + String(jetzt.getMinutes()).padStart(2, '0');
     verlauf.forEach(r => r.neu = false);
-    verlauf.unshift({ tag: 'Heute', zeit, neu: true, zweck: zweck[u[0].kat] || 'Original', wohin: wohinKurz() || 'Eigener Ordner', dateien: u.map(d => {
+    verlauf.unshift({ tag: 'Heute', zeit, neu: true, qual: qual[u[0].kat], zweck: zweck[u[0].kat] || 'Original', wohin: wohinKurz() || 'Eigener Ordner', dateien: u.map(d => {
       const z = ziele(d.kat)[wahl[d.kat]][0];
       const faktor = schaetze(d.kat) / dateien.filter(x => x.kat === d.kat).reduce((s, x) => s + x.mb, 0);
       return V(d.name, d.mb, d.kat, d.fmt, z === 'TON' ? 'MP3' : z, d.mb * faktor, d.ordner || 'Ursprungsordner');

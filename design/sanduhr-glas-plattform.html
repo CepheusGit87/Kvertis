@@ -1,0 +1,319 @@
+<title>Kvertis Glas und Plattform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.lead b { color: var(--ink); font-weight: 600; }
+
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.reihe-rahmen { overflow-x: auto; padding: 6px 2px 10px; }
+.reihe { display: grid; grid-template-columns: repeat(4, minmax(240px, 1fr)); gap: 12px; min-width: 1000px; }
+.zelle { position: relative; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 14px; display: grid; gap: 10px; align-content: start; }
+.zelle h3 { margin: 0; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.zelle h3 i { width: 11px; height: 11px; border-radius: 3px; background: var(--k); }
+.zelle h3 small { margin-left: auto; font: 500 10.5px var(--mono); color: var(--leise); }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Bausteine */
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; cursor: default; transition: transform .2s var(--feder), background .2s, color .2s, opacity .2s; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; transition: opacity .25s, transform .3s var(--feder), box-shadow .25s; }
+.zelle.fokus .chip { opacity: .35; }
+.zelle.fokus .chip.aktiv { opacity: 1; background: var(--k); color: #0b0f12; transform: translateY(-1px) scale(1.06); }
+.zelle.fokus .eti { opacity: .18; box-shadow: none; }
+.zelle.fokus .eti.ja { opacity: 1; transform: translateY(-2px); box-shadow: 0 0 0 2px var(--mint), 0 6px 14px -6px var(--mint); }
+.antwort { min-height: 18px; font: 500 11.5px var(--mono); color: var(--muted); text-align: center; }
+.antwort b { color: var(--k); }
+.antwort em { font-style: normal; color: var(--mint); }
+.logo-m { width: 26px; height: 26px; border-radius: 8px; background: var(--mint); position: relative; box-shadow: 0 0 0 5px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); flex: none; }
+.logo-m::before, .logo-m::after { content: ''; position: absolute; width: 9px; height: 9px; border-radius: 3px; }
+.logo-m::before { left: 6px; top: 6px; background: var(--auf-mint); opacity: .8; }
+.logo-m::after { right: 6px; bottom: 6px; border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.linien { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.linien path { fill: none; stroke-width: 1.2; transition: opacity .25s, stroke .25s; }
+.linien .rein { stroke: color-mix(in srgb, var(--k) 50%, transparent); }
+.linien .raus { stroke: var(--mint); stroke-dasharray: 4 5; animation: fluss 1s linear infinite; opacity: .7; }
+.linien .direkt { stroke: var(--mint); stroke-width: 1.6; opacity: 0; }
+.zelle.fokus .linien .rein, .zelle.fokus .linien .raus { opacity: .04; }
+.zelle.fokus .linien .rein.an { opacity: 1; stroke: var(--k); }
+.zelle.fokus .linien .direkt.an { opacity: .95; }
+@keyframes fluss { to { stroke-dashoffset: -9; } }
+
+/* gemeinsame Teile */
+.glaskontur { position: absolute; left: 50%; top: 0; width: 236px; height: 100%; transform: translateX(-50%); pointer-events: none; }
+.glaskontur .glas { fill: color-mix(in srgb, var(--ink) 3.5%, transparent); stroke: color-mix(in srgb, var(--ink) 30%, transparent); stroke-width: 1.2; }
+.glaskontur .glanz { fill: none; stroke: #fff; stroke-opacity: .15; stroke-width: 4; stroke-linecap: round; }
+.deckel { position: absolute; left: 50%; width: 244px; height: 12px; margin-left: -122px; border-radius: 5px; background: linear-gradient(180deg, var(--panel2), var(--tief)); border: 1px solid var(--line-stark); box-shadow: 0 4px 0 var(--tief); z-index: 2; }
+.korn { position: absolute; left: 50%; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; animation: rieseln var(--dauer, 1.4s) linear infinite; animation-delay: var(--d); }
+@keyframes rieseln { 0% { transform: translateY(0); background: var(--k); opacity: 1; } 60% { background: var(--mint); } 100% { transform: translateY(var(--weg, 56px)); background: var(--mint); opacity: 0; } }
+.ring3d { position: relative; width: 64px; height: 20px; display: grid; place-items: center; }
+.ring3d::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--mint); box-shadow: 0 0 16px color-mix(in srgb, var(--mint) 55%, transparent), inset 0 0 8px color-mix(in srgb, var(--mint) 40%, transparent); }
+.ring3d .logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche); }
+.ring3d .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .ring3d .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.platte { display: flex; flex-wrap: wrap; gap: 6px 5px; justify-content: center; border-radius: 16px; transform-origin: 50% 50%; transition: transform .5s var(--feder); }
+.platte.o { background: linear-gradient(160deg, color-mix(in srgb, var(--k) 24%, var(--panel2)), color-mix(in srgb, var(--k) 8%, var(--panel))); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); box-shadow: 0 12px 0 -4px color-mix(in srgb, var(--k) 30%, var(--karton-tief)), 0 26px 30px -12px var(--schatten); }
+.platte.u { background: linear-gradient(160deg, color-mix(in srgb, var(--mint) 18%, var(--panel2)), color-mix(in srgb, var(--mint) 6%, var(--panel))); border: 1px solid var(--mint-rahmen); box-shadow: 0 12px 0 -4px color-mix(in srgb, var(--mint) 26%, var(--karton-tief)), 0 26px 30px -12px var(--schatten); }
+.platte .chip, .bett .chip, .wuerfel .boden .chip { background: color-mix(in srgb, var(--k) 34%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; }
+.platte .chip { box-shadow: 0 3px 0 color-mix(in srgb, var(--k) 38%, var(--karton-tief)); }
+.platte .eti { box-shadow: 0 3px 0 var(--paper-linie); }
+
+/* 1 · Gläserne Regalböden */
+.gp { position: relative; height: 380px; perspective: 800px; }
+.gp .deckel.o { top: 0; } .gp .deckel.u { bottom: 0; }
+.gp .platte { position: absolute; left: 50%; width: 196px; margin-left: -98px; padding: 12px 10px; transform: rotateX(50deg); }
+.gp .platte.o { top: 18px; } .gp .platte.u { bottom: 18px; }
+.gp:hover .platte.o { transform: rotateX(42deg) translateY(-4px); } .gp:hover .platte.u { transform: rotateX(42deg) translateY(4px); }
+.gp .hals { position: absolute; left: 50%; top: 180px; transform: translateX(-50%); display: grid; justify-items: center; }
+.gp .korn { top: 22px; --weg: 60px; }
+
+/* 2 · Sandbett */
+.sb { position: relative; height: 380px; perspective: 700px; }
+.sb .deckel.o { top: 0; } .sb .deckel.u { bottom: 0; }
+.bett { position: absolute; left: 50%; width: 208px; margin-left: -104px; padding: 16px 18px; border-radius: 50%; display: flex; flex-wrap: wrap; gap: 5px 4px; justify-content: center; align-content: center; transform: rotateX(58deg); }
+.bett.o { top: 14px; min-height: 150px; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--k) 30%, var(--panel2)) 0 40%, color-mix(in srgb, var(--k) 10%, var(--panel)) 75%, transparent 76%), radial-gradient(color-mix(in srgb, var(--k) 40%, transparent) 1px, transparent 1.5px) 0 0 / 7px 7px; }
+.bett.u { bottom: 12px; min-height: 140px; background: radial-gradient(circle at 50% 60%, color-mix(in srgb, var(--mint) 26%, var(--panel2)) 0 40%, color-mix(in srgb, var(--mint) 8%, var(--panel)) 75%, transparent 76%), radial-gradient(color-mix(in srgb, var(--mint) 35%, transparent) 1px, transparent 1.5px) 0 0 / 7px 7px; }
+.bett .chip, .bett .eti { box-shadow: 0 3px 4px -1px #0007; }
+.sb .strom { position: absolute; left: 50%; top: 168px; width: 3px; height: 70px; margin-left: -1.5px; border-radius: 2px; background: linear-gradient(180deg, var(--k), var(--mint)); background-size: 100% 200%; animation: strom 1s linear infinite; box-shadow: 0 0 10px color-mix(in srgb, var(--mint) 50%, transparent); }
+@keyframes strom { to { background-position: 0 -100%; } }
+.sb .hals { position: absolute; left: 50%; top: 178px; transform: translateX(-50%); z-index: 1; }
+
+/* 3 · Stufen */
+.st { perspective: 760px; display: grid; justify-items: center; padding: 4px 0 8px; }
+.stufe { padding: 9px 8px 11px; transform: rotateX(54deg); margin: -9px 0; }
+.st:hover .stufe { transform: rotateX(46deg); }
+.st .ring3d { margin: 10px 0; }
+
+/* 4 · Isometrische Glaswürfel */
+.iso { height: 390px; perspective: 1400px; display: grid; place-items: center; }
+.welt { position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-30deg) rotateY(-40deg); transition: transform .6s var(--feder); }
+.iso:hover .welt { transform: rotateX(-36deg) rotateY(-28deg); }
+.wuerfel { --S: 168px; --H: 88px; --y: 0px; position: absolute; left: 0; top: 0; transform-style: preserve-3d; transform: translateY(var(--y)); }
+.wuerfel .w { position: absolute; left: 0; top: 0; background: color-mix(in srgb, var(--ink) 4%, transparent); border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent); }
+.wuerfel .vo, .wuerfel .hi { width: var(--S); height: var(--H); }
+.wuerfel .li, .wuerfel .re { width: var(--S); height: var(--H); }
+.wuerfel .vo { transform: translate(-50%, -50%) translateZ(calc(var(--S) / 2)); }
+.wuerfel .hi { transform: translate(-50%, -50%) translateZ(calc(var(--S) / -2)); }
+.wuerfel .li { transform: translate(-50%, -50%) rotateY(-90deg) translateZ(calc(var(--S) / 2)); }
+.wuerfel .re { transform: translate(-50%, -50%) rotateY(90deg) translateZ(calc(var(--S) / 2)); }
+.wuerfel .boden { position: absolute; left: 0; top: 0; width: var(--S); height: var(--S); transform: translate(-50%, -50%) translateY(calc(var(--H) / 2 - 1px)) rotateX(90deg); display: flex; flex-wrap: wrap; gap: 5px 4px; align-content: center; justify-content: center; padding: 10px; }
+.wuerfel.o .boden { background: color-mix(in srgb, var(--k) 20%, var(--panel)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--k) 40%, transparent); }
+.wuerfel.u .boden { background: color-mix(in srgb, var(--mint) 15%, var(--panel)); box-shadow: 0 0 0 1px var(--mint-rahmen); }
+.wuerfel .boden .chip { box-shadow: 0 2px 0 color-mix(in srgb, var(--k) 40%, var(--karton-tief)); }
+.wuerfel .boden .eti { box-shadow: 0 2px 0 var(--paper-linie); }
+.wuerfel.o { --y: -78px; } .wuerfel.u { --y: 78px; }
+.hals3d { position: absolute; left: 0; top: 0; transform-style: preserve-3d; }
+.hals3d .rohr { position: absolute; left: -9px; top: -34px; width: 18px; height: 68px; border-radius: 9px; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 10%, transparent), color-mix(in srgb, var(--ink) 3%, transparent) 50%, color-mix(in srgb, var(--ink) 12%, transparent)); border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent); }
+.hals3d .rohr::after { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: linear-gradient(180deg, var(--k), var(--mint)); background-size: 100% 200%; animation: strom 1s linear infinite; }
+.iso-logo { position: absolute; left: -11px; top: -11px; }
+.iso-logo .logo-m { width: 22px; height: 22px; }
+.iso-logo .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .iso-logo .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+
+/* 5 · Schwebend, folgt der Maus */
+.sw { position: relative; height: 380px; perspective: 900px; display: grid; place-items: center; }
+.sw-welt { --rx: 0deg; --ry: 0deg; position: relative; width: 210px; height: 350px; transform-style: preserve-3d; transform: rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .25s ease-out; }
+.sw .platte { position: absolute; left: 7px; width: 196px; padding: 12px 10px; transform: rotateX(56deg) translateZ(0); animation: schweben 4s ease-in-out infinite; }
+.sw .platte.o { top: 6px; } .sw .platte.u { bottom: 14px; animation-delay: -2s; }
+@keyframes schweben { 50% { transform: rotateX(56deg) translateZ(10px); } }
+.sw .schatten-f { position: absolute; left: 30px; right: 30px; height: 20px; border-radius: 50%; background: var(--schatten); filter: blur(10px); opacity: .6; }
+.sw .sf-o { top: 118px; } .sw .sf-u { bottom: -6px; }
+.sw .rohr { position: absolute; left: 50%; top: 128px; width: 22px; height: 92px; margin-left: -11px; border-radius: 11px; background: linear-gradient(90deg, color-mix(in srgb, var(--ink) 12%, transparent), color-mix(in srgb, var(--ink) 3%, transparent) 45%, color-mix(in srgb, var(--ink) 14%, transparent)); border: 1px solid color-mix(in srgb, var(--ink) 30%, transparent); transform: translateZ(20px); }
+.sw .rohr .korn { top: 4px; --weg: 82px; --dauer: 1.1s; }
+.sw .ring3d { position: absolute; left: 50%; top: 162px; margin-left: -32px; transform: translateZ(30px); }
+
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .001s !important; }
+  .korn { display: none; }
+}
+code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .001s !important; } .korn { display: none; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Sortierregal · Sanduhr A + E</div>
+    <h1>Glas trifft Plattform: fünf Verbindungen</h1>
+    <p class="lead">Aus A kommen die Glasform und der rieselnde Sand, aus E die gekippten Plattformen mit Tiefe und der leuchtende Ring. <b>Alle Formate sind sichtbar.</b> Fahren Sie über ein Eingangsformat, dann leuchten seine möglichen Ergebnisse auf.</p>
+  </header>
+
+  <section class="idee" aria-labelledby="h1_">
+    <h2 id="h1_">1 · Gläserne Regalböden <small>E-Plattformen in der Glas-Sanduhr</small></h2>
+    <p>Die Sanduhr aus A wird zum Glasgehäuse, darin liegen zwei gekippte Böden aus E. Oben die Eingänge, unten die Ergebnisse. Durch den Ring in der Mitte rieselt der Sand. Die direkteste Verbindung beider Ideen.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r1"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> beide Ideen klar erkennbar, gut lesbar</span><span class="minus"><b>Schwäche:</b> Glas und Platte überlagern sich an den Rändern</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="h2_">
+    <h2 id="h2_">2 · Sandbett <small>die Formate liegen im Sand</small></h2>
+    <p>Statt Platten liegen die Formate auf gekippten, körnigen Sandflächen in den beiden Glaskolben. Oben in der Farbe der Dateiart, unten in Mint. Zwischen beiden fließt ein feiner Strom.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r2"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> am meisten Sanduhr, weich und stimmungsvoll</span><span class="minus"><b>Schwäche:</b> bei elf Formaten wird die ovale Fläche voll</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="h3_">
+    <h2 id="h3_">3 · Stufen-Sanduhr <small>die Umrisse entstehen aus gestapelten Platten</small></h2>
+    <p>Jede Formatreihe liegt auf einer eigenen 3D-Platte. Oben werden die Platten schmaler, unten wieder breiter, so entsteht die Sanduhr aus Plattformen. In der Mitte sitzt der Ring.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r3"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> sehr plastisch, jede Reihe sauber lesbar</span><span class="minus"><b>Schwäche:</b> kein Glas mehr, die Sanduhr ist nur noch Form</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="h4_">
+    <h2 id="h4_">4 · Zwei Glaswürfel <small>passend zum Glasbehälter in Schritt 2</small></h2>
+    <p>Zwei durchsichtige Würfel in echter 3D-Ansicht, verbunden durch ein Glasrohr mit Sandstrom. Die Formate liegen auf dem Boden der Würfel. Nimmt die Sprache des Größen-Behälters aus Schritt 2 auf und dreht sich beim Darüberfahren etwas.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r4"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> einheitliche Bildsprache im ganzen Programm</span><span class="minus"><b>Schwäche:</b> Schrift auf dem Würfelboden ist am stärksten verkürzt</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="h5_">
+    <h2 id="h5_">5 · Schwebende Sanduhr <small>folgt der Maus</small></h2>
+    <p>Die Plattformen schweben leicht auf und ab, verbunden durch ein Glasrohr mit rieselndem Sand. Das Ganze neigt sich zur Maus hin. Der verspielteste Entwurf, gut für den ersten Start.</p>
+    <div class="reihe-rahmen"><div class="reihe" id="r5"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> lebendig, echte Tiefe, macht Spaß</span><span class="minus"><b>Schwäche:</b> dauernde Bewegung; bei „Animationen reduzieren“ steht alles still</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="hf">
+    <h2 id="hf">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>1 · Gläserne Regalböden.</b> Sie verbinden A und E am klarsten, bleiben gut lesbar und lassen sich in WinUI mit zwei <code>PlaneProjection</code>-Flächen und einer Glas-Kontur umsetzen.</p>
+      <p class="muted">Die Mausneigung aus 5 lässt sich auf jede Variante legen. Die Würfel aus 4 lohnen sich, wenn der Glasbehälter aus Schritt 2 bleibt und das Programm eine durchgehende Glas-Sprache bekommen soll.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const ALLE_AUDIO = ['MP3','M4A','FLAC','WAV','OGG','OPUS'];
+  const VID = ['MP4','MKV','WEBM','TON'];
+  const K = {
+    bild: { name: 'Bilder', rein: ['JPG','PNG','HEIC','WEBP','GIF','BMP','TIFF','SVG','ICO','PSD','RAW'], raus: ['JPG','PNG','WEBP','TIFF','BMP','GIF','ICO','PDF'],
+      map: { JPG: ['PNG','WEBP','TIFF','BMP','GIF','PDF'], PNG: ['JPG','WEBP','TIFF','BMP','GIF','ICO','PDF'], HEIC: ['JPG','PNG','WEBP'], WEBP: ['JPG','PNG','TIFF','GIF'], GIF: ['PNG','JPG','WEBP'], BMP: ['PNG','JPG','WEBP'], TIFF: ['PNG','JPG','WEBP','PDF'], SVG: ['PNG','JPG','WEBP'], ICO: ['PNG'], PSD: ['PNG','JPG'], RAW: ['JPG','PNG','TIFF'] },
+      titel: { RAW: 'DNG, CR2, CR3, NEF, ARW, ORF, RAF, RW2' } },
+    audio: { name: 'Audio', rein: ['MP3','WAV','M4A','AAC','FLAC','OGG','OPUS','WMA','AIFF'], raus: ALLE_AUDIO,
+      map: { MP3: ['WAV','FLAC','OGG','OPUS','M4A'], WAV: ['MP3','FLAC','OGG','OPUS','M4A'], M4A: ['MP3','WAV','FLAC','OGG','OPUS'], AAC: ['MP3','WAV','FLAC','OGG','OPUS'], FLAC: ['MP3','WAV','OGG','OPUS','M4A'], OGG: ['MP3','WAV','FLAC','OPUS','M4A'], OPUS: ['MP3','WAV','FLAC','OGG','M4A'], WMA: ALLE_AUDIO, AIFF: ALLE_AUDIO } },
+    video: { name: 'Video', rein: ['MP4','MOV','M4V','MKV','WEBM','AVI','WMV','FLV','3GP','MPG','TS'], raus: VID,
+      map: { MP4: VID, MOV: VID, M4V: VID, MKV: ['MP4','WEBM','TON'], WEBM: ['MP4','MKV','TON'], AVI: VID, WMV: VID, FLV: VID, '3GP': VID, MPG: VID, TS: VID },
+      titel: { TS: 'TS, MTS, M2TS', MPG: 'MPG, MPEG' } },
+    dok: { name: 'Dokumente', rein: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','HTML','CSV','PDF'],
+      map: { PDF: ['TXT'], DOCX: ['TXT','MD','HTML'], XLSX: ['CSV','TXT'], PPTX: ['TXT','MD'], TXT: ['PDF','HTML'], MD: ['PDF','HTML','TXT'], HTML: ['TXT','MD'] } }
+  };
+  const KS = ['bild', 'audio', 'video', 'dok'];
+  const lab = f => f === 'TON' ? 'nur Ton' : f;
+  const ein = (k, f) => `<span class="chip" tabindex="0" data-in="${f}"${K[k].titel && K[k].titel[f] ? ` title="${K[k].titel[f]}"` : ''}>${f}</span>`;
+  const aus = f => `<span class="eti" data-out="${f}">${lab(f)}</span>`;
+  const zeilen = (liste, caps) => { const out = []; let i = 0, c = 0; while (i < liste.length) { const n = caps[Math.min(c, caps.length - 1)]; out.push(liste.slice(i, i + n)); i += n; c++; } return out; };
+  const kopf = k => `<h3><i></i>${K[k].name}<small>${K[k].rein.length} → ${K[k].raus.length}</small></h3>`;
+  const zelle = (k, inhalt) => `<div class="zelle k-${k}" data-k="${k}">${kopf(k)}${inhalt}<div class="antwort">Maus auf ein Format</div></div>`;
+  const REIN = k => K[k].rein.map(f => ein(k, f)).join('');
+  const RAUS = k => K[k].raus.map(aus).join('');
+  const GLAS = `<svg class="glaskontur" viewBox="0 0 236 380" preserveAspectRatio="none" aria-hidden="true"><path class="glas" d="M14,8 H222 C222,110 134,160 124,190 C134,220 222,270 222,372 H14 C14,270 102,220 112,190 C102,160 14,110 14,8 Z"/><path class="glanz" d="M28,34 C30,90 62,130 90,156"/></svg>`;
+  const koerner = (n, dauer) => Array.from({ length: n }, (_, i) => `<span class="korn" style="--d:${(i * dauer / n).toFixed(2)}s"></span>`).join('');
+
+  document.getElementById('r1').innerHTML = KS.map(k => zelle(k, `<div class="gp">${GLAS}<span class="deckel o"></span><span class="deckel u"></span>
+    <div class="platte o">${REIN(k)}</div>
+    <div class="hals"><span class="ring3d"><span class="logo-m"></span></span>${koerner(4, 1.4)}</div>
+    <div class="platte u">${RAUS(k)}</div></div>`)).join('');
+
+  document.getElementById('r2').innerHTML = KS.map(k => zelle(k, `<div class="sb">${GLAS}<span class="deckel o"></span><span class="deckel u"></span>
+    <div class="bett o">${REIN(k)}</div><span class="strom"></span>
+    <div class="hals"><span class="ring3d"><span class="logo-m"></span></span></div>
+    <div class="bett u">${RAUS(k)}</div></div>`)).join('');
+
+  document.getElementById('r3').innerHTML = KS.map(k => {
+    const o = zeilen(K[k].rein, [4, 3, 3, 2, 2]);
+    const u = zeilen([...K[k].raus].reverse(), [4, 3, 2, 2]).map(z => z.reverse()).reverse();
+    const breiteO = i => 214 - i * 34, breiteU = (i, n) => 214 - (n - 1 - i) * 34;
+    return zelle(k, `<div class="st">
+      ${o.map((z, i) => `<div class="platte o stufe" style="width:${breiteO(i)}px;z-index:${10 - i}">${z.map(f => ein(k, f)).join('')}</div>`).join('')}
+      <span class="ring3d"><span class="logo-m"></span></span>
+      ${u.map((z, i) => `<div class="platte u stufe" style="width:${breiteU(i, u.length)}px;z-index:${i + 1}">${z.map(aus).join('')}</div>`).join('')}
+    </div>`);
+  }).join('');
+
+  const wuerfel = (cls, inhalt) => `<div class="wuerfel ${cls}"><span class="w hi"></span><span class="w li"></span><div class="boden">${inhalt}</div><span class="w re"></span><span class="w vo"></span></div>`;
+  document.getElementById('r4').innerHTML = KS.map(k => zelle(k, `<div class="iso"><div class="welt">
+    ${wuerfel('o', REIN(k))}
+    <div class="hals3d"><span class="rohr"></span></div>
+    ${wuerfel('u', RAUS(k))}
+    </div></div>`)).join('');
+
+  document.getElementById('r5').innerHTML = KS.map(k => zelle(k, `<div class="sw"><div class="sw-welt">
+    <span class="schatten-f sf-o"></span><div class="platte o">${REIN(k)}</div>
+    <span class="rohr">${koerner(5, 1.1)}</span><span class="ring3d"><span class="logo-m"></span></span>
+    <span class="schatten-f sf-u"></span><div class="platte u">${RAUS(k)}</div>
+  </div></div>`)).join('');
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll('.sw').forEach(sw => {
+      const w = sw.querySelector('.sw-welt');
+      sw.addEventListener('pointermove', e => { const r = sw.getBoundingClientRect(); w.style.setProperty('--ry', ((e.clientX - r.left) / r.width - .5) * 26 + 'deg'); w.style.setProperty('--rx', -((e.clientY - r.top) / r.height - .5) * 16 + 'deg'); });
+      sw.addEventListener('pointerleave', () => { w.style.setProperty('--ry', '0deg'); w.style.setProperty('--rx', '0deg'); });
+    });
+  }
+
+  // Hervorheben: Eingang → mögliche Ergebnisse
+  document.querySelectorAll('.zelle').forEach(z => {
+    const k = z.dataset.k, antwort = z.querySelector('.antwort');
+    const an = chip => {
+      const f = chip.dataset.in, m = K[k].map[f] || [];
+      z.classList.add('fokus');
+      z.querySelectorAll('span[data-in]').forEach(c => c.classList.toggle('aktiv', c.dataset.in === f));
+      z.querySelectorAll('[data-out]').forEach(e => e.classList.toggle('ja', m.includes(e.dataset.out)));
+      antwort.innerHTML = `<b>${f}</b> wird zu <em>${m.map(lab).join(', ')}</em>`;
+    };
+    const weg = () => { z.classList.remove('fokus'); antwort.textContent = 'Maus auf ein Format'; };
+    z.querySelectorAll('span[data-in]').forEach(c => { c.addEventListener('mouseenter', () => an(c)); c.addEventListener('focus', () => an(c)); c.addEventListener('blur', weg); });
+    z.addEventListener('mouseleave', weg);
+  });
+})();
+</script>
