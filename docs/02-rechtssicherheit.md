@@ -114,3 +114,14 @@ Jede Datei wird vor der Übergabe an FFmpeg, Magick.NET oder eine Dokument-Bibli
 ## 9. Was bei einem Verstoß passiert
 
 Ein Verstoß gegen dieses Dokument blockiert den Merge. `lizenz-waechter` benennt Komponente, Verstoß und mindestens eine erlaubte Alternative. Gibt es keine Alternative, wird das Feature gestrichen und in `09-roadmap.md` als „verworfen wegen Rechtsrisiko“ dokumentiert.
+
+## 10. Pflichten als Verkäufer
+
+Kvertis wird verkauft. Neben Lizenzen und Patenten gelten deshalb Pflichten, die nicht an einzelnen Bibliotheken hängen. Stand und Klärung: O-17 in `09-roadmap.md`.
+
+- Aktualisierungspflicht für digitale Produkte gegenüber Verbrauchern (§ 327f BGB), einschließlich Sicherheits-Updates der mitgelieferten Bibliotheken.
+- Cyber Resilience Act der EU: Umgang mit Schwachstellen, Stückliste der Softwarebestandteile (Grundlage: `04-bibliotheken.md`), CE-Kennzeichnung.
+- EU-Produkthaftungsrichtlinie, die Software einschließt: Originaldateien werden nie überschrieben (siehe Abschnitt 4).
+- Impressum, AGB, Widerrufsbelehrung, soweit der Store sie nicht abdeckt.
+- Neue Funktionen mit Haftungsnähe (z. B. Anzeige von Rechnungsdaten, O-18) nur nach Anwaltsprüfung.
+- Kein Netzwerkcode bleibt Voraussetzung dafür, dass keine Verarbeitung personenbezogener Daten durch den Anbieter stattfindet.

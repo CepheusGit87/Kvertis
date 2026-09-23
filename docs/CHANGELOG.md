@@ -2,6 +2,18 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-23 – Ideenliste, Verkäuferpflichten, verworfene Funktionen
+
+**Geändert (nur Doku)**
+
+- `09-roadmap.md`: neue Liste „Ideen (geprüft, rechtlich unbedenklich)“ mit Prioritäten (u. a. PDFs zusammenfügen/aufteilen, Bilder → GIF, GIF → Einzelbilder, vCard/iCalendar ↔ CSV/XLSX, Untertitel, OpenDocument/EPUB → Text, 3D-Modelle in offenen Formaten); neue offene Punkte O-17 (Pflichten als Verkäufer), O-18 (E-Rechnung zurückgestellt), O-19 (ADR Sammel-Jobs), O-20 (FFmpeg-Filter für GIF); verworfen: Transkription, RAR/CBR, MOBI/AZW, PDF/A, FBX/USDZ, MIDI → Audio.
+- `10-rechtsmatrix.md`: „Bewusst nicht enthalten“ und offene Punkte ergänzt.
+- `02-rechtssicherheit.md`: neuer Abschnitt 10 „Pflichten als Verkäufer“.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-23 – Rechtsrahmen ohne Patentrisiko
 
 **Geändert**

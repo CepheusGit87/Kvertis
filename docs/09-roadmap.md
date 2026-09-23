@@ -44,6 +44,27 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 - [ ] AV1-Ausgabe (SVT-AV1), wenn Tempo für Laien akzeptabel
 - [ ] Weitere Sprachen
 
+### Ideen (geprüft, rechtlich unbedenklich, noch nicht eingeplant)
+
+Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits vorhandene Bibliotheken. Vor der Umsetzung gilt wie immer: neue Bibliothek → `lizenz-waechter`, Eintrag in `04-bibliotheken.md` und `CHANGELOG.md`; neuer Konverter → Zeile in `10-rechtsmatrix.md`. Keine Programm- oder Herstellernamen in UI und Store-Texten.
+
+| Prio | Idee | Umsetzung | Voraussetzung |
+|---|---|---|---|
+| 1 | PDFs zusammenfügen und aufteilen | PDFsharp (vorhanden); verschlüsselte PDFs weiter `ProtectedFile` | O-19 (Sammel-Jobs) |
+| 1 | Bilder → animiertes GIF | FFmpeg-Prozess mit `palettegen`/`paletteuse`/`split`; Einstellungen: Reihenfolge (natürliche Sortierung, änderbar), Anzeigedauer, Endlosschleife, max. Breite, Einpassen unterschiedlicher Größen, Obergrenze Bildanzahl, Größenwarnung | O-19, O-20 |
+| 1 | GIF / animiertes WebP → Einzelbilder (PNG/JPG/WebP) | SkiaSharp `SKCodec` je Bild, Zusammensetzen über Vorgängerbild; nummerierte Dateien wie mehrseitiges TIFF; Auswahl alle / jedes n-te / einzelnes Bild | – |
+| 1 | Kontakte vCard (.vcf) ↔ CSV/XLSX, Kalender iCalendar (.ics) ↔ CSV/XLSX | eigener Code (RFC-Formate), OpenXml (vorhanden) | – |
+| 2 | Untertitel SRT ↔ VTT (↔ ASS) | eigener Code, reiner Text | – |
+| 2 | ODT/ODS/ODP → TXT/CSV/Markdown, EPUB → TXT/Markdown/HTML, RTF → TXT | eigener Code (ZIP + XML); EPUB mit DRM → `ProtectedFile` | – |
+| 2 | CSV → XLSX, Markdown → DOCX, JSON/XML ↔ CSV/XLSX | OpenXml, Markdig (vorhanden) | – |
+| 3 | 3D-Modelle STL, OBJ, PLY, 3MF, glTF/GLB untereinander | eigene Parser (ohne Allzweck-Bibliothek); kein FBX, kein USDZ; Vorschaubild erst später (bräuchte Renderer) | ADR (neue `MediaKind`, Vorschau) |
+| 3 | GPS-Tracks GPX ↔ KML ↔ CSV | eigener Code; keine Hersteller-Formate | – |
+| 3 | XPS/OXPS → PDF, E-Mails EML/MSG → PDF/TXT, Comics CBZ → PDF | offen dokumentierte Formate; CBR (RAR) ausgeschlossen | – |
+| 3 | Favicon-Paket (ICO mit mehreren Größen + PNG-Sätze), QOI, TGA | eigener ICO-Writer (vorhanden) | – |
+| 3 | Audio: ALAC, WavPack; Lautstärke angleichen | FFmpeg-Decoder bzw. Filter `loudnorm` in der Allowlist | Allowlist-Erweiterung |
+| 3 | Schriften TTF/OTF ↔ WOFF/WOFF2 | Brotli (MIT, neue Bibliothek); Hinweis, dass Schriftlizenzen Umwandlung verbieten können | `lizenz-waechter` |
+| offen | Texterkennung aus Bildern/Scans | nur über die eingebaute Windows-Texterkennung (`Windows.Media.Ocr`), kein mitgeliefertes Modell | Entscheidung Projektinhaber |
+
 ## Offene Punkte
 
 | Nr. | Punkt | Wer entscheidet | Blockiert |
@@ -64,6 +85,10 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 | O-14 | **Windows-Build der App** ist noch nie gelaufen (nur C#-Teile gegen WinUI-Assemblies kompiliert). Erster Windows-CI-Lauf bzw. lokaler Build unter Windows nötig; XAML-Fehler sind wahrscheinlich und schnell behebbar. | Projektinhaber (Windows-Rechner) oder Windows-CI | Alles Sichtbare |
 | O-16 | **UI: Ausgabeliste** filtert jetzt über `IConverterResolver.CanConvert`; die MKV-Ausgabeliste hängt damit vom Codec ab. Verhalten unter Windows prüfen. | `ui-entwickler` | UI |
 | O-15 | **Platzhalter im Code:** Publisher `CN=Kvertis`, Store-Add-on-ID `9NXXXXXXXXXX`, Logos. | Projektinhaber | Store-Einreichung |
+| O-17 | **Pflichten als Verkäufer** (vor Verkaufsstart mit Anwalt für IT-Recht klären, gebündelt mit O-03): Aktualisierungspflicht für digitale Produkte (§ 327f BGB, Sicherheits-Updates für SkiaSharp/FFmpeg eingeschlossen); Cyber Resilience Act (Meldepflichten ab 09/2026, volle Pflichten ab 12/2027: CE-Kennzeichnung, Schwachstellen-Prozess, SBOM – Grundlage `04-bibliotheken.md`); neue EU-Produkthaftungsrichtlinie (Software ab 12/2026; Originaldateien dürfen nie überschrieben werden); Impressum, AGB, Widerruf, soweit nicht vom Store abgedeckt. Daten und Zeitpunkte vom Anwalt bestätigen lassen. | Projektinhaber, Anwalt | Verkaufsstart |
+| O-18 | **E-Rechnung (XML) → PDF/HTML zurückgestellt:** starker Nutzen für den deutschen Markt, aber Haftungsrisiko bei falsch dargestellten Beträgen oder Bankdaten (Haftungsausschluss gegenüber Verbrauchern nur begrenzt möglich) und offene Markenfrage bei einzelnen Formatnamen. Im Store-Text höchstens „E-Rechnungen (XML)“. Nur nach Anwaltsprüfung. | Projektinhaber, Anwalt | E-Rechnung |
+| O-19 | **ADR Sammel-Jobs** (viele Eingaben → eine Ausgabe) in Queue und UI. Gemeinsame Grundlage für PDFs zusammenfügen, Bilder → GIF, Bilder → PDF (Batch), später ICO mit mehreren Größen. | `architekt` | diese Funktionen |
+| O-20 | **FFmpeg-Allowlist ergänzen** um die Filter `palettegen`, `paletteuse`, `split` (Bilder/Video → GIF), möglichst vor dem ersten Build (O-02). Reiner FFmpeg-Code, LGPL, patentfrei. | `lizenz-waechter` | Bilder → GIF, Video → GIF |
 
 ## Verworfen wegen Rechtsrisiko
 
@@ -77,6 +102,12 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 | H.264/HEVC-Eingabe → WebM/MKV (Phase 1) | bräuchte MF-Source-Reader-Pipe; Phase 2 | 2026-09-23 |
 | Passwort aus PDF entfernen | Briefing, Rechtslage | 2026-09-23 |
 | URL-/Stream-Downloads | Briefing, kein Netzwerk | 2026-09-23 |
+| Transkription (Ton → Text) | bräuchte ein mitgeliefertes Sprachmodell; Modelllizenzen teils nicht kommerziell, Kennzeichnung automatisch erzeugter Inhalte, Paketgröße; Entscheidung Projektinhaber | 2026-09-23 |
+| RAR und CBR | proprietäres Format, Lizenz der Entpack-Bibliothek schränkt ein | 2026-09-23 |
+| MOBI/AZW | Herstellerbindung, Markenbezug, meist DRM | 2026-09-23 |
+| PDF/A erzeugen | ohne zuverlässige Prüfung zu fehleranfällig, haftungsnah bei Archivpflichten | 2026-09-23 |
+| 3D: FBX, USDZ | proprietär bzw. restriktive SDK-Lizenz, Markenbezug | 2026-09-23 |
+| MIDI → Audio | bräuchte Klangbibliothek mit oft unklarer Lizenz | 2026-09-23 |
 
 ## Erledigte Meilensteine
 

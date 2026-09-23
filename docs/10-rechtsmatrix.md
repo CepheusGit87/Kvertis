@@ -40,6 +40,10 @@ Stand: 2026-09-23. Bei jeder Änderung an einem Konverter oder einer Bibliothek 
 | FluentAssertions ≥ 8 | kostenpflichtig für kommerzielle Nutzung | Shouldly (BSD-3) |
 | NAudio | nicht nötig | FFmpeg |
 | DRM-Umgehung, Passwörter entfernen, URL-Downloads | Rechtslage, Briefing | nie |
+| Transkription mit Sprachmodell | Modelllizenzen teils nicht kommerziell, KI-Kennzeichnung, Paketgröße | verworfen 2026-09-23 |
+| RAR/CBR, MOBI/AZW, FBX, USDZ | proprietär, restriktive Lizenzen, Markenbezug, DRM | nie |
+| PDF/A erzeugen, MIDI → Audio | Haftung ohne Prüfer bzw. unklare Klangbibliothek-Lizenzen | nicht geplant |
+| E-Rechnung (XML) → PDF | Haftung bei falscher Darstellung, Markenfrage | zurückgestellt (O-18) |
 
 ## Was die App zeigt (Pflichtteil)
 
@@ -47,4 +51,4 @@ Seite „Third-Party Licenses“: jede Bibliothek mit Version, Lizenz und vollst
 
 ## Offene Punkte mit Rechtsbezug
 
-Siehe `09-roadmap.md`: O-02 (FFmpeg-Build erzeugen, Quellcode-Angebot ablegen), O-03 (juristische Einschätzung, optional, nur noch für die abgelaufenen Patente MP3/MPEG-2/AC-3 als Bestätigung), O-08 (Nennung von Office-Produktnamen im Store-Text), O-11 (`NtSuspendProcess` und Store-Zertifizierung), O-13 (Mono-Schrift mit OFL-Lizenz).
+Siehe `09-roadmap.md`: O-02 (FFmpeg-Build erzeugen, Quellcode-Angebot ablegen), O-03 (juristische Einschätzung, optional, nur noch für die abgelaufenen Patente MP3/MPEG-2/AC-3 als Bestätigung), O-08 (Nennung von Office-Produktnamen im Store-Text), O-11 (`NtSuspendProcess` und Store-Zertifizierung), O-13 (Mono-Schrift mit OFL-Lizenz), O-17 (Pflichten als Verkäufer), O-18 (E-Rechnung), O-20 (FFmpeg-Filter für GIF).
