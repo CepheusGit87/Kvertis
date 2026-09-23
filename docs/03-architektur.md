@@ -52,6 +52,7 @@ src/
       Audio/                          AudioConverter (FFmpeg)
       Video/                          VideoConverter (FFmpeg + MF-Encoder)
       Documents/                      PdfConverter, OfficeConverter
+      Models/                         ModelConverter (3D: STL, 3MF, OBJ, PLY, glTF/GLB; eigene Leser/Schreiber)
     Estimation/                       TimeEstimator, SizeEstimator, SpeedProfile
     Naming/                           OutputNamePattern
     Ffmpeg/                           FfmpegLocator, FfmpegCommandBuilder, FfprobeReader
@@ -280,3 +281,10 @@ Die Parallelitätsgrenzen sind Zähler unter dem Queue-Lock statt `SemaphoreSlim
 **Alternativen:** (a) Regulärer LGPL-Build mit allen Decodern (verbreitet patentbelastete Decoder, verworfen); (b) Media-Foundation-Source-Reader → Rohdaten per Pipe an FFmpeg (ermöglicht auch H.264 → VP9; deutlich mehr Aufwand, COM-Interop).
 **Grund:** Entscheidung des Projektinhabers: keine Verbreitung patentbelasteter Codecs. Media Foundation ist Bestandteil von Windows; Lizenzen liegen beim Betriebssystemhersteller bzw. bei den vom Nutzer installierten Erweiterungen.
 **Folgen:** In Phase 1 gibt es keinen Weg von H.264/HEVC-Eingaben nach WebM/MKV (VP9); die Formatmatrix zeigt das (Phase 2: Variante b). Die Routing-Entscheidung trifft `ffprobe` anhand der Codec-Namen der Streams (ffprobe braucht dafür keinen Decoder). `HevcFallbackGuard` (ADR-011) wird gegenstandslos, weil kein HEVC-Decoder mehr existiert; der Build-Nachweis (`FfmpegCompliance`) prüft zusätzlich Decoder und Protokolle. Der FFmpeg-Build muss vor der ersten Auslieferung über den Workflow erzeugt und verifiziert werden (O-02).
+
+### ADR-016 · 2026-09-23 · 3D-Modelle als eigene Medienart, eigene Leser und Schreiber ohne Bibliothek
+
+**Entscheidung:** Neue Medienart `MediaKind.Model3D` mit dem `ModelConverter` (`Kvertis.Engine/Conversion/Models`). Lesen: STL (binär und Text), 3MF (Kernspezifikation), OBJ, PLY (Text, binär little/big endian), glTF 2.0 (GLB und .gltf). Schreiben: STL (binär), 3MF, OBJ, PLY (binär), GLB. Alle Leser und Schreiber sind eigener Code, es kommt keine Bibliothek hinzu. Übernommen wird nur die Dreiecksgeometrie; Farben, Materialien, Texturen und Metadaten fallen weg. Interner Raum: Millimeter, Z nach oben (Konvention des 3D-Drucks); glTF wird beim Lesen und Schreiben von bzw. nach Meter, Y nach oben umgerechnet; 3MF-Einheiten werden ausgewertet. Spiegelnde Transformationen drehen die Dreiecksreihenfolge, damit Flächen außen bleiben.
+**Alternativen:** (a) Allzweck-Bibliothek (Assimp, BSD-3): große native Angriffsfläche, bringt einen nachgebauten Importer für ein proprietäres Format mit; (b) SharpGLTF (MIT) nur für glTF: zusätzliche Abhängigkeit für einen kleinen Teil; (c) Windows-3D-Druck-API (`Windows.Graphics.Printing3D`): nur 3MF, nur Windows.
+**Grund:** Die Formate sind offen und lizenzfrei; eigene Parser sind klein, prüfbar und plattformneutral (Tests unter Linux). Keine neue Lizenz, keine native DLL, kein Patent- oder Markenbezug.
+**Folgen:** Keine Vorschau für 3D in dieser Version (bräuchte einen Renderer; eigenes Thema). Nicht unterstützt: FBX, USDZ, DAE, 3DS, Blend; glTF-Dateien, die Erweiterungen verlangen (z. B. Netzkompression), und dünn besetzte Accessoren (`UnsupportedFormat`). Verknüpfte Dateien werden nie geöffnet (OBJ-Materialdateien, glTF-Bilder); externe glTF-Puffer nur aus dem Ordner des Modells, ohne Schema, ohne absolute Pfade, ohne „..“. Schutz vor feindlichen Dateien: Obergrenzen für Dreiecke (20 Mio.) und Punkte (30 Mio.), PLY-Elementzahlen, 3MF-Modellteil (4 GB entpackt, gegen ZIP-Bomben), XML ohne DTD. 3D ist in der Gratis-Version enthalten.

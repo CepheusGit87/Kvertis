@@ -124,6 +124,14 @@ public static class MagicBytes
         {
             return DetectIsoBmff(header, path);
         }
+        if (StartsWith(header, "glTF"u8) && header.Length >= 12 && BinaryPrimitives.ReadUInt32LittleEndian(header[4..]) == 2)
+        {
+            return FormatRegistry.Glb;
+        }
+        if (StartsWith(header, "ply\n"u8) || StartsWith(header, "ply\r\n"u8))
+        {
+            return FormatRegistry.Ply;
+        }
         if (StartsWith(header, "%PDF"u8))
         {
             return FormatRegistry.Pdf;
@@ -219,6 +227,10 @@ public static class MagicBytes
             {
                 return null;
             }
+            if (names.Any(n => n.StartsWith("3D/", StringComparison.OrdinalIgnoreCase) && n.EndsWith(".model", StringComparison.OrdinalIgnoreCase)))
+            {
+                return FormatRegistry.ThreeMf;
+            }
             if (names.Any(n => n.StartsWith("word/", StringComparison.Ordinal)))
             {
                 return FormatRegistry.Docx;
@@ -263,6 +275,18 @@ public static class MagicBytes
             }
         }
         var ext = Path.GetExtension(path)?.TrimStart('.').ToLowerInvariant();
+        if (LooksLikeAsciiStl(sample))
+        {
+            return FormatRegistry.Stl;
+        }
+        if (LooksLikeGltf(sample, ext))
+        {
+            return FormatRegistry.Gltf;
+        }
+        if (ext == "obj" && LooksLikeObj(sample))
+        {
+            return FormatRegistry.Obj;
+        }
         return ext switch
         {
             "md" or "markdown" => FormatRegistry.Markdown,
@@ -271,6 +295,73 @@ public static class MagicBytes
             "svg" => FormatRegistry.Svg,
             _ => LooksLikeHtml(sample) ? FormatRegistry.Html : FormatRegistry.Txt,
         };
+    }
+
+    /// <summary>
+    /// Binary STL has an arbitrary 80-byte header (it may even start with "solid"), then a triangle count; the
+    /// file length must be exactly 84 + 50 bytes per triangle. That length rule is the only reliable signature.
+    /// </summary>
+    public static bool IsBinaryStl(ReadOnlySpan<byte> sample, long fileLength)
+    {
+        if (sample.Length < 84 || fileLength < 84 + 50)
+        {
+            return false;
+        }
+        var count = BinaryPrimitives.ReadUInt32LittleEndian(sample.Slice(80, 4));
+        return count > 0 && 84 + 50L * count == fileLength;
+    }
+
+    /// <summary>Text STL: "solid name" followed by facets.</summary>
+    private static bool LooksLikeAsciiStl(ReadOnlySpan<byte> sample)
+    {
+        var text = Encoding.ASCII.GetString(sample).TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
+        return text.StartsWith("solid", StringComparison.OrdinalIgnoreCase)
+               && (text.Contains("facet", StringComparison.OrdinalIgnoreCase) || text.Contains("endsolid", StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// glTF JSON: an object with an "asset" member holding a "version" (required by the specification). Plain
+    /// .json files stay text, so ordinary data files are never taken for 3D models.
+    /// </summary>
+    private static bool LooksLikeGltf(ReadOnlySpan<byte> sample, string? ext)
+    {
+        var text = Encoding.UTF8.GetString(sample).TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
+        if (!text.StartsWith('{'))
+        {
+            return false;
+        }
+        return ext == "gltf"
+               || (ext != "json" && text.Contains("\"asset\"", StringComparison.Ordinal) && text.Contains("\"version\"", StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// OBJ is plain text without a signature, so the extension is required; the content must still consist of
+    /// OBJ statements and contain at least one vertex.
+    /// </summary>
+    private static bool LooksLikeObj(ReadOnlySpan<byte> sample)
+    {
+        var text = Encoding.ASCII.GetString(sample);
+        var lines = text.Split('\n');
+        var vertices = 0;
+        // The last line may be cut off by the sample boundary; skip it.
+        for (var i = 0; i < lines.Length - (lines.Length > 1 ? 1 : 0); i++)
+        {
+            var line = lines[i].Trim();
+            if (line.Length == 0 || line[0] == '#')
+            {
+                continue;
+            }
+            var keyword = line.Split(' ', '\t')[0];
+            if (keyword == "v")
+            {
+                vertices++;
+            }
+            else if (keyword is not ("vt" or "vn" or "vp" or "f" or "l" or "p" or "o" or "g" or "s" or "mtllib" or "usemtl"))
+            {
+                return false;
+            }
+        }
+        return vertices > 0;
     }
 
     private static bool LooksLikeSvg(ReadOnlySpan<byte> header)

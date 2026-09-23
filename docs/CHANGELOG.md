@@ -2,6 +2,21 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-23 – 3D-Modelle
+
+**Geändert**
+
+- Neue Medienart `MediaKind.Model3D` und `ModelConverter` (ADR-016): STL (binär/Text), 3MF, OBJ, PLY (Text/binär) und glTF 2.0 (GLB, .gltf) lesen; STL, 3MF, OBJ, PLY, GLB schreiben. Nur Geometrie; Millimeter, Z nach oben; glTF wird von/nach Meter, Y nach oben umgerechnet. Keine Vorschau.
+- Formaterkennung: GLB- und PLY-Signatur, binäres STL über die Dateigröße, Text-STL/glTF/OBJ über den Inhalt, 3MF im ZIP. Grenzwert 1 GB für 3D-Dateien.
+- Schutz: Obergrenzen für Dreiecke, Punkte und PLY-Elemente; 3MF-Modellteil gegen ZIP-Bomben begrenzt, XML ohne DTD; glTF-Puffer nur aus dem Modellordner; glTF mit Pflicht-Erweiterungen wird abgelehnt.
+- App: Konverter registriert, Symbol für 3D-Dateien, Texte (DE/EN) und Store-Texte nennen 3D-Modelle; 3D ist gratis.
+- Tests: `ModelConverterTests` (48 Fälle).
+- Doku: ADR-016, Formatmatrix, Rechtsmatrix, Roadmap, Anforderungen, Store-Texte.
+
+**Bibliotheken**
+
+- Keine Änderung (eigener Code).
+
 ## 2026-09-23 – Rechtsrahmen ohne Anwalt
 
 **Geändert (nur Doku)**

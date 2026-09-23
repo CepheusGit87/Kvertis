@@ -43,6 +43,8 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 - [ ] Video-Zielgröße per Two-Pass
 - [ ] AV1-Ausgabe (SVT-AV1), wenn Tempo für Laien akzeptabel
 - [ ] Weitere Sprachen
+- [x] 3D-Modelle: STL, 3MF, OBJ, PLY, glTF/GLB untereinander, eigene Leser und Schreiber, gratis (ADR-016, 2026-09-23)
+- [ ] 3D-Vorschau (bräuchte einen Renderer; zusammen mit der Vorschau für Dokumente und Ton)
 
 ### Ideen (geprüft, rechtlich unbedenklich, noch nicht eingeplant)
 
@@ -57,7 +59,6 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 | 2 | Untertitel SRT ↔ VTT (↔ ASS) | eigener Code, reiner Text | – |
 | 2 | ODT/ODS/ODP → TXT/CSV/Markdown, EPUB → TXT/Markdown/HTML, RTF → TXT | eigener Code (ZIP + XML); EPUB mit DRM → `ProtectedFile` | – |
 | 2 | CSV → XLSX, Markdown → DOCX, JSON/XML ↔ CSV/XLSX | OpenXml, Markdig (vorhanden) | – |
-| 3 | 3D-Modelle STL, OBJ, PLY, 3MF, glTF/GLB untereinander | eigene Parser (ohne Allzweck-Bibliothek); kein FBX, kein USDZ; Vorschaubild erst später (bräuchte Renderer) | ADR (neue `MediaKind`, Vorschau) |
 | 3 | GPS-Tracks GPX ↔ KML ↔ CSV | eigener Code; keine Hersteller-Formate | – |
 | 3 | XPS/OXPS → PDF, E-Mails EML/MSG → PDF/TXT, Comics CBZ → PDF | offen dokumentierte Formate; CBR (RAR) ausgeschlossen | – |
 | 3 | Favicon-Paket (ICO mit mehreren Größen + PNG-Sätze), QOI, TGA | eigener ICO-Writer (vorhanden) | – |
@@ -116,4 +117,5 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 |---|---|
 | 2026-09-23 | Projektstart: Doku, Agenten, Architektur |
 | 2026-09-23 | Rechtsrahmen ohne Patentrisiko: Magick.NET → SkiaSharp + WIC, FFmpeg-Allowlist-Build, Media-Foundation-Transcoder, Rechtsmatrix (`10-rechtsmatrix.md`) |
+| 2026-09-23 | 3D-Modelle als fünfte Medienart (ADR-016): STL, 3MF, OBJ, PLY, glTF/GLB ohne neue Bibliothek |
 | 2026-09-23 | Grundgerüst komplett: Engine (Bilder, Audio, Video, Dokumente), Queue, Windows-Plattform, WinUI-3-App (ungebaut), CI, Compliance-Gate, Code-Review mit 21 behobenen Befunden |

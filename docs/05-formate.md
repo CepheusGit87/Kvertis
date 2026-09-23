@@ -79,6 +79,19 @@ Bekannte Einschränkung Media-Foundation-Weg: `MediaTranscoder` hat keinen Schal
 
 Vorschau (Vorher/Nachher) gibt es für Bilder, Audio und Video-Standbild; Dokument-Konverter liefern in Phase 1 keine Vorschau.
 
+## 3D-Modelle (ADR-016)
+
+| Eingabe | Ausgaben | Standardvorschlag | Engine | Anmerkung |
+|---|---|---|---|---|
+| STL (binär und Text) | 3MF, OBJ, PLY, GLB, STL | 3MF | `ModelConverter` | STL → STL macht aus Text-STL die deutlich kleinere Binärform |
+| 3MF | STL, OBJ, PLY, GLB | STL | `ModelConverter` | Einheit aus der Datei; Bauteile (Komponenten) und Transformationen werden angewendet; Erweiterungen (Farben, Materialien, Teile in anderen Modell-Dateien) werden ignoriert |
+| OBJ | STL, 3MF, PLY, GLB | STL | `ModelConverter` | Vielecke werden in Dreiecke zerlegt; Materialdateien und Texturen werden nicht geöffnet |
+| PLY (Text, binär) | STL, 3MF, OBJ, GLB | STL | `ModelConverter` | Nur Punkte und Flächen; Farben und weitere Eigenschaften fallen weg |
+| GLB | STL, 3MF, OBJ, PLY | STL | `ModelConverter` | Standard-Szene mit allen Knoten-Transformationen |
+| glTF (.gltf) | GLB, STL, 3MF, OBJ, PLY | GLB | `ModelConverter` | Nur lesen. Puffer eingebettet oder als Datei im selben Ordner; Dateien, die Erweiterungen verlangen (z. B. Netzkompression), werden mit `UnsupportedFormat` abgelehnt |
+
+Übernommen wird nur die Geometrie (Dreiecke). Farben, Materialien, Texturen und Metadaten fallen immer weg, unabhängig von der Einstellung „Metadaten“. Einheiten: STL, OBJ und PLY haben keine; Kvertis behandelt die Zahlen als Millimeter (Konvention des 3D-Drucks). glTF arbeitet in Metern mit Y nach oben und wird beim Lesen und Schreiben umgerechnet, damit ein Modell nicht plötzlich 1000-mal größer ist oder auf der Seite liegt. Keine Vorschau für 3D in dieser Version. Nicht unterstützt: FBX, USDZ, DAE, 3DS, Blend.
+
 ## Presets
 
 | Preset | Bilder | Audio | Video | Metadaten |
@@ -97,6 +110,7 @@ Vorschau (Vorher/Nachher) gibt es für Bilder, Audio und Video-Standbild; Dokume
 | Audio | 2 GB | 15 s | 30 min |
 | Video | 20 GB | 30 s | 6 h |
 | Dokumente | 500 MB | 15 s | 10 min |
+| 3D-Modelle | 1 GB (höchstens 20 Mio. Dreiecke) | 15 s | 10 min |
 
 Dateien darüber werden nicht stillschweigend abgelehnt; die App fragt nach.
 
@@ -117,3 +131,8 @@ Dateien darüber werden nicht stillschweigend abgelehnt; die App fragt nach.
 | WAV | `52 49 46 46 .. .. .. .. 57 41 56 45` |
 | PDF | `25 50 44 46` |
 | DOCX/XLSX/PPTX | `50 4B 03 04` + `[Content_Types].xml` im Archiv |
+| 3MF | `50 4B 03 04` + `[Content_Types].xml` + Modellteil `3D/*.model` |
+| GLB | `67 6C 54 46` („glTF“) + Version 2 |
+| PLY | `ply` + Zeilenende |
+| STL binär | keine Signatur; Dateigröße = 84 + 50 × Dreieckszahl (Byte 80–83) |
+| STL Text, glTF (.gltf), OBJ | Textinhalt: `solid` mit `facet`/`endsolid`; JSON mit `"asset"`; OBJ nur mit Endung `.obj` und reinen OBJ-Anweisungen |

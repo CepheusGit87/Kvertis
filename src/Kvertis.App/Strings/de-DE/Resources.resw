@@ -61,7 +61,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About_Description.Text" xml:space="preserve">
-    <value>Kvertis wandelt Bilder, Audio, Video und Dokumente direkt auf Ihrem PC um. Offline, ohne Konto, ohne Cloud.</value>
+    <value>Kvertis wandelt Bilder, Audio, Video, Dokumente und 3D-Modelle direkt auf Ihrem PC um. Offline, ohne Konto, ohne Cloud.</value>
   </data>
   <data name="About_Licenses_Button.Content" xml:space="preserve">
     <value>Lizenzen von Drittanbietern anzeigen</value>
@@ -82,7 +82,7 @@
     <value>Version {0}</value>
   </data>
   <data name="App_Manifest_Description" xml:space="preserve">
-    <value>Dateien umwandeln, ohne dass sie Ihren PC verlassen. Bilder, Audio, Video und Dokumente. Offline, ohne Konto.</value>
+    <value>Dateien umwandeln, ohne dass sie Ihren PC verlassen. Bilder, Audio, Video, Dokumente und 3D-Modelle. Offline, ohne Konto.</value>
   </data>
   <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Nochmal</value>
@@ -697,7 +697,7 @@
     <value>Video umwandeln (MP4, MKV, WebM)</value>
   </data>
   <data name="Pro_Intro.Text" xml:space="preserve">
-    <value>Kvertis bleibt gratis für Bilder, Audio und Dokumente. Pro schaltet den Rest frei.</value>
+    <value>Kvertis bleibt gratis für Bilder, Audio, Dokumente und 3D-Modelle. Pro schaltet den Rest frei.</value>
   </data>
   <data name="Pro_Purchase_AlreadyOwned" xml:space="preserve">
     <value>Sie besitzen Kvertis Pro bereits.</value>

@@ -2,7 +2,7 @@
 
 ## Ziel
 
-Kvertis ist eine native Windows-App, die Bilder, Audio, Video und Dokumente lokal konvertiert. Vollständig offline, kein Account, keine Cloud, keine Telemetrie. Verkauf als Freemium im Microsoft Store: Gratis mit Limits, Pro als einmaliger In-App-Kauf. Start im deutschsprachigen Raum, später weltweit.
+Kvertis ist eine native Windows-App, die Bilder, Audio, Video, Dokumente und 3D-Modelle lokal konvertiert. Vollständig offline, kein Account, keine Cloud, keine Telemetrie. Verkauf als Freemium im Microsoft Store: Gratis mit Limits, Pro als einmaliger In-App-Kauf. Start im deutschsprachigen Raum, später weltweit.
 
 ## Zielgruppe
 
@@ -63,7 +63,7 @@ Weitere Anforderungen ab Tag 1:
 
 | | Gratis | Pro (einmaliger Kauf) |
 |---|---|---|
-| Bilder, Audio, Dokumente | ja | ja |
+| Bilder, Audio, Dokumente, 3D-Modelle | ja | ja |
 | Video | nein | ja |
 | Batch-Größe | begrenzt (Wert siehe `09-roadmap.md`, offener Punkt) | unbegrenzt |
 | Werbung / Wasserzeichen | keine | keine |

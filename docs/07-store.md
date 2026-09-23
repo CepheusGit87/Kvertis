@@ -63,7 +63,7 @@ Ort der URL: offener Punkt (eigene Domain oder Repository-Seite).
 
 ### Deutsch
 
-**Kurzbeschreibung:** Dateien umwandeln, ohne dass sie Ihren PC verlassen. Bilder, Audio, Video und Dokumente. Offline, ohne Konto.
+**Kurzbeschreibung:** Dateien umwandeln, ohne dass sie Ihren PC verlassen. Bilder, Audio, Video, Dokumente und 3D-Modelle. Offline, ohne Konto.
 
 **Beschreibung:**
 Kvertis wandelt Ihre Dateien direkt auf Ihrem PC um. Ziehen Sie eine Datei in das Fenster, bestätigen Sie den Vorschlag, fertig.
@@ -72,6 +72,7 @@ Kvertis wandelt Ihre Dateien direkt auf Ihrem PC um. Ziehen Sie eine Datei in da
 - Audio: MP3, WAV, FLAC, OGG, Opus, M4A
 - Video (Pro): MP4, MKV, WebM
 - Dokumente: PDF, DOCX, XLSX, PPTX, Text, Markdown
+- 3D-Modelle: STL, 3MF, OBJ, PLY, GLB, zum Beispiel für den 3D-Druck
 - Presets: Für Messenger, Für E-Mail, Für Social Media, Für Website, Archiv
 - Zielgröße eingeben, Kvertis berechnet den Rest
 - Vorher/Nachher-Vorschau mit Größenvergleich
@@ -84,7 +85,7 @@ Kvertis Pro (einmaliger Kauf) schaltet Video-Konvertierung und unbegrenzte Stape
 
 ### English
 
-**Short description:** Convert files without them ever leaving your PC. Images, audio, video and documents. Offline, no account.
+**Short description:** Convert files without them ever leaving your PC. Images, audio, video, documents and 3D models. Offline, no account.
 
 **Description:**
 Kvertis converts your files right on your PC. Drop a file into the window, confirm the suggestion, done.
@@ -93,6 +94,7 @@ Kvertis converts your files right on your PC. Drop a file into the window, confi
 - Audio: MP3, WAV, FLAC, OGG, Opus, M4A
 - Video (Pro): MP4, MKV, WebM
 - Documents: PDF, DOCX, XLSX, PPTX, text, Markdown
+- 3D models: STL, 3MF, OBJ, PLY, GLB, for example for 3D printing
 - Presets: For messaging, For email, For social media, For web, Archive
 - Enter a target size and Kvertis works out the settings
 - Before/after preview with size comparison

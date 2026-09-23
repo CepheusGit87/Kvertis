@@ -7,7 +7,8 @@ public sealed record InputLimits(
     long MaxImageBytes = 500L * 1024 * 1024,
     long MaxAudioBytes = 2L * 1024 * 1024 * 1024,
     long MaxVideoBytes = 20L * 1024 * 1024 * 1024,
-    long MaxDocumentBytes = 500L * 1024 * 1024)
+    long MaxDocumentBytes = 500L * 1024 * 1024,
+    long MaxModelBytes = 1024L * 1024 * 1024)
 {
     public static readonly InputLimits Default = new();
 
@@ -17,6 +18,7 @@ public sealed record InputLimits(
         MediaKind.Audio => MaxAudioBytes,
         MediaKind.Video => MaxVideoBytes,
         MediaKind.Document => MaxDocumentBytes,
+        MediaKind.Model3D => MaxModelBytes,
         _ => MaxImageBytes,
     };
 
@@ -26,6 +28,7 @@ public sealed record InputLimits(
         MediaKind.Audio => TimeSpan.FromSeconds(15),
         MediaKind.Video => TimeSpan.FromSeconds(30),
         MediaKind.Document => TimeSpan.FromSeconds(15),
+        MediaKind.Model3D => TimeSpan.FromSeconds(15),
         _ => TimeSpan.FromSeconds(10),
     };
 
@@ -35,6 +38,7 @@ public sealed record InputLimits(
         MediaKind.Audio => TimeSpan.FromMinutes(30),
         MediaKind.Video => TimeSpan.FromHours(6),
         MediaKind.Document => TimeSpan.FromMinutes(10),
+        MediaKind.Model3D => TimeSpan.FromMinutes(10),
         _ => TimeSpan.FromMinutes(5),
     };
 }

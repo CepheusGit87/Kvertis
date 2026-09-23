@@ -95,6 +95,7 @@ public sealed class FormatDetector : IFormatDetector
             new HashSet<FormatId> { FormatRegistry.Tiff, FormatRegistry.Raw },
             new HashSet<FormatId> { FormatRegistry.Wmv, FormatRegistry.Wma },
             new HashSet<FormatId> { FormatRegistry.Txt, FormatRegistry.Markdown, FormatRegistry.Csv, FormatRegistry.Html },
+            new HashSet<FormatId> { FormatRegistry.Glb, FormatRegistry.Gltf },
         };
         return family.Any(f => f.Contains(a) && f.Contains(b));
     }
@@ -120,6 +121,10 @@ public sealed class FormatDetector : IFormatDetector
             if (format is not null)
             {
                 return format;
+            }
+            if (MagicBytes.IsBinaryStl(buffer.AsSpan(0, read), length))
+            {
+                return FormatRegistry.Stl;
             }
             if (read >= 2 && buffer[0] == (byte)'P' && buffer[1] == (byte)'K')
             {

@@ -4,6 +4,7 @@ using Kvertis.Engine.Conversion;
 using Kvertis.Engine.Conversion.Audio;
 using Kvertis.Engine.Conversion.Documents;
 using Kvertis.Engine.Conversion.Images;
+using Kvertis.Engine.Conversion.Models;
 using Kvertis.Engine.Conversion.Video;
 using Kvertis.Engine.Estimation;
 using Kvertis.Engine.Ffmpeg;
@@ -111,6 +112,8 @@ public static class ServiceRegistration
         services.AddSingleton<IConverter, OfficeConverter>();
         services.AddSingleton<IConverter, TextConverter>();
         services.AddSingleton<IConverter, ImageToPdfConverter>();
+        // 3D models: own readers and writers, no library (ADR-016).
+        services.AddSingleton<IConverter, ModelConverter>();
         services.AddSingleton<IConverterResolver, ConverterResolver>();
 
         // Queue

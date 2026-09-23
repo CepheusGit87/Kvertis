@@ -73,6 +73,14 @@ public sealed class FormatRegistry
     /// <summary>Legacy binary office formats (DOC/XLS/PPT): recognized so we can say "not supported" clearly.</summary>
     public static readonly FormatId LegacyOffice = new("doc");
 
+    public static readonly FormatId Stl = new("stl");
+    public static readonly FormatId Obj = new("obj");
+    public static readonly FormatId Ply = new("ply");
+    public static readonly FormatId ThreeMf = new("3mf");
+    public static readonly FormatId Glb = new("glb");
+    /// <summary>glTF as JSON. Read only; written as the single-file binary form <see cref="Glb"/>.</summary>
+    public static readonly FormatId Gltf = new("gltf");
+
     private static readonly IReadOnlyList<FormatDescriptor> Descriptors =
     [
         new(Jpg, MediaKind.Image, "JPG", ["jpg", "jpeg", "jpe", "jfif"], true, true),
@@ -121,6 +129,14 @@ public sealed class FormatRegistry
         new(Html, MediaKind.Document, "HTML", ["html", "htm"], true, true),
         new(Csv, MediaKind.Document, "CSV", ["csv"], true, true),
         new(LegacyOffice, MediaKind.Document, "DOC/XLS/PPT (legacy)", ["doc", "xls", "ppt"], false, false),
+
+        // 3D models: open, royalty-free formats read and written by own code (ADR-016). Geometry only.
+        new(Stl, MediaKind.Model3D, "STL", ["stl"], true, true, Lossless: true),
+        new(ThreeMf, MediaKind.Model3D, "3MF", ["3mf"], true, true, Lossless: true),
+        new(Obj, MediaKind.Model3D, "OBJ", ["obj"], true, true, Lossless: true),
+        new(Ply, MediaKind.Model3D, "PLY", ["ply"], true, true, Lossless: true),
+        new(Glb, MediaKind.Model3D, "GLB (glTF)", ["glb"], true, true, Lossless: true),
+        new(Gltf, MediaKind.Model3D, "glTF", ["gltf"], true, false, Lossless: true),
     ];
 
     private static readonly Dictionary<FormatId, IReadOnlyList<FormatId>> Matrix = new()
@@ -172,6 +188,14 @@ public sealed class FormatRegistry
         [Markdown] = [Pdf, Html, Txt],
         [Html] = [Txt, Markdown],
         [Csv] = [Txt],
+
+        // 3D (ADR-016). STL → STL rewrites text STL as the much smaller binary form.
+        [Stl] = [ThreeMf, Obj, Ply, Glb, Stl],
+        [ThreeMf] = [Stl, Obj, Ply, Glb],
+        [Obj] = [Stl, ThreeMf, Ply, Glb],
+        [Ply] = [Stl, ThreeMf, Obj, Glb],
+        [Glb] = [Stl, ThreeMf, Obj, Ply],
+        [Gltf] = [Glb, Stl, ThreeMf, Obj, Ply],
     };
 
     private readonly Dictionary<FormatId, FormatDescriptor> _byId;

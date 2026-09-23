@@ -61,7 +61,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="About_Description.Text" xml:space="preserve">
-    <value>Kvertis converts images, audio, video and documents right on your PC. Offline, no account, no cloud.</value>
+    <value>Kvertis converts images, audio, video, documents and 3D models right on your PC. Offline, no account, no cloud.</value>
   </data>
   <data name="About_Licenses_Button.Content" xml:space="preserve">
     <value>Show third-party licenses</value>
@@ -82,7 +82,7 @@
     <value>Version {0}</value>
   </data>
   <data name="App_Manifest_Description" xml:space="preserve">
-    <value>Convert files without them ever leaving your PC. Images, audio, video and documents. Offline, no account.</value>
+    <value>Convert files without them ever leaving your PC. Images, audio, video, documents and 3D models. Offline, no account.</value>
   </data>
   <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Convert again</value>
@@ -697,7 +697,7 @@
     <value>Convert video (MP4, MKV, WebM)</value>
   </data>
   <data name="Pro_Intro.Text" xml:space="preserve">
-    <value>Kvertis stays free for images, audio and documents. Pro unlocks the rest.</value>
+    <value>Kvertis stays free for images, audio, documents and 3D models. Pro unlocks the rest.</value>
   </data>
   <data name="Pro_Purchase_AlreadyOwned" xml:space="preserve">
     <value>You already own Kvertis Pro.</value>

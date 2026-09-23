@@ -1,6 +1,6 @@
 # Kvertis
 
-Offline-Dateikonverter für Windows (Microsoft Store). Bilder, Audio, Video, Dokumente. Kein Account, keine Cloud, keine Telemetrie.
+Offline-Dateikonverter für Windows (Microsoft Store). Bilder, Audio, Video, Dokumente, 3D-Modelle. Kein Account, keine Cloud, keine Telemetrie.
 
 ## Oberste Regel: Rechtssicherheit vor Features
 

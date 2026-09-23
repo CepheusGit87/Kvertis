@@ -63,6 +63,7 @@ public sealed partial class JobItemViewModel : ObservableObject
     private const string GlyphAudio = "\uE8D6";
     private const string GlyphVideo = "\uE714";
     private const string GlyphDocument = "\uE8A5";
+    private const string GlyphModel3D = "\uE7B8";
     private const string GlyphUnknown = "\uE7C3";
 
     private readonly IJobItemHost _host;
@@ -286,6 +287,7 @@ public sealed partial class JobItemViewModel : ObservableObject
             MediaKind.Audio => GlyphAudio,
             MediaKind.Video => GlyphVideo,
             MediaKind.Document => GlyphDocument,
+            MediaKind.Model3D => GlyphModel3D,
             _ => GlyphUnknown,
         };
         SizeText = sizeText;

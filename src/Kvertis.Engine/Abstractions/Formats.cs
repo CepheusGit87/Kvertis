@@ -8,6 +8,8 @@ public enum MediaKind
     Audio,
     Video,
     Document,
+    /// <summary>3D models (meshes): STL, OBJ, PLY, 3MF, glTF/GLB. Own parsers only (ADR-016).</summary>
+    Model3D,
 }
 
 /// <summary>
