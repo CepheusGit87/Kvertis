@@ -161,9 +161,9 @@ code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; bord
   <header class="kopf">
     <div class="augenbraue">Kvertis · Sortierregal · Sanduhr</div>
     <h1>Die Sanduhr läuft ab und dreht sich</h1>
-    <p class="lead">In jeder Sanduhr rieselt der Sand in etwa 25 Sekunden nach unten: oben wird es weniger, unten wächst der Haufen. Dann dreht sich die Sanduhr und alles beginnt von vorn. <b>Die Formate bleiben dabei immer richtig: Eingänge oben, Ergebnisse unten.</b> Die fünf Konzepte unterscheiden sich darin, was die Formate beim Drehen tun.</p>
+    <p class="lead">In jeder Sanduhr rieselt der Sand nach unten: oben wird es weniger, unten wächst der Haufen. Dann dreht sich die Sanduhr und alles beginnt von vorn. Jede Sanduhr hat ihren eigenen Takt: Bilder 25 s, Audio 35 s, Video 45 s, Dokumente 55 s. Alle starten voll, die erste dreht sich also frühestens nach 25 Sekunden, die nächsten jeweils etwa 10 Sekunden später, und sie bleiben auch danach versetzt. <b>Die Formate bleiben dabei immer richtig: Eingänge oben, Ergebnisse unten.</b> Die fünf Konzepte unterscheiden sich darin, was die Formate beim Drehen tun.</p>
     <div class="steuer">
-      <div class="segment" id="tempo" role="group" aria-label="Geschwindigkeit"><button class="an" data-t="25">Echtzeit · 25 s</button><button data-t="6">Zeitraffer · 6 s</button></div>
+      <div class="segment" id="tempo" role="group" aria-label="Geschwindigkeit"><button class="an" data-t="25">Echtzeit · 25 bis 55 s</button><button data-t="6">Zeitraffer · etwa 4× schneller</button></div>
       <span class="muted" style="font-size:13.5px">Zum Anschauen den Zeitraffer wählen oder bei jedem Konzept „Jetzt drehen“ drücken.</span>
     </div>
   </header>
@@ -188,8 +188,8 @@ code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; bord
     <div class="reihe-rahmen"><div class="reihe" id="r5"></div></div>
     <div class="urteil"><span class="plus"><b>Stärke:</b> verspielt, aber die Formate bleiben sichtbar</span><span class="minus"><b>Schwäche:</b> viel Bewegung auf einmal, wenn alle vier Kisten gleichzeitig drehen</span></div></section>
   <section class="idee"><h2>Mein Vorschlag</h2>
-    <div class="empf"><p><b>3 · Formate schweben heraus</b> für den besonderen Moment, oder <b>2 · Formate bleiben stehen</b>, wenn es ruhiger sein soll. Beide halten die Formate lesbar.</p>
-    <p class="muted">Im Programm drehen die vier Sanduhren versetzt, nie gleichzeitig. Sie laufen nur, solange das Fenster sichtbar ist, und bei „Animationen reduzieren“ stehen sie still. Während einer echten Umwandlung könnte der Sand statt der 25 Sekunden den Fortschritt zeigen.</p></div></section>
+    <div class="empf"><p><b>4 · Nach vorn kippen</b>: die schönste Bewegung, und die Formate reisen auf der Rückseite mit, sodass sie nach dem Kippen genau am richtigen Platz stehen.</p>
+    <p class="muted">Im Programm hat jede Sanduhr ihren eigenen Takt (25, 35, 45, 55 s), deshalb kippen sie nie gleichzeitig. Sie laufen nur, solange das Fenster sichtbar ist, und bei „Animationen reduzieren“ stehen sie still. Während einer echten Umwandlung könnte der Sand statt der 25 Sekunden den Fortschritt zeigen.</p></div></section>
 </main>
 
 <script>
@@ -280,7 +280,7 @@ code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; bord
       return zelle(k, `<div class="uhr3d k${konzept} k-${k}" data-i="${i}">${inhalt}<span class="zeitchip"></span></div>`);
     }).join('');
     document.querySelectorAll(`#r${konzept} .uhr3d`).forEach((el, i) => {
-      const u = { el, konzept, L: 1 - i * .22, dreht: false, seite: 0, winkel: 0 };
+      const u = { el, konzept, L: 1, dauer: 25 + i * 10, dreht: false, seite: 0, winkel: 0 };
       u.svgs = () => konzept === 4 ? [el.querySelectorAll('.flaeche svg')[u.seite]] : [el.querySelector('svg')];
       if (konzept === 4) el.querySelectorAll('.flaeche svg').forEach(s => sandZeichnen(s, 1, false));
       UHREN.push(u);
@@ -311,9 +311,9 @@ code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; bord
   function schleife(t) {
     const dt = Math.min(.1, (t - letzt) / 1000); letzt = t;
     UHREN.forEach(u => {
-      if (!u.dreht && !leise) { u.L -= dt / T; if (u.L <= 0) { u.L = 0; wende(u); } }
+      if (!u.dreht && !leise) { u.L -= dt / (u.dauer * T / 25); if (u.L <= 0) { u.L = 0; wende(u); } }
       if (!u.dreht) u.svgs().forEach(s => sandZeichnen(s, Math.max(0, u.L), true));
-      u.el.querySelector('.zeitchip').textContent = u.dreht ? 'dreht …' : `noch ${Math.ceil(Math.max(0, u.L) * T)} s`;
+      u.el.querySelector('.zeitchip').textContent = u.dreht ? 'dreht …' : `noch ${Math.ceil(Math.max(0, u.L) * u.dauer * T / 25)} s · Takt ${Math.round(u.dauer * T / 25)} s`;
     });
     requestAnimationFrame(schleife);
   }
