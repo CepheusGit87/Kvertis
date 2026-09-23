@@ -1,6 +1,6 @@
 # 10 – Rechtsmatrix: Konverter → Bibliothek → Lizenz → Patentlage → Begründung
 
-Die eine Stelle, an der pro Konverter nachvollziehbar ist, womit er arbeitet, unter welcher Lizenz, wie die Patentlage ist, warum das zulässig ist und wo es geprüft wird. Interne Prüfunterlage, **nicht** Teil der App (die App zeigt nur Lizenztexte und das Quellcode-Angebot, siehe unten). Dieses Dokument ersetzt keine Rechtsberatung; Punkte für einen Anwalt stehen in `09-roadmap.md`.
+Die eine Stelle, an der pro Konverter nachvollziehbar ist, womit er arbeitet, unter welcher Lizenz, wie die Patentlage ist, warum das zulässig ist und wo es geprüft wird. Interne Prüfunterlage, **nicht** Teil der App (die App zeigt nur Lizenztexte und das Quellcode-Angebot, siehe unten). Dieses Dokument ersetzt keine Rechtsberatung; es wird kein Anwalt hinzugezogen, offene Punkte stehen in `09-roadmap.md`.
 
 Stand: 2026-09-23. Bei jeder Änderung an einem Konverter oder einer Bibliothek wird diese Tabelle im selben Commit nachgezogen (Compliance-Gate prüft, dass jeder `IConverter` hier steht).
 
@@ -43,7 +43,7 @@ Stand: 2026-09-23. Bei jeder Änderung an einem Konverter oder einer Bibliothek 
 | Transkription mit Sprachmodell | Modelllizenzen teils nicht kommerziell, KI-Kennzeichnung, Paketgröße | verworfen 2026-09-23 |
 | RAR/CBR, MOBI/AZW, FBX, USDZ | proprietär, restriktive Lizenzen, Markenbezug, DRM | nie |
 | PDF/A erzeugen, MIDI → Audio | Haftung ohne Prüfer bzw. unklare Klangbibliothek-Lizenzen | nicht geplant |
-| E-Rechnung (XML) → PDF | Haftung bei falscher Darstellung, Markenfrage | zurückgestellt (O-18) |
+| E-Rechnung (XML) → PDF | Haftung bei falscher Darstellung, Markenfrage | verworfen 2026-09-23 |
 
 ## Was die App zeigt (Pflichtteil)
 
@@ -51,4 +51,4 @@ Seite „Third-Party Licenses“: jede Bibliothek mit Version, Lizenz und vollst
 
 ## Offene Punkte mit Rechtsbezug
 
-Siehe `09-roadmap.md`: O-02 (FFmpeg-Build erzeugen, Quellcode-Angebot ablegen), O-03 (juristische Einschätzung, optional, nur noch für die abgelaufenen Patente MP3/MPEG-2/AC-3 als Bestätigung), O-08 (Nennung von Office-Produktnamen im Store-Text), O-11 (`NtSuspendProcess` und Store-Zertifizierung), O-13 (Mono-Schrift mit OFL-Lizenz), O-17 (Pflichten als Verkäufer), O-18 (E-Rechnung), O-20 (FFmpeg-Filter für GIF).
+Siehe `09-roadmap.md`: O-02 (FFmpeg-Build erzeugen, Quellcode-Angebot ablegen), O-11 (`NtSuspendProcess` und Store-Zertifizierung), O-13 (Mono-Schrift mit OFL-Lizenz), O-17 (Pflichten als Verkäufer, Checkliste ohne Anwalt), O-20 (FFmpeg-Filter für GIF).

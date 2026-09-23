@@ -2,7 +2,7 @@
 
 **Oberste Regel: Rechtssicherheit vor Features. Im Zweifel wird ein Feature weggelassen, statt ein Risiko einzugehen.**
 
-Dieses Dokument ist die verbindliche Prüfliste für `lizenz-waechter` und `reviewer`. Es ersetzt keine Rechtsberatung. Punkte, die eine juristische Prüfung brauchen, sind in [09-roadmap.md](09-roadmap.md) unter „Offene Punkte“ markiert.
+Dieses Dokument ist die verbindliche Prüfliste für `lizenz-waechter` und `reviewer`. Es ersetzt keine Rechtsberatung. Es wird kein Anwalt hinzugezogen (Entscheidung Projektinhaber, 2026-09-23); was ohne juristische Prüfung nicht sicher einschätzbar ist, wird weggelassen. Offene Punkte stehen in [09-roadmap.md](09-roadmap.md).
 
 ## 1. Lizenzen von Bibliotheken
 
@@ -117,11 +117,14 @@ Ein Verstoß gegen dieses Dokument blockiert den Merge. `lizenz-waechter` benenn
 
 ## 10. Pflichten als Verkäufer
 
-Kvertis wird verkauft. Neben Lizenzen und Patenten gelten deshalb Pflichten, die nicht an einzelnen Bibliotheken hängen. Stand und Klärung: O-17 in `09-roadmap.md`.
+Kvertis wird verkauft. Neben Lizenzen und Patenten gelten deshalb Pflichten, die nicht an einzelnen Bibliotheken hängen. Sie werden ohne Anwalt abgearbeitet (O-17 in `09-roadmap.md`). Fristen und Einordnungen vor dem Verkaufsstart anhand der amtlichen Quellen nachprüfen.
 
-- Aktualisierungspflicht für digitale Produkte gegenüber Verbrauchern (§ 327f BGB), einschließlich Sicherheits-Updates der mitgelieferten Bibliotheken.
-- Cyber Resilience Act der EU: Umgang mit Schwachstellen, Stückliste der Softwarebestandteile (Grundlage: `04-bibliotheken.md`), CE-Kennzeichnung.
-- EU-Produkthaftungsrichtlinie, die Software einschließt: Originaldateien werden nie überschrieben (siehe Abschnitt 4).
-- Impressum, AGB, Widerrufsbelehrung, soweit der Store sie nicht abdeckt.
-- Neue Funktionen mit Haftungsnähe (z. B. Anzeige von Rechnungsdaten, O-18) nur nach Anwaltsprüfung.
-- Kein Netzwerkcode bleibt Voraussetzung dafür, dass keine Verarbeitung personenbezogener Daten durch den Anbieter stattfindet.
+Checkliste vor dem Verkaufsstart:
+
+- [ ] **Rechtstexte:** Impressum, AGB, Widerrufsbelehrung, Datenschutzerklärung über ein Rechtstexte-Abo eines spezialisierten Anbieters (mit Aktualisierung und, falls angeboten, Haftung für die Texte). Impressum auch im Store-Eintrag.
+- [ ] **Update-Zusage** (§ 327f BGB): Zeitraum für Sicherheits- und Funktions-Updates festlegen und veröffentlichen (Vorschlag: mindestens 2 Jahre ab Kauf); Sicherheitslücken in mitgelieferten Bibliotheken (SkiaSharp, FFmpeg, PdfPig, PDFsharp, OpenXml, Markdig) werden nachgeliefert.
+- [ ] **Cyber Resilience Act:** SBOM (Stückliste der Softwarebestandteile) automatisch im Build erzeugen, abgeglichen mit `04-bibliotheken.md`; öffentlicher Sicherheitskontakt; kurzer dokumentierter Ablauf für Schwachstellen (annehmen, beheben, ausliefern, melden); Produktkategorie prüfen (erwartet: Standardkategorie mit Selbstbewertung) und CE-Konformität nach den offiziellen EU-Leitfäden.
+- [x] **Produkthaftung technisch absichern:** Originaldateien werden nie überschrieben; Ausgaben entstehen atomar über eine temporäre Datei, ein bestehendes Ziel wird nur mit ausdrücklicher Zustimmung ersetzt (`ConversionOutput`, Tests in `tests/Kvertis.Engine.Tests/IO/ConversionOutputTests.cs`).
+- [ ] **Datenschutz:** Kein Netzwerkcode bleibt Voraussetzung dafür, dass keine Verarbeitung personenbezogener Daten durch den Anbieter stattfindet.
+
+Grundsatz: Funktionen mit Haftungsnähe, die ohne juristische Prüfung nicht sicher einschätzbar sind (z. B. Anzeige von Rechnungsdaten, PDF/A), werden nicht umgesetzt.

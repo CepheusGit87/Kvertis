@@ -2,6 +2,20 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-23 – Rechtsrahmen ohne Anwalt
+
+**Geändert (nur Doku)**
+
+- Entscheidung: kein Anwalt; was ohne juristische Prüfung nicht sicher einschätzbar ist, wird weggelassen (`02-rechtssicherheit.md`).
+- O-03 erledigt: abgelaufene Patente (MP3, MPEG-1/2, AC-3) gelten als belegt, Decoder bleiben.
+- O-08 erledigt: Store-Texte nennen nur DOCX/XLSX/PPTX statt Office-Produktnamen (`07-store.md`).
+- O-18 erledigt: E-Rechnung → PDF/HTML verworfen.
+- O-17 und `02-rechtssicherheit.md` Abschnitt 10: Checkliste für Verkäuferpflichten ohne Anwalt (Rechtstexte-Abo, Update-Zusage, Cyber Resilience Act, Schutz der Originaldateien).
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-23 – Ideenliste, Verkäuferpflichten, verworfene Funktionen
 
 **Geändert (nur Doku)**

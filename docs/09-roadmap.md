@@ -71,12 +71,12 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 |---|---|---|---|
 | O-01 | **Erledigt 2026-09-23:** Magick.NET entfernt, Bildpfad auf SkiaSharp (geprüft) + Windows-Bildkomponente umgestellt (ADR-014). | — | — |
 | O-02 | **FFmpeg-Build erzeugen:** Workflow `.github/workflows/ffmpeg-build.yml` (Allowlist, x64) einmal manuell starten, Artefakt prüfen (`check-build.ps1`), Binärdateien unter `src/Kvertis.App/Tools/ffmpeg/x64/` ablegen, Quellcode-Angebot archivieren. ARM64 offen. | Projektinhaber (Workflow starten), `lizenz-waechter` | Audio, Video |
-| O-03 | **Juristische Bestätigung (optional):** Abgelaufene Patente für MP3 (2017), MPEG-1/2 (2018), AC-3 (2017) sind allgemein anerkannt; ein kurzer Anwaltsvermerk dazu wäre die letzte Absicherung. Alle H.264/HEVC/AAC-Fragen sind durch ADR-015 gegenstandslos. | Projektinhaber | nichts |
+| O-03 | **Erledigt 2026-09-23 (ohne Anwalt):** Die Patente für MP3 (2017), MPEG-1/2 (2018) und AC-3 (2017) sind abgelaufen und gut belegt; die Decoder bleiben im Build. Alle H.264/HEVC/AAC-Fragen sind durch ADR-015 gegenstandslos. | — | — |
 | O-04 | **RAW-Bilder:** Magick.NET/libraw oder WIC mit Raw-Bilderweiterung? | `architekt`, `lizenz-waechter` | RAW-Unterstützung |
 | O-05 | **Batch-Limit Gratis:** Vorschlag 5 Dateien pro Durchlauf. | Projektinhaber | Freemium-Umsetzung |
 | O-06 | **Datenschutz-URL:** Domain oder Repository-Seite? | Projektinhaber | Store-Einreichung |
 | O-07 | **Store-Name reservieren** und Publisher-Identität festlegen. | Projektinhaber | Manifest-Identity |
-| O-08 | **Nennung von „Word/Excel/PowerPoint“** in Store-Texten: erlaubt laut Store-Richtlinien oder nur „DOCX/XLSX/PPTX“? | `lizenz-waechter` | Store-Texte |
+| O-08 | **Erledigt 2026-09-23:** Store-Texte und UI nennen nur Formatnamen („DOCX, XLSX, PPTX“), keine Office-Produktnamen. Damit ist keine Prüfung der Store-Richtlinien nötig. | — | — |
 | O-09 | **Office → PDF layouttreu:** Kein Weg ohne Renderer (ADR-010). Bleibt außerhalb, bis eine lizenzkonforme Lösung existiert. | `architekt` | nichts |
 | O-10 | **Entwicklungsumgebung:** Im Cloud-Container kein .NET SDK und kein Windows. Engine/Queue/Tests sollen dort mit installiertem SDK bauen; App nur in Windows-CI und lokal. | Projektinhaber | Grundgerüst-Verifikation |
 | O-11 | **Pause per Prozess-Suspend** (`NtSuspendProcess`) ist umgesetzt, aber eine undokumentierte API. Vor der Store-Einreichung prüfen, ob die Zertifizierung das beanstandet; Alternative: Job-Objekte + `SuspendThread`. | `architekt`, `store-release` | Store-Einreichung |
@@ -85,8 +85,8 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 | O-14 | **Windows-Build der App** ist noch nie gelaufen (nur C#-Teile gegen WinUI-Assemblies kompiliert). Erster Windows-CI-Lauf bzw. lokaler Build unter Windows nötig; XAML-Fehler sind wahrscheinlich und schnell behebbar. | Projektinhaber (Windows-Rechner) oder Windows-CI | Alles Sichtbare |
 | O-16 | **UI: Ausgabeliste** filtert jetzt über `IConverterResolver.CanConvert`; die MKV-Ausgabeliste hängt damit vom Codec ab. Verhalten unter Windows prüfen. | `ui-entwickler` | UI |
 | O-15 | **Platzhalter im Code:** Publisher `CN=Kvertis`, Store-Add-on-ID `9NXXXXXXXXXX`, Logos. | Projektinhaber | Store-Einreichung |
-| O-17 | **Pflichten als Verkäufer** (vor Verkaufsstart mit Anwalt für IT-Recht klären, gebündelt mit O-03): Aktualisierungspflicht für digitale Produkte (§ 327f BGB, Sicherheits-Updates für SkiaSharp/FFmpeg eingeschlossen); Cyber Resilience Act (Meldepflichten ab 09/2026, volle Pflichten ab 12/2027: CE-Kennzeichnung, Schwachstellen-Prozess, SBOM – Grundlage `04-bibliotheken.md`); neue EU-Produkthaftungsrichtlinie (Software ab 12/2026; Originaldateien dürfen nie überschrieben werden); Impressum, AGB, Widerruf, soweit nicht vom Store abgedeckt. Daten und Zeitpunkte vom Anwalt bestätigen lassen. | Projektinhaber, Anwalt | Verkaufsstart |
-| O-18 | **E-Rechnung (XML) → PDF/HTML zurückgestellt:** starker Nutzen für den deutschen Markt, aber Haftungsrisiko bei falsch dargestellten Beträgen oder Bankdaten (Haftungsausschluss gegenüber Verbrauchern nur begrenzt möglich) und offene Markenfrage bei einzelnen Formatnamen. Im Store-Text höchstens „E-Rechnungen (XML)“. Nur nach Anwaltsprüfung. | Projektinhaber, Anwalt | E-Rechnung |
+| O-17 | **Pflichten als Verkäufer, ohne Anwalt abgearbeitet** (Checkliste in `02-rechtssicherheit.md`, Abschnitt 10): Rechtstexte (Impressum, AGB, Widerruf, Datenschutz) über ein Rechtstexte-Abo mit Aktualisierung; Update-Zusage für Sicherheits-Updates veröffentlichen (§ 327f BGB); Cyber Resilience Act: SBOM im Build, Sicherheitskontakt, Ablauf für Schwachstellen, Einordnung und CE-Selbstbewertung anhand der offiziellen EU-Leitfäden prüfen; Produkthaftung technisch absichern (Original wird nie überschrieben). Fristen und Einordnung vor dem Verkaufsstart anhand der amtlichen Quellen nachprüfen. | Projektinhaber, `store-release` | Verkaufsstart |
+| O-18 | **Erledigt 2026-09-23:** E-Rechnung → PDF/HTML verworfen (Haftung ohne Anwaltsprüfung nicht einschätzbar), siehe „Verworfen wegen Rechtsrisiko“. | — | — |
 | O-19 | **ADR Sammel-Jobs** (viele Eingaben → eine Ausgabe) in Queue und UI. Gemeinsame Grundlage für PDFs zusammenfügen, Bilder → GIF, Bilder → PDF (Batch), später ICO mit mehreren Größen. | `architekt` | diese Funktionen |
 | O-20 | **FFmpeg-Allowlist ergänzen** um die Filter `palettegen`, `paletteuse`, `split` (Bilder/Video → GIF), möglichst vor dem ersten Build (O-02). Reiner FFmpeg-Code, LGPL, patentfrei. | `lizenz-waechter` | Bilder → GIF, Video → GIF |
 
@@ -108,6 +108,7 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 | PDF/A erzeugen | ohne zuverlässige Prüfung zu fehleranfällig, haftungsnah bei Archivpflichten | 2026-09-23 |
 | 3D: FBX, USDZ | proprietär bzw. restriktive SDK-Lizenz, Markenbezug | 2026-09-23 |
 | MIDI → Audio | bräuchte Klangbibliothek mit oft unklarer Lizenz | 2026-09-23 |
+| E-Rechnung (XML) → PDF/HTML | Haftung bei falsch dargestellten Beträgen oder Bankdaten; ohne Anwaltsprüfung nicht einschätzbar | 2026-09-23 |
 
 ## Erledigte Meilensteine
 

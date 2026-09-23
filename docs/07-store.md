@@ -71,7 +71,7 @@ Kvertis wandelt Ihre Dateien direkt auf Ihrem PC um. Ziehen Sie eine Datei in da
 - Bilder: JPG, PNG, WebP, HEIC, TIFF, RAW und mehr
 - Audio: MP3, WAV, FLAC, OGG, Opus, M4A
 - Video (Pro): MP4, MKV, WebM
-- Dokumente: PDF, Word, Excel, PowerPoint, Text, Markdown
+- Dokumente: PDF, DOCX, XLSX, PPTX, Text, Markdown
 - Presets: Für Messenger, Für E-Mail, Für Social Media, Für Website, Archiv
 - Zielgröße eingeben, Kvertis berechnet den Rest
 - Vorher/Nachher-Vorschau mit Größenvergleich
@@ -92,7 +92,7 @@ Kvertis converts your files right on your PC. Drop a file into the window, confi
 - Images: JPG, PNG, WebP, HEIC, TIFF, RAW and more
 - Audio: MP3, WAV, FLAC, OGG, Opus, M4A
 - Video (Pro): MP4, MKV, WebM
-- Documents: PDF, Word, Excel, PowerPoint, text, Markdown
+- Documents: PDF, DOCX, XLSX, PPTX, text, Markdown
 - Presets: For messaging, For email, For social media, For web, Archive
 - Enter a target size and Kvertis works out the settings
 - Before/after preview with size comparison
@@ -103,7 +103,7 @@ Your files never leave this PC. No account, no cloud, no ads, no data collection
 
 Kvertis Pro (one-time purchase) unlocks video conversion and unlimited batches.
 
-Anmerkung: „Word“, „Excel“, „PowerPoint“ sind Formatbezeichnungen des Betriebssystem-Herstellers, in dessen Store die App erscheint. `lizenz-waechter` prüft vor der Einreichung, ob die Store-Richtlinien diese Nennung erlauben; andernfalls „DOCX, XLSX, PPTX“.
+Anmerkung: Office-Produktnamen werden nicht genannt, nur die Formatnamen DOCX, XLSX, PPTX (O-08, entschieden 2026-09-23).
 
 ### Suchbegriffe
 
