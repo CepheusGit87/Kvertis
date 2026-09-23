@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+  x:Class="Kvertis.App.Views.JobCardControl"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:helpers="using:Kvertis.App.Helpers"
+  xmlns:views="using:Kvertis.App.Views"
+  xmlns:vm="using:Kvertis.App.ViewModels">
+
+  <Grid
+    x:Name="CardRoot"
+    AutomationProperties.Name="{x:Bind Item.AutomationName, Mode=OneWay}"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1"
+    CornerRadius="8">
+
+    <Grid Padding="12" ColumnSpacing="16">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <!-- Left: thumbnail or kind icon, format badge below. -->
+      <StackPanel Grid.Column="0" VerticalAlignment="Top" Spacing="6">
+        <Grid
+          Width="56"
+          Height="56"
+          Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+          CornerRadius="6">
+          <Image
+            Source="{x:Bind Item.Thumbnail, Mode=OneWay}"
+            Stretch="UniformToFill"
+            Visibility="{x:Bind helpers:Ui.Show(Item.HasThumbnail), Mode=OneWay}" />
+          <FontIcon
+            FontSize="24"
+            Glyph="{x:Bind Item.KindGlyph, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Hide(Item.HasThumbnail), Mode=OneWay}" />
+        </Grid>
+        <Border
+          Padding="6,1"
+          HorizontalAlignment="Center"
+          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+          BorderThickness="1"
+          CornerRadius="4">
+          <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Item.InputFormatLabel, Mode=OneWay}" />
+        </Border>
+      </StackPanel>
+
+      <!-- Middle: name, facts, output chip, preset chip, progress / result / error. -->
+      <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+        <TextBlock
+          Style="{StaticResource BodyStrongTextBlockStyle}"
+          Text="{x:Bind Item.FileName, Mode=OneWay}"
+          TextTrimming="CharacterEllipsis" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind Item.SizeText, Mode=OneWay}" />
+          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind Item.DetailsText, Mode=OneWay}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" Visibility="{x:Bind helpers:Ui.Show(Item.IsReady), Mode=OneWay}">
+          <DropDownButton
+            x:Name="FormatChip"
+            AutomationProperties.Name="{x:Bind Item.OutputChipAutomationName, Mode=OneWay}"
+            Content="{x:Bind Item.OutputChipText, Mode=OneWay}">
+            <DropDownButton.Flyout>
+              <Flyout x:Name="FormatFlyout" Placement="Bottom">
+                <views:FormatPickerFlyout Item="{x:Bind Item, Mode=OneWay}" Picked="OnFormatPicked" />
+              </Flyout>
+            </DropDownButton.Flyout>
+          </DropDownButton>
+          <DropDownButton
+            x:Name="PresetChip"
+            AutomationProperties.Name="{x:Bind Item.PresetChipAutomationName, Mode=OneWay}"
+            Content="{x:Bind Item.PresetChipText, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.ShowPresetChip), Mode=OneWay}">
+            <DropDownButton.Flyout>
+              <Flyout x:Name="PresetFlyout" Placement="Bottom">
+                <ListView
+                  x:Uid="Card_PresetList"
+                  MinWidth="200"
+                  IsItemClickEnabled="True"
+                  ItemClick="OnPresetClicked"
+                  ItemsSource="{x:Bind Item.PresetOptions, Mode=OneWay}"
+                  SelectedItem="{x:Bind Item.SelectedPreset, Mode=OneWay}"
+                  SelectionMode="Single">
+                  <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:PresetOption">
+                      <TextBlock Text="{x:Bind Label}" />
+                    </DataTemplate>
+                  </ListView.ItemTemplate>
+                </ListView>
+              </Flyout>
+            </DropDownButton.Flyout>
+          </DropDownButton>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Spacing="6" Visibility="{x:Bind helpers:Ui.ShowText(Item.WarningText), Mode=OneWay}">
+          <FontIcon FontSize="14" Foreground="{ThemeResource SystemFillColorCautionBrush}" Glyph="&#xE7BA;" />
+          <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Item.WarningText, Mode=OneWay}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Running / queued / paused -->
+        <StackPanel Spacing="4" Visibility="{x:Bind helpers:Ui.Show(Item.ShowProgress), Mode=OneWay}">
+          <ProgressBar
+            x:Uid="Card_Progress"
+            AutomationProperties.LiveSetting="Polite"
+            Maximum="100"
+            ShowPaused="{x:Bind Item.IsPaused, Mode=OneWay}"
+            Value="{x:Bind Item.ProgressValue, Mode=OneWay}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind Item.StatusText, Mode=OneWay}" />
+            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind Item.ProgressText, Mode=OneWay}" />
+          </StackPanel>
+        </StackPanel>
+
+        <!-- Completed -->
+        <StackPanel Orientation="Horizontal" Spacing="8" Visibility="{x:Bind helpers:Ui.Show(Item.IsCompleted), Mode=OneWay}">
+          <FontIcon
+            x:Name="CheckIcon"
+            FontSize="16"
+            Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+            Glyph="&#xE73E;" />
+          <TextBlock
+            VerticalAlignment="Center"
+            AutomationProperties.LiveSetting="Assertive"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="{x:Bind Item.ResultText, Mode=OneWay}"
+            TextWrapping="Wrap" />
+        </StackPanel>
+
+        <!-- Failed or rejected -->
+        <StackPanel Orientation="Horizontal" Spacing="8" Visibility="{x:Bind helpers:Ui.Show(Item.IsFailed), Mode=OneWay}">
+          <FontIcon FontSize="16" Foreground="{ThemeResource SystemFillColorCriticalBrush}" Glyph="&#xEA39;" />
+          <TextBlock
+            VerticalAlignment="Center"
+            AutomationProperties.LiveSetting="Assertive"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="{x:Bind Item.ErrorTitle, Mode=OneWay}"
+            TextWrapping="Wrap" />
+          <HyperlinkButton x:Uid="Card_WhatToDo_Link" Padding="4,0" Command="{x:Bind Item.ShowErrorHelpCommand, Mode=OneWay}" />
+        </StackPanel>
+
+        <!-- Cancelled -->
+        <StackPanel Orientation="Horizontal" Spacing="8" Visibility="{x:Bind helpers:Ui.Show(Item.IsCancelled), Mode=OneWay}">
+          <FontIcon FontSize="16" Glyph="&#xE711;" />
+          <TextBlock VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Item.StatusText, Mode=OneWay}" />
+        </StackPanel>
+
+        <ProgressRing
+          x:Uid="Card_Detecting_Progress"
+          Width="16"
+          Height="16"
+          HorizontalAlignment="Left"
+          IsActive="{x:Bind Item.IsDetecting, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.Show(Item.IsDetecting), Mode=OneWay}" />
+      </StackPanel>
+
+      <!-- Right: estimates and actions. -->
+      <StackPanel Grid.Column="2" VerticalAlignment="Center" Spacing="6">
+        <StackPanel HorizontalAlignment="Right" Visibility="{x:Bind helpers:Ui.Show(Item.ShowEstimate), Mode=OneWay}">
+          <TextBlock HorizontalAlignment="Right" Style="{StaticResource BodyTextBlockStyle}" Text="{x:Bind Item.EstimateSizeText, Mode=OneWay}" />
+          <TextBlock HorizontalAlignment="Right" Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind Item.EstimateTimeText, Mode=OneWay}" />
+        </StackPanel>
+
+        <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="4">
+          <!-- Staged -->
+          <Button
+            x:Uid="Card_Preview_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.PreviewCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsReady), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE7B3;" />
+          </Button>
+          <Button
+            x:Name="MoreButton"
+            x:Uid="Card_More_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsReady), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE712;" />
+            <Button.Flyout>
+              <Flyout Placement="Left">
+                <views:MorePanel Item="{x:Bind Item, Mode=OneWay}" />
+              </Flyout>
+            </Button.Flyout>
+          </Button>
+
+          <!-- Running / paused / queued -->
+          <Button
+            x:Name="PauseButton"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            AutomationProperties.Name="{x:Bind Item.PauseLabel, Mode=OneWay}"
+            Command="{x:Bind Item.PauseOrResumeCommand, Mode=OneWay}"
+            ToolTipService.ToolTip="{x:Bind Item.PauseLabel, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsActive), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="{x:Bind Item.PauseGlyph, Mode=OneWay}" />
+          </Button>
+          <Button
+            x:Uid="Card_Cancel_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.CancelCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsActive), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE711;" />
+          </Button>
+
+          <!-- Finished -->
+          <Button
+            x:Uid="Card_OpenFolder_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.OpenFolderCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsCompleted), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE838;" />
+          </Button>
+          <Button
+            x:Uid="Card_Again_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.RetryCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.IsCompleted), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE72C;" />
+          </Button>
+          <Button
+            x:Uid="Card_Retry_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.RetryCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.CanRetry), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE72C;" />
+          </Button>
+
+          <Button
+            x:Uid="Card_Remove_Button"
+            Width="{StaticResource IconButtonSize}"
+            Height="{StaticResource IconButtonSize}"
+            Padding="0"
+            Command="{x:Bind Item.RemoveCommand, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Item.CanRemove), Mode=OneWay}">
+            <FontIcon FontSize="14" Glyph="&#xE74D;" />
+          </Button>
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+
+    <!-- Light sweep along the bottom edge while the job runs (docs/06, "Fortschritt"). -->
+    <Border
+      x:Name="GlowBar"
+      Width="96"
+      Height="2"
+      Margin="8,0,8,1"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Bottom"
+      Background="{ThemeResource AccentFillColorDefaultBrush}"
+      CornerRadius="1"
+      IsHitTestVisible="False"
+      Opacity="0" />
+  </Grid>
+</UserControl>

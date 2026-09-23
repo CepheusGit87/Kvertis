@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>Kvertis.App</RootNamespace>
+    <AssemblyName>Kvertis</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>MSIX</WindowsPackageType>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <Description>Kvertis Windows app: WinUI 3 user interface, MVVM, resources (DE/EN), MSIX packaging.</Description>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <!-- Resources and assets are listed explicitly below; the SDK globs would add them a second time
+         (duplicate PRIResource/Content items fail the build). -->
+    <EnableDefaultPriItems>false</EnableDefaultPriItems>
+    <EnableDefaultAssets>false</EnableDefaultAssets>
+    <!-- [ObservableProperty] on fields: partial properties need C# 13 (.NET 9 SDK); no AOT publishing planned. -->
+    <NoWarn>$(NoWarn);MVVMTK0045</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kvertis.Engine\Kvertis.Engine.csproj" />
+    <ProjectReference Include="..\Kvertis.Engine.Windows\Kvertis.Engine.Windows.csproj" />
+    <ProjectReference Include="..\Kvertis.Queue\Kvertis.Queue.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+    <PRIResource Include="Strings\**\*.resw" />
+    <Content Include="Assets\**" />
+  </ItemGroup>
+
+  <!-- Third-party license texts, shown on the licenses page (ThirdParty/<Library>/LICENSE). -->
+  <ItemGroup>
+    <Content Include="..\..\third_party\**\*" Link="ThirdParty\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <!-- Bundled LGPL ffmpeg build (Tools/ffmpeg/<arch>/ffmpeg.exe, ffprobe.exe). Git-ignored; see tools/ffmpeg. -->
+  <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)\Tools\ffmpeg')">
+    <Content Include="Tools\ffmpeg\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

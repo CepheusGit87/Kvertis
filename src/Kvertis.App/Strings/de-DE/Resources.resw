@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Kvertis UI strings (de-DE). Keys: Screen_Element_Purpose; x:Uid keys end in .Property.
+     Both language files must have identical keys (tools/compliance/check-resw.py). No third-party brand names. -->
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About_Description.Text" xml:space="preserve">
+    <value>Kvertis wandelt Bilder, Audio, Video und Dokumente direkt auf Ihrem PC um. Offline, ohne Konto, ohne Cloud.</value>
+  </data>
+  <data name="About_Licenses_Button.Content" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern anzeigen</value>
+  </data>
+  <data name="About_Licenses_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern anzeigen</value>
+  </data>
+  <data name="About_Privacy_Header.Text" xml:space="preserve">
+    <value>Datenschutz</value>
+  </data>
+  <data name="About_Privacy_Text.Text" xml:space="preserve">
+    <value>Kvertis verarbeitet Ihre Dateien ausschließlich auf Ihrem Gerät. Die App hat keinen Internetzugang, erhebt keine Daten, sendet keine Daten und speichert keine personenbezogenen Daten außerhalb Ihres Geräts. Verlauf und Einstellungen liegen lokal im App-Datenordner und können in der App gelöscht werden. In-App-Käufe werden vollständig vom Store abgewickelt; Kvertis erhält dabei keine persönlichen Daten.</value>
+  </data>
+  <data name="About_Title.Text" xml:space="preserve">
+    <value>Kvertis</value>
+  </data>
+  <data name="About_Version_Text" xml:space="preserve">
+    <value>Version {0}</value>
+  </data>
+  <data name="App_Manifest_Description" xml:space="preserve">
+    <value>Dateien umwandeln, ohne dass sie Ihren PC verlassen. Bilder, Audio, Video und Dokumente. Offline, ohne Konto.</value>
+  </data>
+  <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Nochmal</value>
+  </data>
+  <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Nochmal</value>
+  </data>
+  <data name="Card_AutomationName" xml:space="preserve">
+    <value>{0}, {1} nach {2}, {3}</value>
+  </data>
+  <data name="Card_AutomationName_NoFormat" xml:space="preserve">
+    <value>{0}, {1}</value>
+  </data>
+  <data name="Card_Cancel_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Card_Cancel_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Card_Detecting_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Datei wird erkannt</value>
+  </data>
+  <data name="Card_EstimateSize_Text" xml:space="preserve">
+    <value>≈ {0}</value>
+  </data>
+  <data name="Card_EstimateTime_Text" xml:space="preserve">
+    <value>≈ {0}</value>
+  </data>
+  <data name="Card_More_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Mehr Optionen</value>
+  </data>
+  <data name="Card_More_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Mehr Optionen</value>
+  </data>
+  <data name="Card_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ordner öffnen</value>
+  </data>
+  <data name="Card_OpenFolder_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Ordner öffnen</value>
+  </data>
+  <data name="Card_OutputChip_AutomationName" xml:space="preserve">
+    <value>Zielformat {0}. Ändern</value>
+  </data>
+  <data name="Card_OutputChip_Text" xml:space="preserve">
+    <value>→ {0}</value>
+  </data>
+  <data name="Card_Pages_Text" xml:space="preserve">
+    <value>{0} Seiten</value>
+  </data>
+  <data name="Card_Pause_Label" xml:space="preserve">
+    <value>Pausieren</value>
+  </data>
+  <data name="Card_PresetChip_AutomationName" xml:space="preserve">
+    <value>Voreinstellung {0}. Ändern</value>
+  </data>
+  <data name="Card_PresetList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Voreinstellungen</value>
+  </data>
+  <data name="Card_Preview_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="Card_Preview_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Vorschau</value>
+  </data>
+  <data name="Card_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Fortschritt</value>
+  </data>
+  <data name="Card_Remaining_Text" xml:space="preserve">
+    <value>noch etwa {0}</value>
+  </data>
+  <data name="Card_Remove_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Card_Remove_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Entfernen</value>
+  </data>
+  <data name="Card_Resolution_Text" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
+  <data name="Card_Result_Text" xml:space="preserve">
+    <value>Vorher {0} → Nachher {1} ({2})</value>
+  </data>
+  <data name="Card_Resume_Label" xml:space="preserve">
+    <value>Fortsetzen</value>
+  </data>
+  <data name="Card_Retry_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Card_Retry_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Wiederholen</value>
+  </data>
+  <data name="Card_State_Cancelled" xml:space="preserve">
+    <value>Abgebrochen</value>
+  </data>
+  <data name="Card_State_Completed" xml:space="preserve">
+    <value>Fertig</value>
+  </data>
+  <data name="Card_State_Detecting" xml:space="preserve">
+    <value>Wird erkannt …</value>
+  </data>
+  <data name="Card_State_Failed" xml:space="preserve">
+    <value>Fehler</value>
+  </data>
+  <data name="Card_State_Paused" xml:space="preserve">
+    <value>Pausiert</value>
+  </data>
+  <data name="Card_State_Queued" xml:space="preserve">
+    <value>Wartend</value>
+  </data>
+  <data name="Card_State_Ready" xml:space="preserve">
+    <value>Bereit</value>
+  </data>
+  <data name="Card_State_Rejected" xml:space="preserve">
+    <value>Nicht möglich</value>
+  </data>
+  <data name="Card_State_Running" xml:space="preserve">
+    <value>Läuft</value>
+  </data>
+  <data name="Card_WhatToDo_Link.Content" xml:space="preserve">
+    <value>Was tun?</value>
+  </data>
+  <data name="Card_WhatToDo_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Was tun?</value>
+  </data>
+  <data name="Dialog_Cancel_Button" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Dialog_Ok_Button" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Error_Cancelled_Body" xml:space="preserve">
+    <value>Sie haben die Umwandlung abgebrochen. Mit „Wiederholen“ starten Sie sie neu.</value>
+  </data>
+  <data name="Error_Cancelled_Title" xml:space="preserve">
+    <value>Abgebrochen</value>
+  </data>
+  <data name="Error_CorruptFile_Body" xml:space="preserve">
+    <value>Diese Datei ist beschädigt und kann nicht gelesen werden. Versuchen Sie, sie erneut von der Quelle zu kopieren.</value>
+  </data>
+  <data name="Error_CorruptFile_Title" xml:space="preserve">
+    <value>Die Datei ist beschädigt</value>
+  </data>
+  <data name="Error_FileTooLarge_Body" xml:space="preserve">
+    <value>Diese Datei ist größer, als Kvertis verarbeiten kann. Teilen Sie sie im Ursprungsprogramm auf oder speichern Sie sie dort in geringerer Qualität.</value>
+  </data>
+  <data name="Error_FileTooLarge_Title" xml:space="preserve">
+    <value>Die Datei ist zu groß</value>
+  </data>
+  <data name="Error_InputNotReadable_Body" xml:space="preserve">
+    <value>Die Datei wurde verschoben oder gelöscht, oder ein anderes Programm hält sie geöffnet. Schließen Sie das andere Programm und fügen Sie die Datei erneut hinzu.</value>
+  </data>
+  <data name="Error_InputNotReadable_Title" xml:space="preserve">
+    <value>Die Datei kann nicht geöffnet werden</value>
+  </data>
+  <data name="Error_InsufficientDiskSpace_Body" xml:space="preserve">
+    <value>Im Zielordner ist nicht genug Platz frei. Löschen Sie nicht benötigte Dateien oder wählen Sie unten links einen anderen Zielordner.</value>
+  </data>
+  <data name="Error_InsufficientDiskSpace_Title" xml:space="preserve">
+    <value>Nicht genug Speicherplatz</value>
+  </data>
+  <data name="Error_MissingSystemCodec_Body" xml:space="preserve">
+    <value>Für dieses Format braucht Windows eine zusätzliche Erweiterung, zum Beispiel für HEIF-Bilder oder HEVC-Videos. Installieren Sie die passende Erweiterung aus dem Store und starten Sie Kvertis neu.</value>
+  </data>
+  <data name="Error_MissingSystemCodec_Title" xml:space="preserve">
+    <value>Eine Windows-Erweiterung fehlt</value>
+  </data>
+  <data name="Error_None_Body" xml:space="preserve">
+    <value>Alles in Ordnung.</value>
+  </data>
+  <data name="Error_None_Title" xml:space="preserve">
+    <value>Kein Fehler</value>
+  </data>
+  <data name="Error_OutputExists_Body" xml:space="preserve">
+    <value>Kvertis überschreibt keine vorhandenen Dateien. Benennen Sie die vorhandene Datei um, wählen Sie einen anderen Zielordner oder ändern Sie den Dateinamen unter „Mehr“.</value>
+  </data>
+  <data name="Error_OutputExists_Title" xml:space="preserve">
+    <value>Die Zieldatei gibt es schon</value>
+  </data>
+  <data name="Error_OutputNotWritable_Body" xml:space="preserve">
+    <value>Kvertis darf in diesem Ordner keine Dateien anlegen. Wählen Sie unten links einen anderen Zielordner, zum Beispiel in Ihren Dokumenten.</value>
+  </data>
+  <data name="Error_OutputNotWritable_Title" xml:space="preserve">
+    <value>Im Zielordner kann nicht gespeichert werden</value>
+  </data>
+  <data name="Error_ProtectedFile_Body" xml:space="preserve">
+    <value>Die Datei ist mit einem Passwort oder Kopierschutz versehen. Kvertis umgeht keinen Schutz. Entfernen Sie den Schutz im Ursprungsprogramm, wenn Sie dazu berechtigt sind, und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Error_ProtectedFile_Title" xml:space="preserve">
+    <value>Die Datei ist geschützt</value>
+  </data>
+  <data name="Error_TargetSizeUnreachable_Body" xml:space="preserve">
+    <value>So klein lässt sich diese Datei nicht speichern. Erhöhen Sie die Zielgröße unter „Mehr“ oder wählen Sie eine andere Voreinstellung.</value>
+  </data>
+  <data name="Error_TargetSizeUnreachable_Title" xml:space="preserve">
+    <value>Die Zielgröße ist zu klein</value>
+  </data>
+  <data name="Error_Timeout_Body" xml:space="preserve">
+    <value>Die Umwandlung wurde nach einer Zeitgrenze abgebrochen. Versuchen Sie es erneut, schließen Sie andere Programme oder wählen Sie unter „Mehr“ eine geringere Qualität.</value>
+  </data>
+  <data name="Error_Timeout_Title" xml:space="preserve">
+    <value>Das hat zu lange gedauert</value>
+  </data>
+  <data name="Error_ToolFailed_Body" xml:space="preserve">
+    <value>Beim Umwandeln ist ein Fehler aufgetreten. Versuchen Sie ein anderes Zielformat. Wenn es wieder passiert, schalten Sie in den Einstellungen das Diagnoseprotokoll ein und versuchen Sie es erneut.</value>
+  </data>
+  <data name="Error_ToolFailed_Title" xml:space="preserve">
+    <value>Die Umwandlung ist fehlgeschlagen</value>
+  </data>
+  <data name="Error_ToolMissing_Body" xml:space="preserve">
+    <value>Das Programm für Audio und Video (FFmpeg) wurde nicht gefunden oder ist keine zulässige Version. Setzen Sie in den Einstellungen den FFmpeg-Ordner zurück oder installieren Sie Kvertis neu.</value>
+  </data>
+  <data name="Error_ToolMissing_Title" xml:space="preserve">
+    <value>Ein Bestandteil von Kvertis fehlt</value>
+  </data>
+  <data name="Error_Unknown_Body" xml:space="preserve">
+    <value>Etwas ist schiefgelaufen. Versuchen Sie es erneut. Wenn der Fehler bleibt, starten Sie Kvertis neu.</value>
+  </data>
+  <data name="Error_Unknown_Title" xml:space="preserve">
+    <value>Unbekannter Fehler</value>
+  </data>
+  <data name="Error_UnsupportedFormat_Body" xml:space="preserve">
+    <value>Kvertis kann diese Datei nicht lesen oder nicht in das gewählte Format umwandeln. Wählen Sie ein anderes Zielformat oder speichern Sie die Datei im Ursprungsprogramm in einem gängigen Format wie PNG, MP3 oder PDF.</value>
+  </data>
+  <data name="Error_UnsupportedFormat_Title" xml:space="preserve">
+    <value>Dieses Format wird nicht unterstützt</value>
+  </data>
+  <data name="FormatPicker_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielformate</value>
+  </data>
+  <data name="FormatPicker_Suggested.Text" xml:space="preserve">
+    <value>Empfohlen</value>
+  </data>
+  <data name="FormatPicker_Title.Text" xml:space="preserve">
+    <value>Zielformat</value>
+  </data>
+  <data name="Format_Change_Percent" xml:space="preserve">
+    <value>{0} %</value>
+  </data>
+  <data name="Format_Duration_Hours" xml:space="preserve">
+    <value>{0} h {1} min</value>
+  </data>
+  <data name="Format_Duration_Minutes" xml:space="preserve">
+    <value>{0} min {1} s</value>
+  </data>
+  <data name="Format_Duration_Seconds" xml:space="preserve">
+    <value>{0} s</value>
+  </data>
+  <data name="Format_Duration_UnderSecond" xml:space="preserve">
+    <value>unter 1 s</value>
+  </data>
+  <data name="Format_Size_Bytes" xml:space="preserve">
+    <value>{0} Byte</value>
+  </data>
+  <data name="Format_Size_GB" xml:space="preserve">
+    <value>{0} GB</value>
+  </data>
+  <data name="Format_Size_KB" xml:space="preserve">
+    <value>{0} KB</value>
+  </data>
+  <data name="Format_Size_MB" xml:space="preserve">
+    <value>{0} MB</value>
+  </data>
+  <data name="History_Again_Button.Content" xml:space="preserve">
+    <value>Nochmal mit denselben Einstellungen</value>
+  </data>
+  <data name="History_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Nochmal mit denselben Einstellungen</value>
+  </data>
+  <data name="History_Clear_Body" xml:space="preserve">
+    <value>Die Liste der letzten Umwandlungen wird gelöscht. Ihre Dateien bleiben erhalten.</value>
+  </data>
+  <data name="History_Clear_Button.Content" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="History_Clear_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="History_Clear_Confirm" xml:space="preserve">
+    <value>Leeren</value>
+  </data>
+  <data name="History_Clear_Title" xml:space="preserve">
+    <value>Verlauf leeren?</value>
+  </data>
+  <data name="History_Close_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Verlauf schließen</value>
+  </data>
+  <data name="History_Close_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Verlauf schließen</value>
+  </data>
+  <data name="History_Empty_Text.Text" xml:space="preserve">
+    <value>Noch keine Umwandlungen. Der Verlauf bleibt auf diesem PC.</value>
+  </data>
+  <data name="History_Format_Text" xml:space="preserve">
+    <value>{0} → {1}</value>
+  </data>
+  <data name="History_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Letzte Umwandlungen</value>
+  </data>
+  <data name="History_OpenFolder_Button.Content" xml:space="preserve">
+    <value>Ordner öffnen</value>
+  </data>
+  <data name="History_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ordner öffnen</value>
+  </data>
+  <data name="History_Quality_Text" xml:space="preserve">
+    <value>Qualität {0}</value>
+  </data>
+  <data name="History_Result_Text" xml:space="preserve">
+    <value>{0} → {1}</value>
+  </data>
+  <data name="History_Title.Text" xml:space="preserve">
+    <value>Verlauf</value>
+  </data>
+  <data name="Licenses_Empty_Text.Text" xml:space="preserve">
+    <value>Die Lizenztexte wurden nicht gefunden. Installieren Sie Kvertis neu.</value>
+  </data>
+  <data name="Licenses_Ffmpeg_Note.Text" xml:space="preserve">
+    <value>FFmpeg wird als LGPL-Version in einem eigenen Prozess verwendet und kann in den Einstellungen durch eine eigene Version ersetzt werden.</value>
+  </data>
+  <data name="Licenses_Intro.Text" xml:space="preserve">
+    <value>Kvertis verwendet die folgenden Bibliotheken. Ihre Lizenztexte werden mit der App ausgeliefert.</value>
+  </data>
+  <data name="Licenses_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Bibliotheken</value>
+  </data>
+  <data name="Licenses_Text_Scroller.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Lizenztext</value>
+  </data>
+  <data name="Licenses_Title.Text" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern</value>
+  </data>
+  <data name="Main_AddFiles_Button.Content" xml:space="preserve">
+    <value>Dateien wählen</value>
+  </data>
+  <data name="Main_AddFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dateien wählen</value>
+  </data>
+  <data name="Main_AddFolder_Link.Content" xml:space="preserve">
+    <value>Ordner wählen</value>
+  </data>
+  <data name="Main_AddFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ordner wählen</value>
+  </data>
+  <data name="Main_AddMoreFiles_Button.Content" xml:space="preserve">
+    <value>Weitere Dateien hinzufügen</value>
+  </data>
+  <data name="Main_AddMoreFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Weitere Dateien hinzufügen</value>
+  </data>
+  <data name="Main_AddMoreFolder_Link.Content" xml:space="preserve">
+    <value>Ordner hinzufügen</value>
+  </data>
+  <data name="Main_AddMoreFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ordner hinzufügen</value>
+  </data>
+  <data name="Main_Adding_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dateien werden erkannt</value>
+  </data>
+  <data name="Main_Announce_Cancelled" xml:space="preserve">
+    <value>{0} wurde abgebrochen.</value>
+  </data>
+  <data name="Main_Announce_Completed" xml:space="preserve">
+    <value>{0} ist fertig.</value>
+  </data>
+  <data name="Main_Announce_Failed" xml:space="preserve">
+    <value>{0} konnte nicht umgewandelt werden: {1}</value>
+  </data>
+  <data name="Main_CancelAll_Button.Content" xml:space="preserve">
+    <value>Alle abbrechen</value>
+  </data>
+  <data name="Main_CancelAll_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Alle abbrechen</value>
+  </data>
+  <data name="Main_ClearFinished_Button.Content" xml:space="preserve">
+    <value>Fertige entfernen</value>
+  </data>
+  <data name="Main_ClearFinished_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Fertige entfernen</value>
+  </data>
+  <data name="Main_DropZone_DragCaption" xml:space="preserve">
+    <value>Zu Kvertis hinzufügen</value>
+  </data>
+  <data name="Main_DropZone_More.Text" xml:space="preserve">
+    <value>Weitere Dateien hierher ziehen</value>
+  </data>
+  <data name="Main_DropZone_PasteHint.Text" xml:space="preserve">
+    <value>Tipp: Mit Strg+V fügen Sie Bilder aus der Zwischenablage ein.</value>
+  </data>
+  <data name="Main_DropZone_Title.Text" xml:space="preserve">
+    <value>Dateien hierher ziehen oder auswählen</value>
+  </data>
+  <data name="Main_JobList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dateien</value>
+  </data>
+  <data name="Main_ManyFiles_Body" xml:space="preserve">
+    <value>Der Ordner enthält {0} Dateien. Sollen alle hinzugefügt werden?</value>
+  </data>
+  <data name="Main_ManyFiles_Confirm" xml:space="preserve">
+    <value>Alle hinzufügen</value>
+  </data>
+  <data name="Main_ManyFiles_Title" xml:space="preserve">
+    <value>Viele Dateien</value>
+  </data>
+  <data name="Main_Output_Change.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielordner wählen</value>
+  </data>
+  <data name="Main_Output_Change.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Zielordner wählen</value>
+  </data>
+  <data name="Main_Output_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielordner</value>
+  </data>
+  <data name="Main_Output_Custom.Content" xml:space="preserve">
+    <value>Eigener Ordner …</value>
+  </data>
+  <data name="Main_Output_Same.Content" xml:space="preserve">
+    <value>Gleicher Ordner</value>
+  </data>
+  <data name="Main_Output_Sub.Content" xml:space="preserve">
+    <value>Unterordner „Kvertis“</value>
+  </data>
+  <data name="Main_Overall_AutomationName" xml:space="preserve">
+    <value>Gesamtfortschritt {0} Prozent. {1}</value>
+  </data>
+  <data name="Main_Overall_Count" xml:space="preserve">
+    <value>{0} Dateien bereit</value>
+  </data>
+  <data name="Main_Overall_Done" xml:space="preserve">
+    <value>{0} fertig · vorher {1}, nachher {2}</value>
+  </data>
+  <data name="Main_Overall_Estimate" xml:space="preserve">
+    <value>{0} Dateien · Dauer etwa {1}</value>
+  </data>
+  <data name="Main_Overall_Progress" xml:space="preserve">
+    <value>{0} von {1} fertig</value>
+  </data>
+  <data name="Main_Overall_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Gesamtfortschritt</value>
+  </data>
+  <data name="Main_Overall_Remaining" xml:space="preserve">
+    <value>{0} von {1} fertig · noch etwa {2}</value>
+  </data>
+  <data name="Main_PauseAll_Label" xml:space="preserve">
+    <value>Alle pausieren</value>
+  </data>
+  <data name="Main_ProCard_Dismiss.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Hinweis schließen</value>
+  </data>
+  <data name="Main_ProCard_Dismiss.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Hinweis schließen</value>
+  </data>
+  <data name="Main_ProCard_LearnMore.Content" xml:space="preserve">
+    <value>Mehr erfahren</value>
+  </data>
+  <data name="Main_ProCard_LearnMore.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Mehr erfahren</value>
+  </data>
+  <data name="Main_ResumeAll_Label" xml:space="preserve">
+    <value>Alle fortsetzen</value>
+  </data>
+  <data name="Main_Start_Button.Content" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Main_Start_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="Main_Trust_Text.Text" xml:space="preserve">
+    <value>Ihre Dateien verlassen nie diesen PC.</value>
+  </data>
+  <data name="More_ApplyToAll_Button.Content" xml:space="preserve">
+    <value>Auf alle anwenden</value>
+  </data>
+  <data name="More_ApplyToAll_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Auf alle anwenden</value>
+  </data>
+  <data name="More_Estimate_Label.Text" xml:space="preserve">
+    <value>Geschätzte Größe:</value>
+  </data>
+  <data name="More_Metadata_Hint.Text" xml:space="preserve">
+    <value>Entfernt Aufnahmeort, Kameradaten und ähnliche Angaben. Farben bleiben erhalten.</value>
+  </data>
+  <data name="More_Metadata_Toggle.Header" xml:space="preserve">
+    <value>EXIF- und GPS-Daten entfernen</value>
+  </data>
+  <data name="More_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>EXIF- und GPS-Daten entfernen</value>
+  </data>
+  <data name="More_NamePattern_TextBox.Header" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="More_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
+    <value>{name}_{date}_{format}</value>
+  </data>
+  <data name="More_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="More_NamePreview_Label.Text" xml:space="preserve">
+    <value>Beispiel:</value>
+  </data>
+  <data name="More_Quality_Better.Text" xml:space="preserve">
+    <value>Bessere Qualität</value>
+  </data>
+  <data name="More_Quality_Slider.Header" xml:space="preserve">
+    <value>Qualität ↔ Größe</value>
+  </data>
+  <data name="More_Quality_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Qualität ↔ Größe</value>
+  </data>
+  <data name="More_Quality_Smaller.Text" xml:space="preserve">
+    <value>Kleinere Datei</value>
+  </data>
+  <data name="More_TargetSizeUnit_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Einheit der Zielgröße</value>
+  </data>
+  <data name="More_TargetSize_Hint.Text" xml:space="preserve">
+    <value>Kvertis wählt die beste Qualität, die in diese Größe passt. Gilt für Bilder und Audio.</value>
+  </data>
+  <data name="More_TargetSize_NumberBox.Header" xml:space="preserve">
+    <value>Zielgröße (leer = keine)</value>
+  </data>
+  <data name="More_TargetSize_NumberBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielgröße (leer = keine)</value>
+  </data>
+  <data name="More_Title.Text" xml:space="preserve">
+    <value>Mehr Optionen</value>
+  </data>
+  <data name="More_Unit_KB.Content" xml:space="preserve">
+    <value>KB</value>
+  </data>
+  <data name="More_Unit_MB.Content" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Preset_Archive" xml:space="preserve">
+    <value>Archiv (verlustfrei)</value>
+  </data>
+  <data name="Preset_Email" xml:space="preserve">
+    <value>Für E-Mail</value>
+  </data>
+  <data name="Preset_Messenger" xml:space="preserve">
+    <value>Für Messenger</value>
+  </data>
+  <data name="Preset_None" xml:space="preserve">
+    <value>Standard</value>
+  </data>
+  <data name="Preset_SocialMedia" xml:space="preserve">
+    <value>Für Social Media</value>
+  </data>
+  <data name="Preset_Website" xml:space="preserve">
+    <value>Für Website</value>
+  </data>
+  <data name="Preview_After_Excerpt_Label.Text" xml:space="preserve">
+    <value>Nachher (10-Sekunden-Ausschnitt)</value>
+  </data>
+  <data name="Preview_After_Image.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Bild nachher</value>
+  </data>
+  <data name="Preview_After_Label.Text" xml:space="preserve">
+    <value>Nachher</value>
+  </data>
+  <data name="Preview_After_Player.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ton nachher</value>
+  </data>
+  <data name="Preview_Before_Image.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Bild vorher</value>
+  </data>
+  <data name="Preview_Before_Label.Text" xml:space="preserve">
+    <value>Vorher</value>
+  </data>
+  <data name="Preview_Before_Player.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ton vorher</value>
+  </data>
+  <data name="Preview_Dialog.CloseButtonText" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Preview_Loading_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Vorschau wird erstellt</value>
+  </data>
+  <data name="Preview_Summary_Text" xml:space="preserve">
+    <value>Vorher {0} · Nachher ≈ {1} ({2})</value>
+  </data>
+  <data name="Preview_Title_Text" xml:space="preserve">
+    <value>Vorschau: {0}</value>
+  </data>
+  <data name="Preview_Unavailable_Text" xml:space="preserve">
+    <value>Für diese Datei ist keine Vorschau möglich.</value>
+  </data>
+  <data name="Pro_Busy_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Store wird abgefragt</value>
+  </data>
+  <data name="Pro_Buy_Button.Content" xml:space="preserve">
+    <value>Kvertis Pro kaufen</value>
+  </data>
+  <data name="Pro_Buy_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Kvertis Pro kaufen</value>
+  </data>
+  <data name="Pro_Card_Batch_Text" xml:space="preserve">
+    <value>In der Gratis-Version wandeln Sie bis zu {0} Dateien auf einmal um. Kvertis Pro hat keine Grenze.</value>
+  </data>
+  <data name="Pro_Card_Video_Text" xml:space="preserve">
+    <value>Video-Konvertierung ist Teil von Kvertis Pro. Einmal kaufen, für immer nutzen.</value>
+  </data>
+  <data name="Pro_Feature_Batch.Text" xml:space="preserve">
+    <value>Beliebig viele Dateien auf einmal</value>
+  </data>
+  <data name="Pro_Feature_NoAds.Text" xml:space="preserve">
+    <value>Keine Werbung, keine Wasserzeichen, keine Datensammlung</value>
+  </data>
+  <data name="Pro_Feature_Once.Text" xml:space="preserve">
+    <value>Einmal kaufen, für immer nutzen. Kein Abo.</value>
+  </data>
+  <data name="Pro_Feature_Video.Text" xml:space="preserve">
+    <value>Video umwandeln (MP4, MKV, WebM)</value>
+  </data>
+  <data name="Pro_Intro.Text" xml:space="preserve">
+    <value>Kvertis bleibt gratis für Bilder, Audio und Dokumente. Pro schaltet den Rest frei.</value>
+  </data>
+  <data name="Pro_Purchase_AlreadyOwned" xml:space="preserve">
+    <value>Sie besitzen Kvertis Pro bereits.</value>
+  </data>
+  <data name="Pro_Purchase_Cancelled" xml:space="preserve">
+    <value>Der Kauf wurde abgebrochen.</value>
+  </data>
+  <data name="Pro_Purchase_Failed" xml:space="preserve">
+    <value>Der Kauf hat nicht geklappt. Versuchen Sie es später erneut.</value>
+  </data>
+  <data name="Pro_Purchase_Purchased" xml:space="preserve">
+    <value>Danke! Kvertis Pro ist jetzt aktiv.</value>
+  </data>
+  <data name="Pro_Purchase_StoreUnavailable" xml:space="preserve">
+    <value>Der Store ist gerade nicht erreichbar. Versuchen Sie es später erneut.</value>
+  </data>
+  <data name="Pro_Restore_Button.Content" xml:space="preserve">
+    <value>Kauf wiederherstellen</value>
+  </data>
+  <data name="Pro_Restore_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Kauf wiederherstellen</value>
+  </data>
+  <data name="Pro_Restore_Found" xml:space="preserve">
+    <value>Ihr Kauf wurde gefunden. Danke!</value>
+  </data>
+  <data name="Pro_Restore_NotFound" xml:space="preserve">
+    <value>Für dieses Konto wurde kein Kauf gefunden.</value>
+  </data>
+  <data name="Pro_Status_Active" xml:space="preserve">
+    <value>Kvertis Pro ist aktiv</value>
+  </data>
+  <data name="Pro_Status_Free" xml:space="preserve">
+    <value>Gratis-Version</value>
+  </data>
+  <data name="Pro_Store_Note.Text" xml:space="preserve">
+    <value>Der Kauf wird vollständig über den Store abgewickelt. Kvertis erhält dabei keine persönlichen Daten.</value>
+  </data>
+  <data name="Pro_Title.Text" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
+  <data name="Settings_AboutLink_Card.Header" xml:space="preserve">
+    <value>Über Kvertis</value>
+  </data>
+  <data name="Settings_AboutLink_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Über Kvertis</value>
+  </data>
+  <data name="Settings_About_Header.Text" xml:space="preserve">
+    <value>Über</value>
+  </data>
+  <data name="Settings_Advanced_Header.Text" xml:space="preserve">
+    <value>Erweitert</value>
+  </data>
+  <data name="Settings_Appearance_Header.Text" xml:space="preserve">
+    <value>Darstellung</value>
+  </data>
+  <data name="Settings_Conversion_Header.Text" xml:space="preserve">
+    <value>Umwandlung</value>
+  </data>
+  <data name="Settings_Ffmpeg_Card.Description" xml:space="preserve">
+    <value>Nur nötig, wenn Sie die mitgelieferte LGPL-Version durch eine eigene ersetzen möchten. Wird nach einem Neustart verwendet.</value>
+  </data>
+  <data name="Settings_Ffmpeg_Card.Header" xml:space="preserve">
+    <value>Eigene FFmpeg-Version</value>
+  </data>
+  <data name="Settings_Ffmpeg_Choose.Content" xml:space="preserve">
+    <value>Ordner wählen</value>
+  </data>
+  <data name="Settings_Ffmpeg_Choose.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Ordner wählen</value>
+  </data>
+  <data name="Settings_Ffmpeg_Reset.Content" xml:space="preserve">
+    <value>Mitgelieferte verwenden</value>
+  </data>
+  <data name="Settings_Ffmpeg_Reset.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Mitgelieferte verwenden</value>
+  </data>
+  <data name="Settings_Ffmpeg_Status_Missing" xml:space="preserve">
+    <value>Nicht gefunden. Audio und Video sind nicht verfügbar.</value>
+  </data>
+  <data name="Settings_Ffmpeg_Status_NotCompliant" xml:space="preserve">
+    <value>Gefunden, aber keine zulässige LGPL-Version. Sie wird nicht verwendet.</value>
+  </data>
+  <data name="Settings_Ffmpeg_Status_Ok" xml:space="preserve">
+    <value>Gefunden, LGPL-Version geprüft</value>
+  </data>
+  <data name="Settings_Language_Card.Description" xml:space="preserve">
+    <value>Sprache der Oberfläche</value>
+  </data>
+  <data name="Settings_Language_Card.Header" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="Settings_Language_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="Settings_Language_English.Content" xml:space="preserve">
+    <value>English</value>
+  </data>
+  <data name="Settings_Language_German.Content" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
+  <data name="Settings_Language_System.Content" xml:space="preserve">
+    <value>Wie Windows</value>
+  </data>
+  <data name="Settings_Licenses_Card.Description" xml:space="preserve">
+    <value>Bibliotheken, die Kvertis verwendet</value>
+  </data>
+  <data name="Settings_Licenses_Card.Header" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern</value>
+  </data>
+  <data name="Settings_Licenses_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Lizenzen von Drittanbietern</value>
+  </data>
+  <data name="Settings_Logging_Card.Description" xml:space="preserve">
+    <value>Schreibt ein Protokoll in den App-Ordner auf diesem PC. Es wird nie versendet.</value>
+  </data>
+  <data name="Settings_Logging_Card.Header" xml:space="preserve">
+    <value>Diagnoseprotokoll</value>
+  </data>
+  <data name="Settings_Logging_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Diagnoseprotokoll</value>
+  </data>
+  <data name="Settings_Metadata_Card.Description" xml:space="preserve">
+    <value>Schützt Ihre Privatsphäre, wenn Sie Bilder weitergeben</value>
+  </data>
+  <data name="Settings_Metadata_Card.Header" xml:space="preserve">
+    <value>EXIF- und GPS-Daten standardmäßig entfernen</value>
+  </data>
+  <data name="Settings_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>EXIF- und GPS-Daten standardmäßig entfernen</value>
+  </data>
+  <data name="Settings_NamePattern_Card.Description" xml:space="preserve">
+    <value>Platzhalter: {name}, {date}, {time}, {format}, {n}</value>
+  </data>
+  <data name="Settings_NamePattern_Card.Header" xml:space="preserve">
+    <value>Standard-Dateiname</value>
+  </data>
+  <data name="Settings_NamePattern_SampleFile" xml:space="preserve">
+    <value>Urlaub.heic</value>
+  </data>
+  <data name="Settings_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
+    <value>{name}</value>
+  </data>
+  <data name="Settings_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Standard-Dateiname</value>
+  </data>
+  <data name="Settings_Output_Card.Description" xml:space="preserve">
+    <value>Wohin umgewandelte Dateien gespeichert werden</value>
+  </data>
+  <data name="Settings_Output_Card.Header" xml:space="preserve">
+    <value>Standard-Zielordner</value>
+  </data>
+  <data name="Settings_Output_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Standard-Zielordner</value>
+  </data>
+  <data name="Settings_ParallelAuto_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Gleichzeitige Umwandlungen automatisch</value>
+  </data>
+  <data name="Settings_ParallelCount_Card.Description" xml:space="preserve">
+    <value>Mehr ist schneller, braucht aber mehr Leistung</value>
+  </data>
+  <data name="Settings_ParallelCount_Card.Header" xml:space="preserve">
+    <value>Gleichzeitige Umwandlungen</value>
+  </data>
+  <data name="Settings_ParallelCount_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Gleichzeitige Umwandlungen</value>
+  </data>
+  <data name="Settings_Parallel_Card.Description" xml:space="preserve">
+    <value>Passt die Anzahl an die Prozessorkerne an</value>
+  </data>
+  <data name="Settings_Parallel_Card.Header" xml:space="preserve">
+    <value>Gleichzeitige Umwandlungen automatisch</value>
+  </data>
+  <data name="Settings_Privacy_Card.Description" xml:space="preserve">
+    <value>Kvertis hat keinen Internetzugang, erhebt keine Daten und sendet nichts.</value>
+  </data>
+  <data name="Settings_Privacy_Card.Header" xml:space="preserve">
+    <value>Datenschutz</value>
+  </data>
+  <data name="Settings_Pro_Card.Description" xml:space="preserve">
+    <value>Video und unbegrenzte Stapel</value>
+  </data>
+  <data name="Settings_Pro_Card.Header" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
+  <data name="Settings_Pro_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
+  <data name="Settings_Restart_InfoBar.Message" xml:space="preserve">
+    <value>Die Änderung wird nach dem nächsten Start von Kvertis wirksam.</value>
+  </data>
+  <data name="Settings_Restart_InfoBar.Title" xml:space="preserve">
+    <value>Neustart nötig</value>
+  </data>
+  <data name="Settings_Theme_Card.Description" xml:space="preserve">
+    <value>Hell, dunkel oder wie Windows</value>
+  </data>
+  <data name="Settings_Theme_Card.Header" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="Settings_Theme_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Design</value>
+  </data>
+  <data name="Settings_Theme_Dark.Content" xml:space="preserve">
+    <value>Dunkel</value>
+  </data>
+  <data name="Settings_Theme_Light.Content" xml:space="preserve">
+    <value>Hell</value>
+  </data>
+  <data name="Settings_Theme_System.Content" xml:space="preserve">
+    <value>Wie Windows</value>
+  </data>
+  <data name="Settings_Title.Text" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Warning_AnimationDropped" xml:space="preserve">
+    <value>Nur das erste Bild der Animation wird umgewandelt.</value>
+  </data>
+  <data name="Warning_DurationUnknown" xml:space="preserve">
+    <value>Die Länge ist unbekannt. Die Zeitschätzung ist ungenau.</value>
+  </data>
+  <data name="Warning_ExtensionMismatch" xml:space="preserve">
+    <value>Die Dateiendung passt nicht zum Inhalt. Kvertis richtet sich nach dem Inhalt.</value>
+  </data>
+  <data name="Warning_Interlaced" xml:space="preserve">
+    <value>Das Video ist im Zeilensprungverfahren aufgenommen.</value>
+  </data>
+  <data name="Warning_LargeFile" xml:space="preserve">
+    <value>Sehr große Datei. Die Umwandlung kann lange dauern.</value>
+  </data>
+  <data name="Warning_MultipleAudioTracks" xml:space="preserve">
+    <value>Nur die erste Tonspur wird übernommen.</value>
+  </data>
+  <data name="Warning_TransparencyLost" xml:space="preserve">
+    <value>Durchsichtige Bereiche werden weiß, weil das Zielformat keine Transparenz kennt.</value>
+  </data>
+  <data name="Warning_VariableFrameRate" xml:space="preserve">
+    <value>Das Video hat eine schwankende Bildrate. Sie wird gleichmäßig gemacht.</value>
+  </data>
+  <data name="Window_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Window_Back_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Window_History_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Verlauf</value>
+  </data>
+  <data name="Window_History_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Verlauf</value>
+  </data>
+  <data name="Window_Pro_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
+  <data name="Window_Pro_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
+  <data name="Window_Settings_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Window_Settings_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Einstellungen</value>
+  </data>
+  <data name="Window_Title" xml:space="preserve">
+    <value>Kvertis</value>
+  </data>
+  <data name="Window_Title_Text.Text" xml:space="preserve">
+    <value>Kvertis</value>
+  </data>
+</root>

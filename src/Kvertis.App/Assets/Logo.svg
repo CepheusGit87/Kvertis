@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Kvertis placeholder mark: two shapes turning into each other (docs/06-design.md, "Logo und Icon").
+     Source for the PNGs in this folder (tools/assets/generate-placeholder-logos.py). To be replaced. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <rect x="0" y="0" width="100" height="100" rx="18" fill="#2F5DA8"/>
+  <circle cx="40" cy="42" r="20" fill="#FFFFFF"/>
+  <rect x="42" y="40" width="34" height="34" rx="6" fill="#FFFFFF"/>
+  <clipPath id="overlap"><circle cx="40" cy="42" r="20"/></clipPath>
+  <rect x="42" y="40" width="34" height="34" rx="6" fill="#A9C1E8" clip-path="url(#overlap)"/>
+</svg>

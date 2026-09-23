@@ -6,6 +6,7 @@
 #   3. src/ or docs/ mention forbidden libraries (GPL / non-free codecs)
 #   4. app resources, presets or store texts contain a third-party brand name (tools/compliance/brands.txt)
 #   5. the app manifest declares a network or broad file system capability
+#   6. app resources (.resw) and XAML are inconsistent (tools/compliance/check-resw.py)
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
@@ -13,26 +14,32 @@ fail=0
 note() { printf '  %s\n' "$*"; }
 bad()  { printf 'FAIL: %s\n' "$*"; fail=1; }
 
-echo "[1/5] Paketregister"
+echo "[1/6] Paketregister"
 while read -r pkg; do
   if ! grep -Fq -- "$pkg" docs/04-bibliotheken.md; then
     bad "Paket '$pkg' fehlt in docs/04-bibliotheken.md"
   fi
 done < <(grep -oE 'PackageVersion Include="[^"]+"' Directory.Packages.props | sed -E 's/.*="([^"]+)"/\1/')
 
-echo "[2/5] Netzwerkcode"
+echo "[2/6] Netzwerkcode"
 if grep -rnE --include='*.cs' --include='*.xaml' \
      'HttpClient|WebRequest|WebClient|System\.Net\.Sockets|Windows\.Networking|HttpWebRequest|Socket\(' src/ ; then
   bad "Netzwerkcode in src/ gefunden"
 fi
 
-echo "[3/5] Verbotene Bibliotheken"
+echo "[3/6] Verbotene Bibliotheken"
 if grep -rniE --include='*.cs' --include='*.csproj' --include='*.props' --include='*.xaml' \
-     'libx264|libx265|libfdk[_-]?aac|libxvid|enable-gpl|enable-nonfree|QuestPDF|FluentAssertions' src/ tests/ ; then
-  bad "Verbotene Bibliothek oder GPL-Option referenziert"
+     'libx264|libx265|libfdk[_-]?aac|libxvid|QuestPDF|FluentAssertions' src/ tests/ ; then
+  bad "Verbotene Bibliothek referenziert"
+fi
+# The GPL/nonfree configure flags may only appear in the build checker that rejects them
+# (src/Kvertis.Engine/Ffmpeg/FfmpegCompliance.cs) and in test fixtures that feed such builds to it.
+if grep -rniE --include='*.cs' --include='*.csproj' --include='*.props' --include='*.xaml' \
+     --exclude='FfmpegCompliance.cs' 'enable-gpl|enable-nonfree' src/ ; then
+  bad "GPL-/Nonfree-Option ausserhalb der Build-Pruefung referenziert"
 fi
 
-echo "[4/5] Markennamen"
+echo "[4/6] Markennamen"
 if [ -f tools/compliance/brands.txt ]; then
   pattern=$(grep -vE '^\s*(#|$)' tools/compliance/brands.txt | paste -sd'|' -)
   if [ -n "$pattern" ]; then
@@ -46,12 +53,19 @@ if [ -f tools/compliance/brands.txt ]; then
   fi
 fi
 
-echo "[5/5] Manifest-Berechtigungen"
+echo "[5/6] Manifest-Berechtigungen"
 for m in $(find src -name 'Package.appxmanifest' 2>/dev/null); do
   if grep -nE 'internetClient|internetClientServer|privateNetworkClientServer|broadFileSystemAccess|picturesLibrary|videosLibrary|musicLibrary|documentsLibrary|removableStorage' "$m"; then
     bad "Unerlaubte Berechtigung in $m"
   fi
 done
+
+echo "[6/6] App-Ressourcen (DE/EN, x:Uid, Fehlercodes)"
+if [ -d src/Kvertis.App ]; then
+  if ! python3 tools/compliance/check-resw.py; then
+    bad "Ressourcen oder XAML der App inkonsistent"
+  fi
+fi
 
 if [ $fail -ne 0 ]; then
   echo "Compliance-Prüfung fehlgeschlagen."
