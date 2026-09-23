@@ -1,0 +1,79 @@
+# Builds the Kvertis FFmpeg binaries (LGPL 2.1, patent-free components only, see tools/ffmpeg/configure-allowlist.txt)
+# for Windows x64 with MSYS2/MinGW, verifies them with tools/ffmpeg/check-build.sh, and archives binaries
+# together with the exact sources and configuration (LGPL source offer).
+#
+# Manual trigger only. ARM64 is an open point (O-02): MSYS2 has no ARM64 toolchain; cross-compile with
+# llvm-mingw or build on an ARM64 runner in a later step.
+name: FFmpeg build (LGPL, patent-free)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ffmpeg_version:
+        description: FFmpeg release tag (e.g. n7.1.1)
+        required: true
+        default: n7.1.1
+
+permissions:
+  contents: read
+
+jobs:
+  build-win-x64:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            git make diffutils pkgconf nasm yasm
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-libvpx
+            mingw-w64-x86_64-opus
+            mingw-w64-x86_64-libvorbis
+            mingw-w64-x86_64-libogg
+            mingw-w64-x86_64-lame
+            mingw-w64-x86_64-dav1d
+            mingw-w64-x86_64-svt-av1
+
+      - name: Fetch FFmpeg sources
+        run: |
+          git clone --depth 1 --branch "${{ github.event.inputs.ffmpeg_version }}" https://git.ffmpeg.org/ffmpeg.git ffmpeg-src
+
+      - name: Configure (allowlist)
+        working-directory: ffmpeg-src
+        run: |
+          args=$(grep -vE '^\s*(#|$)' ../tools/ffmpeg/configure-allowlist.txt | tr '\n' ' ')
+          echo "configure $args"
+          ./configure --prefix=/opt/kvertis-ffmpeg --arch=x86_64 --target-os=mingw32 --pkg-config-flags=--static \
+            --extra-ldflags="-static -static-libgcc -static-libstdc++" $args
+
+      - name: Build
+        working-directory: ffmpeg-src
+        run: make -j"$(nproc)"
+
+      - name: Verify (LGPL, no forbidden codecs, no network)
+        run: bash tools/ffmpeg/check-build.sh ffmpeg-src/ffmpeg.exe
+
+      - name: Collect binaries, licenses and source offer
+        run: |
+          mkdir -p out/bin out/source-offer
+          cp ffmpeg-src/ffmpeg.exe ffmpeg-src/ffprobe.exe out/bin/
+          cp ffmpeg-src/COPYING.LGPLv2.1 out/bin/LICENSE.FFmpeg.txt
+          ffmpeg-src/ffmpeg.exe -hide_banner -version > out/bin/BUILD-INFO.txt
+          cp tools/ffmpeg/configure-allowlist.txt out/source-offer/
+          (cd ffmpeg-src && git rev-parse HEAD > ../out/source-offer/ffmpeg-commit.txt)
+          tar -C ffmpeg-src -czf out/source-offer/ffmpeg-source.tar.gz --exclude=.git .
+          # MSYS2 package sources for the LGPL library (lame) and the BSD libraries, for a complete source offer.
+          pacman -Qi mingw-w64-x86_64-lame mingw-w64-x86_64-libvpx mingw-w64-x86_64-opus mingw-w64-x86_64-libvorbis \
+                     mingw-w64-x86_64-dav1d mingw-w64-x86_64-svt-av1 > out/source-offer/msys2-packages.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kvertis-ffmpeg-win-x64
+          path: out

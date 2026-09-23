@@ -1,0 +1,166 @@
+# Kvertis FFmpeg build: allowlist configuration (LGPL 2.1, patent-free components only)
+#
+# Everything not listed here is disabled. In particular NO decoders or encoders for
+# H.264, HEVC, AAC, MPEG-4 Part 2, WMV/WMA/VC-1, ProRes, DNxHD, DTS, E-AC-3, AMR.
+# Those formats are handled by Windows Media Foundation (system codecs) in Kvertis.Engine.Windows.
+# No network protocols at all: only "file" and "pipe".
+#
+# Each line is one configure argument; lines starting with # are ignored.
+# Used by .github/workflows/ffmpeg-build.yml and by tools/ffmpeg/check-build.* (allowlist check).
+
+--disable-gpl
+--disable-nonfree
+--disable-version3
+--disable-doc
+--disable-debug
+--disable-programs
+--enable-ffmpeg
+--enable-ffprobe
+--disable-network
+--disable-autodetect
+--disable-everything
+--enable-static
+--disable-shared
+--enable-mediafoundation
+
+# ---- protocols: local only
+--enable-protocol=file
+--enable-protocol=pipe
+
+# ---- demuxers (containers carry no codec patents relevant here)
+--enable-demuxer=mov
+--enable-demuxer=matroska
+--enable-demuxer=ogg
+--enable-demuxer=flac
+--enable-demuxer=wav
+--enable-demuxer=mp3
+--enable-demuxer=aiff
+--enable-demuxer=avi
+--enable-demuxer=asf
+--enable-demuxer=mpegts
+--enable-demuxer=mpegps
+--enable-demuxer=image2
+--enable-demuxer=gif
+--enable-demuxer=rawvideo
+--enable-demuxer=pcm_s16le
+--enable-demuxer=lavfi
+
+# ---- muxers
+--enable-muxer=mp4
+--enable-muxer=ipod
+--enable-muxer=matroska
+--enable-muxer=webm
+--enable-muxer=ogg
+--enable-muxer=opus
+--enable-muxer=flac
+--enable-muxer=wav
+--enable-muxer=mp3
+--enable-muxer=aiff
+--enable-muxer=image2
+--enable-muxer=gif
+--enable-muxer=rawvideo
+--enable-muxer=null
+
+# ---- decoders: patent-free or patents expired (MPEG-1/2 video 2018, MP3 2017, AC-3 2017)
+--enable-decoder=vp8
+--enable-decoder=vp9
+--enable-decoder=libdav1d
+--enable-decoder=theora
+--enable-decoder=mpeg1video
+--enable-decoder=mpeg2video
+--enable-decoder=mjpeg
+--enable-decoder=png
+--enable-decoder=gif
+--enable-decoder=bmp
+--enable-decoder=rawvideo
+--enable-decoder=libopus
+--enable-decoder=libvorbis
+--enable-decoder=flac
+--enable-decoder=mp3
+--enable-decoder=mp3float
+--enable-decoder=mp2
+--enable-decoder=ac3
+--enable-decoder=alac
+--enable-decoder=wavpack
+--enable-decoder=pcm_s16le
+--enable-decoder=pcm_s16be
+--enable-decoder=pcm_s24le
+--enable-decoder=pcm_s24be
+--enable-decoder=pcm_s32le
+--enable-decoder=pcm_f32le
+--enable-decoder=pcm_u8
+--enable-decoder=pcm_alaw
+--enable-decoder=pcm_mulaw
+
+# ---- encoders: patent-free libraries plus the Windows Media Foundation wrappers (system codecs)
+--enable-encoder=libvpx_vp8
+--enable-encoder=libvpx_vp9
+--enable-encoder=libsvtav1
+--enable-encoder=libopus
+--enable-encoder=libvorbis
+--enable-encoder=flac
+--enable-encoder=alac
+--enable-encoder=libmp3lame
+--enable-encoder=png
+--enable-encoder=mjpeg
+--enable-encoder=gif
+--enable-encoder=rawvideo
+--enable-encoder=pcm_s16le
+--enable-encoder=pcm_s16be
+--enable-encoder=pcm_s24le
+--enable-encoder=pcm_f32le
+--enable-encoder=h264_mf
+--enable-encoder=hevc_mf
+--enable-encoder=aac_mf
+--enable-encoder=mp3_mf
+
+# ---- parsers and bitstream filters needed by the above
+--enable-parser=vp8
+--enable-parser=vp9
+--enable-parser=av1
+--enable-parser=mpegvideo
+--enable-parser=mpegaudio
+--enable-parser=opus
+--enable-parser=vorbis
+--enable-parser=flac
+--enable-parser=png
+--enable-parser=mjpeg
+--enable-parser=ac3
+--enable-bsf=null
+--enable-bsf=vp9_superframe
+--enable-bsf=vp9_superframe_split
+
+# ---- filters used by Kvertis (scaling, frame rate, deinterlace, audio resampling, analysis, previews)
+--enable-filter=scale
+--enable-filter=fps
+--enable-filter=format
+--enable-filter=yadif
+--enable-filter=transpose
+--enable-filter=crop
+--enable-filter=pad
+--enable-filter=setpts
+--enable-filter=trim
+--enable-filter=null
+--enable-filter=aresample
+--enable-filter=aformat
+--enable-filter=anull
+--enable-filter=astats
+--enable-filter=atrim
+--enable-filter=asetpts
+--enable-filter=volume
+--enable-filter=showwavespic
+--enable-filter=testsrc
+--enable-filter=sine
+--enable-filter=anullsrc
+--enable-filter=color
+
+# ---- external libraries (all BSD/MIT/LGPL, no patent pools)
+--enable-libvpx
+--enable-libopus
+--enable-libvorbis
+--enable-libmp3lame
+--enable-libdav1d
+--enable-libsvtav1
+--enable-swscale
+--enable-swresample
+--enable-avfilter

@@ -29,40 +29,47 @@ Regeln:
 
 ## 2. FFmpeg
 
-FFmpeg wird ausschließlich als **LGPL-Build** und als **separater Prozess** (`ffmpeg.exe`, `ffprobe.exe`) genutzt. Nie als DLL laden, nie linken.
+FFmpeg wird ausschließlich als **eigener LGPL-Build** und als **separater Prozess** (`ffmpeg.exe`, `ffprobe.exe`) genutzt. Nie als DLL laden, nie linken.
 
-Verbindliche Build-Konfiguration (wird unter `tools/ffmpeg/` dokumentiert und geprüft):
+Der Build enthält **nur patentfreie Komponenten** (Allowlist in `tools/ffmpeg/configure-allowlist.txt`, Begründung in ADR-015):
 
-- `--disable-gpl --disable-nonfree --disable-version3` (bleibt bei LGPL 2.1).
-- `--enable-mediafoundation` (Encoder `h264_mf`, `hevc_mf`, `aac_mf`, `mp3_mf` nutzen die Windows-Systemcodecs).
-- Erlaubte externe Bibliotheken: `libvpx` (BSD), `libopus` (BSD), `libvorbis` (BSD), `libmp3lame` (LGPL), `libaom` (BSD-2 mit Patentklausel), `libsvtav1` (BSD-2 mit Patentklausel), `libdav1d` (BSD-2), `libwebp` (BSD).
+- `--disable-gpl --disable-nonfree --disable-version3` (LGPL 2.1), `--disable-everything`, danach nur die gelisteten Bausteine.
+- `--disable-network`, Protokolle nur `file` und `pipe`. Der Build kann technisch nichts aus dem Netz laden.
+- `--enable-mediafoundation`: Encoder `h264_mf`, `hevc_mf`, `aac_mf`, `mp3_mf` nutzen die Windows-Systemcodecs.
+- Decoder nur für patentfreie oder patentfrei gewordene Formate: VP8, VP9, AV1, Theora, MPEG-1/2 (abgelaufen 2018), MJPEG, PNG, GIF, Opus, Vorbis, FLAC, MP3 (abgelaufen 2017), MP2, AC-3 (abgelaufen 2017), ALAC, WavPack, PCM.
+- **Nicht enthalten, weder als Encoder noch als Decoder:** H.264, HEVC, AAC, MPEG-4 Part 2, WMV/WMA/VC-1, H.263, ProRes, DNxHD, DTS, E-AC-3, AMR. Diese Formate werden ausschließlich von Windows Media Foundation verarbeitet.
+- Externe Bibliotheken: `libvpx`, `libopus`, `libvorbis` (BSD), `libmp3lame` (LGPL), `dav1d` (BSD-2), `SVT-AV1` (BSD-2 mit Patentklausel).
 - **Verboten:** `libx264`, `libx265`, `libfdk-aac`, `libxvid`, alles, was `--enable-gpl` oder `--enable-nonfree` verlangt.
-- Der Build-Nachweis (`ffmpeg -version` zeigt `--disable-gpl` und keine `libx26x`-Einträge; `ffmpeg -encoders` enthält kein `libx264`/`libx265`) wird im Test `FfmpegBuildComplianceTests` (Kategorie Integration) geprüft.
+- Der Build-Nachweis läuft dreifach: `tools/ffmpeg/check-build.sh|.ps1` (nach dem Bauen), `FfmpegCompliance` in der App (beim Start, verweigert fremde Builds) und der Integrationstest `FfmpegBuildComplianceTests`.
 
 LGPL-Pflichten, die Kvertis erfüllt:
 
 - Lizenztext LGPL 2.1 in der App.
 - Hinweis, dass Kvertis FFmpeg verwendet, mit Link zu ffmpeg.org.
-- Quellcode-Angebot: exakte Version, Build-Konfiguration und Quellen des verwendeten Builds werden veröffentlicht (Ort: offener Punkt in `09-roadmap.md`). Werden Patches angewendet, werden sie mitveröffentlicht.
-- Der Nutzer kann `ffmpeg.exe` im Installationsordner austauschen. Bei MSIX ist der Ordner schreibgeschützt; deshalb unterstützt Kvertis optional einen benutzerdefinierten FFmpeg-Pfad in den Einstellungen (nur für diesen Zweck, ohne Download-Funktion).
+- Quellcode-Angebot: Der Build-Workflow (`.github/workflows/ffmpeg-build.yml`) archiviert FFmpeg-Quellen, Commit, Konfiguration und die Paketliste der Bibliotheken als Artefakt. Dieses Artefakt wird mit jeder Veröffentlichung abgelegt (Ort: offener Punkt O-02).
+- Der Nutzer kann `ffmpeg.exe` austauschen: Kvertis unterstützt einen benutzerdefinierten FFmpeg-Pfad in den Einstellungen (ohne Download-Funktion). Ein fremder Build wird nur akzeptiert, wenn er die Compliance-Prüfung besteht.
 
 ## 3. Codecs und Patente
 
-Grundsatz: Kodierung und Dekodierung patentbelasteter Formate laufen über **Systemcodecs von Windows** (Media Foundation, Windows Imaging Component). Die Patentlizenz liegt dann beim Betriebssystem bzw. der vom Nutzer installierten Erweiterung, nicht bei Kvertis.
+Grundsatz: **Kvertis liefert keinen einzigen patentbelasteten Codec aus.** Kodierung und Dekodierung von H.264, HEVC, AAC, HEIC, MPEG-4 Part 2 und Windows-Media-Formaten laufen über **Systemcodecs von Windows** (Media Foundation, Windows Imaging Component). Die Patentlizenz liegt dann beim Betriebssystem bzw. der vom Nutzer installierten Erweiterung, nicht bei Kvertis.
 
 | Format | Kodieren | Dekodieren | Anmerkung |
 |---|---|---|---|
-| H.264 / AVC | nur `h264_mf` (Media Foundation) | bevorzugt Hardware/System (D3D11VA), Fallback FFmpeg-Software-Decoder | Software-Dekodierung ist LGPL, aber patentbelastet. Juristische Prüfung: offener Punkt. |
-| HEVC / H.265 | nur `hevc_mf` | nur über System (D3D11VA / HEVC-Videoerweiterung). **Kein** Software-Fallback in Phase 1. | Fehlt die Erweiterung, klare Meldung mit Hinweis auf den Store. |
-| AAC | nur `aac_mf` | FFmpeg-nativer Decoder (LGPL) | AAC-Dekodierung gilt als geringes Risiko, Prüfung dennoch offener Punkt. |
-| HEIC / HEIF | nicht in Phase 1 | nur über Windows Imaging Component (HEIF-Bilderweiterung + HEVC-Videoerweiterung des Systems) | Keine mitgelieferten HEVC-Decoder (`libde265`, `x265`). Siehe ADR-006 in `03-architektur.md`. |
-| MP3 | `libmp3lame` (LGPL) oder `mp3_mf` | FFmpeg-nativ | Patente abgelaufen. |
-| AV1, VP9, VP8, Opus, Vorbis, FLAC, WebP, PNG, JPG, GIF, TIFF, BMP, WAV | frei | frei | Bevorzugte Standardformate. |
+| H.264 / AVC | nur `h264_mf` (Media Foundation) | nur Media Foundation (`MediaTranscoder`) | kein H.264-Decoder im FFmpeg-Build |
+| HEVC / H.265 | nur `hevc_mf` | nur Media Foundation (HEVC-Videoerweiterung) | fehlt die Erweiterung: klare Meldung mit Hinweis auf den Store |
+| AAC | nur `aac_mf` | nur Media Foundation | kein AAC-Decoder im FFmpeg-Build |
+| MPEG-4 Part 2, WMV, WMA, VC-1 | nicht | nur Media Foundation | |
+| HEIC / HEIF, AVIF, RAW (außer DNG) | nicht | nur Windows Imaging Component (HEIF-, AV1-, Raw-Bilderweiterung des Systems) | keine mitgelieferten Decoder; DNG liest SkiaSharp (Adobe DNG SDK, lizenzfrei) |
+| MP3 | `libmp3lame` (LGPL) oder `mp3_mf` | FFmpeg-nativ | Patente abgelaufen 2017 |
+| MPEG-1/2 Video, AC-3 | nicht | FFmpeg-nativ | Patente abgelaufen (2018 bzw. 2017) |
+| AV1, VP8, VP9, Opus, Vorbis, FLAC, Theora, WebP, PNG, JPG, GIF, TIFF, BMP, WAV | frei | frei | Bevorzugte Standardformate |
 
 Regeln:
 
-- Standardvorschläge der App bevorzugen patentfreie Formate, wo das für Laien sinnvoll ist. Bei Video bleibt MP4/H.264 der Standardvorschlag, weil das für die Zielgruppe die höchste Kompatibilität hat; die Kodierung läuft über Media Foundation.
+- Standardvorschläge der App bevorzugen patentfreie Formate, wo das für Laien sinnvoll ist. Bei Video bleibt MP4/H.264 der Standardvorschlag, weil das für die Zielgruppe die höchste Kompatibilität hat; Kodierung und Dekodierung laufen über Media Foundation.
 - Kein Codec wird „vorsichtshalber“ mitgeliefert. Was das System nicht kann, kann Kvertis nicht, und die App sagt das klar.
+- Bildbibliothek ist SkiaSharp (MIT, geprüft: keine Video-Codecs). Magick.NET wurde entfernt, weil `Magick.Native` libde265 und openh264 statisch enthält (Prüfbericht in `04-bibliotheken.md`).
+- Jede neue native Bibliothek wird vor dem Einbau auf mitgelieferte Codecs geprüft (Notice-Datei und Zeichenketten in der DLL), nicht nur auf ihre Lizenz.
 
 ## 4. Verbotene Funktionen
 
