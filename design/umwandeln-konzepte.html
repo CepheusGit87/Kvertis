@@ -1,0 +1,595 @@
+<title>Kvertis Umwandeln-Konzepte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --karton-kante: #00000014; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1160px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 16px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+.k-mix { --k: var(--muted); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Fenster */
+.win { position: relative; width: 100%; min-width: 960px; height: 580px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 42px 54px 1fr auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.platz { flex: 1; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+.faden { display: flex; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.kn { display: grid; grid-template-columns: 26px auto; gap: 0 9px; align-items: center; }
+.kn i { grid-row: span 2; width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.kn.an i { background: var(--mint); color: var(--auf-mint); border-color: var(--mint); }
+.kn b { font-size: 12.5px; } .kn small { font: 500 10.5px var(--mono); color: var(--mint); } .kn.an small { color: var(--leise); }
+.sg { flex: 1; height: 2px; margin: 0 12px; background: var(--mint); border-radius: 1px; }
+.leiste { display: flex; align-items: center; gap: 12px; padding: 11px 18px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.taste { border: 0; border-radius: 12px; padding: 11px 20px; font-weight: 600; font-size: 14px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), 0 12px 24px -8px color-mix(in srgb, var(--mint) 60%, transparent), inset 0 1px 0 #ffffff55; transform: translateY(-2px); transition: transform .12s, box-shadow .12s; display: inline-flex; gap: 10px; align-items: center; }
+.taste:hover { transform: translateY(-3px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 45%, #000); }
+.taste small { font: 500 11px var(--mono); opacity: .75; }
+.segment { display: flex; gap: 3px; padding: 3px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.segment button { border: 0; background: transparent; padding: 5px 10px; border-radius: 7px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.segment button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset, 0 2px 6px -2px #0006; }
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 1px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.label { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.muted { color: var(--muted); }
+.mono { font-family: var(--mono); }
+
+/* 1 · Förderband */
+.fb { display: grid; grid-template-rows: 1fr auto; padding: 18px 26px 10px; gap: 12px; }
+.bahn { position: relative; height: 230px; }
+.bahn .gurt { position: absolute; left: 0; right: 0; bottom: 34px; height: 16px; border-radius: 8px; background: var(--tief); border: 1px solid var(--line-stark); overflow: hidden; }
+.bahn .gurt::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, var(--line-stark) 0 2px, transparent 2px 18px); }
+.fb.laeuft .gurt::before { animation: gurt .5s linear infinite; }
+@keyframes gurt { to { transform: translateX(18px); } }
+.bahn .rolle { position: absolute; bottom: 22px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--line-stark); background: radial-gradient(circle, var(--panel2) 30%, var(--tief)); }
+.bahn .rolle.l { left: -10px; } .bahn .rolle.r { right: -10px; }
+.tor { position: absolute; left: 50%; bottom: 26px; width: 96px; height: 170px; margin-left: -48px; border-radius: 16px 16px 6px 6px; border: 2px solid var(--mint-rahmen); background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 10%, transparent), transparent); display: grid; justify-items: center; align-content: start; padding-top: 10px; gap: 6px; z-index: 1; }
+.tor .logo { width: 22px; height: 22px; }
+.tor span { font: 600 10px var(--mono); letter-spacing: .1em; color: var(--mint); }
+.fb.laeuft .tor { border-color: var(--mint); box-shadow: 0 0 30px -4px color-mix(in srgb, var(--mint) 55%, transparent); }
+.bl { position: absolute; bottom: 52px; width: 86px; height: 62px; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 14px -8px #000a; padding: 16px 6px 0; font: 600 9.5px var(--mono); text-align: center; overflow: visible; transition: left .8s var(--sanft), transform .3s; z-index: 2; }
+.bl::before { content: attr(data-f); position: absolute; top: -12px; left: 6px; padding: 1px 7px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; }
+.bl.fertig::before { background: var(--mint); color: var(--auf-mint); }
+.bl span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bl small { display: block; font-weight: 500; opacity: .6; margin-top: 3px; }
+.bl.im-tor { transform: translateY(-6px) scale(1.06); z-index: 3; }
+.bahn .ziel-schild { position: absolute; right: 0; top: 0; text-align: right; display: grid; gap: 2px; }
+.bahn .quelle-schild { position: absolute; left: 0; top: 0; display: grid; gap: 2px; }
+.bahn .ziel-schild b, .bahn .quelle-schild b { font-size: 13px; }
+.gruppenleiste { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.gruppenleiste .g { display: inline-flex; gap: 8px; align-items: center; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); font-size: 12px; }
+.gruppenleiste .g i { width: 8px; height: 8px; border-radius: 2px; background: var(--k); }
+
+/* 2 · Auftragszettel */
+.az { display: grid; grid-template-columns: 1fr 250px; gap: 20px; padding: 16px 30px 14px; align-items: center; min-height: 0; }
+.zettel-rahmen { position: relative; justify-self: center; width: min(520px, 100%); }
+.zettel-rahmen::before, .zettel-rahmen::after { content: ''; position: absolute; inset: 0; border-radius: 4px; background: var(--paper); opacity: .5; transform: rotate(1.6deg) translate(6px, 6px); box-shadow: 0 10px 20px -12px #000a; }
+.zettel-rahmen::after { opacity: .75; transform: rotate(.6deg) translate(3px, 3px); }
+.zettel { position: relative; z-index: 1; background: var(--paper); color: var(--paper-ink); border-radius: 4px; padding: 16px 20px 14px; transform: rotate(-.5deg); box-shadow: 0 18px 30px -16px #000c; font-size: 12px; }
+.zettel header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid var(--paper-ink); padding-bottom: 6px; margin-bottom: 6px; }
+.zettel header b { font: 700 15px var(--mono); letter-spacing: .12em; }
+.zettel header span { font: 500 11px var(--mono); color: #5b646a; }
+.zg { padding: 5px 0 4px; border-bottom: 1px dashed var(--paper-linie); }
+.zg h5 { margin: 0 0 3px; font: 600 10px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: #5b646a; display: flex; gap: 6px; align-items: center; }
+.zg h5 i { width: 8px; height: 8px; border-radius: 2px; background: var(--k); }
+.zz { display: grid; grid-template-columns: 16px 1fr auto 110px; gap: 8px; align-items: center; padding: 2px 0; font-family: var(--mono); font-size: 11.5px; }
+.zz .hk { color: #0a6851; font-weight: 700; opacity: 0; transition: opacity .3s; }
+.zz.ok .hk { opacity: 1; }
+.zz .nm { font-family: var(--schrift); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zz .vn { color: #5b646a; } .zz .vn b { color: var(--paper-ink); }
+.zz .gr { text-align: right; color: #5b646a; } .zz .gr b { color: var(--paper-ink); }
+.zettel footer { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding-top: 8px; font-family: var(--mono); font-size: 11.5px; }
+.zettel footer .summe { font: 700 20px var(--mono); color: #0a6851; text-align: right; grid-row: span 2; align-self: center; }
+.zettel footer u { cursor: pointer; }
+.stempel-abdruck { position: absolute; right: 26px; top: 46%; z-index: 2; padding: 6px 14px; border: 3px solid #0a6851; border-radius: 8px; color: #0a6851; font: 800 22px var(--mono); letter-spacing: .12em; transform: rotate(-14deg) scale(2.4); opacity: 0; pointer-events: none; mix-blend-mode: multiply; }
+.stempel-abdruck.da { animation: stempeln .45s cubic-bezier(.3,1.4,.5,1) forwards; }
+@keyframes stempeln { to { transform: rotate(-14deg) scale(1); opacity: .85; } }
+.stempel { justify-self: center; position: relative; width: 170px; height: 190px; border: 0; background: none; padding: 0; perspective: 500px; }
+.stempel .griff { position: absolute; left: 50%; top: 0; width: 56px; height: 76px; margin-left: -28px; border-radius: 28px 28px 10px 10px; background: linear-gradient(90deg, color-mix(in srgb, var(--mint) 55%, #000), var(--mint) 40%, color-mix(in srgb, var(--mint) 70%, #000)); box-shadow: inset 0 2px 0 #ffffff44; transition: transform .2s var(--feder); }
+.stempel .fuss { position: absolute; left: 10px; right: 10px; top: 72px; height: 58px; border-radius: 12px; background: linear-gradient(180deg, var(--panel2), var(--tief)); border: 1px solid var(--line-stark); display: grid; place-items: center; font: 700 15px var(--mono); letter-spacing: .08em; color: var(--mint); box-shadow: 0 8px 0 var(--tief), 0 20px 30px -10px var(--schatten); transition: transform .2s var(--feder); }
+.stempel .unter { position: absolute; left: 0; right: 0; top: 152px; font-size: 12px; color: var(--muted); text-align: center; }
+.stempel:hover .griff, .stempel:hover .fuss { transform: translateY(-4px); }
+.stempel:active .griff, .stempel:active .fuss, .stempel.drueckt .griff, .stempel.drueckt .fuss { transform: translateY(10px); }
+
+/* 3 · Sanduhr-Lauf */
+.sl { display: grid; grid-template-columns: 300px 1fr; gap: 20px; padding: 12px 28px 8px; align-items: center; }
+.uhrbox { position: relative; height: 380px; perspective: 800px; }
+.uhrbox svg { position: absolute; left: 50%; top: 0; width: 250px; height: 100%; transform: translateX(-50%); }
+.uhrbox .glas { fill: color-mix(in srgb, var(--ink) 3.5%, transparent); stroke: color-mix(in srgb, var(--ink) 30%, transparent); stroke-width: 1.2; }
+.uhrbox .glanz { fill: none; stroke: #fff; stroke-opacity: .15; stroke-width: 4; stroke-linecap: round; }
+.uhrbox .deckel { position: absolute; left: 50%; width: 258px; height: 12px; margin-left: -129px; border-radius: 5px; background: linear-gradient(180deg, var(--panel2), var(--tief)); border: 1px solid var(--line-stark); z-index: 2; }
+.uhrbox .deckel.o { top: 0; } .uhrbox .deckel.u { bottom: 0; }
+.platte { position: absolute; left: 50%; width: 206px; margin-left: -103px; padding: 12px 10px; min-height: 64px; display: flex; flex-wrap: wrap; gap: 6px 5px; justify-content: center; align-content: center; border-radius: 16px; transform: rotateX(50deg); }
+.platte.o { top: 20px; background: linear-gradient(160deg, color-mix(in srgb, var(--ink) 10%, var(--panel2)), var(--panel)); border: 1px solid var(--line-stark); box-shadow: 0 12px 0 -4px var(--tief), 0 26px 30px -12px var(--schatten); }
+.platte.u { bottom: 20px; background: linear-gradient(160deg, color-mix(in srgb, var(--mint) 18%, var(--panel2)), color-mix(in srgb, var(--mint) 6%, var(--panel))); border: 1px solid var(--mint-rahmen); box-shadow: 0 12px 0 -4px color-mix(in srgb, var(--mint) 26%, var(--karton-tief)), 0 26px 30px -12px var(--schatten); }
+.platte .chip { background: color-mix(in srgb, var(--k) 34%, var(--panel2)); color: var(--ink); font-weight: 600; box-shadow: 0 3px 0 color-mix(in srgb, var(--k) 38%, var(--karton-tief)); transition: opacity .4s, transform .4s; }
+.platte .chip.weg { opacity: 0; transform: translateY(20px) scale(.6); }
+.platte .eti { box-shadow: 0 3px 0 var(--paper-linie); animation: plopp .4s var(--feder); }
+@keyframes plopp { from { transform: translateY(-20px) scale(.5); opacity: 0; } }
+.uhrbox .hals { position: absolute; left: 50%; top: 172px; transform: translateX(-50%); width: 70px; height: 34px; display: grid; place-items: center; }
+.uhrbox .hals::before { content: ''; position: absolute; inset: 7px 0; border-radius: 50%; border: 2px solid var(--mint); box-shadow: 0 0 16px color-mix(in srgb, var(--mint) 50%, transparent); }
+.uhrbox .hals b { position: relative; font: 700 12px var(--mono); color: var(--mint); background: var(--bg); padding: 0 4px; border-radius: 4px; }
+.korn { position: absolute; left: 50%; top: 200px; width: 4px; height: 4px; margin-left: -2px; border-radius: 50%; background: var(--mint); opacity: 0; }
+.sl.laeuft .korn { animation: rieseln 1s linear infinite; animation-delay: var(--d); }
+@keyframes rieseln { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(60px); opacity: 0; } }
+.sl-rechts { display: grid; gap: 12px; align-content: center; }
+.sl-rechts h4 { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.sl-rechts h4 span { color: var(--mint); }
+.gzeile { display: grid; grid-template-columns: 10px 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); }
+.gzeile i { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.gzeile small { font: 11px var(--mono); color: var(--muted); }
+.gzeile .st { font: 600 11px var(--mono); color: var(--muted); min-width: 36px; text-align: right; }
+.gzeile.ok { border-color: var(--mint-rahmen); background: var(--mint-flaeche); }
+.gzeile.ok .st { color: var(--mint); }
+.wohin-mini { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+
+/* Glas-Sanduhr in 3D */
+.uhr3d { --dx: 0; position: relative; width: 240px; height: 400px; justify-self: center; }
+.uhr3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.uhr3d .p-vorn, .uhr3d .p-hinten, .uhr3d .glanz { transition: transform .25s ease-out; }
+.uhr3d .p-vorn { transform: translateX(calc(var(--dx) * 6px)); }
+.uhr3d .p-hinten { transform: translateX(calc(var(--dx) * -9px)); }
+.uhr3d .glanz { transform: translateX(calc(var(--dx) * 3px)); }
+.uhr3d .u-schatten { fill: var(--schatten); filter: blur(5px); }
+.uhr3d .u-kontur { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.2; }
+.uhr3d .u-rand { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; }
+.uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--k) 45%, var(--panel2)); stroke: color-mix(in srgb, var(--k) 60%, transparent); stroke-width: .8; }
+.uhr3d .u-bodenflaeche { fill: color-mix(in srgb, var(--mint) 22%, transparent); }
+.uhr3d .u-glanz { fill: none; stroke: #fff; stroke-opacity: .2; stroke-width: 5; stroke-linecap: round; }
+.uhr3d .u-glanz.d { stroke-width: 2; stroke-opacity: .12; }
+.uhr3d .u-deckel { fill: color-mix(in srgb, var(--line-stark) 55%, var(--panel2)); stroke: var(--line-stark); stroke-width: 1; }
+.uhr3d .u-strom { stroke-width: 2.2; stroke-dasharray: 3 5; stroke-linecap: round; animation: strom3d .6s linear infinite; }
+@keyframes strom3d { to { stroke-dashoffset: -8; } }
+.uhr3d .sand-o, .uhr3d .sand-u { position: absolute; left: 30px; right: 30px; display: grid; gap: 5px; justify-items: center; }
+.uhr3d .sand-o { top: 58px; } .uhr3d .sand-u { bottom: 40px; }
+.uhr3d .zeile { display: flex; gap: 4px; justify-content: center; }
+.uhr3d .hals-m { position: absolute; left: 50%; top: 188px; transform: translateX(-50%); display: grid; place-items: center; }
+.uhr3d .hals-m .logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.uhr3d .hals-m .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .uhr3d .hals-m .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.uhr3d .sand-o .chip { background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; box-shadow: 0 2px 5px -1px #0009; }
+.uhr3d .sand-u .eti { box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; }
+.logo-m { width: 22px; height: 22px; border-radius: 7px; background: var(--mint); position: relative; flex: none; }
+.logo-m::before, .logo-m::after { content: ''; position: absolute; }
+.logo-m::before { background: var(--auf-mint); opacity: .8; border-radius: 3px; }
+.logo-m::after { border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.uhr3d .chip { transition: opacity .4s, transform .4s; }
+.uhr3d .chip.weg { opacity: 0; transform: translateY(24px) scale(.6); }
+.uhr3d .sand-u .eti { animation: plopp .4s var(--feder); }
+.uhr3d .hals-m b { font: 700 12px var(--mono); color: var(--mint); background: var(--bg); padding: 1px 6px; border-radius: 6px; border: 1px solid var(--mint-rahmen); }
+.sl:not(.laeuft) .u-strom { animation-play-state: paused; opacity: .35; }
+
+/* 4 · Ziel im Mittelpunkt */
+.zm { position: relative; display: grid; grid-template-columns: 290px 1fr 320px; align-items: center; padding: 14px 26px; min-height: 0; }
+.zm svg.linien { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.zm .linien path { fill: none; stroke: var(--mint-rahmen); stroke-width: 1.6; stroke-dasharray: 5 6; }
+.zm.laeuft .linien path { stroke: var(--mint); animation: fluss .8s linear infinite; }
+@keyframes fluss { to { stroke-dashoffset: -11; } }
+.gkarten { display: grid; gap: 10px; position: relative; z-index: 1; }
+.gk { display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: 0 8px 16px -12px var(--schatten); }
+.gk .st3 { position: relative; width: 30px; height: 26px; }
+.gk .st3 i { position: absolute; width: 22px; height: 16px; border-radius: 2px; background: var(--paper); box-shadow: 0 1px 0 #0003; }
+.gk .st3 i:nth-child(1) { left: 0; top: 8px; } .gk .st3 i:nth-child(2) { left: 3px; top: 5px; } .gk .st3 i:nth-child(3) { left: 6px; top: 2px; }
+.gk .st3 i::before { content: ''; position: absolute; top: -3px; left: 3px; width: 8px; height: 3px; border-radius: 2px 2px 0 0; background: var(--k); }
+.gk b { display: block; font-size: 12.5px; } .gk small { font: 10.5px var(--mono); color: var(--muted); }
+.gk.ok { border-color: var(--mint-rahmen); }
+.mitte-los { justify-self: center; position: relative; z-index: 1; display: grid; justify-items: center; gap: 6px; }
+.rund { width: 104px; height: 104px; border-radius: 50%; border: 0; display: grid; place-items: center; font-weight: 700; font-size: 16px; color: var(--auf-mint); background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--mint) 70%, #fff), var(--mint) 55%, color-mix(in srgb, var(--mint) 60%, #000)); box-shadow: 0 8px 0 color-mix(in srgb, var(--mint) 40%, #000), 0 20px 30px -8px color-mix(in srgb, var(--mint) 55%, transparent); transform: translateY(-5px); transition: transform .12s, box-shadow .12s; }
+.rund:hover { transform: translateY(-7px); }
+.rund:active { transform: translateY(2px); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.ordnerbox { position: relative; z-index: 1; display: grid; justify-items: center; gap: 10px; }
+.ordner { position: relative; width: 230px; height: 170px; perspective: 700px; }
+.ordner .rueck { position: absolute; left: 0; right: 0; bottom: 0; height: 150px; border-radius: 6px 12px 12px 12px; background: color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.ordner .rueck::before { content: ''; position: absolute; left: 0; top: -16px; width: 90px; height: 20px; border-radius: 8px 8px 0 0; background: color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.ordner .blaetter-o { position: absolute; left: 20px; right: 20px; bottom: 20px; height: 120px; }
+.ordner .blaetter-o i { position: absolute; left: 0; right: 0; height: 110px; border-radius: 3px; background: var(--paper); box-shadow: 0 -1px 0 #0002; transition: transform .4s var(--feder); }
+.ordner .vorn { position: absolute; left: 0; right: 0; bottom: 0; height: 118px; border-radius: 8px 8px 12px 12px; transform-origin: bottom; transform: rotateX(-14deg); transition: transform .5s var(--feder); background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 62%, var(--karton-tief)), color-mix(in srgb, var(--mint) 42%, var(--karton-tief))); box-shadow: 0 -1px 0 #ffffff30 inset, 0 18px 30px -12px var(--schatten); display: grid; place-items: center; }
+.zm.laeuft .ordner .vorn { transform: rotateX(-34deg); }
+.ordner .vorn span { font: 700 13px var(--mono); letter-spacing: .06em; color: #0b0f12cc; text-align: center; line-height: 1.3; }
+.ordner .vorn span small { display: block; font-weight: 500; font-size: 10.5px; opacity: .8; letter-spacing: 0; }
+.ordner .zaehl { position: absolute; right: -8px; top: 0; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; background: var(--mint); color: var(--auf-mint); font: 700 13px/30px var(--mono); text-align: center; z-index: 2; box-shadow: 0 4px 10px -4px var(--mint); }
+.pfad { font: 11px var(--mono); color: var(--muted); max-width: 300px; text-align: center; }
+.pfad em { font-style: normal; color: var(--mint); }
+.flug { position: absolute; z-index: 5; width: 60px; height: 42px; border-radius: 3px; background: var(--paper); box-shadow: 0 10px 16px -8px #000a; pointer-events: none; }
+.flug::before { content: attr(data-f); position: absolute; top: -11px; left: 5px; padding: 0 6px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font: 600 8.5px/12px var(--mono); }
+
+/* 5 · Kompakt */
+.kp { display: grid; grid-template-rows: auto 1fr; gap: 10px; padding: 14px 24px 8px; min-height: 0; }
+.kp-kopf { display: flex; justify-content: space-between; align-items: end; gap: 16px; }
+.kp-kopf .gross { font: 600 30px var(--mono); letter-spacing: -.02em; }
+.kp-kopf .gross span { color: var(--muted); font-size: 20px; }
+.kp-kopf .gross b { color: var(--mint); }
+.kp-liste { display: grid; align-content: start; gap: 4px; overflow: auto; min-height: 0; }
+.kz { position: relative; display: grid; grid-template-columns: 52px 1fr 14px 50px 260px 110px 76px; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.kz::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: var(--p, 0%); background: var(--mint); box-shadow: 0 0 8px var(--mint); transition: width .2s linear; }
+.kz .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kz .pf { color: var(--mint); text-align: center; }
+.balken3d { position: relative; height: 22px; display: grid; gap: 3px; align-content: center; }
+.balken3d i { display: block; height: 8px; border-radius: 2px; width: var(--w); min-width: 3px; }
+.balken3d .vor { background: linear-gradient(180deg, var(--line-stark), color-mix(in srgb, var(--line-stark) 55%, var(--karton-tief))); box-shadow: 0 2px 0 var(--tief); }
+.balken3d .nach { background: linear-gradient(180deg, var(--mint), color-mix(in srgb, var(--mint) 55%, var(--karton-tief))); box-shadow: 0 2px 0 color-mix(in srgb, var(--mint) 35%, var(--karton-tief)); }
+.kz .gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.kz .gr b { color: var(--ink); }
+.kz .st { font: 500 11px var(--schrift); color: var(--muted); display: inline-flex; gap: 5px; align-items: center; justify-content: flex-end; }
+.kz.ok .st { color: var(--mint); }
+.kz.ok { border-color: var(--mint-rahmen); }
+.spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line-stark); border-top-color: var(--mint); animation: dreh .7s linear infinite; }
+@keyframes dreh { to { transform: rotate(360deg); } }
+.breit { flex: 1; justify-content: center; padding: 13px 22px; font-size: 15px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001s !important; animation-iteration-count: 1 !important; transition-duration: .001s !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Schritt 3 · Umwandeln</div>
+    <h1>Fünf Wege für den letzten Schritt</h1>
+    <p class="lead">Alle fünf zeigen denselben Auftrag: sechs Dateien, vier Dateiarten, gespeichert neben den Originalen. Jede Variante hat einen Demo-Knopf, der eine Umwandlung durchspielt. Dateinamen und Größen sind Beispiele.</p>
+  </header>
+
+  <section class="idee" aria-labelledby="i1">
+    <div class="idee-kopf"><h2 id="i1">1 · Förderband <small>jede Datei fährt durchs Tor</small></h2><button class="demo" data-demo="1">▶ Demo abspielen</button></div>
+    <p>Links liegen die Dateien auf dem Band, in der Mitte steht das Kvertis-Tor, rechts landen die fertigen Dateien. Beim Durchfahren wechselt der Reiter vom alten zum neuen Format. Man sieht jede einzelne Datei unterwegs.</p>
+    <div class="buehne" id="w1"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> sehr anschaulich, jede Datei sichtbar</span><span class="minus"><b>Schwäche:</b> bei 100 Dateien braucht es einen Stapel statt einzelner Blätter</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i2">
+    <div class="idee-kopf"><h2 id="i2">2 · Auftragszettel <small>alles auf einem Blatt, dann stempeln</small></h2><button class="demo" data-demo="2">▶ Demo abspielen</button></div>
+    <p>Der Auftrag steht auf einem Papierzettel wie ein Lieferschein: jede Datei mit altem und neuem Format und Größe, unten Speicherort und Ersparnis. Rechts ein Stempel. Drückt man ihn, werden die Zeilen abgehakt, am Ende steht „ERLEDIGT“ auf dem Zettel.</p>
+    <div class="buehne" id="w2"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> beste Übersicht vor dem Start, sehr eigenständig</span><span class="minus"><b>Schwäche:</b> viel Text; der Stempel ist Geschmackssache</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i3">
+    <div class="idee-kopf"><h2 id="i3">3 · Sanduhr-Lauf <small>die Sanduhr zeigt den Fortschritt</small></h2><button class="demo" data-demo="3">▶ Demo abspielen</button></div>
+    <p>Die Sanduhr aus dem Sortierregal kommt wieder: Oben liegen die Dateien dieses Auftrags, beim Umwandeln rieseln sie nach unten und werden zu Etiketten im neuen Format. Rechts stehen die Gruppen mit Fortschritt und der Start.</p>
+    <div class="buehne" id="w3"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> roter Faden vom ersten bis zum letzten Bild</span><span class="minus"><b>Schwäche:</b> die Sanduhr zeigt Formate, keine Dateinamen</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i4">
+    <div class="idee-kopf"><h2 id="i4">4 · Ziel im Mittelpunkt <small>alles fließt in einen Ordner</small></h2><button class="demo" data-demo="4">▶ Demo abspielen</button></div>
+    <p>Links die Gruppen, rechts ein großer 3D-Ordner, der den Speicherort darstellt. Darüber die Wahl, wohin gespeichert wird, darunter der echte Pfad. Beim Start öffnet sich der Ordner und die Blätter fliegen hinein.</p>
+    <div class="buehne" id="w4"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> „Wohin?“ ist unübersehbar, weniger Fehler beim Speicherort</span><span class="minus"><b>Schwäche:</b> einzelne Dateien treten zurück</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i5">
+    <div class="idee-kopf"><h2 id="i5">5 · Kompakt <small>eine Zeile pro Datei, ein breiter Knopf</small></h2><button class="demo" data-demo="5">▶ Demo abspielen</button></div>
+    <p>Für Geübte und viele Dateien: jede Datei in einer Zeile mit Vorher- und Nachher-Balken, oben groß die Gesamtersparnis, unten Speicherort und ein breiter Start-Knopf. Während der Umwandlung läuft der Fortschritt in jeder Zeile.</p>
+    <div class="buehne" id="w5"></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> schnell, skaliert auf viele Dateien, alle Details sichtbar</span><span class="minus"><b>Schwäche:</b> am wenigsten verspielt, kaum 3D</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="i6">
+    <h2 id="i6">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>3 · Sanduhr-Lauf als Standard, 5 · Kompakt ab etwa 20 Dateien.</b> Die Sanduhr hält den roten Faden vom Sortierregal bis zum Ende. Bei vielen Dateien schaltet Kvertis auf die kompakte Liste um, oder der Nutzer wählt sie selbst.</p>
+      <p class="muted">Der Ordner aus 4 lässt sich in beide einbauen: Statt der Ausgangskiste steht dort der Zielordner mit Pfad. Der Auftragszettel aus 2 eignet sich als „Zusammenfassung vor dem Start“ oder für den Verlauf.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const warte = ms => new Promise(r => setTimeout(r, leise ? 0 : ms));
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: n < 0.1 ? 2 : 1, maximumFractionDigits: n < 0.1 ? 2 : 1 });
+  const F = [
+    { n: 'IMG_2041.heic', k: 'bild', von: 'HEIC', nach: 'JPG', mb: 8.4, neu: 1.1, o: 'Bilder\\Urlaub 2026' },
+    { n: 'Scan.jpg', k: 'bild', von: 'PNG', nach: 'JPG', mb: 2.2, neu: 0.5, o: 'Downloads' },
+    { n: 'Probe_03.wav', k: 'audio', von: 'WAV', nach: 'MP3', mb: 19.7, neu: 2.6, o: 'Musik\\Proben' },
+    { n: 'Interview.m4a', k: 'audio', von: 'M4A', nach: 'MP3', mb: 6.1, neu: 4.8, o: 'Musik\\Proben' },
+    { n: 'Urlaub_Clip.mov', k: 'video', von: 'MOV', nach: 'MP4', mb: 148, neu: 66, o: 'Videos' },
+    { n: 'Protokoll.docx', k: 'dok', von: 'DOCX', nach: 'TXT', mb: 0.4, neu: 0.02, o: 'Dokumente\\Verein' }
+  ];
+  const G = { bild: 'Bilder', audio: 'Audio', video: 'Video', dok: 'Dokumente' };
+  const G1 = { bild: 'Bild', audio: 'Audio', video: 'Video', dok: 'Dokument' };
+  const gn = k => `${gruppe(k).length} ${gruppe(k).length === 1 ? G1[k] : G[k]}`;
+  const ZW = { bild: 'Für E-Mail', audio: 'Für E-Mail', video: 'Für Messenger', dok: 'Nur Text' };
+  const KS = ['bild', 'audio', 'video', 'dok'];
+  const VOR = F.reduce((s, f) => s + f.mb, 0), NACH = F.reduce((s, f) => s + f.neu, 0), PROZ = Math.round((1 - NACH / VOR) * 100);
+  const gruppe = k => F.filter(f => f.k === k);
+  const SCHLOSS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>';
+  const fenster = (inhalt, leiste) => `<div class="win">
+    <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><div class="wk" aria-hidden="true"><span>—</span><span>☐</span><span>✕</span></div></div>
+    <div class="faden"><span class="kn"><i>✓</i><b>Dateien</b><small>6 erkannt</small></span><span class="sg"></span><span class="kn"><i>✓</i><b>Ziel</b><small>JPG · MP3 · MP4 · TXT</small></span><span class="sg"></span><span class="kn an"><i>3</i><b>Umwandeln</b><small>≈ ${mb(NACH)} MB · neben Original</small></span></div>
+    ${inhalt}
+    <div class="leiste"><span class="vertrauen">${SCHLOSS}Ihre Dateien verlassen nie diesen PC.</span><span class="platz"></span>${leiste}</div>
+  </div>`;
+  const WOHIN = `<div class="segment" role="group" aria-label="Wohin speichern"><button class="an">Neben dem Original</button><button>Unterordner „Kvertis“</button><button>Eigener Ordner …</button></div>`;
+  document.querySelectorAll('.segment').forEach(() => {});
+
+  // Glas-Sanduhr in 3D (SVG + flache, lesbare Formate davor)
+  let uhrNr = 0;
+  function uhr3d(k, oben, unten, mitte = '') {
+    const n = ++uhrNr, st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+    return `<div class="uhr3d k-${k}">
+      <svg viewBox="0 0 240 400" aria-hidden="true">
+        <defs>
+          <linearGradient id="gl${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+          <linearGradient id="sa${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .55)}/><stop offset="1" ${st('var(--k)', .18)}/></linearGradient>
+          <radialGradient id="su${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .5)}/><stop offset="1" ${st('var(--mint)', .12)}/></radialGradient>
+          <linearGradient id="sl${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', 1)}/><stop offset="1" ${st('var(--mint)', 1)}/></linearGradient>
+          <linearGradient id="sae${n}" x1="0" x2="1"><stop offset="0" ${st('var(--tief)', 1)}/><stop offset=".35" ${st('var(--line-stark)', 1)}/><stop offset=".55" ${st('var(--muted)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+          <linearGradient id="de${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--line-stark)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+        </defs>
+        <ellipse class="u-schatten" cx="120" cy="392" rx="112" ry="7"/>
+        <g class="p-hinten"><rect x="116" y="26" width="8" height="348" rx="4" fill="url(#sae${n})" opacity=".45"/></g>
+        <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#gl${n})"/>
+        <path d="M30,44 C34,108 92,158 120,196 C148,158 206,108 210,44 Z" fill="url(#sa${n})"/>
+        <ellipse cx="120" cy="44" rx="90" ry="8" class="u-sandflaeche"/>
+        <line class="u-strom" x1="120" y1="198" x2="120" y2="${366 - 18 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)}" stroke="url(#sl${n})"/>
+        <path d="M26,366 C58,352 88,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 120,${344 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} C152,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 182,352 214,366 Z" fill="url(#su${n})"/>
+        <ellipse cx="120" cy="366" rx="94" ry="7" class="u-bodenflaeche"/>
+        <path class="u-kontur" d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z"/>
+        <ellipse cx="120" cy="32" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="368" rx="98" ry="8" class="u-rand"/>
+        <ellipse cx="120" cy="200" rx="8" ry="2.5" class="u-rand"/>
+        <g class="glanz"><path d="M36,52 C38,112 70,150 100,176" class="u-glanz"/><path d="M36,350 C40,296 70,258 100,226" class="u-glanz"/><path d="M204,62 C202,104 180,132 160,152" class="u-glanz d"/></g>
+        <path d="M8,20 V30 A112,10 0 0 0 232,30 V20 Z" fill="url(#de${n})"/><ellipse cx="120" cy="20" rx="112" ry="10" class="u-deckel"/>
+        <path d="M8,372 V384 A112,10 0 0 0 232,384 V372 Z" fill="url(#de${n})"/><ellipse cx="120" cy="372" rx="112" ry="10" class="u-deckel"/>
+        <g class="p-vorn"><rect x="13" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/><rect x="217" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/></g>
+      </svg>
+      <div class="sand-o">${oben}</div>
+      <div class="hals-m">${mitte || '<span class="logo-m" aria-hidden="true"></span>'}</div>
+      <div class="sand-u">${unten}</div>
+    </div>`;
+  }
+  function uhrParallax(root = document) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    root.querySelectorAll('.uhr3d').forEach(u => {
+      u.addEventListener('pointermove', e => { const r = u.getBoundingClientRect(); u.style.setProperty('--dx', ((e.clientX - r.left) / r.width - .5) * 2); });
+      u.addEventListener('pointerleave', () => u.style.setProperty('--dx', 0));
+    });
+  }
+
+  // ===== 1 Förderband
+  document.getElementById('w1').innerHTML = fenster(`<div class="fb" id="fb">
+      <div class="bahn" id="bahn">
+        <div class="quelle-schild"><span class="label">Eingang</span><b>6 Dateien · ${mb(VOR)} MB</b></div>
+        <div class="ziel-schild"><span class="label">Fertig</span><b id="fb-fertig">0 von 6</b></div>
+        <span class="rolle l"></span><span class="rolle r"></span><div class="gurt"></div>
+        <div class="tor"><span class="logo" aria-hidden="true"></span><span>KVERTIS</span></div>
+        ${F.map((f, i) => `<div class="bl k-${f.k}" data-f="${f.von}" data-i="${i}"><span>${f.n}</span><small>${mb(f.mb)} MB</small></div>`).join('')}
+      </div>
+      <div class="gruppenleiste">${KS.map(k => `<span class="g k-${k}"><i></i>${gn(k)} <span class="eti">${gruppe(k)[0].nach}</span></span>`).join('')}</div>
+    </div>`, `${WOHIN}<button class="taste" data-demo="1">Umwandeln <small>6 Dateien</small></button>`);
+  const bahn = document.getElementById('bahn');
+  function fbStart() {
+    const w = bahn.clientWidth;
+    bahn.querySelectorAll('.bl').forEach((b, i) => { b.style.left = (10 + (5 - i) * 22) + 'px'; b.style.zIndex = 2 + i; b.dataset.f = F[i].von; b.classList.remove('fertig', 'im-tor'); b.querySelector('small').textContent = mb(F[i].mb) + ' MB'; });
+    document.getElementById('fb-fertig').textContent = '0 von 6';
+    return w;
+  }
+  fbStart();
+  let fbLauf = false;
+  async function fbDemo() {
+    if (fbLauf) return; fbLauf = true;
+    const w = fbStart(); await warte(300);
+    const fb = document.getElementById('fb'); fb.classList.add('laeuft');
+    const bl = [...bahn.querySelectorAll('.bl')];
+    for (let j = 0; j < bl.length; j++) {
+      const b = bl[bl.length - 1 - j], f = F[+b.dataset.i];
+      b.style.left = (w / 2 - 43) + 'px'; await warte(800);
+      b.classList.add('im-tor'); await warte(350);
+      b.dataset.f = f.nach; b.classList.add('fertig'); b.querySelector('small').textContent = mb(f.neu) + ' MB';
+      b.classList.remove('im-tor');
+      b.style.left = (w - 96 - j * 22) + 'px'; b.style.zIndex = 20 - j;
+      document.getElementById('fb-fertig').textContent = `${j + 1} von 6`;
+      await warte(450);
+    }
+    fb.classList.remove('laeuft');
+    document.getElementById('fb-fertig').innerHTML = `6 fertig · <span style="color:var(--mint)">−${PROZ} %</span>`;
+    fbLauf = false;
+  }
+
+  // ===== 2 Auftragszettel
+  document.getElementById('w2').innerHTML = fenster(`<div class="az">
+      <div class="zettel-rahmen"><div class="zettel">
+        <header><b>AUFTRAG</b><span>23.09.2026 · 6 Dateien</span></header>
+        ${KS.map(k => `<div class="zg k-${k}"><h5><i></i>${G[k]} · ${ZW[k]}</h5>${gruppe(k).map(f => `<div class="zz" data-n="${f.n}"><span class="hk">✓</span><span class="nm">${f.n}</span><span class="vn">${f.von} → <b>${f.nach}</b></span><span class="gr">${mb(f.mb)} → <b>${mb(f.neu)} MB</b></span></div>`).join('')}</div>`).join('')}
+        <footer><span>Speichern: <b>neben dem Original</b> · <u>ändern</u></span><span class="summe">−${PROZ} %</span><span>${mb(VOR)} MB → <b>${mb(NACH)} MB</b></span></footer>
+        <div class="stempel-abdruck" id="abdruck">ERLEDIGT</div>
+      </div></div>
+      <button class="stempel" id="stempel" aria-label="Auftrag abstempeln und umwandeln"><span class="griff"></span><span class="fuss">UMWANDELN</span><span class="unter">Stempel drücken zum Start</span></button>
+    </div>`, `<button class="btn">Zurück</button>`);
+  let azLauf = false;
+  async function azDemo() {
+    if (azLauf) return; azLauf = true;
+    const ab = document.getElementById('abdruck'), st = document.getElementById('stempel');
+    ab.classList.remove('da'); document.querySelectorAll('.zz').forEach(z => z.classList.remove('ok'));
+    st.classList.add('drueckt'); await warte(250); st.classList.remove('drueckt');
+    st.querySelector('.unter').textContent = 'Wird umgewandelt …';
+    for (const z of document.querySelectorAll('.zz')) { await warte(420); z.classList.add('ok'); }
+    await warte(300); ab.classList.add('da');
+    st.querySelector('.unter').textContent = 'Fertig · Ordner öffnen';
+    azLauf = false;
+  }
+  document.getElementById('stempel').addEventListener('click', azDemo);
+
+  // ===== 3 Sanduhr-Lauf
+  document.getElementById('w3').innerHTML = fenster(`<div class="sl" id="sl">
+      ${uhr3d('mix', `<div class="zeile" id="sl-o" style="flex-wrap:wrap;max-width:176px">${F.map((f, i) => `<span class="chip k-${f.k}" data-i="${i}" title="${f.n}">${f.von}</span>`).join('')}</div>`, `<div class="zeile" id="sl-u" style="flex-wrap:wrap;max-width:180px;min-height:22px"></div>`, '<b id="sl-proz">0 %</b>')}
+      <div class="sl-rechts">
+        <span class="label">Dieser Auftrag</span>
+        <h4 id="sl-titel">6 Dateien werden etwa <span>${PROZ} % kleiner</span></h4>
+        ${KS.map(k => `<div class="gzeile k-${k}" id="sl-${k}"><i></i><span><b>${gn(k)}</b> <small>${[...new Set(gruppe(k).map(f => f.von))].join(', ')} → ${ZW[k]}</small></span><span class="eti">${gruppe(k)[0].nach}</span><span class="st">0/${gruppe(k).length}</span></div>`).join('')}
+        <div class="wohin-mini"><span class="label">Speichern</span>${WOHIN}</div>
+      </div>
+    </div>`, `<button class="btn">Zurück</button><button class="taste" data-demo="3">Umwandeln <small>6 Dateien</small></button>`);
+  let slLauf = false;
+  async function slDemo() {
+    if (slLauf) return; slLauf = true;
+    const sl = document.getElementById('sl'), u = document.getElementById('sl-u');
+    u.innerHTML = ''; document.querySelectorAll('#sl-o .chip').forEach(c => c.classList.remove('weg'));
+    KS.forEach(k => { const z = document.getElementById('sl-' + k); z.classList.remove('ok'); z.querySelector('.st').textContent = `0/${gruppe(k).length}`; });
+    sl.classList.add('laeuft');
+    const zaehl = {};
+    for (let i = 0; i < F.length; i++) {
+      const f = F[i];
+      await warte(600);
+      document.querySelector(`#sl-o .chip[data-i="${i}"]`).classList.add('weg');
+      await warte(350);
+      u.insertAdjacentHTML('beforeend', `<span class="eti" title="${f.n}">${f.nach}</span>`);
+      zaehl[f.k] = (zaehl[f.k] || 0) + 1;
+      const z = document.getElementById('sl-' + f.k);
+      z.querySelector('.st').textContent = `${zaehl[f.k]}/${gruppe(f.k).length}`;
+      if (zaehl[f.k] === gruppe(f.k).length) { z.classList.add('ok'); z.querySelector('.st').textContent = '✓'; }
+      document.getElementById('sl-proz').textContent = Math.round((i + 1) / F.length * 100) + ' %';
+    }
+    sl.classList.remove('laeuft');
+    document.getElementById('sl-titel').innerHTML = `Fertig: ${mb(VOR)} MB → <span>${mb(NACH)} MB</span>`;
+    slLauf = false;
+  }
+
+  // ===== 4 Ziel im Mittelpunkt
+  const PFADE = { 0: '…\\Bilder\\Urlaub 2026\\<em>IMG_2041.jpg</em>', 1: '…\\Bilder\\Urlaub 2026\\<em>Kvertis</em>\\IMG_2041.jpg', 2: '…\\<em>Desktop</em>\\IMG_2041.jpg' };
+  const ORDNERNAME = { 0: 'NEBEN DEM<br>ORIGINAL<small>5 Ordner</small>', 1: 'KVERTIS<small>Unterordner</small>', 2: 'DESKTOP<small>eigener Ordner</small>' };
+  document.getElementById('w4').innerHTML = fenster(`<div class="zm" id="zm">
+      <svg class="linien" id="zm-linien" aria-hidden="true"></svg>
+      <div class="gkarten">${KS.map(k => `<div class="gk k-${k}" id="zm-${k}"><span class="st3"><i></i><i></i><i></i></span><span><b>${gn(k)}</b><small>${[...new Set(gruppe(k).map(f => f.von))].join(', ')} · ${ZW[k]}</small></span><span class="eti">${gruppe(k)[0].nach}</span></div>`).join('')}</div>
+      <div class="mitte-los"><button class="rund" data-demo="4" id="zm-los">Los</button><span class="muted" style="font-size:12px">≈ ${mb(NACH)} MB · ≈ 9 s</span></div>
+      <div class="ordnerbox">
+        <div class="segment" id="zm-wahl" role="group" aria-label="Wohin speichern"><button class="an" data-w="0">Neben Original</button><button data-w="1">Unterordner</button><button data-w="2">Eigener …</button></div>
+        <div class="ordner" id="ordner"><span class="rueck"></span><div class="blaetter-o" id="zm-bl"></div><span class="vorn"><span id="zm-name">${ORDNERNAME[0]}</span></span><span class="zaehl" id="zm-zaehl" hidden>0</span></div>
+        <span class="pfad" id="zm-pfad">${PFADE[0]}</span>
+      </div>
+    </div>`, `<button class="btn">Zurück</button>`);
+  const zm = document.getElementById('zm');
+  document.getElementById('zm-wahl').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    [...b.parentElement.children].forEach(x => x.classList.toggle('an', x === b));
+    document.getElementById('zm-pfad').innerHTML = PFADE[b.dataset.w]; document.getElementById('zm-name').innerHTML = ORDNERNAME[b.dataset.w];
+  });
+  function zmLinien() {
+    const r = zm.getBoundingClientRect(), o = document.getElementById('ordner').getBoundingClientRect();
+    const ox = o.left - r.left + 30, oy = o.top - r.top + o.height / 2;
+    document.getElementById('zm-linien').innerHTML = KS.map(k => { const c = document.getElementById('zm-' + k).getBoundingClientRect(); const x = c.right - r.left, y = c.top - r.top + c.height / 2; return `<path d="M${x},${y} C${(x + ox) / 2},${y} ${(x + ox) / 2},${oy} ${ox},${oy}"/>`; }).join('');
+  }
+  let zmLauf = false;
+  async function zmDemo() {
+    if (zmLauf) return; zmLauf = true;
+    zmLinien();
+    const bl = document.getElementById('zm-bl'), zaehl = document.getElementById('zm-zaehl');
+    bl.innerHTML = ''; zaehl.hidden = false; zaehl.textContent = '0';
+    KS.forEach(k => document.getElementById('zm-' + k).classList.remove('ok'));
+    zm.classList.add('laeuft');
+    const r = zm.getBoundingClientRect(), o = document.getElementById('ordner').getBoundingClientRect();
+    for (let i = 0; i < F.length; i++) {
+      const f = F[i], c = document.getElementById('zm-' + f.k).getBoundingClientRect();
+      const el = document.createElement('div'); el.className = 'flug k-' + f.k; el.dataset.f = f.nach; zm.appendChild(el);
+      const a = [c.right - r.left - 60, c.top - r.top + c.height / 2 - 21], z = [o.left - r.left + o.width / 2 - 30, o.top - r.top + 40];
+      await el.animate([{ transform: `translate(${a[0]}px,${a[1]}px) scale(.7)`, opacity: 0 }, { transform: `translate(${(a[0] + z[0]) / 2}px,${Math.min(a[1], z[1]) - 50}px) rotate(-6deg)`, opacity: 1, offset: .5 }, { transform: `translate(${z[0]}px,${z[1]}px) scale(.8)`, opacity: 0 }], { duration: leise ? 1 : 800, easing: 'cubic-bezier(.45,.05,.3,1)' }).finished;
+      el.remove();
+      bl.insertAdjacentHTML('beforeend', `<i style="bottom:${i * 4}px;transform:rotate(${(i % 2 ? 1 : -1) * (i + 1)}deg)"></i>`);
+      zaehl.textContent = i + 1;
+      if (F.slice(0, i + 1).filter(x => x.k === f.k).length === gruppe(f.k).length) document.getElementById('zm-' + f.k).classList.add('ok');
+    }
+    zm.classList.remove('laeuft');
+    document.getElementById('zm-los').textContent = '✓';
+    zmLauf = false;
+  }
+  new ResizeObserver(zmLinien).observe(zm);
+  if (document.fonts) document.fonts.ready.then(zmLinien);
+
+  // ===== 5 Kompakt
+  const maxMb = Math.sqrt(Math.max(...F.map(f => f.mb)));
+  document.getElementById('w5').innerHTML = fenster(`<div class="kp">
+      <div class="kp-kopf"><div><span class="label">6 Dateien · 4 Dateiarten</span><div class="gross">${mb(VOR)} <span>MB →</span> <b>${mb(NACH)} MB</b></div></div><span class="label" id="kp-stand">bereit</span></div>
+      <div class="kp-liste">${F.map((f, i) => `<div class="kz k-${f.k}" id="kz-${i}"><span class="chip">${f.von}</span><span class="nm" title="…\\${f.o}">${f.n}</span><span class="pf">→</span><span class="eti">${f.nach}</span>
+        <span class="balken3d" aria-hidden="true"><i class="vor" style="--w:${Math.sqrt(f.mb) / maxMb * 100}%"></i><i class="nach" style="--w:${Math.sqrt(f.neu) / maxMb * 100}%"></i></span>
+        <span class="gr">${mb(f.mb)} → <b>${mb(f.neu)} MB</b></span><span class="st">bereit</span></div>`).join('')}</div>
+    </div>`, `${WOHIN}<button class="taste breit" data-demo="5" style="flex:0 0 280px">6 Dateien umwandeln</button>`);
+  let kpLauf = false;
+  async function kpDemo() {
+    if (kpLauf) return; kpLauf = true;
+    const stand = document.getElementById('kp-stand');
+    F.forEach((f, i) => { const z = document.getElementById('kz-' + i); z.classList.remove('ok'); z.style.setProperty('--p', '0%'); z.querySelector('.st').textContent = 'wartet'; });
+    for (let i = 0; i < F.length; i++) {
+      const z = document.getElementById('kz-' + i);
+      z.querySelector('.st').innerHTML = '<span class="spin"></span>läuft';
+      for (let p = 0; p <= 100; p += 20) { z.style.setProperty('--p', p + '%'); await warte(70); }
+      z.classList.add('ok'); z.querySelector('.st').innerHTML = '✓ fertig';
+      stand.textContent = `${i + 1} von 6 fertig`;
+    }
+    stand.innerHTML = `<span style="color:var(--mint)">fertig · −${PROZ} %</span>`;
+    kpLauf = false;
+  }
+
+  // Segment-Umschalter (Optik)
+  document.addEventListener('click', e => { const b = e.target.closest('.segment button'); if (b && !b.closest('#zm-wahl')) [...b.parentElement.children].forEach(x => x.classList.toggle('an', x === b)); });
+  uhrParallax();
+  const DEMOS = { 1: fbDemo, 2: azDemo, 3: slDemo, 4: zmDemo, 5: kpDemo };
+  document.querySelectorAll('[data-demo]').forEach(b => b.addEventListener('click', () => DEMOS[b.dataset.demo]()));
+  window.addEventListener('resize', () => { if (!fbLauf) fbStart(); });
+})();
+</script>

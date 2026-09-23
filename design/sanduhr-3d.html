@@ -1,0 +1,238 @@
+<title>Kvertis Glas-Sanduhr 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --paper-linie: #d8d5cd; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 44px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 21px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.lead b { color: var(--ink); font-weight: 600; }
+
+.idee { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.idee > p { margin: 0; color: var(--muted); max-width: 74ch; }
+.reihe-rahmen { overflow-x: auto; padding: 6px 2px 10px; }
+.reihe { display: grid; grid-template-columns: repeat(4, minmax(240px, 1fr)); gap: 12px; min-width: 1000px; }
+.zelle { position: relative; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); padding: 14px; display: grid; gap: 10px; align-content: start; }
+.zelle h3 { margin: 0; font-size: 14px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+.zelle h3 i { width: 11px; height: 11px; border-radius: 3px; background: var(--k); }
+.zelle h3 small { margin-left: auto; font: 500 10.5px var(--mono); color: var(--leise); }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* Bausteine */
+.chip { display: inline-block; font: 500 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 13%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; cursor: default; transition: transform .2s var(--feder), background .2s, color .2s, opacity .2s; }
+.eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; transition: opacity .25s, transform .3s var(--feder), box-shadow .25s; }
+.zelle.fokus .chip { opacity: .35; }
+.zelle.fokus .chip.aktiv { opacity: 1; background: var(--k); color: #0b0f12; transform: translateY(-1px) scale(1.06); }
+.zelle.fokus .eti { opacity: .18; box-shadow: none; }
+.zelle.fokus .eti.ja { opacity: 1; transform: translateY(-2px); box-shadow: 0 0 0 2px var(--mint), 0 6px 14px -6px var(--mint); }
+.antwort { min-height: 18px; font: 500 11.5px var(--mono); color: var(--muted); text-align: center; }
+.antwort b { color: var(--k); }
+.antwort em { font-style: normal; color: var(--mint); }
+.logo-m { width: 26px; height: 26px; border-radius: 8px; background: var(--mint); position: relative; box-shadow: 0 0 0 5px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); flex: none; }
+.logo-m::before, .logo-m::after { content: ''; position: absolute; width: 9px; height: 9px; border-radius: 3px; }
+.logo-m::before { left: 6px; top: 6px; background: var(--auf-mint); opacity: .8; }
+.logo-m::after { right: 6px; bottom: 6px; border-radius: 50%; background: var(--auf-mint); opacity: .45; }
+.linien { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.linien path { fill: none; stroke-width: 1.2; transition: opacity .25s, stroke .25s; }
+.linien .rein { stroke: color-mix(in srgb, var(--k) 50%, transparent); }
+.linien .raus { stroke: var(--mint); stroke-dasharray: 4 5; animation: fluss 1s linear infinite; opacity: .7; }
+.linien .direkt { stroke: var(--mint); stroke-width: 1.6; opacity: 0; }
+.zelle.fokus .linien .rein, .zelle.fokus .linien .raus { opacity: .04; }
+.zelle.fokus .linien .rein.an { opacity: 1; stroke: var(--k); }
+.zelle.fokus .linien .direkt.an { opacity: .95; }
+@keyframes fluss { to { stroke-dashoffset: -9; } }
+
+/* Glas-Sanduhr in 3D */
+.uhr3d { --dx: 0; position: relative; width: 240px; height: 400px; justify-self: center; }
+.uhr3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.uhr3d .p-vorn, .uhr3d .p-hinten, .uhr3d .glanz { transition: transform .25s ease-out; }
+.uhr3d .p-vorn { transform: translateX(calc(var(--dx) * 6px)); }
+.uhr3d .p-hinten { transform: translateX(calc(var(--dx) * -9px)); }
+.uhr3d .glanz { transform: translateX(calc(var(--dx) * 3px)); }
+.uhr3d .u-schatten { fill: var(--schatten); filter: blur(5px); }
+.uhr3d .u-kontur { fill: none; stroke: color-mix(in srgb, var(--ink) 34%, transparent); stroke-width: 1.2; }
+.uhr3d .u-rand { fill: none; stroke: color-mix(in srgb, var(--ink) 40%, transparent); stroke-width: 1.1; }
+.uhr3d .u-sandflaeche { fill: color-mix(in srgb, var(--k) 45%, var(--panel2)); stroke: color-mix(in srgb, var(--k) 60%, transparent); stroke-width: .8; }
+.uhr3d .u-bodenflaeche { fill: color-mix(in srgb, var(--mint) 22%, transparent); }
+.uhr3d .u-glanz { fill: none; stroke: #fff; stroke-opacity: .2; stroke-width: 5; stroke-linecap: round; }
+.uhr3d .u-glanz.d { stroke-width: 2; stroke-opacity: .12; }
+.uhr3d .u-deckel { fill: color-mix(in srgb, var(--line-stark) 55%, var(--panel2)); stroke: var(--line-stark); stroke-width: 1; }
+.uhr3d .u-strom { stroke-width: 2.2; stroke-dasharray: 3 5; stroke-linecap: round; animation: strom3d .6s linear infinite; }
+@keyframes strom3d { to { stroke-dashoffset: -8; } }
+.uhr3d .sand-o, .uhr3d .sand-u { position: absolute; left: 30px; right: 30px; display: grid; gap: 5px; justify-items: center; }
+.uhr3d .sand-o { top: 58px; } .uhr3d .sand-u { bottom: 40px; }
+.uhr3d .zeile { display: flex; gap: 4px; justify-content: center; }
+.uhr3d .hals-m { position: absolute; left: 50%; top: 188px; transform: translateX(-50%); display: grid; place-items: center; }
+.uhr3d .hals-m .logo-m { width: 22px; height: 22px; box-shadow: 0 0 0 4px var(--mint-flaeche), 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.uhr3d .hals-m .logo-m::before { left: 5px; top: 5px; width: 7px; height: 7px; } .uhr3d .hals-m .logo-m::after { right: 5px; bottom: 5px; width: 7px; height: 7px; }
+.uhr3d .sand-o .chip { background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, transparent); font-weight: 600; box-shadow: 0 2px 5px -1px #0009; }
+.uhr3d .sand-u .eti { box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; }
+.empf { display: grid; gap: 8px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 78ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .001s !important; }
+  .korn { display: none; }
+}
+code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+.reihe { grid-template-columns: repeat(4, minmax(262px, 1fr)); min-width: 1080px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .001s !important; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Sortierregal · Sanduhr</div>
+    <h1>Die Glas-Sanduhr, jetzt mit Tiefe</h1>
+    <p class="lead">Die ursprüngliche Sanduhr A mit dem ganzen Aufbau einer echten Sanduhr: gewölbtes Glas mit Lichtkanten, runde Deckel mit Dicke, drei Säulen als Gestell, Sand mit Oberfläche und ein rieselnder Strom. <b>Alle Formate bleiben sichtbar und flach lesbar.</b> Fahren Sie mit der Maus über eine Sanduhr: Sie dreht sich leicht. Über einem Format leuchten seine möglichen Ergebnisse auf.</p>
+  </header>
+
+  <section class="idee" aria-labelledby="h1_">
+    <h2 id="h1_">Glas-Sanduhr 3D <small>alle vier Dateiarten</small></h2>
+    <div class="reihe-rahmen"><div class="reihe" id="r1"></div></div>
+    <div class="urteil"><span class="plus"><b>Wie in WinUI:</b> Glas, Deckel und Säulen als Vektorgrafik (<code>Path</code> mit Verläufen), die Neigung über <code>Translation</code> der Säulen-Ebenen, der Sandstrom als animierter Strich. Bei „Animationen reduzieren“ steht alles still.</span></div>
+  </section>
+
+  <section class="idee" aria-labelledby="hf">
+    <h2 id="hf">Wie es weitergeht</h2>
+    <div class="empf">
+      <p><b>Diese Sanduhr steht im Sortierregal unter jeder Kiste</b>, solange die Kiste leer ist. Liegen Dateien darin, zeigt die Kiste beim Aufklappen ihren Inhalt, wie bisher.</p>
+      <p class="muted">Dieselbe Sanduhr kann in Schritt 3 den Fortschritt zeigen: oben die Dateien des Auftrags, unten die fertigen Etiketten. Das ist in den Umwandeln-Konzepten als Variante 3 eingebaut.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const ALLE_AUDIO = ['MP3','M4A','FLAC','WAV','OGG','OPUS'];
+  const VID = ['MP4','MKV','WEBM','TON'];
+  const K = {
+    bild: { name: 'Bilder', rein: ['JPG','PNG','HEIC','WEBP','GIF','BMP','TIFF','SVG','ICO','PSD','RAW'], raus: ['JPG','PNG','WEBP','TIFF','BMP','GIF','ICO','PDF'],
+      map: { JPG: ['PNG','WEBP','TIFF','BMP','GIF','PDF'], PNG: ['JPG','WEBP','TIFF','BMP','GIF','ICO','PDF'], HEIC: ['JPG','PNG','WEBP'], WEBP: ['JPG','PNG','TIFF','GIF'], GIF: ['PNG','JPG','WEBP'], BMP: ['PNG','JPG','WEBP'], TIFF: ['PNG','JPG','WEBP','PDF'], SVG: ['PNG','JPG','WEBP'], ICO: ['PNG'], PSD: ['PNG','JPG'], RAW: ['JPG','PNG','TIFF'] },
+      titel: { RAW: 'DNG, CR2, CR3, NEF, ARW, ORF, RAF, RW2' } },
+    audio: { name: 'Audio', rein: ['MP3','WAV','M4A','AAC','FLAC','OGG','OPUS','WMA','AIFF'], raus: ALLE_AUDIO,
+      map: { MP3: ['WAV','FLAC','OGG','OPUS','M4A'], WAV: ['MP3','FLAC','OGG','OPUS','M4A'], M4A: ['MP3','WAV','FLAC','OGG','OPUS'], AAC: ['MP3','WAV','FLAC','OGG','OPUS'], FLAC: ['MP3','WAV','OGG','OPUS','M4A'], OGG: ['MP3','WAV','FLAC','OPUS','M4A'], OPUS: ['MP3','WAV','FLAC','OGG','M4A'], WMA: ALLE_AUDIO, AIFF: ALLE_AUDIO } },
+    video: { name: 'Video', rein: ['MP4','MOV','M4V','MKV','WEBM','AVI','WMV','FLV','3GP','MPG','TS'], raus: VID,
+      map: { MP4: VID, MOV: VID, M4V: VID, MKV: ['MP4','WEBM','TON'], WEBM: ['MP4','MKV','TON'], AVI: VID, WMV: VID, FLV: VID, '3GP': VID, MPG: VID, TS: VID },
+      titel: { TS: 'TS, MTS, M2TS', MPG: 'MPG, MPEG' } },
+    dok: { name: 'Dokumente', rein: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','HTML','CSV','PDF'],
+      map: { PDF: ['TXT'], DOCX: ['TXT','MD','HTML'], XLSX: ['CSV','TXT'], PPTX: ['TXT','MD'], TXT: ['PDF','HTML'], MD: ['PDF','HTML','TXT'], HTML: ['TXT','MD'] } }
+  };
+  const KS = ['bild', 'audio', 'video', 'dok'];
+  const lab = f => f === 'TON' ? 'nur Ton' : f;
+  const ein = (k, f) => `<span class="chip" tabindex="0" data-in="${f}"${K[k].titel && K[k].titel[f] ? ` title="${K[k].titel[f]}"` : ''}>${f}</span>`;
+  const aus = f => `<span class="eti" data-out="${f}">${lab(f)}</span>`;
+  const zeilen = (liste, caps) => { const out = []; let i = 0, c = 0; while (i < liste.length) { const n = caps[Math.min(c, caps.length - 1)]; out.push(liste.slice(i, i + n)); i += n; c++; } return out; };
+  const kopf = k => `<h3><i></i>${K[k].name}<small>${K[k].rein.length} → ${K[k].raus.length}</small></h3>`;
+  const zelle = (k, inhalt) => `<div class="zelle k-${k}" data-k="${k}">${kopf(k)}${inhalt}<div class="antwort">Maus auf ein Format</div></div>`;
+  // Glas-Sanduhr in 3D (SVG + flache, lesbare Formate davor)
+  let uhrNr = 0;
+  function uhr3d(k, oben, unten, mitte = '') {
+    const n = ++uhrNr, st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+    return `<div class="uhr3d k-${k}">
+      <svg viewBox="0 0 240 400" aria-hidden="true">
+        <defs>
+          <linearGradient id="gl${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+          <linearGradient id="sa${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .55)}/><stop offset="1" ${st('var(--k)', .18)}/></linearGradient>
+          <radialGradient id="su${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .5)}/><stop offset="1" ${st('var(--mint)', .12)}/></radialGradient>
+          <linearGradient id="sl${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', 1)}/><stop offset="1" ${st('var(--mint)', 1)}/></linearGradient>
+          <linearGradient id="sae${n}" x1="0" x2="1"><stop offset="0" ${st('var(--tief)', 1)}/><stop offset=".35" ${st('var(--line-stark)', 1)}/><stop offset=".55" ${st('var(--muted)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+          <linearGradient id="de${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--line-stark)', 1)}/><stop offset="1" ${st('var(--tief)', 1)}/></linearGradient>
+        </defs>
+        <ellipse class="u-schatten" cx="120" cy="392" rx="112" ry="7"/>
+        <g class="p-hinten"><rect x="116" y="26" width="8" height="348" rx="4" fill="url(#sae${n})" opacity=".45"/></g>
+        <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#gl${n})"/>
+        <path d="M30,44 C34,108 92,158 120,196 C148,158 206,108 210,44 Z" fill="url(#sa${n})"/>
+        <ellipse cx="120" cy="44" rx="90" ry="8" class="u-sandflaeche"/>
+        <line class="u-strom" x1="120" y1="198" x2="120" y2="${366 - 18 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)}" stroke="url(#sl${n})"/>
+        <path d="M26,366 C58,352 88,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 120,${344 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} C152,${352 - 26 * Math.max(1, (unten.match(/class="zeile"/g) || []).length)} 182,352 214,366 Z" fill="url(#su${n})"/>
+        <ellipse cx="120" cy="366" rx="94" ry="7" class="u-bodenflaeche"/>
+        <path class="u-kontur" d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z"/>
+        <ellipse cx="120" cy="32" rx="98" ry="8" class="u-rand"/><ellipse cx="120" cy="368" rx="98" ry="8" class="u-rand"/>
+        <ellipse cx="120" cy="200" rx="8" ry="2.5" class="u-rand"/>
+        <g class="glanz"><path d="M36,52 C38,112 70,150 100,176" class="u-glanz"/><path d="M36,350 C40,296 70,258 100,226" class="u-glanz"/><path d="M204,62 C202,104 180,132 160,152" class="u-glanz d"/></g>
+        <path d="M8,20 V30 A112,10 0 0 0 232,30 V20 Z" fill="url(#de${n})"/><ellipse cx="120" cy="20" rx="112" ry="10" class="u-deckel"/>
+        <path d="M8,372 V384 A112,10 0 0 0 232,384 V372 Z" fill="url(#de${n})"/><ellipse cx="120" cy="372" rx="112" ry="10" class="u-deckel"/>
+        <g class="p-vorn"><rect x="13" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/><rect x="217" y="26" width="10" height="348" rx="5" fill="url(#sae${n})"/></g>
+      </svg>
+      <div class="sand-o">${oben}</div>
+      <div class="hals-m">${mitte || '<span class="logo-m" aria-hidden="true"></span>'}</div>
+      <div class="sand-u">${unten}</div>
+    </div>`;
+  }
+  function uhrParallax(root = document) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    root.querySelectorAll('.uhr3d').forEach(u => {
+      u.addEventListener('pointermove', e => { const r = u.getBoundingClientRect(); u.style.setProperty('--dx', ((e.clientX - r.left) / r.width - .5) * 2); });
+      u.addEventListener('pointerleave', () => u.style.setProperty('--dx', 0));
+    });
+  }
+
+  document.getElementById('r1').innerHTML = KS.map(k => {
+    const o = zeilen(K[k].rein, [4, 4, 3, 2, 2]);
+    const u = zeilen([...K[k].raus].reverse(), [4, 3, 2, 2]).map(z => z.reverse()).reverse();
+    return zelle(k, uhr3d(k, o.map(z => `<div class="zeile">${z.map(f => ein(k, f)).join('')}</div>`).join(''), u.map(z => `<div class="zeile">${z.map(aus).join('')}</div>`).join('')));
+  }).join('');
+  uhrParallax();
+
+  document.querySelectorAll('.zelle').forEach(z => {
+    const k = z.dataset.k, antwort = z.querySelector('.antwort');
+    const an = chip => {
+      const f = chip.dataset.in, m = K[k].map[f] || [];
+      z.classList.add('fokus');
+      z.querySelectorAll('span[data-in]').forEach(c => c.classList.toggle('aktiv', c.dataset.in === f));
+      z.querySelectorAll('[data-out]').forEach(e => e.classList.toggle('ja', m.includes(e.dataset.out)));
+      antwort.innerHTML = `<b>${f}</b> wird zu <em>${m.map(lab).join(', ')}</em>`;
+    };
+    const weg = () => { z.classList.remove('fokus'); antwort.textContent = 'Maus auf ein Format'; };
+    z.querySelectorAll('span[data-in]').forEach(c => { c.addEventListener('mouseenter', () => an(c)); c.addEventListener('focus', () => an(c)); c.addEventListener('blur', weg); });
+    z.addEventListener('mouseleave', weg);
+  });
+})();
+</script>
