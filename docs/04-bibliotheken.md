@@ -16,7 +16,9 @@ Einbindung: `NuGet` (verwaltete DLL), `native` (native DLL im Paket), `Prozess` 
 | Microsoft.Extensions.Logging | 8.0.1 | MIT | Lokales Logging (opt-in, nie versendet) | NuGet | im Code |
 | Microsoft.Extensions.Logging.Abstractions | 8.0.3 | MIT | `ILogger` in Engine und Queue | NuGet | im Code |
 | Markdig | 1.4.0 | BSD-2 | Markdown → HTML/Text/PDF-Blockmodell | NuGet | im Code |
-| Magick.NET-Q16-AnyCPU + Magick.NET.Core | 14.17.1 | Apache 2.0 (Wrapper), ImageMagick License (nativ) | Bilder lesen, wandeln, komprimieren, Metadaten entfernen | NuGet + native (`Magick.Native-Q16-<arch>.dll`) | im Code, **Prüfung 2026-09-23 (siehe unten): kein GPL, aber libde265 (HEVC-Decoder) und openh264 statisch enthalten → O-01 blockierend für die Store-Einreichung** |
+| Magick.NET-Q16-AnyCPU + Magick.NET.Core | 14.17.1 | Apache 2.0 (Wrapper), ImageMagick License (nativ) | Bilder lesen, wandeln, komprimieren, Metadaten entfernen | NuGet + native (`Magick.Native-Q16-<arch>.dll`) | **entfernt 2026-09-23** (Entscheidung Projektinhaber: null Patentrisiko; nativ enthaltene libde265/openh264, siehe Prüfbericht unten) |
+| SkiaSharp | 4.152.1 | MIT | Bilder lesen (JPG, PNG, WebP, GIF, BMP, ICO, DNG), skalieren, JPG/PNG/WebP schreiben, Bild → PDF, PDF-Seite → JPG | NuGet | im Code seit 2026-09-23 (ersetzt Magick.NET), durch lizenz-waechter zu prüfen |
+| SkiaSharp.NativeAssets.Win32 | 4.152.1 | MIT (nativ: Skia BSD-3; enthält libjpeg-turbo, libpng, libwebp, zlib, FreeType, HarfBuzz, Expat, ICU, piex, DNG SDK, Wuffs – alle permissiv, keine Video-Codecs) | Native `libSkiaSharp.dll` für Windows | NuGet + native | im Code seit 2026-09-23, Lizenztexte in `third_party/SkiaSharp/` (LICENSE.txt, THIRD-PARTY-NOTICES.txt), durch lizenz-waechter zu prüfen |
 | FFMpegCore | 5.5.0 | MIT | Ansteuerung von ffmpeg/ffprobe als Prozess | NuGet | im Code |
 | FFmpeg (LGPL-Build) | — | LGPL 2.1 | Audio/Video-Konvertierung | Prozess (`ffmpeg.exe`, `ffprobe.exe`) | geplant, Build-Konfiguration siehe `02-rechtssicherheit.md` §2, Bezugsquelle offener Punkt |
 | PdfPig (UglyToad.PdfPig) | 0.1.16 | Apache 2.0 | PDF lesen: Text, Seitenzahl, Schutz erkennen | NuGet | im Code |
@@ -39,6 +41,7 @@ Einbindung: `NuGet` (verwaltete DLL), `native` (native DLL im Paket), `Prozess` 
 | Shouldly | 4.3.0 | BSD-3 | Assertions | NuGet | im Code |
 | coverlet.collector | 6.0.4 | MIT | Testabdeckung | NuGet | im Code |
 | Microsoft.NET.Test.Sdk | 17.14.1 | MIT | Test-Host | NuGet | im Code |
+| SkiaSharp.NativeAssets.Linux.NoDependencies | 4.152.1 | MIT (nativ wie oben) | Native Skia-Bibliothek, damit die Engine-Tests unter Linux laufen; wird nie mit der App ausgeliefert | NuGet (nur Testprojekt) | im Code seit 2026-09-23, durch lizenz-waechter zu prüfen |
 
 ## Prüfbericht Magick.Native (2026-09-23, lizenz-waechter)
 

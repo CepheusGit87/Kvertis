@@ -59,8 +59,7 @@ public sealed class FormatDetector : IFormatDetector
         }
         if (!descriptor.CanRead)
         {
-            var detail = format.Value == FormatRegistry.Avif ? FormatRegistry.AvifBlockedDetail : $"format '{format}' is recognized but not readable";
-            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect", detail);
+            throw new ConversionException(ConversionErrorCode.UnsupportedFormat, path, "detect", $"format '{format}' is recognized but not readable");
         }
 
         var warnings = new List<InputWarning>();

@@ -50,15 +50,37 @@ public interface ISystemCodecCapabilities
 }
 
 /// <summary>
-/// Decodes HEIC/HEIF into an uncompressed image using the operating system's image codecs.
-/// Kvertis never ships an HEVC decoder (see ADR-006).
+/// Image codecs of the operating system (on Windows: the Windows Imaging Component with the installed
+/// image extensions). Covers everything the bundled image library (SkiaSharp) cannot or must not do:
+/// HEIC/HEIF and AVIF (Kvertis never ships an HEVC or AV1 decoder, ADR-006), camera RAW other than
+/// DNG, TIFF (multi-page) and the TIFF/BMP/GIF encoders. The platform-neutral default reports nothing
+/// available; converters then fail with <see cref="ConversionErrorCode.MissingSystemCodec"/>.
 /// </summary>
-public interface IHeicDecoder
+public interface ISystemImageCodec
 {
+    /// <summary>False when the platform has no system image codecs at all.</summary>
     bool IsAvailable { get; }
 
-    /// <summary>Decodes to a PNG file at <paramref name="outputPngPath"/>. Throws ConversionException(MissingSystemCodec) when unavailable.</summary>
-    Task DecodeToPngAsync(string heicPath, string outputPngPath, CancellationToken ct);
+    /// <summary>Whether a decoder for this format is (believed to be) installed. RAW may only be known after a decode attempt.</summary>
+    bool CanDecode(FormatId format);
+
+    /// <summary>Whether an encoder for this format exists (TIFF, BMP, GIF, PNG, JPG on Windows).</summary>
+    bool CanEncode(FormatId format);
+
+    /// <summary>
+    /// Decodes up to <paramref name="maxFrames"/> frames (TIFF pages, GIF frames) into PNG files inside
+    /// <paramref name="outputDirectory"/>. EXIF orientation is applied, colors are converted to sRGB, no
+    /// metadata is written. The caller has verified the format by magic bytes and owns (deletes) the files.
+    /// Throws ConversionException(MissingSystemCodec) when no decoder is installed, CorruptFile for bad data.
+    /// </summary>
+    Task<IReadOnlyList<string>> DecodeToPngFramesAsync(string path, string outputDirectory, int maxFrames, CancellationToken ct);
+
+    /// <summary>
+    /// Encodes the PNG at <paramref name="pngPath"/> into <paramref name="outputPath"/> as
+    /// <paramref name="format"/>. <paramref name="quality"/> (0..100) is used by lossy encoders only.
+    /// Writes no metadata. Throws ConversionException(MissingSystemCodec) when no encoder exists.
+    /// </summary>
+    Task EncodeFromPngAsync(string pngPath, string outputPath, FormatId format, int quality, CancellationToken ct);
 }
 
 /// <summary>Location of the bundled or user-provided ffmpeg/ffprobe binaries.</summary>

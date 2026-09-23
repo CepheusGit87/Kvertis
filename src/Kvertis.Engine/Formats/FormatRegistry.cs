@@ -35,11 +35,6 @@ public sealed class FormatRegistry
     public static readonly FormatId Heic = new("heic");
     public static readonly FormatId Avif = new("avif");
 
-    /// <summary>
-    /// Detail of the UnsupportedFormat error for AVIF input. Magick.NET would read AVIF through its HEIF
-    /// coder (libheif/libde265 inside Magick.Native); that path stays blocked until open point O-01 is decided.
-    /// </summary>
-    public const string AvifBlockedDetail = "avif blocked until O-01";
     public static readonly FormatId Svg = new("svg");
     public static readonly FormatId Ico = new("ico");
     public static readonly FormatId Raw = new("raw");
@@ -85,12 +80,15 @@ public sealed class FormatRegistry
         new(Bmp, MediaKind.Image, "BMP", ["bmp", "dib"], true, true, Lossless: true),
         new(Tiff, MediaKind.Image, "TIFF", ["tif", "tiff"], true, true, Lossless: true, SupportsTransparency: true),
         new(Heic, MediaKind.Image, "HEIC", ["heic", "heif", "hif"], true, false, SupportsTransparency: true, PatentEncumbered: true),
-        // CanRead=false: recognized, but blocked until O-01 (see AvifBlockedDetail).
-        new(Avif, MediaKind.Image, "AVIF", ["avif"], false, false, SupportsTransparency: true),
-        new(Svg, MediaKind.Image, "SVG", ["svg"], true, false, SupportsTransparency: true),
+        // AVIF is decoded only by the operating system (AV1 video extension via ISystemImageCodec), never bundled.
+        new(Avif, MediaKind.Image, "AVIF", ["avif"], true, false, SupportsTransparency: true),
+        // CanRead=false: no patent-free/low-risk library in Phase 1 (recognized so the user gets a clear message).
+        new(Svg, MediaKind.Image, "SVG", ["svg"], false, false, SupportsTransparency: true),
         new(Ico, MediaKind.Image, "ICO", ["ico"], true, true, SupportsTransparency: true),
+        // DNG is decoded by SkiaSharp; the other RAW variants need the system RAW image extension.
         new(Raw, MediaKind.Image, "RAW", ["dng", "cr2", "cr3", "nef", "arw", "orf", "raf", "rw2"], true, false),
-        new(Psd, MediaKind.Image, "PSD", ["psd"], true, false, SupportsTransparency: true),
+        // CanRead=false: no patent-free/low-risk library in Phase 1.
+        new(Psd, MediaKind.Image, "PSD", ["psd"], false, false, SupportsTransparency: true),
 
         new(Mp3, MediaKind.Audio, "MP3", ["mp3"], true, true),
         new(Wav, MediaKind.Audio, "WAV", ["wav"], true, true, Lossless: true),

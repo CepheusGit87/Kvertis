@@ -1,8 +1,8 @@
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
 using Kvertis.Engine.Probing;
 using Shouldly;
+using SkiaSharp;
 using Xunit;
 
 namespace Kvertis.Engine.Tests.Images;
@@ -23,14 +23,12 @@ public sealed class ImageProberTests : IDisposable
     }
 
     [Theory]
-    [InlineData("png", MagickFormat.Png)]
-    [InlineData("jpg", MagickFormat.Jpeg)]
-    [InlineData("webp", MagickFormat.WebP)]
-    [InlineData("bmp", MagickFormat.Bmp)]
-    [InlineData("tiff", MagickFormat.Tiff)]
-    public async Task Reads_dimensions(string format, MagickFormat magickFormat)
+    [InlineData("png", SKEncodedImageFormat.Png)]
+    [InlineData("jpg", SKEncodedImageFormat.Jpeg)]
+    [InlineData("webp", SKEncodedImageFormat.Webp)]
+    public async Task Reads_dimensions(string format, SKEncodedImageFormat skiaFormat)
     {
-        var info = TestImages.Info(_files.Solid("in." + format, magickFormat, 123, 45), new FormatId(format));
+        var info = TestImages.Info(_files.Solid("in." + format, skiaFormat, 123, 45), new FormatId(format));
 
         var result = await _prober.ProbeAsync(info, CancellationToken.None);
 
@@ -54,23 +52,39 @@ public sealed class ImageProberTests : IDisposable
     [Fact]
     public async Task Single_frame_gif_has_no_animation_warning()
     {
-        var info = TestImages.Info(_files.Solid("still.gif", MagickFormat.Gif), FormatRegistry.Gif);
+        var info = TestImages.Info(_files.StillGif("still.gif"), FormatRegistry.Gif);
 
         var result = await _prober.ProbeAsync(info, CancellationToken.None);
 
+        result.Width.ShouldBe(64);
+        result.Height.ShouldBe(48);
         result.HasWarning(InputWarning.AnimationDropped).ShouldBeFalse();
     }
 
-    [Fact]
-    public async Task Heic_is_not_touched_and_keeps_unknown_dimensions()
+    [Theory]
+    [InlineData("heic")]
+    [InlineData("avif")]
+    [InlineData("tiff")]
+    [InlineData("raw")]
+    public async Task System_codec_formats_are_not_touched_and_keep_unknown_dimensions(string format)
     {
         byte[] garbage = [0x00, 0x00, 0x00, 0x18, (byte)'f', (byte)'t', (byte)'y', (byte)'p', (byte)'h', (byte)'e', (byte)'i', (byte)'c', 0xDE, 0xAD];
-        var info = TestImages.Info(_files.Bytes("photo.heic", garbage), FormatRegistry.Heic);
+        var info = TestImages.Info(_files.Bytes("photo." + format, garbage), new FormatId(format));
 
         var result = await _prober.ProbeAsync(info, CancellationToken.None);
 
         result.ShouldBe(info);
         result.Width.ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Png_content_detected_as_jpg_throws_corrupt_file()
+    {
+        var info = TestImages.Info(_files.Solid("fake.jpg", SKEncodedImageFormat.Png), FormatRegistry.Jpg);
+
+        var ex = await Should.ThrowAsync<ConversionException>(() => _prober.ProbeAsync(info, CancellationToken.None));
+
+        ex.Code.ShouldBe(ConversionErrorCode.CorruptFile);
     }
 
     [Fact]
@@ -87,7 +101,7 @@ public sealed class ImageProberTests : IDisposable
     [Fact]
     public async Task Cancelled_probe_reports_cancelled()
     {
-        var info = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var info = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
@@ -99,7 +113,7 @@ public sealed class ImageProberTests : IDisposable
     [Fact]
     public async Task Detector_uses_prober_for_dimensions()
     {
-        var path = _files.Solid("in.png", MagickFormat.Png, 80, 60);
+        var path = _files.Solid("in.png", SKEncodedImageFormat.Png, 80, 60);
         var detector = new FormatDetector(new FormatRegistry(), [_prober]);
 
         var info = await detector.DetectAsync(path, CancellationToken.None);

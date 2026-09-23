@@ -28,6 +28,12 @@ public sealed class MediaFoundationCapabilities : ISystemCodecCapabilities
     public bool CanDecodeHevc => Current.DecodeHevc;
     public bool CanDecodeHeif => Current.DecodeHeif;
 
+    /// <summary>
+    /// True when a WIC decoder for camera RAW (other than DNG) is registered, e.g. the Raw Image Extension.
+    /// Best effort: a decode is attempted anyway and reports MissingSystemCodec when it fails.
+    /// </summary>
+    public bool CanDecodeRaw => Current.DecodeRaw;
+
     /// <summary>Runs the probe again and replaces the cached snapshot. Never throws.</summary>
     public Task RefreshAsync()
     {
@@ -83,7 +89,8 @@ public sealed class MediaFoundationCapabilities : ISystemCodecCapabilities
         var aac = await HasCodecAsync(CodecKind.Audio, CodecCategory.Encoder, CodecSubtypes.AudioFormatAac).ConfigureAwait(false);
         var hevcDec = await HasCodecAsync(CodecKind.Video, CodecCategory.Decoder, CodecSubtypes.VideoFormatHevc).ConfigureAwait(false);
         var heif = HasHeifDecoder();
-        Volatile.Write(ref _snapshot, new Snapshot(h264, hevcEnc, aac, hevcDec, heif));
+        var raw = HasRawDecoder();
+        Volatile.Write(ref _snapshot, new Snapshot(h264, hevcEnc, aac, hevcDec, heif, raw));
     }
 
     private static async Task<bool> HasCodecAsync(CodecKind kind, CodecCategory category, string subtype)
@@ -125,8 +132,48 @@ public sealed class MediaFoundationCapabilities : ISystemCodecCapabilities
         }
     }
 
-    private sealed record Snapshot(bool EncodeH264, bool EncodeHevc, bool EncodeAac, bool DecodeHevc, bool DecodeHeif)
+    /// <summary>
+    /// True when a WIC decoder announces AVIF (".avif" / "image/avif"), which the AV1 video extension provides.
+    /// Synchronous and cheap.
+    /// </summary>
+    internal static bool HasAvifDecoder() => AnyDecoder(info =>
+        info.FileExtensions.Any(e => string.Equals(e, ".avif", StringComparison.OrdinalIgnoreCase))
+        || info.MimeTypes.Any(m => string.Equals(m, "image/avif", StringComparison.OrdinalIgnoreCase)));
+
+    /// <summary>
+    /// True when a WIC decoder handles camera RAW files other than DNG (Raw Image Extension): it announces one of
+    /// the RAW file extensions or calls itself a raw decoder. Synchronous and cheap.
+    /// </summary>
+    internal static bool HasRawDecoder() => AnyDecoder(info =>
+        info.FileExtensions.Any(e => RawExtensions.Contains(e))
+        || (info.FriendlyName?.Contains("raw", StringComparison.OrdinalIgnoreCase) ?? false));
+
+    private static readonly HashSet<string> RawExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        public static readonly Snapshot None = new(false, false, false, false, false);
+        ".cr2", ".cr3", ".nef", ".arw", ".orf", ".raf", ".rw2",
+    };
+
+    private static bool AnyDecoder(Func<BitmapCodecInformation, bool> predicate)
+    {
+        try
+        {
+            foreach (var info in BitmapDecoder.GetDecoderInformationEnumerator())
+            {
+                if (predicate(info))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private sealed record Snapshot(bool EncodeH264, bool EncodeHevc, bool EncodeAac, bool DecodeHevc, bool DecodeHeif, bool DecodeRaw)
+    {
+        public static readonly Snapshot None = new(false, false, false, false, false, false);
     }
 }

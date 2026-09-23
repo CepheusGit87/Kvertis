@@ -42,7 +42,7 @@ public sealed class FormatDetectorTests : IDisposable
         { "image.gif", "gif", MediaKind.Image },
         { "image.webp", "webp", MediaKind.Image },
         { "photo.heic", "heic", MediaKind.Image },
-        { "vector.svg", "svg", MediaKind.Image },
+        { "photo.avif", "avif", MediaKind.Image },
         { "sound.wav", "wav", MediaKind.Audio },
         { "sound.flac", "flac", MediaKind.Audio },
         { "sound.ogg", "ogg", MediaKind.Audio },
@@ -63,7 +63,7 @@ public sealed class FormatDetectorTests : IDisposable
         "gif" => FormatSamples.Gif,
         "webp" => FormatSamples.WebP,
         "heic" => FormatSamples.Heic,
-        "svg" => FormatSamples.Svg,
+        "avif" => FormatSamples.Avif,
         "wav" => FormatSamples.Wav,
         "flac" => FormatSamples.Flac,
         "ogg" => FormatSamples.OggVorbis,
@@ -215,14 +215,16 @@ public sealed class FormatDetectorTests : IDisposable
     }
 
     [Fact]
-    public async Task Avif_is_recognized_but_blocked()
+    public async Task Svg_is_recognized_but_not_readable()
     {
-        var path = Write("photo.avif", FormatSamples.Avif);
+        // SVG and PSD were dropped with the image library switch: no low-risk reader in phase 1.
+        var path = Write("vector.svg", FormatSamples.Svg);
 
         var ex = await Should.ThrowAsync<ConversionException>(() => _detector.DetectAsync(path, CancellationToken.None));
 
         ex.Code.ShouldBe(ConversionErrorCode.UnsupportedFormat);
-        ex.Detail.ShouldBe(FormatRegistry.AvifBlockedDetail);
+        new FormatRegistry().Get(FormatRegistry.Psd)!.CanRead.ShouldBeFalse();
+        new FormatRegistry().Get(FormatRegistry.Avif)!.CanRead.ShouldBeTrue();
     }
 
     [Fact]

@@ -85,10 +85,11 @@ public static class ServiceRegistration
         services.AddSingleton<MediaInfoCache>();
         services.AddSingleton<FfmpegToolset>();
 
-        // Windows platform services (Media Foundation, WIC, process suspend)
+        // Windows platform services (Media Foundation, WIC, process suspend). ISystemImageCodec (WIC) decodes
+        // HEIC/AVIF/RAW/TIFF and encodes TIFF/BMP/GIF for ImageConverter and ImageToPdfConverter (ADR-006).
         services.AddSingleton(state.Platform);
         services.AddSingleton(state.Platform.Codecs);
-        services.AddSingleton(state.Platform.Heic);
+        services.AddSingleton(state.Platform.Images);
         services.AddSingleton(state.Platform.Suspender);
 
         // Engine: detection and probing

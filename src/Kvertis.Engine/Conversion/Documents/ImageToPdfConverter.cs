@@ -1,24 +1,34 @@
 using System.Diagnostics;
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Formats;
+using Kvertis.Engine.Platform;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
+using SkiaSharp;
 
 namespace Kvertis.Engine.Conversion.Documents;
 
 /// <summary>
 /// Image (JPG, PNG, TIFF) → PDF. One page per image or TIFF frame, A4 portrait or landscape by the
-/// image's aspect ratio, image scaled to fit inside a 1 cm margin. JPEG data is embedded without
-/// re-encoding; with MetadataPolicy.Strip its EXIF/XMP/IPTC segments are removed first.
+/// image's aspect ratio, image scaled to fit inside a 1 cm margin. Upright JPEG data is embedded without
+/// re-encoding; with MetadataPolicy.Strip its EXIF/XMP/IPTC segments are removed first. TIFF pages are
+/// decoded by the system codec (<see cref="ISystemImageCodec"/>); without it the conversion fails with
+/// MissingSystemCodec.
 /// </summary>
 public sealed class ImageToPdfConverter : IConverter
 {
     private const double A4Short = 595.28;
     private const double A4Long = 841.89;
     private const double Margin = 1 / 2.54 * 72;
-    private const uint ReencodeJpegQuality = 92;
+    private const int ReencodeJpegQuality = 92;
+
+    private readonly ISystemImageCodec _systemCodec;
+
+    public ImageToPdfConverter(ISystemImageCodec? systemCodec = null)
+    {
+        _systemCodec = systemCodec ?? NullSystemImageCodec.Instance;
+    }
 
     public string Name => "image-pdf";
 
@@ -38,20 +48,20 @@ public sealed class ImageToPdfConverter : IConverter
         {
             throw new ConversionException(ConversionErrorCode.UnsupportedFormat, input.Path, "image-pdf", $"{input.Format} -> {settings.Output}");
         }
-        return DocumentTasks.RunAsync(() => Convert(input, outputPath, settings, progress, ct), input.Path, "image-pdf");
+        return DocumentTasks.RunAsync(() => ConvertCoreAsync(input, outputPath, settings, progress, ct), input.Path, "image-pdf");
     }
 
     public Task<PreviewResult?> PreviewAsync(InputInfo input, ConversionSettings settings, CancellationToken ct) =>
         Task.FromResult<PreviewResult?>(null);
 
-    private static ConversionResult Convert(InputInfo input, string outputPath, ConversionSettings settings, IProgress<ConversionProgress>? progress, CancellationToken ct)
+    private async Task<ConversionResult> ConvertCoreAsync(InputInfo input, string outputPath, ConversionSettings settings, IProgress<ConversionProgress>? progress, CancellationToken ct)
     {
         var watch = Stopwatch.StartNew();
         progress?.Report(ConversionProgress.Start);
         ct.ThrowIfCancellationRequested();
         var strip = settings.Metadata == MetadataPolicy.Strip;
 
-        var frames = LoadFrames(input, strip, ct);
+        var frames = await LoadFramesAsync(input, strip, ct).ConfigureAwait(false);
         using var outputs = new OutputSet();
         try
         {
@@ -109,42 +119,69 @@ public sealed class ImageToPdfConverter : IConverter
     }
 
     /// <summary>Image data for each page, as streams the PDF library can read (JPEG or 8-bit PNG).</summary>
-    private static List<MemoryStream> LoadFrames(InputInfo input, bool strip, CancellationToken ct)
+    private async Task<List<MemoryStream>> LoadFramesAsync(InputInfo input, bool strip, CancellationToken ct)
     {
-        var frames = new List<MemoryStream>();
         if (input.Format == FormatRegistry.Jpg)
         {
-            frames.Add(LoadJpeg(input.Path, strip));
-            return frames;
+            return [LoadJpeg(input.Path, strip, ct)];
         }
-        if (input.Format == FormatRegistry.Png && CanEmbedPngDirectly(input.Path))
+        if (input.Format == FormatRegistry.Png)
         {
             // PNG pixels are decoded and re-compressed by the PDF library; no metadata chunks survive.
-            frames.Add(new MemoryStream(File.ReadAllBytes(input.Path)));
+            return [CanEmbedPngDirectly(input.Path)
+                ? new MemoryStream(File.ReadAllBytes(input.Path))
+                : ToPng(input.Path, FormatRegistry.Png, ct)];
+        }
+
+        // TIFF: only the system codec decodes it; every page arrives as a metadata-free PNG.
+        if (!_systemCodec.IsAvailable || !_systemCodec.CanDecode(input.Format))
+        {
+            throw new ConversionException(ConversionErrorCode.MissingSystemCodec, input.Path, "image-pdf", $"no system decoder for '{input.Format}'");
+        }
+        var scratch = Path.Combine(Path.GetTempPath(), "Kvertis", "pdf-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(scratch);
+        var frames = new List<MemoryStream>();
+        try
+        {
+            var pngs = await _systemCodec.DecodeToPngFramesAsync(input.Path, scratch, ImageConverter.MaxPages, ct).ConfigureAwait(false);
+            if (pngs.Count == 0)
+            {
+                throw new ConversionException(ConversionErrorCode.CorruptFile, input.Path, "image-pdf", "no frames");
+            }
+            foreach (var png in pngs)
+            {
+                ct.ThrowIfCancellationRequested();
+                frames.Add(ToPng(png, FormatRegistry.Png, ct));
+            }
             return frames;
         }
-
-        // Explicit coder and the Magick security policy, like every other Magick.NET read (ADR-006).
-        using var collection = new MagickImageCollection();
-        collection.Read(input.Path, MagickSupport.ReadSettings(input.Format, input.Path, firstFrameOnly: false));
-        foreach (var frame in collection)
+        catch
         {
-            ct.ThrowIfCancellationRequested();
-            frames.Add(ToPng(frame));
+            foreach (var frame in frames)
+            {
+                frame.Dispose();
+            }
+            throw;
         }
-        return frames;
+        finally
+        {
+            TryDeleteDirectory(scratch);
+        }
     }
 
-    private static MemoryStream LoadJpeg(string path, bool strip)
+    private static MemoryStream LoadJpeg(string path, bool strip, CancellationToken ct)
     {
-        var orientation = OrientationType.Undefined;
-        var readSettings = MagickSupport.ReadSettings(FormatRegistry.Jpg, path, firstFrameOnly: true);
-        using (var probe = new MagickImage())
+        SKEncodedOrigin origin;
+        using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+        using (var codec = SkiaImaging.OpenCodec(stream, FormatRegistry.Jpg))
         {
-            probe.Ping(path, readSettings);
-            orientation = probe.Orientation;
+            if (codec is null)
+            {
+                throw new ConversionException(ConversionErrorCode.CorruptFile, path, "image-pdf", "not a readable jpg image");
+            }
+            origin = codec.EncodedOrigin;
         }
-        if (orientation is OrientationType.Undefined or OrientationType.TopLeft)
+        if (origin is SKEncodedOrigin.TopLeft)
         {
             var bytes = File.ReadAllBytes(path);
             if (!strip)
@@ -158,17 +195,20 @@ public sealed class ImageToPdfConverter : IConverter
             }
         }
 
-        // Rotated by EXIF (or not parseable): apply the orientation and re-encode once.
-        using var image = new MagickImage(path, readSettings);
-        image.AutoOrient();
-        if (strip)
+        // Rotated by EXIF (or not parseable): apply the orientation and re-encode once. The encoder writes
+        // no metadata; with Keep the EXIF is carried over with the orientation reset to upright.
+        using var image = SkiaImaging.Decode(path, FormatRegistry.Jpg, ct);
+        SkiaImaging.FlattenOnWhite(image);
+        var jpeg = SkiaImaging.EncodeJpeg(image, ReencodeJpegQuality);
+        if (!strip)
         {
-            StripKeepingIcc(image);
+            using var source = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            if (JpegSegments.ReadExif(source) is { } exif)
+            {
+                jpeg = JpegSegments.InsertApp1(jpeg, JpegSegments.WithUprightOrientation(exif));
+            }
         }
-        image.Quality = ReencodeJpegQuality;
-        var output = new MemoryStream();
-        image.Write(output, MagickFormat.Jpeg);
-        return output;
+        return new MemoryStream(jpeg);
     }
 
     private static bool CanEmbedPngDirectly(string path)
@@ -180,24 +220,26 @@ public sealed class ImageToPdfConverter : IConverter
                && header[24] == 8 && header[28] == 0;
     }
 
-    private static MemoryStream ToPng(IMagickImage<ushort> frame)
+    /// <summary>Decodes with Skia (orientation, sRGB) and writes an 8-bit, non-interlaced PNG without metadata.</summary>
+    private static MemoryStream ToPng(string path, FormatId format, CancellationToken ct)
     {
-        frame.AutoOrient();
-        StripKeepingIcc(frame);
-        frame.Depth = 8;
-        frame.Settings.Interlace = Interlace.NoInterlace;
-        var output = new MemoryStream();
-        frame.Write(output, MagickFormat.Png);
-        return output;
+        using var image = SkiaImaging.Decode(path, format, ct);
+        return new MemoryStream(SkiaImaging.EncodePng(image));
     }
 
-    private static void StripKeepingIcc(IMagickImage<ushort> image)
+    private static void TryDeleteDirectory(string path)
     {
-        var icc = image.GetColorProfile();
-        image.Strip();
-        if (icc is not null)
+        try
         {
-            image.SetProfile(icc);
+            Directory.Delete(path, recursive: true);
+        }
+        catch (IOException)
+        {
+            // Best effort.
+        }
+        catch (UnauthorizedAccessException)
+        {
+            // Best effort.
         }
     }
 }

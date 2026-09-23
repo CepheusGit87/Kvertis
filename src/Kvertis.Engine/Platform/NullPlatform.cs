@@ -2,7 +2,7 @@ using Kvertis.Engine.Abstractions;
 
 namespace Kvertis.Engine.Platform;
 
-/// <summary>Platform-neutral defaults: no system codecs, no HEIC, no suspend. Kvertis.Engine.Windows replaces these.</summary>
+/// <summary>Platform-neutral defaults: no system codecs, no system image codecs, no suspend. Kvertis.Engine.Windows replaces these.</summary>
 public sealed class NullSystemCodecCapabilities : ISystemCodecCapabilities
 {
     public static readonly NullSystemCodecCapabilities Instance = new();
@@ -24,13 +24,19 @@ public sealed class AllSystemCodecCapabilities : ISystemCodecCapabilities
     public bool CanDecodeHeif => true;
 }
 
-public sealed class NullHeicDecoder : IHeicDecoder
+/// <summary>No system image codecs: HEIC, AVIF, non-DNG RAW, TIFF and the TIFF/BMP/GIF encoders are unavailable.</summary>
+public sealed class NullSystemImageCodec : ISystemImageCodec
 {
-    public static readonly NullHeicDecoder Instance = new();
+    public static readonly NullSystemImageCodec Instance = new();
     public bool IsAvailable => false;
+    public bool CanDecode(FormatId format) => false;
+    public bool CanEncode(FormatId format) => false;
 
-    public Task DecodeToPngAsync(string heicPath, string outputPngPath, CancellationToken ct) =>
-        throw new ConversionException(ConversionErrorCode.MissingSystemCodec, heicPath, "heic-decode", "HEIF image extension not available");
+    public Task<IReadOnlyList<string>> DecodeToPngFramesAsync(string path, string outputDirectory, int maxFrames, CancellationToken ct) =>
+        throw new ConversionException(ConversionErrorCode.MissingSystemCodec, path, "system-decode", "no system image codecs on this platform");
+
+    public Task EncodeFromPngAsync(string pngPath, string outputPath, FormatId format, int quality, CancellationToken ct) =>
+        throw new ConversionException(ConversionErrorCode.MissingSystemCodec, outputPath, "system-encode", $"no system encoder for '{format}'");
 }
 
 public sealed class NullProcessSuspender : IProcessSuspender

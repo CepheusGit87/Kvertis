@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Formats;
@@ -159,12 +158,10 @@ public sealed class PdfConverter : IConverter
                 try
                 {
                     await _rasterizer.RasterizePageAsync(input.Path, i, dpi, png, ct).ConfigureAwait(false);
-                    using var image = new MagickImage(png, MagickSupport.ReadSettings(FormatRegistry.Png, png, firstFrameOnly: true));
-                    image.Strip();
-                    image.Quality = (uint)Math.Clamp(settings.QualityClamped, 1, 100);
-                    image.BackgroundColor = MagickColors.White;
-                    image.Alpha(AlphaOption.Remove);
-                    await image.WriteAsync(temp, MagickFormat.Jpeg, ct).ConfigureAwait(false);
+                    // Skia writes no metadata; transparent areas become white like in the image converter.
+                    using var image = SkiaImaging.Decode(png, FormatRegistry.Png, ct);
+                    SkiaImaging.FlattenOnWhite(image);
+                    await File.WriteAllBytesAsync(temp, SkiaImaging.EncodeJpeg(image, settings.QualityClamped), ct).ConfigureAwait(false);
                 }
                 finally
                 {

@@ -1,5 +1,4 @@
 using System.Globalization;
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion;
 using Kvertis.Engine.Conversion.Images;
@@ -8,6 +7,7 @@ using Kvertis.Engine.Platform;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
 using Shouldly;
+using SkiaSharp;
 using Xunit;
 
 namespace Kvertis.Engine.Tests.Images;
@@ -19,23 +19,52 @@ public sealed class ImageConverterTests : IDisposable
 
     public void Dispose() => _files.Dispose();
 
-    private ImageConverter CreateConverter(IHeicDecoder? heic = null) =>
-        new(_registry, heic ?? NullHeicDecoder.Instance, NullLogger<ImageConverter>.Instance);
+    private ImageConverter CreateConverter(ISystemImageCodec? codec = null) =>
+        new(_registry, codec ?? NullSystemImageCodec.Instance, NullLogger<ImageConverter>.Instance);
 
     private async Task<(ConversionResult Result, RecordingProgress Progress)> ConvertAsync(
-        InputInfo input, ConversionSettings settings, string outputName, IHeicDecoder? heic = null, CancellationToken ct = default)
+        InputInfo input, ConversionSettings settings, string outputName, ISystemImageCodec? codec = null, CancellationToken ct = default)
     {
         var progress = new RecordingProgress();
-        var result = await CreateConverter(heic).ConvertAsync(input, _files.PathFor(outputName), settings, progress, ct);
+        var result = await CreateConverter(codec).ConvertAsync(input, _files.PathFor(outputName), settings, progress, ct);
         return (result, progress);
     }
 
-    private static MagickFormat FormatOf(string path) => new MagickImageInfo(path).Format;
+    /// <summary>A fake system codec that "decodes" into the given PNG frames and "encodes" by copying the PNG.</summary>
+    private ISystemImageCodec FakeSystemCodec(params SKColor[] frames)
+    {
+        var codec = Substitute.For<ISystemImageCodec>();
+        codec.IsAvailable.Returns(true);
+        codec.CanDecode(Arg.Any<FormatId>()).Returns(true);
+        codec.CanEncode(Arg.Any<FormatId>()).Returns(true);
+        codec.DecodeToPngFramesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(call =>
+            {
+                var directory = call.ArgAt<string>(1);
+                var max = call.ArgAt<int>(2);
+                var paths = new List<string>();
+                for (var i = 0; i < Math.Min(max, frames.Length); i++)
+                {
+                    using var bitmap = TestImages.SolidBitmap(40 + i * 10, 30, frames[i]);
+                    var path = Path.Combine(directory, $"frame{i + 1:000}.png");
+                    File.WriteAllBytes(path, TestImages.Encode(bitmap, SKEncodedImageFormat.Png));
+                    paths.Add(path);
+                }
+                return Task.FromResult<IReadOnlyList<string>>(paths);
+            });
+        codec.EncodeFromPngAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<FormatId>(), Arg.Any<int>(), Arg.Any<CancellationToken>())
+            .Returns(call =>
+            {
+                File.Copy(call.ArgAt<string>(0), call.ArgAt<string>(1), overwrite: true);
+                return Task.CompletedTask;
+            });
+        return codec;
+    }
 
     [Fact]
     public async Task Png_to_jpg_writes_a_jpeg_with_same_dimensions()
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
         var (result, progress) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "out.jpg");
 
@@ -43,26 +72,26 @@ public sealed class ImageConverterTests : IDisposable
         File.Exists(result.OutputPath + ".kvertis-tmp").ShouldBeFalse();
         result.OutputBytes.ShouldBe(new FileInfo(result.OutputPath).Length);
         File.ReadAllBytes(result.OutputPath).Take(3).ShouldBe(new byte[] { 0xFF, 0xD8, 0xFF });
-        using var output = new MagickImage(result.OutputPath);
-        output.Width.ShouldBe(64u);
-        output.Height.ShouldBe(48u);
+        using var output = TestImages.Load(result.OutputPath);
+        output.Width.ShouldBe(64);
+        output.Height.ShouldBe(48);
         progress.Reports[^1].ShouldBe(ConversionProgress.Complete);
     }
 
     [Fact]
     public async Task Jpg_to_webp_writes_webp()
     {
-        var input = TestImages.Info(_files.Noisy("in.jpg", MagickFormat.Jpeg), FormatRegistry.Jpg);
+        var input = TestImages.Info(_files.Noisy("in.jpg", SKEncodedImageFormat.Jpeg), FormatRegistry.Jpg);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.WebP, Quality: 70), "out.webp");
 
-        FormatOf(result.OutputPath).ShouldBe(MagickFormat.WebP);
+        TestImages.FormatOf(result.OutputPath).ShouldBe(SKEncodedImageFormat.Webp);
     }
 
     [Fact]
     public async Task Higher_quality_produces_larger_jpeg()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
         var (low, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, Quality: 30), "low.jpg");
         var (high, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, Quality: 95), "high.jpg");
@@ -73,20 +102,44 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Transparent_png_to_jpg_is_flattened_on_white()
     {
-        using (var image = new MagickImage(MagickColors.Transparent, 20, 20))
+        using (var bitmap = TestImages.SolidBitmap(20, 20, SKColors.Transparent))
         {
-            _files.Write(image, "alpha.png", MagickFormat.Png);
+            _files.Write(bitmap, "alpha.png", SKEncodedImageFormat.Png);
         }
         var input = TestImages.Info(_files.PathFor("alpha.png"), FormatRegistry.Png);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "flat.jpg");
 
-        using var output = new MagickImage(result.OutputPath);
-        output.HasAlpha.ShouldBeFalse();
-        var pixel = output.GetPixels().GetPixel(10, 10).ToColor()!;
-        pixel.R.ShouldBeGreaterThan((ushort)64000);
-        pixel.G.ShouldBeGreaterThan((ushort)64000);
-        pixel.B.ShouldBeGreaterThan((ushort)64000);
+        using var output = TestImages.Load(result.OutputPath);
+        var pixel = output.GetPixel(10, 10);
+        pixel.Alpha.ShouldBe((byte)255);
+        pixel.Red.ShouldBeGreaterThan((byte)250);
+        pixel.Green.ShouldBeGreaterThan((byte)250);
+        pixel.Blue.ShouldBeGreaterThan((byte)250);
+    }
+
+    [Fact]
+    public async Task Semi_transparent_png_to_png_keeps_alpha()
+    {
+        using (var bitmap = TestImages.SolidBitmap(20, 20, new SKColor(255, 0, 0, 128)))
+        {
+            _files.Write(bitmap, "half.png", SKEncodedImageFormat.Png);
+        }
+        var input = TestImages.Info(_files.PathFor("half.png"), FormatRegistry.Png);
+
+        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "half-out.png");
+        var (resized, _) = await ConvertAsync(
+            input,
+            new ConversionSettings(FormatRegistry.Png, Advanced: new Dictionary<string, string> { [ConversionSettings.AdvancedKeys.MaxDimension] = "10" }),
+            "half-small.png");
+
+        using var output = TestImages.Load(result.OutputPath);
+        output.GetPixel(5, 5).Alpha.ShouldBe((byte)128);
+        using var small = TestImages.Load(resized.OutputPath);
+        small.Width.ShouldBe(10);
+        var pixel = small.GetPixel(5, 5);
+        ((int)pixel.Alpha).ShouldBeInRange(126, 130);
+        ((int)pixel.Red).ShouldBeGreaterThan(250); // unpremultiplied resize must not darken colours
     }
 
     [Fact]
@@ -108,109 +161,163 @@ public sealed class ImageConverterTests : IDisposable
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "first.png");
 
-        using var frames = new MagickImageCollection(result.OutputPath);
-        frames.Count.ShouldBe(1);
-        var pixel = frames[0].GetPixels().GetPixel(5, 5).ToColor()!;
-        pixel.R.ShouldBe(ushort.MaxValue);
-        pixel.G.ShouldBe((ushort)0);
-        pixel.B.ShouldBe((ushort)0);
+        using var codec = SKCodec.Create(result.OutputPath);
+        codec.FrameCount.ShouldBeLessThanOrEqualTo(1);
+        using var output = TestImages.Load(result.OutputPath);
+        output.GetPixel(5, 5).ShouldBe(new SKColor(255, 0, 0, 255));
     }
 
     [Theory]
     [InlineData("jpg")]
     [InlineData("png")]
     [InlineData("webp")]
-    public async Task Strip_removes_exif_and_comment_but_keeps_icc(string output)
+    public async Task Strip_removes_exif(string output)
     {
-        var input = TestImages.Info(_files.WithExifAndIcc("meta.jpg", MagickFormat.Jpeg), FormatRegistry.Jpg);
-        using (var source = new MagickImage(input.Path))
-        {
-            source.GetExifProfile().ShouldNotBeNull();
-            source.GetColorProfile().ShouldNotBeNull();
-        }
+        var input = TestImages.Info(_files.JpegWithExif("meta.jpg"), FormatRegistry.Jpg);
+        File.ReadAllBytes(input.Path).AsSpan().IndexOf("TestCamera"u8).ShouldBeGreaterThan(0);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(new FormatId(output)), "stripped." + output);
 
-        using var image = new MagickImage(result.OutputPath);
-        image.GetExifProfile().ShouldBeNull();
-        image.GetXmpProfile().ShouldBeNull();
-        image.GetIptcProfile().ShouldBeNull();
-        image.Comment.ShouldBeNull();
-        var icc = image.GetColorProfile();
-        icc.ShouldNotBeNull();
-        icc.ColorSpace.ShouldBe(ColorSpace.sRGB);
-        File.ReadAllText(result.OutputPath, System.Text.Encoding.Latin1).ShouldNotContain("TestCamera");
+        var bytes = File.ReadAllBytes(result.OutputPath);
+        bytes.AsSpan().IndexOf("TestCamera"u8).ShouldBe(-1);
+        bytes.AsSpan().IndexOf("Exif\0\0"u8).ShouldBe(-1);
+        bytes.AsSpan().IndexOf("ICC_PROFILE"u8).ShouldBe(-1); // colors are converted to sRGB, no profile embedded
+        bytes.AsSpan().IndexOf("iCCP"u8).ShouldBe(-1);
+        if (output == "jpg")
+        {
+            JpegSegments.HasApp1(bytes).ShouldBeFalse();
+        }
     }
 
     [Fact]
-    public async Task Keep_policy_keeps_exif()
+    public async Task Keep_policy_copies_exif_for_jpg_to_jpg_with_upright_orientation()
     {
-        var input = TestImages.Info(_files.WithExifAndIcc("meta.jpg", MagickFormat.Jpeg), FormatRegistry.Jpg);
+        // 64x48 stored, orientation 6 (rotate 90°): displayed and converted as 48x64.
+        var input = TestImages.Info(_files.JpegWithExif("meta.jpg", orientation: 6), FormatRegistry.Jpg);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, Metadata: MetadataPolicy.Keep), "kept.jpg");
 
-        using var image = new MagickImage(result.OutputPath);
-        var exif = image.GetExifProfile();
-        exif.ShouldNotBeNull();
-        exif.GetValue(ExifTag.Make)!.Value.ShouldBe("TestCamera");
-        image.GetColorProfile().ShouldNotBeNull();
+        var bytes = File.ReadAllBytes(result.OutputPath);
+        JpegSegments.HasApp1(bytes).ShouldBeTrue();
+        bytes.AsSpan().IndexOf("TestCamera"u8).ShouldBeGreaterThan(0);
+        using var codec = SKCodec.Create(result.OutputPath);
+        codec.EncodedOrigin.ShouldBe(SKEncodedOrigin.TopLeft); // tag reset, pixels already rotated
+        codec.Info.Width.ShouldBe(48);
+        codec.Info.Height.ShouldBe(64);
+    }
+
+    [Fact]
+    public async Task Keep_policy_copies_exif_for_jpg_to_webp()
+    {
+        var input = TestImages.Info(_files.JpegWithExif("meta.jpg"), FormatRegistry.Jpg);
+
+        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.WebP, Metadata: MetadataPolicy.Keep), "kept.webp");
+
+        var bytes = File.ReadAllBytes(result.OutputPath);
+        bytes.AsSpan().IndexOf("EXIF"u8).ShouldBeGreaterThan(0);
+        bytes.AsSpan().IndexOf("TestCamera"u8).ShouldBeGreaterThan(0);
+        using var output = TestImages.Load(result.OutputPath);
+        output.Width.ShouldBe(64);
+    }
+
+    [Fact]
+    public async Task Strip_applies_exif_orientation_to_pixels()
+    {
+        var input = TestImages.Info(_files.JpegWithExif("rot.jpg", 64, 48, orientation: 8), FormatRegistry.Jpg);
+
+        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "rot.png");
+
+        using var output = TestImages.Load(result.OutputPath);
+        output.Width.ShouldBe(48);
+        output.Height.ShouldBe(64);
     }
 
     [Theory]
-    [InlineData(32, 32u, 24u)]
-    [InlineData(200, 64u, 48u)] // never upscale
-    [InlineData(0, 64u, 48u)]   // 0 = keep
-    public async Task MaxDimension_shrinks_longest_edge_keeping_aspect(int maxDimension, uint expectedWidth, uint expectedHeight)
+    [InlineData(32, 32, 24)]
+    [InlineData(200, 64, 48)] // never upscale
+    [InlineData(0, 64, 48)]   // 0 = keep
+    public async Task MaxDimension_shrinks_longest_edge_keeping_aspect(int maxDimension, int expectedWidth, int expectedHeight)
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         var settings = new ConversionSettings(
             FormatRegistry.Png,
             Advanced: new Dictionary<string, string> { [ConversionSettings.AdvancedKeys.MaxDimension] = maxDimension.ToString(CultureInfo.InvariantCulture) });
 
         var (result, _) = await ConvertAsync(input, settings, "sized.png");
 
-        using var image = new MagickImage(result.OutputPath);
+        using var image = TestImages.Load(result.OutputPath);
         image.Width.ShouldBe(expectedWidth);
         image.Height.ShouldBe(expectedHeight);
     }
 
     [Fact]
-    public async Task Ico_output_is_limited_to_256_px()
+    public async Task Ico_output_is_limited_to_256_px_and_decodable()
     {
-        var input = TestImages.Info(_files.Solid("big.png", MagickFormat.Png, 600, 300), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("big.png", SKEncodedImageFormat.Png, 600, 300), FormatRegistry.Png);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Ico), "icon.ico");
 
-        using var image = new MagickImage(result.OutputPath, MagickFormat.Ico);
-        Math.Max(image.Width, image.Height).ShouldBe(256u);
+        var bytes = File.ReadAllBytes(result.OutputPath);
+        bytes[..6].ShouldBe(new byte[] { 0, 0, 1, 0, 1, 0 }); // ICONDIR: icon, one image
+        bytes[6].ShouldBe((byte)0);   // width 256 is stored as 0
+        bytes[7].ShouldBe((byte)128);
+        BitConverter.ToUInt32(bytes, 14).ShouldBe((uint)(bytes.Length - 22));
+        BitConverter.ToUInt32(bytes, 18).ShouldBe(22u);
+        TestImages.FormatOf(result.OutputPath).ShouldBe(SKEncodedImageFormat.Ico);
+        using var image = TestImages.Load(result.OutputPath);
+        image.Width.ShouldBe(256);
+        image.Height.ShouldBe(128);
     }
 
     [Fact]
-    public async Task Tiff_output_uses_lzw()
+    public void IcoWriter_writes_valid_header_for_small_icons()
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        using var bitmap = TestImages.SolidBitmap(16, 16, SKColors.Blue);
+        var png = TestImages.Encode(bitmap, SKEncodedImageFormat.Png);
 
-        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Tiff), "out.tiff");
+        var ico = IcoWriter.Write(png, 16, 16);
 
-        using var image = new MagickImage(result.OutputPath);
-        image.Compression.ShouldBe(CompressionMethod.LZW);
+        ico[6].ShouldBe((byte)16);
+        ico[7].ShouldBe((byte)16);
+        BitConverter.ToUInt16(ico, 12).ShouldBe((ushort)32);
+        using var decoded = SKBitmap.Decode(ico);
+        decoded.ShouldNotBeNull();
+        decoded.Width.ShouldBe(16);
+        Should.Throw<ArgumentOutOfRangeException>(() => IcoWriter.Write(png, 257, 16));
+    }
+
+    [Theory]
+    [InlineData("tiff")]
+    [InlineData("bmp")]
+    [InlineData("gif")]
+    public async Task System_encoded_output_without_system_codec_fails_with_missing_codec(string output)
+    {
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
+
+        var ex = await Should.ThrowAsync<ConversionException>(
+            () => ConvertAsync(input, new ConversionSettings(new FormatId(output)), "out." + output));
+
+        ex.Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        File.Exists(_files.PathFor("out." + output)).ShouldBeFalse();
     }
 
     [Fact]
-    public async Task Gif_output_has_at_most_256_colors()
+    public async Task System_encoded_output_goes_through_system_encoder()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png, 100, 100), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
+        var codec = FakeSystemCodec();
 
-        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Gif), "out.gif");
+        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Bmp, Quality: 77), "out.bmp", codec);
 
-        using var image = new MagickImage(result.OutputPath);
-        image.TotalColors.ShouldBeLessThanOrEqualTo(256u);
+        await codec.Received(1).EncodeFromPngAsync(Arg.Any<string>(), result.OutputPath + ".kvertis-tmp", FormatRegistry.Bmp, 77, Arg.Any<CancellationToken>());
+        File.Exists(result.OutputPath).ShouldBeTrue();
+        Directory.GetFiles(_files.Directory, "*.kvertis-tmp.png").ShouldBeEmpty();
     }
 
     [Fact]
     public async Task Target_size_is_reached_for_jpg()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         var (full, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, Quality: 95), "full.jpg");
         var target = full.OutputBytes / 2;
 
@@ -224,22 +331,22 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Target_size_below_quality_floor_shrinks_resolution()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         var (floor, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.WebP, Quality: 20), "floor.webp");
         var target = floor.OutputBytes * 2 / 3;
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.WebP, TargetSizeBytes: target), "target.webp");
 
         result.OutputBytes.ShouldBeLessThanOrEqualTo(target);
-        using var image = new MagickImage(result.OutputPath);
-        image.Width.ShouldBeLessThan(400u);
-        image.Width.ShouldBeGreaterThanOrEqualTo(100u);
+        using var image = TestImages.Load(result.OutputPath);
+        image.Width.ShouldBeLessThan(400);
+        image.Width.ShouldBeGreaterThanOrEqualTo(100);
     }
 
     [Fact]
     public async Task Unreachable_target_size_reports_smallest_size()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
         var ex = await Should.ThrowAsync<ConversionException>(
             () => ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, TargetSizeBytes: 100), "never.jpg"));
@@ -254,17 +361,32 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Lossless_output_ignores_target_size()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
         var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png, TargetSizeBytes: 100), "big.png");
 
         result.OutputBytes.ShouldBeGreaterThan(100);
     }
 
-    [Fact]
-    public async Task Heic_without_system_decoder_fails_with_missing_codec()
+    [Theory]
+    [InlineData("heic")]
+    [InlineData("avif")]
+    [InlineData("tiff")]
+    public async Task System_decoded_input_without_system_codec_fails_with_missing_codec(string format)
     {
-        var input = TestImages.Info(_files.Bytes("photo.heic", HeicHeader()), FormatRegistry.Heic);
+        var input = TestImages.Info(_files.Bytes("photo." + format, HeicHeader()), new FormatId(format));
+
+        var ex = await Should.ThrowAsync<ConversionException>(
+            () => ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "photo.jpg"));
+
+        ex.Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        File.Exists(_files.PathFor("photo.jpg")).ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task Non_dng_raw_without_system_codec_fails_with_missing_codec()
+    {
+        var input = TestImages.Info(_files.Bytes("photo.cr2", [0x49, 0x49, 0x2A, 0x00, 0x10, 0, 0, 0, (byte)'C', (byte)'R', 2, 0, 0, 0, 0, 0]), FormatRegistry.Raw);
 
         var ex = await Should.ThrowAsync<ConversionException>(
             () => ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "photo.jpg"));
@@ -273,29 +395,47 @@ public sealed class ImageConverterTests : IDisposable
     }
 
     [Fact]
-    public async Task Heic_is_decoded_by_system_decoder_and_never_by_magick()
+    public async Task Heic_is_decoded_by_system_codec_and_never_by_skia()
     {
-        // The HEIC file is not decodable at all: if Magick.NET ever touched it, the conversion would fail.
+        // The HEIC file is not decodable at all: if Skia ever touched it, the conversion would fail.
         var input = TestImages.Info(_files.Bytes("photo.heic", HeicHeader()), FormatRegistry.Heic);
-        var decoder = Substitute.For<IHeicDecoder>();
-        decoder.IsAvailable.Returns(true);
-        string? decodedPath = null;
-        decoder.DecodeToPngAsync(input.Path, Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(call =>
-            {
-                decodedPath = call.ArgAt<string>(1);
-                using var image = new MagickImage(MagickColors.Blue, 40, 30);
-                image.Write(decodedPath, MagickFormat.Png);
-                return Task.CompletedTask;
-            });
+        var codec = FakeSystemCodec(SKColors.Blue);
+        string? scratch = null;
+        codec.When(c => c.DecodeToPngFramesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()))
+            .Do(call => scratch = call.ArgAt<string>(1));
 
-        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "photo.jpg", decoder);
+        var (result, _) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg), "photo.jpg", codec);
 
-        await decoder.Received(1).DecodeToPngAsync(input.Path, Arg.Any<string>(), Arg.Any<CancellationToken>());
-        using var output = new MagickImage(result.OutputPath);
-        output.Width.ShouldBe(40u);
-        decodedPath.ShouldNotBeNull();
-        File.Exists(decodedPath).ShouldBeFalse(); // temp PNG cleaned up
+        await codec.Received(1).DecodeToPngFramesAsync(input.Path, Arg.Any<string>(), ImageConverter.MaxPages, Arg.Any<CancellationToken>());
+        using var output = TestImages.Load(result.OutputPath);
+        output.Width.ShouldBe(40);
+        scratch.ShouldNotBeNull();
+        Directory.Exists(scratch).ShouldBeFalse(); // temp PNGs cleaned up
+    }
+
+    [Fact]
+    public async Task Multi_page_tiff_becomes_one_output_per_page()
+    {
+        var input = TestImages.Info(_files.Bytes("scan.tiff", [0x49, 0x49, 0x2A, 0x00, 8, 0, 0, 0]), FormatRegistry.Tiff);
+        var codec = FakeSystemCodec(SKColors.Red, SKColors.Green);
+        File.WriteAllText(_files.PathFor("scan_p001.png"), "keep me");
+
+        var (result, progress) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "scan.png", codec);
+
+        result.OutputPath.ShouldBe(_files.PathFor("scan_p001_1.png"));
+        File.ReadAllText(_files.PathFor("scan_p001.png")).ShouldBe("keep me");
+        File.Exists(_files.PathFor("scan.png")).ShouldBeFalse();
+        using (var first = TestImages.Load(result.OutputPath))
+        {
+            first.Width.ShouldBe(40);
+            first.GetPixel(1, 1).Red.ShouldBe((byte)255);
+        }
+        using (var second = TestImages.Load(_files.PathFor("scan_p002.png")))
+        {
+            second.Width.ShouldBe(50);
+        }
+        result.OutputBytes.ShouldBe(new FileInfo(result.OutputPath).Length + new FileInfo(_files.PathFor("scan_p002.png")).Length);
+        progress.Reports.Select(r => r.Fraction).ShouldBeInOrder(SortDirection.Ascending);
     }
 
     [Fact]
@@ -312,26 +452,33 @@ public sealed class ImageConverterTests : IDisposable
     }
 
     [Fact]
-    public async Task Truncated_jpeg_does_not_produce_unknown_error()
+    public async Task Content_that_is_not_the_detected_format_fails_with_corrupt_file()
     {
-        var full = File.ReadAllBytes(_files.Noisy("full.jpg", MagickFormat.Jpeg));
+        // A valid PNG handed in as "jpg": Skia must not silently decode whatever it finds.
+        var input = TestImages.Info(_files.Solid("fake.jpg", SKEncodedImageFormat.Png), FormatRegistry.Jpg);
+
+        var ex = await Should.ThrowAsync<ConversionException>(
+            () => ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "fake.png"));
+
+        ex.Code.ShouldBe(ConversionErrorCode.CorruptFile);
+    }
+
+    [Fact]
+    public async Task Truncated_jpeg_fails_with_corrupt_file()
+    {
+        var full = File.ReadAllBytes(_files.Noisy("full.jpg", SKEncodedImageFormat.Jpeg));
         var input = TestImages.Info(_files.Bytes("cut.jpg", full[..(full.Length / 3)]), FormatRegistry.Jpg);
 
-        try
-        {
-            // libjpeg may recover a partial image (a warning only); that is acceptable.
-            await ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "cut.png");
-        }
-        catch (ConversionException ex)
-        {
-            ex.Code.ShouldBe(ConversionErrorCode.CorruptFile);
-        }
+        var ex = await Should.ThrowAsync<ConversionException>(
+            () => ConvertAsync(input, new ConversionSettings(FormatRegistry.Png), "cut.png"));
+
+        ex.Code.ShouldBe(ConversionErrorCode.CorruptFile);
     }
 
     [Fact]
     public async Task Cancelled_token_fails_with_cancelled()
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
@@ -345,7 +492,7 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Cancellation_during_target_search_fails_with_cancelled()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         using var cts = new CancellationTokenSource();
         var progress = new CancelOnPhase(ConversionPhase.Optimizing, cts);
 
@@ -359,7 +506,7 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Existing_output_fails_with_output_exists()
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
         File.WriteAllText(_files.PathFor("taken.jpg"), "keep me");
 
         var ex = await Should.ThrowAsync<ConversionException>(
@@ -372,7 +519,7 @@ public sealed class ImageConverterTests : IDisposable
     [Fact]
     public async Task Progress_runs_through_phases_in_order()
     {
-        var input = TestImages.Info(_files.Noisy("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
         var (_, progress) = await ConvertAsync(input, new ConversionSettings(FormatRegistry.Jpg, TargetSizeBytes: 20_000), "p.jpg");
 
@@ -396,13 +543,16 @@ public sealed class ImageConverterTests : IDisposable
         converter.Supports(png, FormatRegistry.Heic).ShouldBeFalse();
         converter.Supports(wav, FormatRegistry.Mp3).ShouldBeFalse();
         converter.Supports(png with { Format = FormatRegistry.Heic }, FormatRegistry.Jpg).ShouldBeTrue();
+        converter.Supports(png with { Format = FormatRegistry.Avif }, FormatRegistry.Jpg).ShouldBeTrue();
+        converter.Supports(png with { Format = FormatRegistry.Psd }, FormatRegistry.Png).ShouldBeFalse();
+        converter.Supports(png with { Format = FormatRegistry.Svg }, FormatRegistry.Png).ShouldBeFalse();
         converter.Name.ShouldBe("image");
     }
 
     [Fact]
     public async Task Preview_is_capped_at_1024_px_and_estimates_size()
     {
-        var input = TestImages.Info(_files.Noisy("big.png", MagickFormat.Png, 2000, 1000), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("big.png", SKEncodedImageFormat.Png, 2000, 1000), FormatRegistry.Png);
         var settings = new ConversionSettings(FormatRegistry.Jpg, Quality: 80);
 
         var preview = await CreateConverter().PreviewAsync(input, settings, CancellationToken.None);
@@ -411,8 +561,8 @@ public sealed class ImageConverterTests : IDisposable
         try
         {
             preview.PreviewPath.ShouldStartWith(Path.Combine(Path.GetTempPath(), "Kvertis"));
-            using var image = new MagickImage(preview.PreviewPath);
-            image.Width.ShouldBe(1024u);
+            using var image = TestImages.Load(preview.PreviewPath);
+            image.Width.ShouldBe(1024);
             var (result, _) = await ConvertAsync(input, settings, "real.jpg");
             preview.EstimatedOutputBytes.ShouldBe(result.OutputBytes);
         }
@@ -423,27 +573,26 @@ public sealed class ImageConverterTests : IDisposable
     }
 
     [Fact]
-    public async Task Preview_returns_null_for_unsupported_output()
+    public async Task Preview_returns_null_for_unsupported_output_or_missing_encoder()
     {
-        var input = TestImages.Info(_files.Solid("in.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Solid("in.png", SKEncodedImageFormat.Png), FormatRegistry.Png);
 
-        var preview = await CreateConverter().PreviewAsync(input, new ConversionSettings(FormatRegistry.Pdf), CancellationToken.None);
-
-        preview.ShouldBeNull();
+        (await CreateConverter().PreviewAsync(input, new ConversionSettings(FormatRegistry.Pdf), CancellationToken.None)).ShouldBeNull();
+        (await CreateConverter().PreviewAsync(input, new ConversionSettings(FormatRegistry.Tiff), CancellationToken.None)).ShouldBeNull();
     }
 
     [Fact]
-    public async Task Archive_preset_png_is_lossless_and_keeps_metadata()
+    public async Task Archive_preset_png_is_lossless()
     {
-        var input = TestImages.Info(_files.WithExifAndIcc("meta.png", MagickFormat.Png), FormatRegistry.Png);
+        var input = TestImages.Info(_files.Noisy("noisy.png", SKEncodedImageFormat.Png, 120, 80), FormatRegistry.Png);
         var settings = PresetCatalog.Apply(new ConversionSettings(FormatRegistry.Jpg, Preset: ConversionPreset.Archive), MediaKind.Image);
 
         var (result, _) = await ConvertAsync(input, settings, "archive.png");
 
-        using var original = new MagickImage(input.Path);
-        using var output = new MagickImage(result.OutputPath);
-        output.Compare(original, ErrorMetric.Absolute).ShouldBe(0);
-        output.GetExifProfile().ShouldNotBeNull();
+        using var original = TestImages.Load(input.Path);
+        using var output = TestImages.Load(result.OutputPath);
+        output.Width.ShouldBe(original.Width);
+        output.Pixels.ShouldBe(original.Pixels);
     }
 
     private static byte[] HeicHeader() =>

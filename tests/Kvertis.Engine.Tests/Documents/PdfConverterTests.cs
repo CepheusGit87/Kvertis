@@ -1,4 +1,3 @@
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Documents;
 using Kvertis.Engine.Formats;
@@ -175,8 +174,8 @@ public sealed class PdfConverterTests(ITestOutputHelper output) : IDisposable
         var result = await new PdfConverter(new FakeRasterizer()).ConvertAsync(Info(pdf, FormatRegistry.Pdf), _dir.File("one.jpg"), To(FormatRegistry.Jpg), new NullProgress(), CancellationToken.None);
 
         result.OutputPath.ShouldBe(_dir.File("one.jpg"));
-        using var image = new MagickImage(result.OutputPath);
-        image.Format.ShouldBe(MagickFormat.Jpeg);
+        Kvertis.Engine.Tests.Images.TestImages.FormatOf(result.OutputPath).ShouldBe(SkiaSharp.SKEncodedImageFormat.Jpeg);
+        Kvertis.Engine.Conversion.Images.JpegSegments.HasApp1(await File.ReadAllBytesAsync(result.OutputPath)).ShouldBeFalse();
     }
 
     private sealed class FakeRasterizer : IPdfRasterizer
@@ -191,8 +190,8 @@ public sealed class PdfConverterTests(ITestOutputHelper output) : IDisposable
             {
                 Pages.Add(pageIndex);
             }
-            using var image = new MagickImage(MagickColors.White, 20, 30);
-            image.Write(outputPngPath, MagickFormat.Png);
+            using var image = Kvertis.Engine.Tests.Images.TestImages.SolidBitmap(20, 30, SkiaSharp.SKColors.White);
+            File.WriteAllBytes(outputPngPath, Kvertis.Engine.Tests.Images.TestImages.Encode(image, SkiaSharp.SKEncodedImageFormat.Png));
             return Task.CompletedTask;
         }
     }

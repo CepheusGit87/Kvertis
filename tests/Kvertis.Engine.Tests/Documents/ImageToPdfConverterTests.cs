@@ -1,9 +1,11 @@
 using System.Text;
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Documents;
 using Kvertis.Engine.Formats;
+using Kvertis.Engine.Tests.Images;
+using NSubstitute;
 using Shouldly;
+using SkiaSharp;
 using UglyToad.PdfPig;
 using Xunit;
 using static Kvertis.Engine.Tests.Documents.DocumentTestFiles;
@@ -17,11 +19,11 @@ public sealed class ImageToPdfConverterTests : IDisposable
 
     public void Dispose() => _dir.Dispose();
 
-    private string CreateJpegWithExif(string name, uint width, uint height, ushort orientation = 1)
+    private string CreateJpegWithExif(string name, int width, int height, ushort orientation = 1)
     {
         var path = _dir.File(name);
-        using var image = new MagickImage(MagickColors.SteelBlue, width, height);
-        File.WriteAllBytes(path, ExifJpeg.WithExif(image.ToByteArray(MagickFormat.Jpeg), orientation, "SecretArtistName"));
+        using var image = TestImages.SolidBitmap(width, height, SKColors.SteelBlue);
+        File.WriteAllBytes(path, ExifJpeg.WithExif(TestImages.Encode(image, SKEncodedImageFormat.Jpeg), orientation, "SecretArtistName"));
         return path;
     }
 
@@ -60,6 +62,18 @@ public sealed class ImageToPdfConverterTests : IDisposable
     }
 
     [Fact]
+    public async Task Rotated_jpeg_keeps_exif_with_upright_orientation_when_asked()
+    {
+        var jpg = CreateJpegWithExif("rotated-keep.jpg", 400, 200, orientation: 6);
+
+        var pdf = await Convert(jpg, FormatRegistry.Jpg, MetadataPolicy.Keep);
+
+        (await File.ReadAllBytesAsync(pdf)).AsSpan().IndexOf("SecretArtistName"u8).ShouldBeGreaterThan(0);
+        using var doc = PdfDocument.Open(pdf);
+        doc.GetPage(1).Height.ShouldBeGreaterThan(doc.GetPage(1).Width);
+    }
+
+    [Fact]
     public async Task Rotated_jpeg_is_oriented_before_embedding()
     {
         // 400x200 pixels with orientation "rotate 90°" displays as 200x400: portrait.
@@ -77,9 +91,9 @@ public sealed class ImageToPdfConverterTests : IDisposable
     public async Task Png_becomes_portrait_page()
     {
         var png = _dir.File("tall.png");
-        using (var image = new MagickImage(MagickColors.Orange, 100, 300))
+        using (var image = TestImages.SolidBitmap(100, 300, SKColors.Orange))
         {
-            image.Write(png, MagickFormat.Png);
+            File.WriteAllBytes(png, TestImages.Encode(image, SKEncodedImageFormat.Png));
         }
 
         var pdf = await Convert(png, FormatRegistry.Png);
@@ -94,11 +108,7 @@ public sealed class ImageToPdfConverterTests : IDisposable
     public async Task Sixteen_bit_png_is_converted_via_image_library()
     {
         var png = _dir.File("deep.png");
-        using (var image = new MagickImage(MagickColors.Green, 50, 40))
-        {
-            image.Depth = 16;
-            image.Write(png, MagickFormat.Png);
-        }
+        File.WriteAllBytes(png, PngWriter.Rgb16(50, 40, 0, 0x8000, 0));
 
         var pdf = await Convert(png, FormatRegistry.Png);
 
@@ -109,22 +119,46 @@ public sealed class ImageToPdfConverterTests : IDisposable
     [Fact]
     public async Task Multi_page_tiff_becomes_one_page_per_frame()
     {
+        // TIFF is decoded by the system codec only; the fake returns one PNG per page.
         var tiff = _dir.File("scan.tiff");
-        using (var frames = new MagickImageCollection())
+        File.WriteAllBytes(tiff, [0x49, 0x49, 0x2A, 0x00, 8, 0, 0, 0]);
+        var codec = Substitute.For<ISystemImageCodec>();
+        codec.IsAvailable.Returns(true);
+        codec.CanDecode(FormatRegistry.Tiff).Returns(true);
+        codec.DecodeToPngFramesAsync(tiff, Arg.Any<string>(), Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns(call =>
         {
-            frames.Add(new MagickImage(MagickColors.Red, 100, 150));
-            frames.Add(new MagickImage(MagickColors.Green, 150, 100));
-            frames.Add(new MagickImage(MagickColors.Blue, 100, 150));
-            frames.Write(tiff, MagickFormat.Tiff);
-        }
+            var directory = call.ArgAt<string>(1);
+            var pages = new List<string>();
+            foreach (var (w, h, color) in new[] { (100, 150, SKColors.Red), (150, 100, SKColors.Green), (100, 150, SKColors.Blue) })
+            {
+                using var page = TestImages.SolidBitmap(w, h, color);
+                var path = Path.Combine(directory, $"frame{pages.Count + 1:000}.png");
+                File.WriteAllBytes(path, TestImages.Encode(page, SKEncodedImageFormat.Png));
+                pages.Add(path);
+            }
+            return Task.FromResult<IReadOnlyList<string>>(pages);
+        });
+        var converter = new ImageToPdfConverter(codec);
         var progress = new NullProgress();
 
-        var result = await _converter.ConvertAsync(Info(tiff, FormatRegistry.Tiff, MediaKind.Image), _dir.File("scan.pdf"), To(FormatRegistry.Pdf), progress, CancellationToken.None);
+        var result = await converter.ConvertAsync(Info(tiff, FormatRegistry.Tiff, MediaKind.Image), _dir.File("scan.pdf"), To(FormatRegistry.Pdf), progress, CancellationToken.None);
 
         using var doc = PdfDocument.Open(result.OutputPath);
         doc.NumberOfPages.ShouldBe(3);
         doc.GetPage(2).Width.ShouldBeGreaterThan(doc.GetPage(2).Height);
         progress.Reports.Count(p => p.Phase == ConversionPhase.Converting).ShouldBe(3);
+    }
+
+    [Fact]
+    public async Task Tiff_without_system_codec_fails_with_missing_codec()
+    {
+        var tiff = _dir.File("scan2.tiff");
+        File.WriteAllBytes(tiff, [0x49, 0x49, 0x2A, 0x00, 8, 0, 0, 0]);
+
+        var ex = await Should.ThrowAsync<ConversionException>(() => Convert(tiff, FormatRegistry.Tiff));
+
+        ex.Code.ShouldBe(ConversionErrorCode.MissingSystemCodec);
+        File.Exists(_dir.File("scan2.pdf")).ShouldBeFalse();
     }
 
     [Fact]
@@ -147,9 +181,9 @@ public sealed class ImageToPdfConverterTests : IDisposable
         stripped.ShouldNotBeNull();
         stripped.AsSpan().IndexOf("Exif\0\0"u8).ShouldBe(-1);
         stripped.Length.ShouldBeLessThan(original.Length);
-        using var image = new MagickImage(stripped);
-        image.Width.ShouldBe(64u);
-        image.Height.ShouldBe(32u);
+        using var image = SKBitmap.Decode(stripped);
+        image.Width.ShouldBe(64);
+        image.Height.ShouldBe(32);
         JpegMetadataStripper.Strip(Encoding.ASCII.GetBytes("not a jpeg")).ShouldBeNull();
     }
 

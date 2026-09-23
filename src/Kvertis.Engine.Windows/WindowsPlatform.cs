@@ -11,7 +11,7 @@ namespace Kvertis.Engine.Windows;
 [SupportedOSPlatform("windows10.0.17763.0")]
 public sealed record WindowsPlatformServices(
     ISystemCodecCapabilities Codecs,
-    IHeicDecoder Heic,
+    ISystemImageCodec Images,
     IProcessSuspender Suspender,
     WindowsPdfRasterizer Pdf);
 
@@ -24,7 +24,7 @@ public static class WindowsPlatform
     /// </summary>
     public static WindowsPlatformServices Create() => new(
         new MediaFoundationCapabilities(),
-        new WicHeicDecoder(),
+        new WicImageCodec(),
         new WindowsProcessSuspender(),
         new WindowsPdfRasterizer());
 }

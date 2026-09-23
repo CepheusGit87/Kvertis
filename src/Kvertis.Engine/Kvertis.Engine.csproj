@@ -5,8 +5,8 @@
     <Description>Kvertis conversion engine: format detection, validation, converters, estimation. Platform-neutral.</Description>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Magick.NET-Q16-AnyCPU" />
-    <PackageReference Include="Magick.NET.Core" />
+    <PackageReference Include="SkiaSharp" />
+    <PackageReference Include="SkiaSharp.NativeAssets.Win32" />
     <PackageReference Include="FFMpegCore" />
     <PackageReference Include="PdfPig" />
     <PackageReference Include="PDFsharp" />

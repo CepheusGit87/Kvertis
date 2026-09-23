@@ -40,7 +40,7 @@ public sealed record InputLimits(
 }
 
 /// <summary>
-/// Gate before any file reaches ffmpeg, Magick.NET or a document library. Rejects unreadable,
+/// Gate before any file reaches ffmpeg, the image library or a document library. Rejects unreadable,
 /// oversized and protected files; large-but-allowed files only get a warning (the UI asks).
 /// Protection detection itself lives in the probers, which set the error via ConversionException.
 /// </summary>

@@ -1,4 +1,3 @@
-using ImageMagick;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Conversion.Images;
 using Kvertis.Engine.Formats;
@@ -7,8 +6,9 @@ using Kvertis.Engine.Validation;
 namespace Kvertis.Engine.Probing;
 
 /// <summary>
-/// Reads image headers with Magick.NET (ping, no pixel decoding) to fill in width and height and to
-/// flag animated sources. HEIC is never handed to Magick.NET (ADR-006); its dimensions stay unknown.
+/// Reads image headers with SkiaSharp (<c>SKCodec</c>, no pixel decoding) to fill in width and height and
+/// to flag animated sources. HEIC, AVIF, TIFF and non-DNG RAW are only ever decoded by the system codec;
+/// decoding them fully at probe time would be too slow, so their dimensions stay unknown.
 /// Whether transparency gets lost depends on the output, so that warning is decided by the converter/UI.
 /// </summary>
 public sealed class ImageProber : IMediaProber
@@ -31,17 +31,21 @@ public sealed class ImageProber : IMediaProber
     public async Task<InputInfo> ProbeAsync(InputInfo info, CancellationToken ct)
     {
         ArgumentNullException.ThrowIfNull(info);
-        if (info.Format == FormatRegistry.Heic || MagickSupport.ReadFormatFor(info.Format, info.Path) is null)
+        if (!SkiaImaging.IsSkiaReadable(info.Format))
         {
-            // HEIC: only the system decoder may touch it. Unknown coder: nothing we can add safely.
+            // System-codec formats (and anything unknown): nothing we can add cheaply and safely.
             return info;
         }
 
         try
         {
-            var (width, height, frames) = await Task.Run(() => Ping(info, ct), ct)
+            var header = await Task.Run(() => ReadHeader(info, ct), ct)
                 .WaitAsync(_timeout, ct)
                 .ConfigureAwait(false);
+            if (header is not var (width, height, frames))
+            {
+                return info; // RAW that is not DNG: the system codec decides later.
+            }
 
             var result = info with { Width = width, Height = height };
             if (frames > 1 && (info.Format == FormatRegistry.Gif || info.Format == FormatRegistry.WebP))
@@ -52,20 +56,29 @@ public sealed class ImageProber : IMediaProber
         }
         catch (Exception ex)
         {
-            throw MagickSupport.Translate(ex, info.Path, "probe");
+            throw ConversionException.From(ex, info.Path, "probe");
         }
     }
 
-    private static (int Width, int Height, int Frames) Ping(InputInfo info, CancellationToken ct)
+    private static (int Width, int Height, int Frames)? ReadHeader(InputInfo info, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
-        var settings = MagickSupport.ReadSettings(info.Format, info.Path, firstFrameOnly: false);
-        var frames = MagickImageInfo.ReadCollection(info.Path, settings).ToList();
-        if (frames.Count == 0)
+        using var stream = new FileStream(info.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
+        using var codec = SkiaImaging.OpenCodec(stream, info.Format);
+        if (codec is null)
         {
-            throw new ConversionException(ConversionErrorCode.CorruptFile, info.Path, "probe", "no frames");
+            if (info.Format == FormatRegistry.Raw)
+            {
+                return null;
+            }
+            // The magic bytes said this is an image Skia reads, but Skia cannot open it.
+            throw new ConversionException(ConversionErrorCode.CorruptFile, info.Path, "probe", $"not a readable {info.Format} image");
         }
-        var first = frames[0];
-        return (checked((int)first.Width), checked((int)first.Height), frames.Count);
+        var size = codec.Info;
+        if (size.Width <= 0 || size.Height <= 0)
+        {
+            throw new ConversionException(ConversionErrorCode.CorruptFile, info.Path, "probe", "empty image");
+        }
+        return (size.Width, size.Height, Math.Max(1, codec.FrameCount));
     }
 }

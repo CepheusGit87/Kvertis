@@ -157,7 +157,7 @@ public static class MagicBytes
 
         // The major brand decides first. Only when it is generic (mif1, isom, ...) do the compatible brands
         // count, and the HEIF family wins there: a HEIC that lists "avif" as compatible stays HEIC, so it can
-        // never bypass IHeicDecoder.
+        // never be routed as AVIF.
         if (ClassifyBrand(major) is { } byMajor)
         {
             return byMajor;
