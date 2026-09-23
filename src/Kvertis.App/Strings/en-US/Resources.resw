@@ -516,7 +516,7 @@
   <data name="Main_Overall_Estimate" xml:space="preserve">
     <value>{0} files · takes about {1}</value>
   </data>
-  <data name="Main_Overall_Progress" xml:space="preserve">
+  <data name="Main_Overall_ProgressText" xml:space="preserve">
     <value>{0} of {1} done</value>
   </data>
   <data name="Main_Overall_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">

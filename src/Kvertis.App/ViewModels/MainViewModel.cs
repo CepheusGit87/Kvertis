@@ -761,7 +761,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             OverallProgress = Math.Clamp(overall.Fraction, 0, 1) * 100;
             OverallText = overall.Remaining is { } remaining
                 ? _loc.Format("Main_Overall_Remaining", overall.Done, overall.Total, Formatting.Duration(_loc, remaining))
-                : _loc.Format("Main_Overall_Progress", overall.Done, overall.Total);
+                : _loc.Format("Main_Overall_ProgressText", overall.Done, overall.Total);
         }
         else if (staged.Count > 0)
         {
@@ -777,7 +777,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             OverallProgress = 100;
             OverallText = overall.BytesIn > 0
                 ? _loc.Format("Main_Overall_Done", overall.Completed, Formatting.Bytes(_loc, overall.BytesIn), Formatting.Bytes(_loc, overall.BytesOut))
-                : _loc.Format("Main_Overall_Progress", overall.Done, overall.Total);
+                : _loc.Format("Main_Overall_ProgressText", overall.Done, overall.Total);
         }
         else
         {
