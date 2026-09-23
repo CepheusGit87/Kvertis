@@ -130,6 +130,8 @@ public static class ServiceRegistration
             History = sp.GetRequiredService<JobHistory>(),
             SpeedProfileStore = sp.GetRequiredService<ISpeedProfileStore>(),
             Registry = sp.GetRequiredService<FormatRegistry>(),
+            FormatDetector = sp.GetRequiredService<IFormatDetector>(),
+            MediaInfo = sp.GetRequiredService<MediaInfoCache>(),
             Logger = sp.GetRequiredService<ILoggerFactory>().CreateLogger<JobQueue>(),
         });
         services.AddSingleton(sp => new JobQueue(
