@@ -2,6 +2,17 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-24 – Oberflächenentwurf Schritt 2
+
+**Geändert (nur Entwurf und Doku)**
+
+- Schritt 2 „Ziel“ im Mischentwurf (`design/oberflaeche-mischentwurf.html`) neu: Artwahl links als kleine Universen (flache Symbole mit Ring), Zoom-Wege in der Mitte, rechts Zielformate, Qualitätsnote, Größenleiste mit Zielgröße und aufklappbare Zonen mit Balken.
+- Entscheidungen in `design/ENTSCHEIDUNGEN.md`, Kurzfassung in `06-design.md` („Entwurfsstand Oberfläche“).
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-23 – 3D-Modelle
 
 **Geändert**

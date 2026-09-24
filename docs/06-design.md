@@ -112,3 +112,13 @@ Erste Umsetzung in `src/Kvertis.App` (noch nicht unter Windows gebaut). Abweichu
 - **Karten-Schatten:** Karten haben Rand und Kartenhintergrund aus den Theme-Ressourcen, aber noch keinen `ThemeShadow` (Tiefe je Zustand). Grund: Schatten brauchen unter Windows gezielte Tests (Hoher Kontrast, Performance bei vielen Karten).
 - **Schmale Fenster:** Unter 900 px Breite rutschen die Buttons der Aktionsleiste in eine zweite Zeile (`AdaptiveTrigger`).
 - **Tastatur:** Strg+O, Strg+V (nicht in Textfeldern), Entf und Leertaste auf der markierten Karte, Enter auf einer Karte startet. Enter auf dem Start-Button wirkt wie immer.
+
+## Entwurfsstand Oberfläche (2026-09-24)
+
+Die HTML-Entwürfe unter `design/` gehen über die Screens oben hinaus. Verbindlich für die weitere Umsetzung ist `design/ENTSCHEIDUNGEN.md`, zusammengeführt in `design/oberflaeche-mischentwurf.html`. Kurzfassung:
+
+- **Ablauf in drei Schritten** mit rotem Faden oben: Dateien (Fächer-Galaxie) → Ziel → Umwandeln (Pixelwirbel, Zielordner).
+- **Schritt 2 „Ziel“:** links je Dateiart ein kleines Universum aus flachem Linien-Symbol und Ring, farbig nur die gewählte Art, Bewegung nur beim Wechsel. Daneben die Dateien mit „Alle gleich / Jede einzeln“, in der Mitte die Wege durchs Loch, rechts die Zielformate mit Größe.
+- **Ausgabe-Einstellungen rechts:** oben eine Note von 0 bis 100 für die Qualität, darunter eine Größenleiste von Rot bis Grün (Zielgröße je Datei, Marken wie „E-Mail“). Darunter zugeklappte Zonen, jede mit eigenem Balken (z. B. Schärfe, Details, Klang, Bewegung), dazu „Zielgröße genau“ und „Was sich ändert“. Das ersetzt das „Mehr“-Panel aus Abschnitt 3.
+- **Barrierefreiheit:** Bei „Animationen reduzieren“ stehen alle Bewegungen still; Note und Balken haben `role="meter"` bzw. in WinUI `AutomationProperties.Name` mit Wert.
+
