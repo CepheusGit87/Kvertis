@@ -16,7 +16,7 @@ Stand: 23.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 3 neu: sechs Konzepte in `schritt3-konzepte.html` (1 Linienplan, 2 Abfahrtstafel, 3 Filmstreifen, 4 Postfächer, 5 Karteikarten, 6 Presse). Alle mit Ziel für alle (unten neben Start) und Ziel je Datei. Vorschlag: 1 als Grundlage, dazu Pressbalken aus 6 und Klapp-Status aus 2; ab etwa 15 Dateien Tafel. Auswahl offen, ersetzt ggf. die Förderband-Entscheidung.
+- Schritt 3: Förderband bleibt, Sanduhr fällt weg. Fünf Stationen in `foerderband-effekte.html` (Lichttor, Stempel, Pixel-Tausch, Tunnel, Wirbel), Liste nur „Format → Format“ in drei Ansichten (Pfeil, Vorher/Nachher, Kapsel). Vorschlag: Lichttor + Pfeil. Die sechs freien Konzepte in `schritt3-konzepte.html` sind verworfen.
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
