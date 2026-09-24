@@ -1,0 +1,741 @@
+<title>Kvertis Einwurf-Übersicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+.k-model { --k: var(--model); }
+/* ===== Fenster im Weltraum-Motiv ===== */
+.win { height: 700px; grid-template-rows: 40px 58px minmax(0, 1fr) auto; background: radial-gradient(900px 500px at 50% 60%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 70%), var(--bg); }
+/* Logo als kleines schwarzes Loch */
+.logo { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #000 0 34%, var(--mint) 38%, color-mix(in srgb, var(--mint) 30%, transparent) 55%, transparent 72%); }
+.logo::before, .logo::after { display: none; }
+/* Roter Faden als Umlaufbahn: der aktuelle Schritt dreht sich */
+.faden { position: relative; }
+.faden .seg { height: 1px; background: repeating-linear-gradient(90deg, var(--mint) 0 4px, transparent 4px 8px); width: 60px; }
+.knoten i { border-radius: 50%; }
+.knoten.an i { background: conic-gradient(from var(--dreh, 0deg), var(--mint), color-mix(in srgb, var(--mint) 20%, var(--bg)), var(--mint)); color: var(--auf-mint); box-shadow: 0 0 14px color-mix(in srgb, var(--mint) 60%, transparent); animation: knotendreh 3s linear infinite; }
+@property --dreh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes knotendreh { to { --dreh: 360deg; } }
+.knoten.an i span { background: var(--mint); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); }
+.knoten.aus i { border-color: var(--line-stark); color: var(--muted); }
+.knoten.aus small { color: var(--leise); }
+
+.welt { position: relative; overflow: hidden; }
+.welt canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.ov > * { pointer-events: auto; }
+.einwurf { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); transition: opacity .4s; white-space: nowrap; }
+.einwurf b { font-size: 13px; display: block; }
+.einwurf small { font-size: 11.5px; color: var(--muted); }
+.einwurf.klar { border: 0; background: transparent; backdrop-filter: none; text-align: center; flex-direction: column; gap: 2px; padding: 0; }
+.art { position: absolute; display: grid; gap: 1px; width: 170px; transition: opacity .5s, transform .5s var(--sanft); pointer-events: none; }
+.art.mitte { transform: translateX(-50%); text-align: center; justify-items: center; }
+.art.rechts { transform: translateX(-100%); text-align: right; justify-items: end; }
+.art b { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.art b em { font: 700 11px var(--mono); font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--k); color: #0b0f12; }
+.art b em.null { background: transparent; color: var(--leise); border: 1px dashed var(--line-stark); }
+.art small { font: 10.5px var(--mono); color: var(--muted); line-height: 1.45; }
+.art small i { font-style: normal; color: var(--mint); }
+.abweis { position: absolute; right: 16px; bottom: 12px; max-width: 250px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 75%, transparent); font-size: 11.5px; color: var(--muted); transition: opacity .4s; }
+.abweis b { color: var(--coral); font-weight: 600; font-size: 12px; }
+.mitte3 { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; opacity: 0; transition: opacity .5s; pointer-events: none; }
+.mitte3 b { font-size: 14px; } .mitte3 small { font: 11px var(--mono); color: var(--muted); }
+.welt[data-modus="wirbel"] .art, .welt[data-modus="wirbel"] .einwurf, .welt[data-modus="wirbel"] .abweis { opacity: 0; pointer-events: none; }
+.welt[data-modus="wirbel"] .mitte3 { opacity: 1; }
+.leiste .tipp { font-size: 12px; color: var(--muted); }
+
+.ideen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.idee-k { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idee-k small { font: 600 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.idee-k b { font-size: 14.5px; }
+.idee-k p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.idee-k .da { color: var(--mint); font: 600 11px var(--mono); }
+
+
+.win { height: 820px; }
+.welt.zeigt { cursor: zoom-in; }
+.welt[data-modus="wirbel"] .panel { opacity: 0 !important; pointer-events: none; }
+.panel { transition: opacity .45s; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fc { display: inline-grid; place-items: center; font: 700 10.5px var(--mono); padding: 2px 7px; border-radius: 6px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); white-space: nowrap; transition: background .3s, color .3s, box-shadow .3s; }
+.fc.m { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.fc.da { background: var(--k); color: #0b0f12; box-shadow: 0 0 12px var(--k); }
+.fc.m.da, .fc.m.an { background: var(--mint); color: var(--auf-mint); box-shadow: 0 0 12px color-mix(in srgb, var(--mint) 60%, transparent); }
+
+/* Auswahl unten, Titel oben */
+.wahl { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 3px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(8px); z-index: 3; }
+.wahl button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); transition: background .35s, color .35s, box-shadow .35s; white-space: nowrap; }
+.wahl button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.wahl button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.wahl button:hover { color: var(--ink); }
+.wahl button.an { background: color-mix(in srgb, var(--k, var(--mint)) 16%, var(--panel)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k, var(--mint)) 55%, transparent); }
+.wahl .ueber { --k: var(--mint); }
+.titel { position: absolute; left: 50%; top: 14px; transform: translateX(-50%) translateY(-6px); text-align: center; display: grid; gap: 1px; opacity: 0; transition: opacity .45s, transform .45s var(--sanft); pointer-events: none; z-index: 2; }
+.titel b { font-size: 17px; } .titel small { font-size: 12.5px; color: var(--muted); }
+.titel.sichtbar { opacity: 1; transform: translateX(-50%); }
+.js-ein { transition: opacity .4s; }
+.js-ein.weg { opacity: 0; pointer-events: none; }
+.hin-ueber { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: 12px; color: var(--muted); transition: opacity .4s; white-space: nowrap; }
+.hin-ueber.weg { opacity: 0; }
+
+/* Seitenspalten: gleiten herein, wenn die Kamera ankommt */
+.seite-l, .seite-r { position: absolute; top: 74px; width: 250px; display: grid; gap: 8px; align-content: start; z-index: 2; }
+.seite-l { left: 16px; } .seite-r { right: 16px; }
+.seite-l > *, .seite-r > * { opacity: 0; transform: translateX(var(--vx, -14px)); transition: opacity .4s, transform .5s var(--sanft); transition-delay: calc(var(--i, 0) * 35ms); }
+.seite-r > * { --vx: 14px; }
+.panel.sichtbar .seite-l > *, .panel.sichtbar .seite-r > * { opacity: 1; transform: none; }
+.kopf-s { display: grid; gap: 1px; padding-bottom: 2px; }
+.kopf-s b { font-size: 13.5px; } .kopf-s small { font-size: 11.5px; color: var(--muted); }
+.kopf-s.m b { color: var(--mint); }
+.zeile-d { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.seite-r .zeile-d { grid-template-columns: 1fr 56px; text-align: right; }
+.seite-r .zeile-d .fc { justify-self: end; }
+.zeile-d .fc { justify-self: start; }
+.gruppe { display: grid; gap: 5px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); }
+.gruppe > span { font-size: 12px; font-weight: 600; }
+.seite-r .gruppe { justify-items: end; text-align: right; }
+.seite-r .gruppe .chips { justify-content: flex-end; }
+.kachel { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); text-align: left; font-size: 12.5px; cursor: pointer; transition: border-color .25s, background .25s; }
+.kachel b { font-weight: 600; }
+.kachel:hover, .kachel.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.seite-r .kachel:hover, .seite-r .kachel.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.seite-r .kachel.an b { color: var(--mint); }
+.empf-tag { font: 600 9.5px var(--mono); padding: 1px 6px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); margin-left: 6px; }
+.knopf-l { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; text-align: left; font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color .25s, background .25s; }
+.knopf-l:hover, .knopf-l.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); color: var(--ink); }
+.knopf-r { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 1fr 56px; gap: 8px; align-items: center; text-align: right; font-size: 12px; color: var(--muted); transition: border-color .25s, background .25s, opacity .25s; }
+.knopf-r .fc { justify-self: end; }
+.knopf-r.aus { opacity: .3; }
+.knopf-r.an { border-color: var(--mint); background: var(--mint-flaeche); color: var(--ink); }
+.zusammen { font-size: 12px; color: var(--muted); } .zusammen b { color: var(--ink); }
+
+/* 6 · Tiefenregler */
+.tiefe { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: 22px auto; gap: 0 10px; z-index: 3; }
+.tiefe .spur { grid-row: 1 / span 6; position: relative; width: 4px; justify-self: center; border-radius: 2px; background: var(--line); }
+.tiefe .spur i { position: absolute; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); transform: translateY(-50%); top: calc(var(--u) * 20% + 10px); }
+.tiefe button { grid-column: 2; height: 40px; display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; font-size: 12.5px; color: var(--muted); padding: 0 8px; border-radius: 8px; text-align: left; }
+.tiefe button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.tiefe button.an { color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--k, var(--mint)) 12%, transparent); }
+.tiefe-hin { position: absolute; left: 16px; bottom: 16px; font-size: 11.5px; color: var(--leise); }
+.welt.k6 .seite-l { left: 180px; width: 220px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0ms !important; }
+}
+
+.win { height: 740px; }
+.buehne-in { position: relative; min-height: 0; overflow: hidden; }
+.buehne-in.zieht::after { content: 'Loslassen · Kvertis sortiert nach Art'; position: absolute; inset: 10px; border: 2px dashed var(--mint); border-radius: 14px; background: color-mix(in srgb, var(--mint-flaeche) 70%, transparent); display: grid; place-items: center; font-size: 17px; font-weight: 600; color: var(--mint); z-index: 20; pointer-events: none; }
+.orbit { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+.ein2 { display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); }
+.ein2 .btn { white-space: nowrap; flex: none; }
+.ein2 b { display: block; font-size: 13px; } .ein2 small { font-size: 11.5px; color: var(--muted); }
+.fc { display: inline-grid; place-items: center; font: 700 10px var(--mono); padding: 1px 6px; border-radius: 5px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); white-space: nowrap; }
+.summe { font-size: 13px; color: var(--muted); } .summe b { color: var(--ink); } .summe em { font-style: normal; color: var(--coral); }
+.hinw { display: block; font: 10.5px var(--mono); color: var(--amber); }
+.leer { font-size: 12px; color: var(--leise); padding: 6px 2px; }
+.zeile { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 5px 8px; border-radius: 9px; background: color-mix(in srgb, var(--panel) 85%, transparent); border: 1px solid var(--line); font-size: 12px; }
+.zeile .nm { min-width: 0; } .zeile .nm b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .zeile .nm small { display: block; font: 10.5px var(--mono); color: var(--muted); }
+.ikon { width: 26px; height: 26px; border-radius: 6px; display: grid; place-items: center; background: color-mix(in srgb, var(--k) 16%, var(--panel2)); color: var(--k); overflow: hidden; }
+.ikon svg { width: 15px; height: 15px; } .ikon img { width: 100%; height: 100%; object-fit: cover; }
+.neu-da { animation: neuDa .5s var(--feder); }
+@keyframes neuDa { from { opacity: 0; transform: translateY(-8px) scale(.96); } }
+.hupf { animation: hupf3 .45s var(--feder); }
+@keyframes hupf3 { 40% { transform: scale(1.3); } }
+.flieger2 { position: absolute; z-index: 30; pointer-events: none; display: inline-flex; gap: 6px; align-items: center; padding: 4px 9px; border-radius: 8px; background: var(--panel); border: 1px solid var(--k); box-shadow: 0 10px 24px -8px var(--schatten), 0 0 14px color-mix(in srgb, var(--k) 40%, transparent); font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.nein-leiste { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); font-size: 12px; color: var(--muted); }
+.nein-leiste b { color: var(--coral); font-weight: 600; }
+.nein-leiste:empty { display: none; }
+
+/* 1 · Fächer */
+.k1-in { display: grid; grid-template-rows: 210px minmax(0, 1fr) auto; gap: 10px; padding: 12px 16px 12px; height: 100%; }
+.k1-oben { position: relative; display: grid; place-items: start center; }
+.k1-oben .ein2 { position: relative; z-index: 2; margin-top: 4px; }
+.k1-oben .summe { position: absolute; left: 4px; bottom: 4px; z-index: 2; }
+.faecher2 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; min-height: 0; }
+.fach2 { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 6px; min-height: 0; padding: 10px; border-radius: 14px; border: 1px solid var(--line); border-top: 3px solid var(--k); background: color-mix(in srgb, var(--panel) 70%, transparent); transition: border-color .3s, box-shadow .3s; }
+.fach2.hat { border-color: color-mix(in srgb, var(--k) 45%, var(--line)); border-top-color: var(--k); }
+.fach2 header { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+.fach2 header b { font-size: 13.5px; }
+.fach2 header em { font: 700 20px var(--mono); font-style: normal; color: var(--k); display: inline-block; }
+.fach2 header em.null { color: var(--leise); font-size: 16px; }
+.fach2 .liste2 { display: grid; gap: 4px; align-content: start; overflow: auto; min-height: 0; }
+
+/* 2 · Gruppierte Liste */
+.k2-in { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; padding: 12px 18px; height: 100%; }
+.k2-kopf { display: grid; grid-template-columns: 170px minmax(0, 1fr) auto; gap: 16px; align-items: center; }
+.k2-kopf .mini { position: relative; height: 104px; }
+.k2-kopf .zaehl { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.k2-kopf .zaehl span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); }
+.k2-kopf .zaehl i { width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.k2-kopf .zaehl b { font-family: var(--mono); }
+.gruppen2 { display: grid; gap: 10px; align-content: start; overflow: auto; min-height: 0; padding-right: 4px; }
+.gr2 { display: grid; gap: 4px; }
+.gr2 > header { display: grid; grid-template-columns: 10px auto 1fr auto; gap: 10px; align-items: center; padding: 6px 4px; border-bottom: 1px solid color-mix(in srgb, var(--k) 40%, var(--line)); }
+.gr2 > header i { width: 10px; height: 10px; border-radius: 50%; background: var(--k); }
+.gr2 > header b { font-size: 14px; } .gr2 > header span { font-size: 12px; color: var(--muted); }
+.gr2 > header .btn { font-size: 11.5px; padding: 4px 10px; }
+.gr2 .zeilen2 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 4px; }
+.gr2.leer-g { opacity: .5; } .gr2.leer-g .zeilen2 { display: none; }
+
+/* 3 · Zuordnung */
+.k3-in { position: relative; display: grid; grid-template-columns: minmax(0, 36%) 1fr minmax(0, 30%); gap: 0; padding: 12px 16px; height: 100%; }
+.k3-links { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 8px; min-height: 0; position: relative; z-index: 2; }
+.k3-links .liste2 { display: grid; gap: 4px; align-content: start; overflow: auto; }
+.k3-rechts { display: grid; gap: 8px; align-content: center; position: relative; z-index: 2; }
+.art3 { display: grid; grid-template-columns: 10px 1fr auto; gap: 4px 10px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); border-left: 3px solid var(--k); background: color-mix(in srgb, var(--panel) 80%, transparent); transition: border-color .3s, background .3s; }
+.art3 i { width: 10px; height: 10px; border-radius: 50%; background: var(--k); }
+.art3 b { font-size: 13px; } .art3 em { font: 700 18px var(--mono); font-style: normal; color: var(--k); }
+.art3 em.null { color: var(--leise); font-size: 14px; }
+.art3 .chips { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 3px; }
+.art3.hell, .zeile.hell { background: color-mix(in srgb, var(--k) 12%, var(--panel)); border-color: var(--k); }
+.art3.nein3 { --k: var(--coral); }
+.k3-titel { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+
+/* 4 · Galerie */
+.k4-in { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 10px; padding: 12px 18px; height: 100%; }
+.k4-kopf { display: flex; align-items: center; gap: 16px; }
+.k4-kopf .mini { position: relative; width: 120px; height: 70px; flex: none; }
+.galerie { display: grid; gap: 14px; align-content: start; overflow: auto; min-height: 0; }
+.abschn > header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.abschn > header b { font-size: 14px; color: var(--k); } .abschn > header span { font-size: 12px; color: var(--muted); }
+.kacheln { display: grid; grid-template-columns: repeat(auto-fill, 112px); gap: 10px; }
+.kachel4 { display: grid; gap: 4px; }
+.kachel4 .bild { position: relative; height: 84px; border-radius: 10px; overflow: hidden; display: grid; place-items: center; background: linear-gradient(145deg, color-mix(in srgb, var(--k) 30%, var(--panel2)), color-mix(in srgb, var(--k) 8%, var(--panel))); border: 1px solid color-mix(in srgb, var(--k) 35%, var(--line)); color: var(--k); }
+.kachel4 .bild svg { width: 30px; height: 30px; } .kachel4 .bild img { width: 100%; height: 100%; object-fit: cover; }
+.kachel4 .bild .fc { position: absolute; right: 5px; bottom: 5px; background: var(--panel); }
+.kachel4 b { font-size: 11.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kachel4 small { font: 10px var(--mono); color: var(--muted); margin-top: -3px; }
+.abschn.nein4 { --k: var(--coral); }
+
+/* 5 · Zählerkacheln */
+.k5-in { display: grid; grid-template-rows: minmax(0, 1fr) auto auto; gap: 10px; padding: 12px 16px; height: 100%; }
+.k5-oben { position: relative; }
+.k5-oben .ein2 { position: absolute; left: 50%; top: 4px; transform: translateX(-50%); z-index: 2; }
+.kacheln5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.zk5 { position: relative; display: grid; gap: 2px; align-content: start; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); text-align: left; cursor: pointer; transition: border-color .25s, background .25s; }
+.zk5::before { content: ''; position: absolute; left: 12px; right: 12px; top: 0; height: 3px; border-radius: 0 0 3px 3px; background: var(--k); }
+.zk5 .kopf5 { display: flex; justify-content: space-between; align-items: baseline; }
+.zk5 b { font-size: 13px; } .zk5 em { font: 700 24px var(--mono); font-style: normal; color: var(--k); line-height: 1.1; display: inline-block; }
+.zk5 em.null { color: var(--leise); font-size: 18px; }
+.zk5 small { font-size: 11.5px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-height: 17px; }
+.zk5.an, .zk5:hover { border-color: var(--k); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.schublade { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 4px; padding: 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--k) 45%, var(--line)); background: color-mix(in srgb, var(--panel) 85%, transparent); animation: neuDa .35s var(--sanft); }
+.schublade:empty { display: none; }
+.schublade h6 { grid-column: 1 / -1; margin: 0 0 2px; font-size: 12.5px; color: var(--k); display: flex; justify-content: space-between; }
+.schublade h6 button { border: 0; background: none; color: var(--muted); font-size: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Kvertis · Schritt 1 · Entwürfe vom 24.09.2026</span>
+    <h1>Hineinwerfen, und sofort sehen, was da ist</h1>
+    <p class="lead">Hier zählt nicht der Effekt, sondern der Blick danach: Welche Dateien sind da, und in welcher Art liegen sie? Die Animation ist kurz und sortiert nur. Das schwarze Loch bleibt als ruhiges Motiv. Die fünf Konzepte zeigen die Übersicht nach dem Einwerfen jeweils anders.</p>
+    <div class="gemeinsam">
+      <div><small>Ausprobieren</small><p>„Beispieldateien einwerfen“ oder echte Dateien auf ein Fenster ziehen. Bei Bildern erscheint eine Vorschau. Es wird nichts hochgeladen, alles bleibt im Browser.</p></div>
+      <div><small>Immer sichtbar</small><p>Zahl je Art, Dateiname, Größe, erkanntes Format. Und was nicht geht, mit Grund.</p></div>
+      <div><small>Hinweise</small><p>Wenn Endung und Inhalt nicht zusammenpassen, steht es in Gelb dabei, zum Beispiel „Endung .jpg, Inhalt ist PNG“.</p></div>
+      <div><small>Weiter</small><p>Der nächste Schritt „Ziel wählen“ und der Zoom mit den Wegen durchs Loch bleiben wie besprochen.</p></div>
+    </div>
+    <nav class="sprung" aria-label="Konzepte">
+      <a href="#k1"><b>1</b>Fächer</a><a href="#k2"><b>2</b>Gruppierte Liste</a><a href="#k3"><b>3</b>Zuordnung</a><a href="#k4"><b>4</b>Galerie</a><a href="#k5"><b>5</b>Zählerkacheln</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+    </nav>
+  </header>
+
+  <section class="idee" id="k1" aria-labelledby="h-k1">
+    <div class="idee-kopf"><h2 id="h-k1">1 · Fächer <small>oben das Loch, unten fünf Fächer</small></h2></div>
+    <p>Oben bleiben die Bahnen um das Loch als Einwurf. Darunter stehen fünf Fächer nebeneinander, eines je Art, mit großer Zahl und den Dateien darin. Jede Datei fliegt kurz in ihr Fach, die Zahl springt, und die passende Bahn leuchtet auf. Was nicht geht, steht in einer eigenen Zeile darunter.</p>
+    <div class="buehne" data-konzept="k1"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Auf einen Blick: welche Art, wie viele, welche Dateien</span><span class="plus"><b>+</b>Wie das bisherige Sortierregal, nur klarer</span><span class="minus"><b>−</b>Bei 30 Bildern wird ein Fach lang, dann mit eigener Bildlaufleiste</span></div>
+  </section>
+
+  <section class="idee" id="k2" aria-labelledby="h-k2">
+    <div class="idee-kopf"><h2 id="h-k2">2 · Gruppierte Liste <small>eine Liste, nach Art gegliedert</small></h2></div>
+    <p>Oben ein kleines Loch mit Bahnen und eine Zeile mit allen Zahlen. Darunter eine einzige Liste mit Überschrift je Art: Name, Anzahl, Größe zusammen, die erkannten Formate und der Knopf „Ziele ansehen“. Neue Dateien rutschen unter ihre Überschrift. Leere Arten werden blass.</p>
+    <div class="buehne" data-konzept="k2"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Skaliert gut, auch bei vielen Dateien</span><span class="plus"><b>+</b>Direkter Weg zu den Zielen je Art</span><span class="minus"><b>−</b>Weniger Bild, mehr Liste</span></div>
+  </section>
+
+  <section class="idee" id="k3" aria-labelledby="h-k3">
+    <div class="idee-kopf"><h2 id="h-k3">3 · Zuordnung <small>links die Dateien, rechts die Arten, dazwischen Kvertis</small></h2></div>
+    <p>Links stehen die Dateien in der Reihenfolge, in der sie kamen. Rechts stehen die fünf Arten mit Zahl und erkannten Formaten. Beim Einwerfen zieht Kvertis für jede Datei eine Linie durch das kleine Loch in der Mitte zu ihrer Art. Fährt man über eine Datei oder eine Art, leuchten die zugehörigen Linien.</p>
+    <div class="buehne" data-konzept="k3"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Zeigt das Aufteilen wörtlich</span><span class="plus"><b>+</b>Jede Datei bleibt mit ihrem Namen sichtbar</span><span class="minus"><b>−</b>Ab etwa 20 Dateien viele Linien, dann nur beim Überfahren</span></div>
+  </section>
+
+  <section class="idee" id="k4" aria-labelledby="h-k4">
+    <div class="idee-kopf"><h2 id="h-k4">4 · Galerie <small>Kacheln mit Vorschau, nach Art</small></h2></div>
+    <p>Jede Datei ist eine Kachel mit Vorschau: Bilder zeigen sich selbst, die anderen Arten ein klares Symbol. Die Kacheln stehen in Abschnitten je Art mit Anzahl und Gesamtgröße. Das ist die freundlichste Ansicht, weil man die eigenen Dateien wiedererkennt.</p>
+    <div class="buehne" data-konzept="k4"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Wiedererkennen statt lesen</span><span class="plus"><b>+</b>Gut für Fotos, der häufigste Fall</span><span class="minus"><b>−</b>Braucht mehr Platz je Datei</span></div>
+  </section>
+
+  <section class="idee" id="k5" aria-labelledby="h-k5">
+    <div class="idee-kopf"><h2 id="h-k5">5 · Zählerkacheln <small>das Loch groß, darunter fünf Zähler zum Aufklappen</small></h2></div>
+    <p>Die Bahnen bleiben groß im Bild. Darunter fünf Kacheln, eine je Art, mit großer Zahl und den ersten Dateinamen. Ein Klick auf eine Kachel klappt eine Schublade mit allen Dateien dieser Art auf. Nach dem Einwerfen öffnet sich die Art mit den meisten Dateien von selbst.</p>
+    <div class="buehne" data-konzept="k5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Behält das große Bild</span><span class="plus"><b>+</b>Zahlen sofort, Einzelheiten auf Wunsch</span><span class="minus"><b>−</b>Alle Dateien sieht man erst nach einem Klick</span></div>
+  </section>
+
+  <section class="idee" id="vorschlag" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>1 · Fächer.</b> Es beantwortet die Frage „was habe ich hineingeworfen?“ am schnellsten: fünf Spalten, große Zahl, Dateinamen darunter. Das Loch mit den Bahnen oben bleibt das Erkennungszeichen, und ein Klick auf ein Fach öffnet den Zoom mit den Wegen durchs Loch.</p>
+      <p><b>Aus 4 die Vorschaubilder</b> als kleines Symbol vor jedem Dateinamen. So erkennt man die eigenen Fotos sofort.</p>
+      <p class="muted">Die echte App prüft den Inhalt (docs/05-formate.md). Hier im Entwurf werden Endung und die ersten Bytes geprüft. Bei „Animationen reduzieren“ entfällt der Flug, die Dateien stehen sofort im Fach.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const LEISE = matchMedia('(prefers-reduced-motion: reduce)').matches; let still = false;
+  const leiseF = () => LEISE || still;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const TAU = Math.PI * 2;
+  const warte = ms => new Promise(r => setTimeout(r, leiseF() ? 0 : ms));
+  const mbText = n => n < .1 ? Math.max(1, Math.round(n * 1024)) + ' KB' : (n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })) + ' MB';
+
+  const ARTEN = [
+    { name: 'Bilder', cls: 'bild', tok: 'blue' }, { name: 'Audio', cls: 'audio', tok: 'violet' }, { name: 'Video', cls: 'video', tok: 'amber' },
+    { name: 'Dokumente', cls: 'dok', tok: 'cyan' }, { name: '3D-Modelle', cls: 'model', tok: 'model' },
+  ];
+  const IKON = [
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2.5 11l3.5-3.5 3 3 2-2 2.5 2.5"/><circle cx="11" cy="6" r="1.1"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 12V3.5l7-1.5V10.5"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="10.5" r="1.8"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="3.5" width="10" height="9" rx="1.5"/><path d="M11.5 7l3-2v6l-3-2"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9 1.5V5h4M6 8h5M6 10.5h5"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5l6 3.3v6.4l-6 3.3-6-3.3V4.8z"/><path d="M2 4.8l6 3.3 6-3.3M8 8.1v6.4"/></svg>',
+  ];
+  const IKON_NEIN = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M4 12l8-8"/></svg>';
+  const PROBE = [
+    { n: 'IMG_2041.heic', k: 0, f: 'HEIC', mb: 8.4 }, { n: 'Probe_03.wav', k: 1, f: 'WAV', mb: 19.7 },
+    { n: 'Scan.jpg', k: 0, f: 'PNG', mb: 2.2, hin: 'Endung .jpg, Inhalt ist PNG' }, { n: 'Urlaub_Clip.mov', k: 2, f: 'MOV', mb: 148 },
+    { n: 'Protokoll.docx', k: 3, f: 'DOCX', mb: .4 }, { n: 'Fotos.zip', k: -1, f: 'ZIP', mb: 54, grund: 'Archive werden nicht entpackt' },
+    { n: 'Halterung_v3.stl', k: 4, f: 'STL', mb: 12.6 }, { n: 'Interview.m4a', k: 1, f: 'M4A', mb: 6.1 },
+    { n: 'Sommerfest_12.jpg', k: 0, f: 'JPG', mb: 3.6 }, { n: 'Angebot_2026.pdf', k: 3, f: 'PDF', mb: 1.1 },
+  ];
+  const EXT = { jpg: [0, 'JPG'], jpeg: [0, 'JPG'], jfif: [0, 'JPG'], png: [0, 'PNG'], heic: [0, 'HEIC'], heif: [0, 'HEIC'], webp: [0, 'WEBP'], tif: [0, 'TIFF'], tiff: [0, 'TIFF'], gif: [0, 'GIF'], bmp: [0, 'BMP'], svg: [0, 'SVG'], psd: [0, 'PSD'], ico: [0, 'ICO'],
+    dng: [0, 'RAW'], cr2: [0, 'RAW'], cr3: [0, 'RAW'], nef: [0, 'RAW'], arw: [0, 'RAW'], orf: [0, 'RAW'], raf: [0, 'RAW'], rw2: [0, 'RAW'],
+    mp3: [1, 'MP3'], wav: [1, 'WAV'], m4a: [1, 'M4A'], aac: [1, 'M4A'], flac: [1, 'FLAC'], ogg: [1, 'OGG'], opus: [1, 'OPUS'], wma: [1, 'WMA'], aif: [1, 'AIFF'], aiff: [1, 'AIFF'],
+    mp4: [2, 'MP4'], m4v: [2, 'MP4'], mov: [2, 'MOV'], mkv: [2, 'MKV'], webm: [2, 'WEBM'], avi: [2, 'AVI'], wmv: [2, 'WMV'], '3gp': [2, '3GP'], mpg: [2, 'MPG'], mpeg: [2, 'MPG'],
+    pdf: [3, 'PDF'], docx: [3, 'DOCX'], xlsx: [3, 'XLSX'], pptx: [3, 'PPTX'], txt: [3, 'TXT'], md: [3, 'MD'], html: [3, 'HTML'], htm: [3, 'HTML'],
+    stl: [4, 'STL'], '3mf': [4, '3MF'], obj: [4, 'OBJ'], ply: [4, 'PLY'], glb: [4, 'GLB'], gltf: [4, 'GLTF'] };
+  const GRUND = { zip: 'Archive werden nicht entpackt', rar: 'Archive werden nicht entpackt', '7z': 'Archive werden nicht entpackt', doc: 'altes Binärformat', xls: 'altes Binärformat', ppt: 'altes Binärformat', avif: 'vorerst gesperrt', exe: 'Programme werden nicht umgewandelt' };
+  async function ausDatei(file) {
+    const ext = (file.name.includes('.') ? file.name.split('.').pop() : '').toLowerCase();
+    let [k, f] = EXT[ext] || [-1, (ext || '?').toUpperCase()], hin = null;
+    try {
+      const b = new Uint8Array(await file.slice(0, 8).arrayBuffer()), hex = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+      if (hex.startsWith('89504e47') && f !== 'PNG') { k = 0; hin = `Endung .${ext}, Inhalt ist PNG`; f = 'PNG'; }
+      else if (hex.startsWith('ffd8ff') && f !== 'JPG') { k = 0; hin = `Endung .${ext}, Inhalt ist JPG`; f = 'JPG'; }
+      else if (hex.startsWith('25504446') && f !== 'PDF') { k = 3; hin = `Endung .${ext}, Inhalt ist PDF`; f = 'PDF'; }
+    } catch (e) { /* ohne Inhaltsprüfung weiter */ }
+    const d = { n: file.name, k, f, mb: Math.max(file.size / 1e6, .001), hin, grund: k < 0 ? (GRUND[ext] || 'unbekanntes Format') : null };
+    if (k === 0 && /^image\/(jpeg|png|gif|webp|bmp|svg)/.test(file.type)) { try { d.bild = URL.createObjectURL(file); } catch (e) { /* ohne Vorschau */ } }
+    return d;
+  }
+  const ikonHTML = d => `<span class="ikon">${d.bild ? `<img src="${d.bild}" alt="">` : d.k >= 0 ? IKON[d.k] : IKON_NEIN}</span>`;
+  const artK = d => d.k >= 0 ? 'k-' + ARTEN[d.k].cls : '';
+  const zeileHTML = d => `<div class="zeile ${artK(d)}" data-i="${d.i}"${d.k < 0 ? ' style="--k:var(--coral)"' : ''}>${ikonHTML(d)}<span class="nm"><b title="${esc(d.n)}">${esc(d.n)}</b><small>${mbText(d.mb)}${d.k < 0 ? ' · ' + esc(d.grund) : ''}</small>${d.hin ? `<span class="hinw">⚠ ${esc(d.hin)}</span>` : ''}</span><span class="fc">${esc(d.f)}</span></div>`;
+  const summeHTML = W => { const ok = W.files.filter(f => f.k >= 0), nein = W.files.length - ok.length, arten = new Set(ok.map(f => f.k)).size; return W.files.length ? `<b>${W.files.length} ${W.files.length === 1 ? 'Datei' : 'Dateien'}</b> · ${ok.length} umwandelbar in ${arten} ${arten === 1 ? 'Art' : 'Arten'}${nein ? ` · <em>${nein} nicht umwandelbar</em>` : ''}` : 'Noch keine Dateien. Einfach hineinwerfen.'; };
+
+  /* Farben und Umlaufbahn als ruhiges Motiv */
+  const F = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'bg'].forEach(k => { F[k] = norm(cs.getPropertyValue('--' + k)); F[k + 'R'] = hexRgb(F[k]); });
+    const [r, g, b] = F.bgR; F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
+    F.art = ARTEN.map(a => F[a.tok + 'R']);
+  }
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+  const BAHN = [4, 3, 2, 0, 1];
+  function orbit(O, T) {
+    const { ctx, w, h } = O; if (!w) return;
+    ctx.clearRect(0, 0, w, h);
+    const cx = O.cx * w, cy = O.cy * h, r0 = O.r0, dr = O.dr, fl = O.fl;
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    ARTEN.forEach((a, k) => {
+      const rx = r0 + BAHN[k] * dr, ry = rx * fl, puls = Math.max(0, 1 - (T - (O.puls[k] || -9)) / .9), n = O.zahl[k] || 0;
+      ctx.strokeStyle = rgba(F.art[k], .2 + .5 * puls + (n ? .12 : 0)); ctx.lineWidth = 1 + 1.5 * puls; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.stroke();
+      const sp = .25 - BAHN[k] * .03;
+      for (let j = 0; j < O.teile; j++) { const A = j / O.teile * TAU + T * sp + k, x = cx + Math.cos(A) * rx * (1 + (Math.sin(j * 7.3) * .04)), y = cy + Math.sin(A) * ry; ctx.fillStyle = rgba(F.art[k], .45); ctx.fillRect(x - .8, y - .8, 1.6, 1.6); }
+      for (let j = 0; j < Math.min(n, 8); j++) { const A = j * 1.9 + T * sp + k * 2, x = cx + Math.cos(A) * rx, y = cy + Math.sin(A) * ry; const g = ctx.createRadialGradient(x, y, 0, x, y, 7); g.addColorStop(0, rgba(F.art[k], .95)); g.addColorStop(1, rgba(F.art[k], 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, 7, 0, TAU); ctx.fill(); }
+    });
+    ctx.globalCompositeOperation = 'source-over';
+    const R = O.loch;
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 3); g.addColorStop(0, rgba(F.mintR, .25)); g.addColorStop(1, rgba(F.mintR, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R * 3, 0, TAU); ctx.fill();
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+    ctx.strokeStyle = F.mint; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R + 1.5, 0, TAU); ctx.stroke();
+  }
+  function neuOrbit(cv, opt) {
+    const O = { cv, ctx: cv.getContext('2d'), w: 0, h: 0, puls: {}, zahl: {}, teile: 40, cx: .5, cy: .5, r0: 40, dr: 18, fl: .36, loch: 10, ...opt };
+    new ResizeObserver(() => { const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); O.w = r.width; O.h = r.height; cv.width = r.width * d; cv.height = r.height * d; O.ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(cv);
+    return O;
+  }
+
+  /* Kurzer Flug eines Namensschilds vom Einwurf zum Ziel */
+  function flieg(W, d, ziel) {
+    if (leiseF() || !ziel) { d.da = true; return Promise.resolve(); }
+    const wr = W.stage.getBoundingClientRect(), von = W.stage.querySelector('.js-einpunkt') || W.stage, a = von.getBoundingClientRect(), b = ziel.getBoundingClientRect();
+    const el = document.createElement('div'); el.className = 'flieger2 ' + artK(d); if (d.k < 0) el.style.setProperty('--k', 'var(--coral)');
+    el.innerHTML = `<span class="fc">${esc(d.f)}</span>${esc(d.n)}`;
+    W.stage.append(el);
+    const x0 = a.left - wr.left + a.width / 2 - el.offsetWidth / 2, y0 = a.top - wr.top + a.height / 2, x1 = b.left - wr.left + Math.min(b.width, 200) / 2 - el.offsetWidth / 2 + 6, y1 = b.top - wr.top + 10;
+    return el.animate([{ transform: `translate(${x0}px, ${y0}px) scale(.8)`, opacity: 0 }, { transform: `translate(${x0}px, ${y0 - 10}px) scale(1)`, opacity: 1, offset: .15 }, { transform: `translate(${x1}px, ${y1}px) scale(.9)`, opacity: 1, offset: .9 }, { transform: `translate(${x1}px, ${y1}px) scale(.85)`, opacity: 0 }],
+      { duration: 620, easing: 'cubic-bezier(.4,.05,.3,1)' }).finished.then(() => { el.remove(); d.da = true; });
+  }
+  const hupf = el => { if (!el || leiseF()) return; el.classList.remove('hupf'); void el.offsetWidth; el.classList.add('hupf'); };
+  const einwurfHTML = `<div class="ein2 js-einpunkt"><div><b>Alles hier hineinwerfen</b><small>Bilder, Musik, Videos, Dokumente, 3D-Modelle</small></div><button type="button" class="btn js-probe">Dateien wählen</button></div>`;
+
+  /* =========================================================
+     Fünf Konzepte
+     ========================================================= */
+  const K = {};
+
+  K.k1 = {
+    aufbau(W) {
+      W.stage.innerHTML = `<div class="k1-in"><div class="k1-oben"><canvas class="orbit"></canvas>${einwurfHTML}<span class="summe js-summe"></span></div>
+        <div class="faecher2">${ARTEN.map((a, k) => `<section class="fach2 k-${a.cls}" data-k="${k}"><header><b>${a.name}</b><em class="js-n null">0</em></header><div class="liste2"><span class="leer">noch leer</span></div></section>`).join('')}</div>
+        <div class="nein-leiste js-nein"></div></div>`;
+      W.orbit = neuOrbit(W.stage.querySelector('.orbit'), { cy: .56, r0: 44, dr: 22, fl: .34, loch: 12, teile: 46 });
+    },
+    leeren(W) { W.stage.querySelectorAll('.fach2').forEach(f => { f.classList.remove('hat'); f.querySelector('.liste2').innerHTML = '<span class="leer">noch leer</span>'; const n = f.querySelector('.js-n'); n.textContent = 0; n.classList.add('null'); }); W.stage.querySelector('.js-nein').innerHTML = ''; },
+    async hinzu(W, d) {
+      if (d.k < 0) { const z = W.stage.querySelector('.js-nein'); await flieg(W, d, z.offsetParent ? z : W.stage.querySelector('.faecher2')); if (!z.innerHTML) z.innerHTML = '<b>Nicht umwandelbar</b>'; z.insertAdjacentHTML('beforeend', `<span class="neu-da">${esc(d.n)} · ${esc(d.grund)}</span>`); return; }
+      const fach = W.stage.querySelector(`.fach2[data-k="${d.k}"]`), liste = fach.querySelector('.liste2');
+      await flieg(W, d, liste);
+      liste.querySelector('.leer')?.remove(); liste.insertAdjacentHTML('beforeend', zeileHTML(d)); liste.lastElementChild.classList.add('neu-da'); liste.scrollTop = liste.scrollHeight;
+      fach.classList.add('hat'); const n = fach.querySelector('.js-n'); n.textContent = W.files.filter(f => f.k === d.k && f.da).length; n.classList.remove('null'); hupf(n);
+    },
+  };
+
+  K.k2 = {
+    aufbau(W) {
+      W.stage.innerHTML = `<div class="k2-in"><div class="k2-kopf"><div class="mini"><canvas class="orbit"></canvas></div><div><span class="summe js-summe"></span><div class="zaehl">${ARTEN.map((a, k) => `<span class="k-${a.cls}"><i></i>${a.name} <b class="js-z" data-k="${k}">0</b></span>`).join('')}</div></div>${einwurfHTML}</div>
+        <div class="gruppen2">${ARTEN.map((a, k) => `<section class="gr2 leer-g k-${a.cls}" data-k="${k}"><header><i></i><b>${a.name}</b><span class="js-info">keine Dateien</span><button type="button" class="btn js-ziele">Ziele ansehen ›</button></header><div class="zeilen2"></div></section>`).join('')}<section class="gr2 leer-g js-neingr" style="--k:var(--coral)"><header><i></i><b>Nicht umwandelbar</b><span class="js-info">keine</span><span></span></header><div class="zeilen2"></div></section></div></div>`;
+      W.orbit = neuOrbit(W.stage.querySelector('.orbit'), { r0: 26, dr: 13, fl: .38, loch: 7, teile: 26 });
+    },
+    leeren(W) { W.stage.querySelectorAll('.gr2').forEach(g => { g.classList.add('leer-g'); g.querySelector('.zeilen2').innerHTML = ''; g.querySelector('.js-info').textContent = 'keine Dateien'; }); W.stage.querySelectorAll('.js-z').forEach(z => z.textContent = 0); },
+    async hinzu(W, d) {
+      const g = d.k >= 0 ? W.stage.querySelector(`.gr2[data-k="${d.k}"]`) : W.stage.querySelector('.js-neingr'), z = g.querySelector('.zeilen2');
+      await flieg(W, d, g.querySelector('header'));
+      g.classList.remove('leer-g'); z.insertAdjacentHTML('beforeend', zeileHTML(d)); z.lastElementChild.classList.add('neu-da');
+      const fs = W.files.filter(f => f.k === d.k && f.da), fm = [...new Set(fs.map(f => f.f))];
+      g.querySelector('.js-info').innerHTML = d.k >= 0 ? `${fs.length} ${fs.length === 1 ? 'Datei' : 'Dateien'} · ${mbText(fs.reduce((s, f) => s + f.mb, 0))} · ${fm.map(x => `<span class="fc">${x}</span>`).join(' ')}` : `${fs.length} · werden nicht umgewandelt`;
+      if (d.k >= 0) { const b = W.stage.querySelector(`.js-z[data-k="${d.k}"]`); b.textContent = fs.length; hupf(b); }
+    },
+  };
+
+  K.k3 = {
+    aufbau(W) {
+      W.stage.innerHTML = `<div class="k3-in"><canvas class="orbit js-linien" style="z-index:1"></canvas>
+        <div class="k3-links"><div style="display:grid;gap:8px">${einwurfHTML}<span class="k3-titel">Eingeworfen, in dieser Reihenfolge</span></div><div class="liste2"></div></div>
+        <div></div>
+        <div class="k3-rechts"><span class="k3-titel">Aufgeteilt nach Art</span>${ARTEN.map((a, k) => `<div class="art3 k-${a.cls}" data-k="${k}"><i></i><b>${a.name}</b><em class="js-n null">0</em><span class="chips"></span></div>`).join('')}<div class="art3 nein3" data-k="-1"><i></i><b>Nicht umwandelbar</b><em class="js-n null">0</em><span class="chips"></span></div></div></div>`;
+      const cv = W.stage.querySelector('.js-linien');
+      W.lin = { cv, ctx: cv.getContext('2d'), w: 0, h: 0 };
+      new ResizeObserver(() => { const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); W.lin.w = r.width; W.lin.h = r.height; cv.width = r.width * d; cv.height = r.height * d; W.lin.ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(cv);
+      W.stage.addEventListener('pointerover', e => { const z = e.target.closest('.zeile, .art3'); W.hell = z ? (z.classList.contains('art3') ? { k: +z.dataset.k } : { i: +z.dataset.i }) : null; });
+    },
+    leeren(W) { W.stage.querySelector('.k3-links .liste2').innerHTML = ''; W.stage.querySelectorAll('.art3').forEach(a => { const n = a.querySelector('.js-n'); n.textContent = 0; n.classList.add('null'); a.querySelector('.chips').innerHTML = ''; }); },
+    async hinzu(W, d) {
+      const l = W.stage.querySelector('.k3-links .liste2'); l.insertAdjacentHTML('beforeend', zeileHTML(d)); l.lastElementChild.classList.add('neu-da'); if (!still) l.scrollTop = l.scrollHeight;
+      d.tLinie = performance.now() / 1000; await warte(560); d.da = true;
+      const box = W.stage.querySelector(`.art3[data-k="${d.k}"]`), n = box.querySelector('.js-n'), fs = W.files.filter(f => f.k === d.k && f.da);
+      n.textContent = fs.length; n.classList.remove('null'); hupf(n);
+      box.querySelector('.chips').innerHTML = [...new Set(fs.map(f => f.f))].map(x => `<span class="fc">${x}</span>`).join('');
+    },
+    zeichnen(W, T) {
+      const L = W.lin; if (!L || !L.w) return; const ctx = L.ctx; ctx.clearRect(0, 0, L.w, L.h);
+      const b = L.cv.getBoundingClientRect(), cx = L.w * .52, cy = L.h * .5;
+      // kleines Loch in der Mitte
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, 40); g.addColorStop(0, rgba(F.mintR, .22)); g.addColorStop(1, rgba(F.mintR, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, 40, 0, TAU); ctx.fill();
+      W.files.forEach(d => {
+        if (d.tLinie == null) return;
+        const z = W.stage.querySelector(`.k3-links .zeile[data-i="${d.i}"]`), box = W.stage.querySelector(`.art3[data-k="${d.k}"]`); if (!z || !box) return;
+        const r1 = z.getBoundingClientRect(), r2 = box.getBoundingClientRect(), x0 = r1.right - b.left + 4, y0 = r1.top - b.top + r1.height / 2, x1 = r2.left - b.left - 4, y1 = r2.top - b.top + r2.height / 2;
+        const u = leiseF() ? 1 : Math.min(1, (T - d.tLinie) / .55), hell = W.hell && (W.hell.i === d.i || W.hell.k === d.k), farbe = d.k >= 0 ? F.art[d.k] : [240, 122, 106];
+        const pt = t => t < .5 ? (q => [(1 - q) * (1 - q) * x0 + 2 * (1 - q) * q * (cx - 60) + q * q * cx, (1 - q) * (1 - q) * y0 + 2 * (1 - q) * q * y0 + q * q * cy])(t * 2) : (q => [(1 - q) * (1 - q) * cx + 2 * (1 - q) * q * (cx + 60) + q * q * x1, (1 - q) * (1 - q) * cy + 2 * (1 - q) * q * y1 + q * q * y1])((t - .5) * 2);
+        ctx.strokeStyle = rgba(farbe, hell ? .9 : W.hell ? .08 : .32); ctx.lineWidth = hell ? 2 : 1.2;
+        ctx.beginPath(); const n = Math.max(2, Math.round(40 * u)); for (let j = 0; j <= n; j++) { const [x, y] = pt(j / 40); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
+        if (u < 1) { const [x, y] = pt(u); ctx.fillStyle = rgba(farbe, 1); ctx.beginPath(); ctx.arc(x, y, 3.5, 0, TAU); ctx.fill(); }
+      });
+      ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(cx, cy, 11, 0, TAU); ctx.fill(); ctx.strokeStyle = F.mint; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, 12.5, 0, TAU); ctx.stroke();
+    },
+  };
+
+  K.k4 = {
+    aufbau(W) {
+      W.stage.innerHTML = `<div class="k4-in"><div class="k4-kopf"><div class="mini"><canvas class="orbit"></canvas></div><span class="summe js-summe" style="flex:1"></span>${einwurfHTML}</div>
+        <div class="galerie">${ARTEN.map((a, k) => `<section class="abschn k-${a.cls}" data-k="${k}" hidden><header><b>${a.name}</b><span class="js-info"></span></header><div class="kacheln"></div></section>`).join('')}<section class="abschn nein4" data-k="-1" hidden><header><b>Nicht umwandelbar</b><span class="js-info"></span></header><div class="kacheln"></div></section></div></div>`;
+      W.orbit = neuOrbit(W.stage.querySelector('.orbit'), { r0: 18, dr: 9, fl: .4, loch: 6, teile: 20 });
+    },
+    leeren(W) { W.stage.querySelectorAll('.abschn').forEach(s => { s.hidden = true; s.querySelector('.kacheln').innerHTML = ''; }); },
+    async hinzu(W, d) {
+      const s = W.stage.querySelector(`.abschn[data-k="${d.k}"]`); s.hidden = false;
+      await flieg(W, d, s.querySelector('header'));
+      s.querySelector('.kacheln').insertAdjacentHTML('beforeend', `<div class="kachel4 neu-da" title="${esc(d.n)}${d.hin ? ' · ' + esc(d.hin) : ''}"><div class="bild">${d.bild ? `<img src="${d.bild}" alt="">` : d.k >= 0 ? IKON[d.k] : IKON_NEIN}<span class="fc">${esc(d.f)}</span></div><b>${esc(d.n)}</b><small>${mbText(d.mb)}${d.hin ? ' · ⚠ Endung' : ''}${d.k < 0 ? ' · ' + esc(d.grund) : ''}</small></div>`);
+      const fs = W.files.filter(f => f.k === d.k && f.da);
+      s.querySelector('.js-info').textContent = `${fs.length} ${fs.length === 1 ? 'Datei' : 'Dateien'} · ${mbText(fs.reduce((a, f) => a + f.mb, 0))}`;
+    },
+  };
+
+  K.k5 = {
+    aufbau(W) {
+      W.stage.innerHTML = `<div class="k5-in"><div class="k5-oben"><canvas class="orbit"></canvas>${einwurfHTML}<span class="summe js-summe" style="position:absolute;left:4px;bottom:0"></span></div>
+        <div class="kacheln5">${ARTEN.map((a, k) => `<button type="button" class="zk5 k-${a.cls}" data-k="${k}" aria-expanded="false"><span class="kopf5"><b>${a.name}</b><em class="js-n null">0</em></span><small class="js-namen">noch leer</small></button>`).join('')}</div>
+        <div class="schublade" aria-live="polite"></div></div>`;
+      W.orbit = neuOrbit(W.stage.querySelector('.orbit'), { cy: .56, r0: 60, dr: 30, fl: .34, loch: 16, teile: 60 });
+      W.stage.addEventListener('click', e => { const z = e.target.closest('.zk5'); if (z) { W.offen = W.offen === +z.dataset.k ? null : +z.dataset.k; K.k5.lade(W); } if (e.target.closest('.js-zu')) { W.offen = null; K.k5.lade(W); } });
+    },
+    lade(W) {
+      const s = W.stage.querySelector('.schublade');
+      W.stage.querySelectorAll('.zk5').forEach(z => { const an = +z.dataset.k === W.offen; z.classList.toggle('an', an); z.setAttribute('aria-expanded', an); });
+      if (W.offen == null) { s.innerHTML = ''; s.className = 'schublade'; return; }
+      const a = ARTEN[W.offen], fs = W.files.filter(f => f.k === W.offen && f.da), nein = W.files.filter(f => f.k < 0 && f.da);
+      s.className = 'schublade k-' + a.cls;
+      s.innerHTML = `<h6><span>${a.name}: ${fs.length} ${fs.length === 1 ? 'Datei' : 'Dateien'} · ${mbText(fs.reduce((x, f) => x + f.mb, 0))}</span><button type="button" class="js-zu">schließen ✕</button></h6>` + (fs.map(zeileHTML).join('') || '<span class="leer">Keine Dateien dieser Art.</span>') + (nein.length ? `<h6 style="color:var(--coral)"><span>Nicht umwandelbar: ${nein.map(f => esc(f.n) + ' · ' + esc(f.grund)).join(', ')}</span></h6>` : '');
+    },
+    leeren(W) { W.offen = null; K.k5.lade(W); W.stage.querySelectorAll('.zk5').forEach(z => { const n = z.querySelector('.js-n'); n.textContent = 0; n.classList.add('null'); z.querySelector('.js-namen').textContent = 'noch leer'; }); },
+    async hinzu(W, d) {
+      if (d.k < 0) { if (W.offen != null) K.k5.lade(W); return; }
+      const z = W.stage.querySelector(`.zk5[data-k="${d.k}"]`);
+      await flieg(W, d, z);
+      const fs = W.files.filter(f => f.k === d.k && f.da), n = z.querySelector('.js-n');
+      n.textContent = fs.length; n.classList.remove('null'); hupf(n);
+      z.querySelector('.js-namen').textContent = fs.slice(0, 2).map(f => f.n).join(', ') + (fs.length > 2 ? ` +${fs.length - 2}` : '');
+      if (W.offen === d.k) K.k5.lade(W);
+    },
+    fertig(W) { const zahl = ARTEN.map((a, k) => W.files.filter(f => f.k === k).length); const max = Math.max(...zahl); if (max) { W.offen = zahl.indexOf(max); K.k5.lade(W); } },
+  };
+
+  /* ---------- Fenster ---------- */
+  function fenster(W) {
+    const el = document.createElement('div'); el.className = 'win';
+    el.innerHTML = `
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><span class="wk" aria-hidden="true"><span>─</span><span>▢</span><span>✕</span></span></div>
+      <nav class="faden" aria-label="Schritte">
+        <span class="knoten an"><i><span>1</span></i><b>Dateien</b><small class="js-f0">hineinwerfen</small></span><span class="seg"></span>
+        <span class="knoten aus"><i><span>2</span></i><b>Ziel</b><small>Format und Zweck</small></span><span class="seg"></span>
+        <span class="knoten aus"><i><span>3</span></i><b>Umwandeln</b><small>danach</small></span>
+      </nav>
+      <div class="buehne-in"></div>
+      <div class="leiste">
+        <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+        <span class="platz"></span><span class="tipp">Echte Dateien einfach hineinziehen</span>
+        <button type="button" class="btn js-probe">Beispieldateien einwerfen</button>
+        <button type="button" class="btn js-leeren">Leeren</button>
+        <button type="button" class="taste js-weiter" disabled>Weiter: Ziel wählen</button>
+      </div>`;
+    return el;
+  }
+  function status(W) {
+    const ok = W.files.filter(f => f.k >= 0 && f.da).length, nein = W.files.filter(f => f.k < 0 && f.da).length;
+    W.el.querySelector('.js-f0').textContent = ok + nein ? `${ok} erkannt${nein ? ` · ${nein} nicht` : ''}` : 'hineinwerfen';
+    W.el.querySelector('.js-weiter').disabled = !ok;
+    W.stage.querySelectorAll('.js-summe').forEach(s => s.innerHTML = summeHTML({ files: W.files.filter(f => f.da) }));
+    if (W.orbit) ARTEN.forEach((a, k) => { W.orbit.zahl[k] = W.files.filter(f => f.k === k && f.da).length; });
+  }
+  async function einwerfen(W, liste) {
+    const lauf = W.lauf = {};
+    W.k.leeren(W);
+    W.files = liste.map((d, i) => ({ ...d, i, da: false }));
+    status(W);
+    const alle = [];
+    for (const d of W.files) {
+      if (W.lauf !== lauf) return;
+      const p = W.k.hinzu(W, d);
+      if (W.orbit && d.k >= 0) W.orbit.puls[d.k] = performance.now() / 1000;
+      alle.push(p.then(() => { d.da = true; if (W.lauf === lauf) status(W); }));
+      await warte(110);
+    }
+    await Promise.all(alle);
+    if (W.lauf === lauf) { W.k.fertig?.(W); status(W); }
+  }
+
+  farbenLesen();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', farbenLesen);
+  const ALLE = [], ANFANG = [];
+  document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const W = { k: K[host.dataset.konzept], files: [], sichtbar: true };
+    W.el = fenster(W); host.append(W.el); W.stage = W.el.querySelector('.buehne-in');
+    W.k.aufbau(W);
+    new IntersectionObserver(en => { W.sichtbar = en[0].isIntersecting; }).observe(W.el);
+    W.el.addEventListener('click', e => { if (e.target.closest('.js-probe')) einwerfen(W, PROBE); if (e.target.closest('.js-leeren')) { W.lauf = null; W.files = []; W.k.leeren(W); status(W); } });
+    let tiefe = 0;
+    W.stage.addEventListener('dragenter', e => { e.preventDefault(); tiefe++; W.stage.classList.add('zieht'); if (W.orbit) W.orbit.loch *= 1; });
+    W.stage.addEventListener('dragover', e => e.preventDefault());
+    W.stage.addEventListener('dragleave', () => { if (--tiefe <= 0) { tiefe = 0; W.stage.classList.remove('zieht'); } });
+    W.stage.addEventListener('drop', async e => { e.preventDefault(); tiefe = 0; W.stage.classList.remove('zieht'); const fs = [...(e.dataTransfer?.files || [])].slice(0, 40); if (fs.length) einwerfen(W, await Promise.all(fs.map(ausDatei))); });
+    // Ruhezustand: Beispieldateien liegen schon da
+    W.files = PROBE.map((d, i) => ({ ...d, i, da: true }));
+    ANFANG.push(async () => { for (const d of W.files) await W.k.hinzu(W, d); W.k.fertig?.(W); status(W); });
+    ALLE.push(W);
+  });
+  (async () => { still = true; for (const f of ANFANG) await f(); still = false; })();
+  const loop = t => { const T = t / 1000; for (const W of ALLE) { if (!W.sichtbar) continue; if (W.orbit) orbit(W.orbit, T); W.k.zeichnen?.(W, T); } requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+})();
+</script>

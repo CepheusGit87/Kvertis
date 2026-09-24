@@ -17,7 +17,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Einheitliche Designsprache „schwarzes Loch“: Favorit ist „3 · Wege durchs Loch“ aus `zoom-varianten.html`. Fünf Einwurf-Animationen in `einwurf-varianten.html`: Sog, Kamera folgt, Rundenliste, Planeten mit Namen, Scanner. Vorschlag: Sog + Rundenliste, Kamera folgt nur bei einer Art. Würde die Sanduhren im Sortierregal ersetzen.
+- Einheitliche Designsprache „schwarzes Loch“: Favorit ist „3 · Wege durchs Loch“ aus `zoom-varianten.html`. Die Einwurf-Animationen aus `einwurf-varianten.html` sind verworfen: Es zählt der klare Blick danach. Fünf Übersichten in `einwurf-uebersicht.html`: Fächer, Gruppierte Liste, Zuordnung, Galerie, Zählerkacheln. Vorschlag: Fächer mit Vorschaubildern aus der Galerie, ein Klick auf ein Fach öffnet den Zoom. Würde die Sanduhren im Sortierregal ersetzen.
 - Win2D (MIT) für den Pixelwirbel: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
