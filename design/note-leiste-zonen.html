@@ -811,6 +811,11 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 .gleiste .griff.e5-rgriff.ohne-zahl { width: 32px; height: 32px; margin-left: -16px; top: 6px; }
 .e5-rgriff.ohne-zahl .rg::before { inset: 5px; }
 .e5-rgriff.ohne-zahl .rg b { display: none; }
+.e5-tuer > button { padding: 5px 10px; row-gap: 2px; }
+.e5-tuer > button .n { grid-row: 1 / 3; grid-column: 1; }
+.e5-tuer > button small { grid-row: 1; grid-column: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.e5-tuer > button .bal { grid-row: 2; grid-column: 2; height: 6px; }
+.e5-tuer > button::after { grid-row: 1 / 3; grid-column: 3; }
 </style>
 
 <main class="seite">
@@ -830,10 +835,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   </header>
 
   <section class="idee" id="d5" aria-labelledby="h-d5">
-    <div class="idee-kopf"><h2 id="h-d5">Gewählt · D1 <small>Note oben, Leiste mit normalem Griff, zwei Zonen</small></h2></div>
-    <p>Aufbau wie D1: oben der Ring mit Note, Wort, Größe und Säulen je Merkmal, darunter die Leiste, unten die Zonen „Alle Einstellungen“ und „Was sich ändert“, beide zu. Der Griff der Leiste ist ein ganz normaler Regler. Beim Ziehen ändert sich nur oben die Note mit Ring, Wort, Größe und Säulen.</p>
+    <div class="idee-kopf"><h2 id="h-d5">Gewählt · Note oben, Zonen mit Balken <small>D1 kombiniert mit C2</small></h2></div>
+    <p>Aufbau wie D1: oben der Ring mit Note, Wort, Größe und Säulen je Merkmal, darunter die Leiste, unten die Zonen „Alle Einstellungen“ und „Was sich ändert“, beide zu. Oben die globale Note im Ring mit Wort und Größe. Darunter die Leiste, ihr Griff ist ein normaler Regler. Dann die Zonen aus C2: Jede Einstellung zeigt schon zugeklappt ihren eigenen Balken, zum Beispiel Schärfe, Details oder Bewegung. Ein Klick öffnet die passenden Regler. Dazu „Zielgröße genau“ und „Was sich ändert“. Beim Ziehen bewegen sich Note und alle Balken mit.</p>
     <div class="buehne" data-konzept="A3|D5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Die Note steht an einer Stelle, oben</span><span class="plus"><b>+</b>Alle Einzelheiten zugeklappt in zwei Zonen</span><span class="minus"><b>−</b>Beim Ziehen wandert der Blick nach oben</span></div>
+    <div class="urteil"><span class="plus"><b>+</b>Global oben, im Einzelnen unten</span><span class="plus"><b>+</b>Alle Einzelheiten zugeklappt in zwei Zonen</span><span class="minus"><b>−</b>Etwas mehr Höhe als D1</span></div>
   </section>
 
   <section class="idee" id="d1" aria-labelledby="h-d1">
@@ -1440,9 +1445,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
         ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
     },
-    D5: { // gewählt: D1, Griff ist ein normaler Regler
-      html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
-        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · Griff ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
+    D5: { // gewählt: globale Note oben, Leiste, darunter die Balken-Zonen aus C2
+      html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="noteOhne">${LIVE.noteOhne(W, g)}</div>
+        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei</span>' : ''}${leisteHTML(W, g)}
+        <span class="folgen-kopf">Einstellungen · antippen zum Öffnen</span><div data-live="tueren">${LIVE.tueren(W, g)}</div></div>`,
     },
     D2: { // die Note sitzt im Griff der Leiste
       html: (W, g) => `<div class="ein-k"><div class="e5-kopfz" data-live="kopf">${LIVE.kopf(W, g)}</div>
@@ -1463,6 +1469,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     },
   });
 
+  Object.assign(LIVE, {
+    tueren(W, g) {
+      const Z = W.Z, zug = ASP_P[g.k], benutzt = new Set(Object.values(zug).flat()), rest = P[g.k].filter(d => !benutzt.has(d.id)).map(d => d.id);
+      const tuer = aspekte(Z, g).map(([n, v, txt]) => { const ids = zug[n] || [], auf = W.zone === n; return `<div class="akk-z e5-tuer${auf ? ' auf' : ''}"><button type="button" data-zone="${n}" aria-expanded="${auf}"><span class="n">${n}</span><span class="bal" role="meter" aria-label="${n}: ${txt}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v * 100)}"><i style="width:${Math.max(3, v * 100)}%;background:${farbeA(v)}"></i></span><small>${esc(txt)}</small></button>${auf ? `<div class="inhalt">${ids.length ? teilReihen(W, g, ids) : `<span class="fest">${n} hängt am Format. Mit ${zielDef(Z, g)}: ${esc(txt)}.</span>`}</div>` : ''}</div>`; }).join('');
+      return `<div class="akk">${tuer}${zielZone(W, g)}${rest.length ? zoneHTML(W, 'rest', 'Weiteres', esc(zonenWert(Z, g, rest)), () => teilReihen(W, g, rest)) : ''}${folgenZone(W, g)}</div>`;
+    },
+    noteOhne: (W, g) => LIVE.note(W, g).replace(/<span class="e5-mini">[\s\S]*$/, ''),
+  });
   // C3: Formatliste zugeklappt, nur die Wahl sichtbar
   function zieleKompakt(W) {
     const g = GR[W.art], t = zielDef(W.Z, g), eig = g.files.filter(f => W.Z.ausn[f.n]).length;
