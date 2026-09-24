@@ -17,7 +17,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 2 (Ziel): einzelne Dateien auswählen und Formatwahl ohne Karussell. Vier Konzepte in `ziel-konzepte.html` (Vorschlag: C Fächer mit Zweck-Karten aus D).
+- Schritt 2 (Ziel): einzelne Dateien auswählen und Formatwahl ohne Karussell. Erste Runde `ziel-konzepte.html` abgelehnt (zu kompliziert). Regel: erst ein Format für alle einer Art, dann bei Bedarf einzelne; Chips und Etiketten aus Schritt 1 wiederverwenden; roter Faden sichtbar. Zweite Runde: drei Konzepte in `ziel-konzepte-2.html` (Vorschlag: 1 Zeile je Dateiart mit Satz-Überschrift).
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
@@ -25,4 +25,4 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Weitere Entwurfsseiten (Zwischenstände)
 
-`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-fuenf-kisten.html`, `ziel-konzepte.html`.
+`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-fuenf-kisten.html`, `ziel-konzepte.html`, `ziel-konzepte-2.html`.

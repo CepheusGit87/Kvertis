@@ -1,0 +1,400 @@
+<title>Kvertis Ziel einfach</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css) plus Rosa für 3D. Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --karton-kante: #00000014; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --karton-kante: #00000014; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+
+.seite { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 48px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 24ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; text-wrap: balance; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 72ch; color: var(--muted); font-size: 16.5px; }
+.lead b { color: var(--ink); font-weight: 600; }
+.regeln { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.regeln div { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px 14px; display: grid; gap: 6px; align-content: start; font-size: 13.5px; color: var(--muted); }
+.regeln b { color: var(--ink); font-size: 14px; }
+.regeln .bsp { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+.konzept { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.konzept > p { margin: 0; color: var(--muted); max-width: 78ch; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.buehne { overflow-x: auto; padding: 6px 2px 14px; }
+
+/* Bausteine aus Schritt 1: farbiger Chip = was reinkommt, Papier-Etikett = was rauskommt */
+.chip { display: inline-flex; align-items: center; gap: 4px; font: 600 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--k) 60%, transparent); box-shadow: 0 2px 5px -1px #0009; white-space: nowrap; }
+.chip small { font-weight: 500; color: var(--muted); }
+.eti { display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; white-space: nowrap; border: 0; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); } .k-model { --k: var(--model); }
+.pfeil { color: var(--mint); font-weight: 600; }
+
+/* Fenster mit rotem Faden */
+.win { position: relative; min-width: 1040px; height: 600px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; font-size: 13px;
+  background: radial-gradient(1000px 420px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); display: grid; grid-template-rows: 62px 1fr auto; }
+.faden { display: flex; align-items: center; padding: 0 22px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 7px 12px 7px 8px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--line-stark); color: var(--muted); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--leise); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.ok i { border-color: var(--mint-rahmen); color: var(--mint); }
+.knoten.ok small { color: var(--mint); }
+.seg { flex: 1; height: 2px; margin: 0 6px; border-radius: 1px; background: var(--line-stark); }
+.seg.voll { background: var(--mint); }
+.leiste { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.leiste .sum { font: 500 12px var(--mono); color: var(--muted); }
+.leiste .sum b { color: var(--mint); }
+.leiste .platz { flex: 1; }
+.taste { border: 0; border-radius: 11px; padding: 9px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), inset 0 1px 0 #ffffff55; transform: translateY(-2px); }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 6px 11px; font-weight: 500; font-size: 12px; }
+.btn:hover { border-color: var(--line-stark); }
+.link { border: 0; background: none; color: var(--mint); font-weight: 500; font-size: 12px; padding: 3px 6px; border-radius: 7px; }
+.link:hover { background: var(--mint-flaeche); }
+.frage { display: grid; gap: 2px; }
+.frage h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.frage p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.innen { overflow: auto; min-height: 0; padding: 16px 22px; display: grid; gap: 12px; align-content: start; }
+
+/* Auswahl-Etikett (groß) */
+.wahl { position: relative; display: grid; gap: 1px; justify-items: start; padding: 6px 11px 6px; border: 0; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 0 #0003, 0 8px 14px -8px #000c; transform: rotate(var(--r, -1deg)); transition: transform .25s var(--feder), box-shadow .25s, opacity .2s; }
+.wahl b { font: 700 13px var(--mono); }
+.wahl small { font-size: 10px; color: #5b646a; }
+.wahl:hover { transform: translateY(-3px) rotate(0); }
+.wahl[aria-checked="true"] { transform: translateY(-5px) rotate(0); box-shadow: 0 0 0 2px var(--mint), 0 12px 18px -8px var(--mint); }
+.wahl[aria-checked="true"]::after { content: '✓'; position: absolute; top: -8px; right: -8px; width: 18px; height: 18px; border-radius: 50%; background: var(--mint); color: var(--auf-mint); font: 700 10px/18px var(--mono); text-align: center; }
+.wahl .vs { position: absolute; top: -9px; left: 6px; font: 700 8px var(--mono); letter-spacing: .06em; padding: 0 4px; border-radius: 3px; background: var(--panel2); color: var(--mint); border: 1px solid var(--mint-rahmen); }
+.wahlen { display: flex; flex-wrap: wrap; gap: 10px 8px; padding-top: 6px; }
+.klein .wahl { padding: 3px 8px; }
+.klein .wahl b { font-size: 11px; }
+.klein .wahl small { display: none; }
+.klein .wahlen { gap: 6px; padding-top: 2px; }
+.klein .wahl[aria-checked="true"]::after { width: 14px; height: 14px; font-size: 8px; line-height: 14px; top: -6px; right: -6px; }
+.wahl.ausnahme[aria-checked="true"] { box-shadow: 0 0 0 2px var(--amber), 0 12px 18px -8px var(--amber); }
+.wahl.ausnahme[aria-checked="true"]::after { background: var(--amber); color: #0b0f12; }
+
+/* Einzeln-Liste (für 1 und 3) */
+.einzeln { display: grid; gap: 4px; padding: 8px 10px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.ez { display: grid; grid-template-columns: 58px minmax(0, 190px) 16px 1fr auto; gap: 10px; align-items: center; padding: 4px 4px; }
+.ez .nm { font-weight: 600; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ez .nm small { display: block; font: 10px var(--mono); color: var(--muted); font-weight: 500; }
+.ez .zurueck { font-size: 11px; }
+
+/* ===== 1 · Eine Zeile je Dateiart ===== */
+.zeile { display: grid; grid-template-columns: 210px 70px 1fr 120px; gap: 14px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: inset 0 1px 0 var(--karton-kante), 0 10px 20px -16px var(--schatten); }
+.zeile .art { display: grid; gap: 6px; }
+.zeile .art b { font-size: 13.5px; display: flex; gap: 7px; align-items: center; }
+.zeile .art b i { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.zeile .art .chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.zeile .wird { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mint); text-align: center; }
+.zeile .wird::after { content: '→'; display: block; font-size: 18px; letter-spacing: 0; }
+.zeile .gr { font: 500 11.5px var(--mono); color: var(--muted); text-align: right; }
+.zeile .gr b { display: block; color: var(--ink); font-size: 13px; }
+.zeile .unten { grid-column: 1 / -1; display: grid; gap: 8px; }
+.zeile .ausn { font-size: 12px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.zeile .ausn .eti { box-shadow: 0 0 0 2px var(--amber); }
+
+/* ===== 2 · Sanduhren ===== */
+.uhren { display: flex; gap: 14px; justify-content: center; padding: 6px 0 0; }
+.uhrk { display: grid; justify-items: center; gap: 8px; width: 186px; }
+.uhrk h4 { margin: 0; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.uhrk h4 i { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.uhrk h4 small { font: 500 11px var(--mono); color: var(--muted); }
+.glas { position: relative; width: 168px; height: 280px; }
+.glas svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.glas .oben, .glas .unten { position: absolute; left: 18px; right: 18px; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; z-index: 2; }
+.glas .oben { top: 36px; } .glas .unten { bottom: 24px; }
+.glas .oben .chip { border: 1px solid color-mix(in srgb, var(--k) 60%, transparent); cursor: pointer; }
+.glas .oben .chip[aria-pressed="true"] { outline: 2px solid var(--amber); outline-offset: 1px; }
+.glas .oben .chip .mini-eti { background: var(--paper); color: var(--paper-ink); border-radius: 2px; padding: 0 3px; font-size: 9px; box-shadow: 0 0 0 1.5px var(--amber); }
+.glas .unten .wahl { padding: 3px 7px; }
+.glas .unten .wahl b { font-size: 11px; }
+.glas .unten .wahl small, .glas .unten .wahl .vs { display: none; }
+.glas .unten .wahl[aria-checked="true"]::after { width: 14px; height: 14px; font-size: 8px; line-height: 14px; top: -6px; right: -6px; }
+.glas .logo { position: absolute; left: 50%; top: 132px; transform: translateX(-50%); width: 18px; height: 18px; border-radius: 6px; background: var(--mint); box-shadow: 0 0 0 4px var(--mint-flaeche); z-index: 2; }
+.uhrk .zweck { min-height: 18px; font-size: 11.5px; color: var(--muted); text-align: center; }
+.uhrk .zweck b { color: var(--ink); font-family: var(--mono); }
+.hinweis-2 { justify-self: center; display: flex; gap: 10px; align-items: center; padding: 6px 12px; border-radius: 999px; border: 1px dashed var(--line-stark); font-size: 12px; color: var(--muted); }
+.hinweis-2.aktiv { border-color: var(--amber); color: var(--ink); }
+
+/* ===== 3 · Satz ===== */
+.satz { display: grid; gap: 8px; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); }
+.satz .text { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 15px; }
+.satz .text .anzahl { font-weight: 600; }
+.satz .text .chips { display: inline-flex; gap: 3px; }
+.satz .ziel { display: inline-flex; gap: 6px; align-items: center; padding: 5px 10px 5px 12px; border: 0; border-radius: 4px; background: var(--paper); color: var(--paper-ink); font: 700 14px var(--mono); box-shadow: 0 3px 0 #0003, 0 0 0 2px var(--mint); transform: rotate(-1deg); }
+.satz .ziel::after { content: '▾'; font-size: 11px; opacity: .6; }
+.satz .ziel[aria-expanded="true"]::after { content: '▴'; }
+.satz .zweckw { font-size: 12.5px; color: var(--muted); }
+.satz .ausnahmen { display: flex; gap: 8px 14px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--muted); padding-left: 2px; }
+.satz .aus { display: inline-flex; gap: 6px; align-items: center; }
+.satz .aus .eti { box-shadow: 0 0 0 2px var(--amber); }
+.satz .weg { border: 0; background: none; color: var(--leise); font-size: 13px; padding: 0 4px; }
+.satz .weg:hover { color: var(--coral); }
+.streifen { padding: 6px 2px 2px; }
+.dateiwahl { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--muted); }
+.dateiwahl button.chip { cursor: pointer; }
+
+.empf { display: grid; gap: 10px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf ul { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: .001s !important; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Schritt 2 · Ziel wählen · zweite Runde</div>
+    <h1>Erst alle, dann bei Bedarf einzelne</h1>
+    <p class="lead">Drei Konzepte nach denselben Regeln. Jede Dateiart bekommt <b>ein Format für alle</b>, mit einem Klick. Einzelne Dateien stellt man nur um, wenn man will. Dafür kommen die Kacheln aus Schritt 1 wieder vor: <b>farbiger Chip</b> für das, was hineinkommt, <b>Papier-Etikett</b> für das, was herauskommt.</p>
+    <div class="regeln">
+      <div><b>Wiedererkennung aus Schritt 1</b>So sahen die Formate in der Sanduhr aus. Genau diese Kacheln wählt man jetzt an.<span class="bsp"><span class="chip k-bild">HEIC</span><span class="pfeil">→</span><span class="eti">JPG</span></span></div>
+      <div><b>Ein Klick für alle</b>Der Vorschlag ist schon gewählt. Wer zufrieden ist, drückt nur „Weiter“.</div>
+      <div><b>Ausnahmen sind gelb</b>Eine Datei mit eigenem Ziel hat einen gelben Rahmen und lässt sich mit einem Klick zurücksetzen.</div>
+      <div><b>Roter Faden bleibt</b>Oben stehen die drei Schritte, der aktuelle ist grün. Der Faden zeigt die gewählten Formate live.</div>
+    </div>
+  </header>
+
+  <section class="konzept" aria-labelledby="h-1">
+    <h2 id="h-1">1 · Eine Zeile je Dateiart <small>am schlichtesten</small></h2>
+    <p>Jede erkannte Dateiart ist eine Zeile: links die Chips der Dateien, rechts die Etiketten zur Wahl. Unter der Zeile öffnet „Einzeln anpassen“ die Dateien mit kleinen Etiketten.</p>
+    <div class="buehne"><div class="win" id="win-1"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> alles auf einer Seite, liest sich von links nach rechts wie Schritt 1 in der Sanduhr (oben rein, unten raus)</span><span class="minus"><b>Schwäche:</b> wenig 3D; lebt von den Kacheln</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-2">
+    <h2 id="h-2">2 · Die Sanduhren aus Schritt 1 <small>am meisten Wiedererkennung</small></h2>
+    <p>Die Sanduhren aus dem Regal kommen mit. Oben liegen jetzt die eigenen Dateien als Chips, unten die Etiketten. Ein Etikett antippen gilt für alle. Wer einen Chip oben antippt, wählt als Nächstes das Etikett nur für diese Datei.</p>
+    <div class="buehne"><div class="win" id="win-2"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> dieselbe Form wie in Schritt 1, man erkennt sofort, was gemeint ist</span><span class="minus"><b>Schwäche:</b> bei vielen Dateien wird die obere Hälfte voll (ab etwa 12 Chips: „+ 30 weitere“)</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-3">
+    <h2 id="h-3">3 · Ein Satz je Dateiart <small>am verständlichsten</small></h2>
+    <p>Jede Zeile ist ein Satz: „4 Bilder werden zu JPG.“ Das Etikett im Satz lässt sich antippen, darunter klappen alle Etiketten auf. Eine Ausnahme ist ein Nebensatz: „außer Logo_Verein.png → PNG“.</p>
+    <div class="buehne"><div class="win" id="win-3"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> liest sich wie eine Bestätigung, auch für Menschen ohne Formatwissen</span><span class="minus"><b>Schwäche:</b> Formate sieht man erst nach dem Aufklappen</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>1 · Eine Zeile je Dateiart</b>, mit der Satz-Überschrift aus 3.</p>
+      <ul>
+        <li>Die Zeile beginnt mit dem Satz „4 Bilder werden zu …“, daneben stehen alle Etiketten offen. Man muss nichts aufklappen, um die Wahl zu sehen.</li>
+        <li>Chips und Etiketten sind dieselben Kacheln wie in der Sanduhr. So wird klar: das Etikett unten in der Sanduhr ist das, was ich hier auswähle.</li>
+        <li>„Einzeln anpassen“ bleibt zu, bis man es braucht. Ausnahmen zeigt die Zeile auch zugeklappt als gelbe Etiketten.</li>
+        <li>Die Sanduhr aus 2 könnte als kleines Bild links in der Zeile stehen, statt der Chips. Das würde ich nur machen, wenn es ruhig bleibt.</li>
+      </ul>
+      <p class="muted">WinUI 3: Zeilen als <code>ItemsRepeater</code>, Etiketten als <code>RadioButtons</code> mit eigenem Template (Tastatur: Pfeiltasten), „Einzeln anpassen“ als <code>Expander</code>. Jede Datei bekommt einen <code>AutomationProperties.Name</code> wie „Logo_Verein.png, Ziel PNG, abweichend“.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  const ARTEN = { bild: ['Bild', 'Bilder'], audio: ['Audiodatei', 'Audiodateien'], video: ['Video', 'Videos'], dok: ['Dokument', 'Dokumente'], model: ['3D-Modell', '3D-Modelle'] };
+  const DATEIEN = [
+    { id: 1, name: 'IMG_2041.heic', kat: 'bild', fmt: 'HEIC', mb: 8.4 },
+    { id: 2, name: 'IMG_2042.heic', kat: 'bild', fmt: 'HEIC', mb: 7.9 },
+    { id: 3, name: 'Scan.jpg', kat: 'bild', fmt: 'PNG', mb: 2.2 },
+    { id: 4, name: 'Logo_Verein.png', kat: 'bild', fmt: 'PNG', mb: 0.6 },
+    { id: 5, name: 'Probe_03.wav', kat: 'audio', fmt: 'WAV', mb: 19.7 },
+    { id: 6, name: 'Interview.m4a', kat: 'audio', fmt: 'M4A', mb: 6.1 },
+    { id: 7, name: 'Urlaub_Clip.mov', kat: 'video', fmt: 'MOV', mb: 148 },
+    { id: 8, name: 'Protokoll.docx', kat: 'dok', fmt: 'DOCX', mb: 0.4 },
+    { id: 9, name: 'Halterung_v3.stl', kat: 'model', fmt: 'STL', mb: 12.6 }
+  ];
+  // [Etikett, wofür, Größenfaktor]; das erste ist der Vorschlag
+  const FORMATE = {
+    bild: [['JPG', 'überall lesbar', .13], ['PNG', 'verlustfrei', .6], ['WEBP', 'fürs Web', .09], ['PDF', 'als Dokument', .2], ['TIFF', 'zum Drucken', 1.1], ['GIF', 'einfach', .3]],
+    audio: [['MP3', 'überall abspielbar', .13], ['M4A', 'klein, gut', .11], ['FLAC', 'verlustfrei', .55], ['WAV', 'zum Bearbeiten', 1], ['OPUS', 'sehr klein', .07]],
+    video: [['MP4', 'überall abspielbar', .2], ['WEBM', 'fürs Web', .17], ['MKV', 'flexibel', .22], ['nur Ton', 'als MP3', .01]],
+    dok: [['TXT', 'nur Text', .05], ['MD', 'mit Gliederung', .06], ['HTML', 'für den Browser', .1]],
+    model: [['3MF', 'für den 3D-Druck', .3], ['STL', 'binär, kleiner', .25], ['GLB', 'fürs Web', .45], ['OBJ', 'für 3D-Programme', 1.4], ['PLY', 'kompakt', .5]]
+  };
+  const KOMP = new Set(['HEIC', 'JPG', 'M4A', 'MP3', 'MOV', 'MP4', 'DOCX']);
+  const KATS = Object.keys(ARTEN);
+  const vonArt = k => DATEIEN.filter(d => d.kat === k);
+  const zweckVon = (k, f) => (FORMATE[k].find(x => x[0] === f) || [])[1] || '';
+  const schaetze = (d, f) => d.mb * Math.min(1.3, (FORMATE[d.kat].find(x => x[0] === f) || [0, 0, 1])[2] * (KOMP.has(d.fmt) ? 4 : 1));
+  const vorher = DATEIEN.reduce((s, d) => s + d.mb, 0);
+  const anzahl = (k, n = vonArt(k).length) => `${n} ${ARTEN[k][n === 1 ? 0 : 1]}`;
+
+  // Gemeinsamer Zustand je Konzept: ein Ziel je Art, Ausnahmen je Datei
+  const neu = () => ({ art: Object.fromEntries(KATS.map(k => [k, FORMATE[k][0][0]])), aus: {} });
+  const ziel = (S, d) => S.aus[d.id] || S.art[d.kat];
+  const setzeArt = (S, k, f) => { S.art[k] = f; vonArt(k).forEach(d => { if (S.aus[d.id] === f) delete S.aus[d.id]; }); };
+  const setzeDatei = (S, d, f) => { if (f === S.art[d.kat]) delete S.aus[d.id]; else S.aus[d.id] = f; };
+  const ausnahmen = (S, k) => vonArt(k).filter(d => S.aus[d.id]);
+  const summe = S => DATEIEN.reduce((s, d) => s + schaetze(d, ziel(S, d)), 0);
+  const chipsZaehlen = (k, liste = vonArt(k)) => { const m = {}; liste.forEach(d => m[d.fmt] = (m[d.fmt] || 0) + 1); return Object.entries(m).map(([f, n]) => `<span class="chip k-${k}">${f}${n > 1 ? `<small>×${n}</small>` : ''}</span>`).join(''); };
+
+  const faden = S => `<nav class="faden" aria-label="Ablauf">
+    <span class="knoten ok"><i>✓</i><b>Dateien</b><small>${DATEIEN.length} erkannt</small></span><span class="seg voll"></span>
+    <span class="knoten an"><i>2</i><b>Ziel</b><small>${KATS.map(k => S.art[k]).join(' · ')}</small></span><span class="seg"></span>
+    <span class="knoten"><i>3</i><b>Umwandeln</b><small>≈ ${mb(summe(S))} MB · neben Original</small></span></nav>`;
+  const leiste = S => `<div class="leiste"><span class="sum">${mb(vorher)} MB → <b>≈ ${mb(summe(S))} MB</b></span><span class="platz"></span><button class="btn">Zurück</button><button class="taste">Weiter: Umwandeln</button></div>`;
+  const frage = `<div class="frage"><h3>Worin sollen Ihre Dateien umgewandelt werden?</h3><p>Kvertis hat für jede Art ein Format vorgewählt. Sie können es ändern und einzelne Dateien anders einstellen.</p></div>`;
+  const wahlen = (k, aktiv, attrs = '', ausnahme = false) => `<div class="wahlen" role="radiogroup">${FORMATE[k].map(([f, w], i) =>
+    `<button class="wahl ${ausnahme ? 'ausnahme' : ''}" role="radio" aria-checked="${aktiv === f}" data-f="${f}" ${attrs} style="--r:${[-1.2, .8, -.6, 1, -.9, .5][i]}deg">${i === 0 && !ausnahme ? '<span class="vs">VORSCHLAG</span>' : ''}<b>${f}</b><small>${w}</small></button>`).join('')}</div>`;
+  const einzelListe = (S, k) => `<div class="einzeln klein">${vonArt(k).map(d => `<div class="ez">
+      <span class="chip k-${k}">${d.fmt}</span><span class="nm">${esc(d.name)}<small>${mb(d.mb)} → ≈ ${mb(schaetze(d, ziel(S, d)))} MB</small></span><span class="pfeil">→</span>
+      <div>${wahlenKlein(S, d)}</div>
+      ${S.aus[d.id] ? `<button class="link zurueck" data-reset="${d.id}">wie alle (${S.art[k]})</button>` : '<span></span>'}</div>`).join('')}</div>`;
+  const wahlenKlein = (S, d) => `<div class="wahlen" role="radiogroup" aria-label="Ziel für ${esc(d.name)}">${FORMATE[d.kat].map(([f]) =>
+    `<button class="wahl ${S.aus[d.id] ? 'ausnahme' : ''}" role="radio" aria-checked="${ziel(S, d) === f}" data-datei="${d.id}" data-f="${f}"><b>${f}</b></button>`).join('')}</div>`;
+
+  // ===== 1 · Zeilen
+  const S1 = neu(); S1.offen = new Set();
+  function render1() {
+    $('win-1').innerHTML = faden(S1) + `<div class="innen">${frage}
+      ${KATS.map(k => { const l = vonArt(k), vor = l.reduce((s, d) => s + d.mb, 0), nach = l.reduce((s, d) => s + schaetze(d, ziel(S1, d)), 0), a = ausnahmen(S1, k);
+        return `<div class="zeile k-${k}">
+          <div class="art"><b><i></i>${anzahl(k)}</b><span class="chips">${chipsZaehlen(k)}</span></div>
+          <span class="wird">werden zu</span>
+          <div data-art="${k}">${wahlen(k, S1.art[k])}</div>
+          <span class="gr"><b>≈ ${mb(nach)} MB</b>statt ${mb(vor)} MB</span>
+          ${l.length > 1 || a.length ? `<div class="unten">
+            <div class="ausn">${a.length ? `Ausnahmen: ${a.map(d => `<span>${esc(d.name)} → <span class="eti">${S1.aus[d.id]}</span></span>`).join(' ')}` : ''}
+              <button class="link" data-offen="${k}" aria-expanded="${S1.offen.has(k)}">${S1.offen.has(k) ? 'Einzeln anpassen schließen' : `Einzeln anpassen (${l.length})`}</button></div>
+            ${S1.offen.has(k) ? einzelListe(S1, k) : ''}</div>` : ''}
+        </div>`; }).join('')}
+    </div>` + leiste(S1);
+  }
+  $('win-1').addEventListener('click', e => {
+    const o = e.target.closest('[data-offen]'); if (o) { const k = o.dataset.offen; S1.offen.has(k) ? S1.offen.delete(k) : S1.offen.add(k); render1(); return; }
+    const r = e.target.closest('[data-reset]'); if (r) { delete S1.aus[+r.dataset.reset]; render1(); return; }
+    const w = e.target.closest('.wahl'); if (!w) return;
+    if (w.dataset.datei) setzeDatei(S1, DATEIEN.find(d => d.id === +w.dataset.datei), w.dataset.f);
+    else setzeArt(S1, w.closest('[data-art]').dataset.art, w.dataset.f);
+    const sel = w.dataset.datei ? `.wahl[data-datei="${w.dataset.datei}"][data-f="${w.dataset.f}"]` : `[data-art="${w.closest('[data-art]').dataset.art}"] .wahl[data-f="${w.dataset.f}"]`;
+    render1(); const n = $('win-1').querySelector(sel); if (n) n.focus();
+  });
+  render1();
+
+  // ===== 2 · Sanduhren
+  const S2 = neu(); S2.datei = null;
+  let nr = 0;
+  const st = (c, o) => `style="stop-color:${c};stop-opacity:${o}"`;
+  const glasSvg = () => { const n = ++nr; return `<svg viewBox="0 0 240 400" aria-hidden="true"><defs>
+      <linearGradient id="g${n}" x1="0" x2="1"><stop offset="0" ${st('var(--ink)', .2)}/><stop offset=".14" ${st('var(--ink)', .06)}/><stop offset=".5" ${st('var(--ink)', .015)}/><stop offset=".86" ${st('var(--ink)', .06)}/><stop offset="1" ${st('var(--ink)', .22)}/></linearGradient>
+      <linearGradient id="s${n}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" ${st('var(--k)', .55)}/><stop offset="1" ${st('var(--k)', .2)}/></linearGradient>
+      <radialGradient id="u${n}" cx=".5" cy=".15" r=".9"><stop offset="0" ${st('var(--mint)', .5)}/><stop offset="1" ${st('var(--mint)', .12)}/></radialGradient></defs>
+      <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="url(#g${n})"/>
+      <path d="M40,70 H200 C196,122 132,168 124,196 H116 C108,168 44,122 40,70 Z" fill="url(#s${n})"/>
+      <path d="M30,366 C62,340 92,300 120,292 C148,300 178,340 210,366 Z" fill="url(#u${n})"/>
+      <path d="M22,32 H218 C218,122 132,172 124,200 C132,228 218,278 218,368 H22 C22,278 108,228 116,200 C108,172 22,122 22,32 Z" fill="none" stroke="color-mix(in srgb, var(--ink) 34%, transparent)" stroke-width="1.2"/>
+      <path d="M36,52 C38,112 70,150 100,176" fill="none" stroke="#fff" stroke-opacity=".18" stroke-width="5" stroke-linecap="round"/>
+      <ellipse cx="120" cy="20" rx="112" ry="10" fill="color-mix(in srgb, var(--line-stark) 55%, var(--panel2))" stroke="var(--line-stark)"/>
+      <ellipse cx="120" cy="380" rx="112" ry="10" fill="color-mix(in srgb, var(--line-stark) 55%, var(--panel2))" stroke="var(--line-stark)"/>
+      <rect x="13" y="26" width="10" height="348" rx="5" fill="var(--line-stark)"/><rect x="217" y="26" width="10" height="348" rx="5" fill="var(--line-stark)"/></svg>`; };
+  const GLAS = Object.fromEntries(KATS.map(k => [k, glasSvg()]));
+  function render2() {
+    const d0 = S2.datei && DATEIEN.find(d => d.id === S2.datei);
+    $('win-2').innerHTML = faden(S2) + `<div class="innen">${frage}
+      <div class="hinweis-2 ${d0 ? 'aktiv' : ''}">${d0 ? `Nur für <b>${esc(d0.name)}</b>: jetzt unten ein Etikett antippen. <button class="link" data-abbruch>Abbrechen</button>` : 'Etikett unten antippen = gilt für alle. Chip oben antippen = nur diese Datei.'}</div>
+      <div class="uhren">${KATS.map(k => { const aktivF = d0 && d0.kat === k ? ziel(S2, d0) : S2.art[k];
+        return `<div class="uhrk k-${k}" data-art="${k}">
+          <h4><i></i>${ARTEN[k][1]}<small>${vonArt(k).length}</small></h4>
+          <div class="glas">${GLAS[k]}
+            <div class="oben">${vonArt(k).map(d => `<button class="chip k-${k}" data-chip="${d.id}" aria-pressed="${S2.datei === d.id}" title="${esc(d.name)}" aria-label="${esc(d.name)}, Ziel ${ziel(S2, d)}">${d.fmt}${S2.aus[d.id] ? `<span class="mini-eti">→${S2.aus[d.id]}</span>` : ''}</button>`).join('')}</div>
+            <span class="logo" aria-hidden="true"></span>
+            <div class="unten">${wahlen(k, aktivF, '', !!(d0 && d0.kat === k)).replace('<div class="wahlen" role="radiogroup">', '').replace(/<\/div>$/, '')}</div>
+          </div>
+          <div class="zweck"><b>${S2.art[k]}</b> · ${zweckVon(k, S2.art[k])}${ausnahmen(S2, k).length ? ` · <span style="color:var(--amber)">${ausnahmen(S2, k).length} anders</span>` : ''}</div>
+        </div>`; }).join('')}</div>
+    </div>` + leiste(S2);
+  }
+  $('win-2').addEventListener('click', e => {
+    if (e.target.closest('[data-abbruch]')) { S2.datei = null; render2(); return; }
+    const c = e.target.closest('[data-chip]'); if (c) { S2.datei = S2.datei === +c.dataset.chip ? null : +c.dataset.chip; render2(); return; }
+    const w = e.target.closest('.wahl'); if (!w) return;
+    const k = w.closest('[data-art]').dataset.art, d0 = S2.datei && DATEIEN.find(d => d.id === S2.datei);
+    if (d0 && d0.kat === k) { setzeDatei(S2, d0, w.dataset.f); S2.datei = null; } else setzeArt(S2, k, w.dataset.f);
+    render2(); const n = $('win-2').querySelector(`[data-art="${k}"] .wahl[data-f="${w.dataset.f}"]`); if (n) n.focus();
+  });
+  $('win-2').addEventListener('keydown', e => { if (e.key === 'Escape' && S2.datei) { S2.datei = null; render2(); } });
+  render2();
+
+  // ===== 3 · Satz
+  const S3 = neu(); S3.auf = null; S3.ausnahmeFuer = null;
+  function render3() {
+    $('win-3').innerHTML = faden(S3) + `<div class="innen">${frage}
+      ${KATS.map(k => { const l = vonArt(k), a = ausnahmen(S3, k), andere = l.filter(d => !S3.aus[d.id]);
+        const n = a.length ? andere.length : l.length;
+        return `<div class="satz k-${k}" data-art="${k}">
+          <div class="text"><span class="anzahl">${a.length ? (n === 1 ? 'Das übrige' : `Die übrigen ${n}`) + ' ' + ARTEN[k][n === 1 ? 0 : 1] : (l.length === 1 ? `${k === 'audio' ? 'Die' : 'Das'} ${ARTEN[k][0]}` : `Die ${l.length} ${ARTEN[k][1]}`)}</span>
+            <span class="chips">${chipsZaehlen(k, andere)}</span><span>${n === 1 ? 'wird' : 'werden'} zu</span>
+            <button class="ziel" data-auf="${k}" aria-expanded="${S3.auf === k}" aria-label="Ziel für ${ARTEN[k][1]}: ${S3.art[k]}, ändern">${S3.art[k]}</button>
+            <span class="zweckw">${zweckVon(k, S3.art[k])}</span></div>
+          ${S3.auf === k ? `<div class="streifen">${wahlen(k, S3.art[k])}</div>` : ''}
+          ${a.length || l.length > 1 ? `<div class="ausnahmen">${a.map(d => `<span class="aus">außer <span class="chip k-${k}">${d.fmt}</span> ${esc(d.name)} <span class="pfeil">→</span> <span class="eti">${S3.aus[d.id]}</span><button class="weg" data-reset="${d.id}" aria-label="Ausnahme für ${esc(d.name)} entfernen">✕</button></span>`).join('')}
+            ${l.length > 1 ? `<button class="link" data-ausnahme="${k}">+ Ausnahme</button>` : ''}</div>` : ''}
+          ${S3.ausnahmeFuer && S3.ausnahmeFuer.k === k ? (S3.ausnahmeFuer.d
+            ? `<div class="streifen klein"><span class="dateiwahl">${esc(DATEIEN.find(d => d.id === S3.ausnahmeFuer.d).name)} wird zu:</span>${wahlenKlein(S3, DATEIEN.find(d => d.id === S3.ausnahmeFuer.d))}</div>`
+            : `<div class="dateiwahl">Welche Datei? ${l.filter(d => !S3.aus[d.id]).map(d => `<button class="chip k-${k}" data-waehle="${d.id}" title="${esc(d.name)}">${d.fmt} · ${esc(d.name)}</button>`).join('')}<button class="link" data-abbruch>Abbrechen</button></div>`) : ''}
+        </div>`; }).join('')}
+    </div>` + leiste(S3);
+  }
+  $('win-3').addEventListener('click', e => {
+    const auf = e.target.closest('[data-auf]'); if (auf) { S3.auf = S3.auf === auf.dataset.auf ? null : auf.dataset.auf; S3.ausnahmeFuer = null; render3(); return; }
+    const r = e.target.closest('[data-reset]'); if (r) { delete S3.aus[+r.dataset.reset]; render3(); return; }
+    const ax = e.target.closest('[data-ausnahme]'); if (ax) { S3.ausnahmeFuer = { k: ax.dataset.ausnahme, d: null }; S3.auf = null; render3(); return; }
+    if (e.target.closest('[data-abbruch]')) { S3.ausnahmeFuer = null; render3(); return; }
+    const wd = e.target.closest('[data-waehle]'); if (wd) { S3.ausnahmeFuer.d = +wd.dataset.waehle; render3(); return; }
+    const w = e.target.closest('.wahl'); if (!w) return;
+    if (w.dataset.datei) { setzeDatei(S3, DATEIEN.find(d => d.id === +w.dataset.datei), w.dataset.f); S3.ausnahmeFuer = null; }
+    else { setzeArt(S3, w.closest('[data-art]').dataset.art, w.dataset.f); S3.auf = null; }
+    render3();
+  });
+  render3();
+})();
+</script>
