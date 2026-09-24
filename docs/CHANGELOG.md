@@ -2,6 +2,17 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-24 – Oberflächenentwurf Übergänge und Abschluss
+
+**Geändert (nur Entwurf und Doku)**
+
+- Mischentwurf (`design/oberflaeche-mischentwurf.html`): Übergänge zwischen den Schritten als Überlagerung, die Seiten bleiben unverändert. Fächer fliegen als Symbole nach links, Symbole geben ihre Dateien als Blätter an den Eingangsstapel, das schwarze Loch fliegt jeweils mit. Varianten zum Umschalten: Andocken, Vorbeiflug, Wurmloch, Faden-Reise. Abschluss nach dem Umwandeln: Welle, Häkchen im Loch oder Urknall. Zum Zeigen lässt sich eine fehlerhafte Datei einschalten; sie landet wieder im Eingang und die Zeile zeigt den Fehler.
+- Skizzen der fünf Konzepte in `design/uebergaenge-konzepte.html`.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-24 – Oberflächenentwurf Schritt 2
 
 **Geändert (nur Entwurf und Doku)**

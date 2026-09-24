@@ -19,6 +19,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
+- Übergänge 1 → 2 → 3 und Abschluss: im Mischentwurf umschaltbar (Andocken, Vorbeiflug, Wurmloch, Faden-Reise; Abschluss Welle, Häkchen im Loch, Urknall). Vorschlag: Vorbeiflug mit Häkchen im Loch. Die Reihenfolge der Arten ist in Schritt 1 und 2 verschieden (3D und Dokumente vertauscht); die Flugbahnen sind so gelegt, dass sich die beiden nicht treffen. Ein Fehlerzustand in Schritt 3 ist nur zum Zeigen eingebaut.
 - Win2D (MIT) für den Pixelwirbel und die Galaxie: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.

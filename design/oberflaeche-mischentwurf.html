@@ -674,6 +674,28 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .w5-akt.haupt svg { color: var(--mint); }
 .w5-st { font: 500 11px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
 .w5-zeile[data-st="fertig"] .w5-st { color: var(--mint); }
+.w5-zeile[data-st="fehler"] { border-color: var(--coral-rahmen); }
+.w5-zeile[data-st="fehler"]::after { opacity: 0; }
+.w5-zeile[data-st="fehler"] .w5-st, .w5-grund { color: var(--coral); }
+.w5-grund { font-size: 11.5px; justify-self: end; }
+
+/* Übergänge und Abschluss: Überlagerung über dem Fenster */
+.ueb { position: absolute; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
+.ueb > canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ueb-host { position: absolute; inset: 0; }
+.ueb-p { position: absolute; left: 0; top: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--k); box-shadow: 0 0 12px var(--k), 0 0 0 2px color-mix(in srgb, var(--k) 30%, transparent); transform-origin: 0 0; opacity: 0; }
+.ueb-blatt { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; filter: drop-shadow(0 6px 10px var(--schatten)); }
+.ueb-erg { position: absolute; transform: translate(-50%, 0); display: grid; justify-items: center; gap: 3px; text-align: center; white-space: nowrap; transition: opacity .5s, transform .6s var(--feder); }
+.ueb-erg.weg { opacity: 0; transform: translate(-50%, 8px) scale(.97); }
+.ueb-erg b { font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
+.ueb-erg small { font: 11.5px var(--mono); color: var(--muted); }
+.ueb-erg small.f { color: var(--coral); font-family: var(--schrift); font-size: 12.5px; }
+.ueb-erg .hk { width: 34px; height: 34px; border-radius: 50%; background: var(--mint); color: var(--auf-mint); display: grid; place-items: center; font-weight: 700; font-size: 17px; margin-bottom: 4px; box-shadow: 0 0 24px color-mix(in srgb, var(--mint) 45%, transparent); }
+.ueb-erg .hk.teil { background: var(--panel); color: var(--mint); border: 1.5px solid var(--mint); }
+.ueb-wahl { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13.5px; color: var(--muted); }
+.ueb-wahl label { display: inline-flex; gap: 6px; align-items: center; }
+.ueb-wahl select { font: inherit; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line-stark); border-radius: 8px; padding: 6px 8px; }
+.ueb-wahl input { accent-color: var(--coral); }
 
 .w5-menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: rein2 .18s var(--sanft); }
 .w5-menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
@@ -720,6 +742,11 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       <button class="btn" id="beispiel">Beispieldateien einlegen</button>
       <button class="btn" id="leeren">Leeren</button>
       <span class="tipp">Oder echte Dateien ins Fenster ziehen. Die Erkennung läuft nur in Ihrem Browser, es wird nichts hochgeladen.</span>
+    </div>
+    <div class="ueb-wahl" role="group" aria-label="Übergänge ausprobieren">
+      <label>Übergang <select id="ueb-art"><option value="heute">Heute: Überblenden</option><option value="andocken">Andocken</option><option value="vorbeiflug" selected>Vorbeiflug</option><option value="wurmloch">Wurmloch</option><option value="faden">Faden-Reise</option></select></label>
+      <label>Abschluss <select id="ueb-ende"><option value="keiner">Keiner (heute)</option><option value="welle">Welle</option><option value="haken" selected>Häkchen im Loch</option><option value="urknall">Urknall</option></select></label>
+      <label><input type="checkbox" id="ueb-fehler"> eine Datei schlägt fehl (nur zum Zeigen)</label>
     </div>
     <div class="buehne">
       <div class="win" id="win">
@@ -3027,6 +3054,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const KATS = ['bild', 'audio', 'video', 'dok', 'model'], ZU = new WeakMap();
   const API = window.KvertisGalaxie = {
     aktiv: true, waehlen: null, weg: null,
+    // für die Übergänge: Loch, Bahnen und Fächer in Bildschirmkoordinaten
+    geo() {
+      const W = ALLE[0]; if (!W || !W.S.w) return null;
+      const r = W.S.cv.getBoundingClientRect();
+      return { x: r.left + W.S.c.x, y: r.top + W.S.c.y, r: W.lochR || 18,
+        bahn: k => { const i = KATS.indexOf(k), g = W.geo && W.geo[i]; return g ? { rx: g[0], ry: g[0] * g[1] } : { rx: basis(W.S, i), ry: basis(W.S, i) * W.S.fl }; },
+        fach: k => W.el.querySelector(`.fach[data-art="${KATS.indexOf(k)}"]`) };
+    },
     // Dateiliste des Mischentwurfs übernehmen; neue Dateien fliegen ein, wenn animiert
     sync(liste, animiert) {
       const W = ALLE[0]; if (!W) return;
@@ -3821,6 +3856,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     });
     W.innen.querySelectorAll('.v-r [data-wt]').forEach(b => { if (an(W, b.dataset.wt) || gelb(W, b.dataset.wt)) return; const e = rel(W, b), p3 = [e.x - 3, e.y + e.h / 2]; weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, F['line-stark'], .22 * z, 1); });
     loch(ctx, cx, cy, lerp(18, 12, z));
+    W.lochXY = { x: cx, y: cy, r: lerp(18, 12, z) };
     // A4: Arten als Planeten im Bogen über der Bahn
     if (W.a === 'A4') {
       const R = Math.min(W.w / 2 - 340, 250), bx = cx, by = m.oben + 40 + R * .5;
@@ -3927,6 +3963,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       qual: qualVon,
       meta: k => !!W.Z.p[k].meta,
       artAktiv: () => GR[W.art] && GR[W.art].k,
+      // für die Übergänge: Loch und Artwahl-Knopf in Bildschirmkoordinaten
+      loch() { if (!W.lochXY) return null; const r = W.innen.getBoundingClientRect(); return { x: r.left + W.lochXY.x, y: r.top + W.lochXY.y, r: W.lochXY.r }; },
+      knopf: k => W.el.querySelector(`.k-b[data-w2k="${GR.findIndex(g => g.k === k)}"]`),
       // neue Runde: alle Einstellungen auf Anfang
       reset() { W.Z = neuerZustand(); W.besucht.clear(); W.art = 0; W.sel = null; W.einzeln = false; W.zone = null; W.qZuletzt = QSTART(); W.zc = {}; },
       einzeln(k, n) { const j = GR.findIndex(g => g.k === k); if (j < 0) return; W.art = j; W.einzeln = GR[j].files.length > 1; W.sel = W.einzeln ? (n || GR[j].files[0].n) : null; neu(W); },
@@ -4310,7 +4349,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   }
   // ===== Umwandeln: Eingangsstapel → Pixelwirbel → großer Zielordner
   let laeuft = false;
-  const W5 = { items: [], lauf: null, gelandet: 0 };
+  const W5 = { items: [], lauf: null, gelandet: 0, fehl: new Set() };
   const dauerD = d => leise ? .3 : Math.min(4.8, Math.max(2.4, 1.8 + Math.log10(d.mb + 1) * 1.1));
   const ICON_AUF = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5L7 9M11.5 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></svg>';
   const ICON_ORD = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1.5 4.5a1 1 0 011-1h3.2l1.5 1.5h6.3a1 1 0 011 1v6.5a1 1 0 01-1 1H2.5a1 1 0 01-1-1z"/></svg>';
@@ -4323,7 +4362,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   function farbenLesen() {
     const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
     const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
-    ['paper', 'blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'auf-mint', 'line-stark', 'bg', 'tief'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
+    ['paper', 'blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'auf-mint', 'line-stark', 'bg', 'tief', 'coral'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
     const [r, g, b] = hexRgb(F.bg); F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
     F.mintRgb = hexRgb(F.mint);
   }
@@ -4432,6 +4471,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const relS = el => { const a = el.getBoundingClientRect(), b = S5.cv.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; };
   const quelle5 = (i, n) => { const j = n - 1 - i; return { x: 40 + j * 4, y: S5.cy - 70 - j * 5, s: .5, rot: (j % 3 - 1) * .04 }; };
   function ziel5(it) {
+    if (it.st === 'fehler') return quelle5(it.i, W5.items.length);
     const eig = !!ausnahmen[it.d.name], r = eig ? S5.tasche : S5.mund;
     return { x: r.x + (eig ? 18 : r.w / 2 - 8), y: r.y + (eig ? 6 : 2), s: .16 };
   }
@@ -4448,7 +4488,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       if (!lauf) { if (it.st !== 'fertig') bildAt(ctx, d.alt, q); return; }
       const tIn = lauf.t0 + i * .16, tOut = lauf.raus[i];
       const ein = clamp((T - tIn) / .95), aus = tOut ? clamp((T - tOut) / .95) : 0;
-      if (aus >= 1) return;
+      if (aus >= 1) { if (it.st === 'fehler') bildAt(ctx, d.alt, q); return; }
       if (ein <= 0) { bildAt(ctx, d.alt, q); return; }
       const z = ziel5(it);
       pixel(ctx, d.P, p => {
@@ -4489,7 +4529,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   /* Liste: Format, voller Zielpfad, Öffnen und Ordner */
   function zeileW5(it) {
     const d = it.d, a = !!ausnahmen[d.name], rel = zielOrdner(d), n = schaetzeDatei(d), frei = !laeuft && it.st === 'bereit';
-    const aktion = it.st === 'fertig'
+    const aktion = it.st === 'fehler' ? `<span class="w5-grund">Datei beschädigt, liegt wieder im Eingang</span>` : it.st === 'fertig'
       ? `<button type="button" class="w5-akt haupt" data-a="oeffnen" data-i="${it.i}" aria-label="${esc(zielName(d))} öffnen">${ICON_AUF}Öffnen</button><button type="button" class="w5-akt" data-a="ordner" data-i="${it.i}" aria-label="${esc(zielName(d))} im Ordner zeigen">${ICON_ORD}Im Ordner zeigen</button>`
       : `<button type="button" class="w5-akt" data-a="aendern" data-i="${it.i}" aria-haspopup="dialog" aria-label="Ziel für ${esc(d.name)} ändern"${frei ? '' : ' disabled'}>${ICON_STIFT}Ändern</button>`;
     return `<div class="w5-zeile k-${d.kat}" role="listitem" data-i="${it.i}" data-st="${it.st}" style="--p:${it.p.toFixed(3)}">
@@ -4499,7 +4539,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       <button type="button" class="w5-ziel" data-a="aendern" data-i="${it.i}" aria-haspopup="dialog" title="${esc(voll(rel) + '\\' + zielName(d))}" aria-label="Wird gespeichert als ${esc(voll(rel) + '\\' + zielName(d))}, ${a ? 'eigenes Ziel' : 'wie alle'}"${frei ? '' : ' disabled'}>
         <span class="w5-tag${a ? ' eigen' : ''}">${a ? 'eigenes Ziel' : 'wie alle'}</span><span class="w5-pfad"><span class="dir">${esc(kurzPfad(rel, 42))}</span><b>${esc(zielName(d))}</b></span></button>
       <span class="w5-aktion">${aktion}</span>
-      <span class="w5-st">${it.st === 'bereit' ? 'bereit' : it.st === 'laeuft' ? Math.round(it.p * 100) + ' %' : '✓ fertig'}</span></div>`;
+      <span class="w5-st">${it.st === 'bereit' ? 'bereit' : it.st === 'laeuft' ? Math.round(it.p * 100) + ' %' : it.st === 'fehler' ? '✕ Fehler' : '✓ fertig'}</span></div>`;
   }
   const zeileNeu = it => { const z = $('auftrag').querySelector(`.w5-zeile[data-i="${it.i}"]`); if (z) z.outerHTML = zeileW5(it); };
   const zeileFort = it => { const z = $('auftrag').querySelector(`.w5-zeile[data-i="${it.i}"]`); if (!z) return; z.style.setProperty('--p', it.p.toFixed(3)); z.querySelector('.w5-st').textContent = Math.round(it.p * 100) + ' %'; };
@@ -4511,9 +4551,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 
   function renderLauf() {
     const u = umwandelbar();
-    if (!laeuft) { W5.items = u.map((d, i) => ({ d, i, f: blattDaten(d), st: fertig ? 'fertig' : 'bereit', p: fertig ? 1 : 0, dur: dauerD(d) })); if (!fertig) { W5.gelandet = 0; W5.lauf = null; } }
+    if (!laeuft) { W5.items = u.map((d, i) => ({ d, i, f: blattDaten(d), st: fertig ? (W5.fehl.has(d.name) ? 'fehler' : 'fertig') : 'bereit', p: fertig ? 1 : 0, dur: dauerD(d) })); if (!fertig) { W5.gelandet = 0; W5.lauf = null; } }
     const nein = dateien.filter(d => !d.kat);
-    if (!laeuft) $('ein-zahl').textContent = fertig ? 'alles umgewandelt' : `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
+    if (!laeuft) $('ein-zahl').textContent = fertig ? (fertig.fehl ? `${fertig.fehl} nicht umgewandelt` : 'alles umgewandelt') : `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
     $('ein-klein').textContent = nein.length ? `${nein.length} nicht umwandelbar: ${nein.map(d => d.name).join(', ')}` : '';
     renderGross();
     $('auftrag').innerHTML = W5.items.map(zeileW5).join('');
@@ -4547,10 +4587,13 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   async function los() {
     if (laeuft || !umwandelbar().length || (wohin === 'eigen' && !eigener)) return;
     popZu();
+    UEB.endeWeg();
     fertig = null; renderLauf();
     laeuft = true; renderLeiste(); renderLauf();
     $('lauf').classList.add('aktiv');
     const its = W5.items; W5.gelandet = 0; $('w5-zahl').textContent = 0;
+    W5.fehl = new Set();
+    const fehlI = $('ueb-fehler').checked && its.length > 1 ? (its.find(x => x.d.name === 'Urlaub_Clip.mov') || its[its.length - 1]).i : -1;
     W5.lauf = { t0: performance.now() / 1000, raus: {} };
     let gespart = 0;
     await new Promise(res => {
@@ -4560,10 +4603,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
         while (aktivS.size < 2 && warten.length) { const it = warten.shift(); it.st = 'laeuft'; aktivS.add(it); zeileNeu(it); }
         for (const it of [...aktivS]) {
           it.p = Math.min(1, it.p + dt / it.dur);
-          if (it.p >= 1) { it.st = 'fertig'; aktivS.delete(it); W5.lauf.raus[it.i] = performance.now() / 1000; gespart += it.d.mb - schaetzeDatei(it.d); landen(it); zeileNeu(it); }
+          if (it.p >= 1) {
+            aktivS.delete(it); W5.lauf.raus[it.i] = performance.now() / 1000;
+            if (it.i === fehlI) { it.st = 'fehler'; W5.fehl.add(it.d.name); } else { it.st = 'fertig'; gespart += it.d.mb - schaetzeDatei(it.d); landen(it); }
+            zeileNeu(it);
+          }
           else zeileFort(it);
         }
-        const n = its.filter(x => x.st === 'fertig').length, w = its.filter(x => x.st === 'bereit').length;
+        const n = its.filter(x => x.st === 'fertig' || x.st === 'fehler').length, w = its.filter(x => x.st === 'bereit').length;
         $('l-stand').innerHTML = `${n} von ${its.length} · <span style="color:var(--mint)">${mb(gespart)} MB gespart</span>`;
         $('ein-zahl').textContent = w ? `${w} ${w === 1 ? 'wartet' : 'warten'} · ${aktivS.size} im Wirbel` : aktivS.size ? `${aktivS.size} im Wirbel` : 'alles umgewandelt';
         if (!aktivS.size && !warten.length) { res(); return; }
@@ -4574,10 +4621,11 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     await warte(1050);
     $('lauf').classList.remove('aktiv');
     const vor = summeVorher(), nach = summeNachher();
-    fertig = { vor, nach, p: Math.round((1 - nach / vor) * 100) };
+    fertig = { vor, nach, p: Math.round((1 - nach / vor) * 100), fehl: W5.fehl.size };
     inVerlauf();
     laeuft = false; W5.lauf = null;
     renderLauf(); renderFaden(); renderLeiste();
+    UEB.abschluss({ gut: its.length - W5.fehl.size, fehl: W5.fehl.size, fehlName: [...W5.fehl][0], fehlI, vor, nach });
   }
 
   function flug(d, von, nach, fmt, ueber) {
@@ -4689,7 +4737,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const n = dateien.filter(d => d.kat).length;
     $('f-0').textContent = dateien.length ? `${n} erkannt${dateien.length > n ? ` · ${dateien.length - n} nicht` : ''}` : 'hineinwerfen';
     $('f-1').textContent = hat ? gruppen().map(k => zeigF(zielDef(k))).join(' · ') || 'Format wählen' : 'Format wählen';
-    $('f-2').textContent = fertig ? `fertig · −${fertig.p} %` : hat ? `≈ ${mb(summeNachher())} MB · ${wohin === 'eigen' ? (eigener || '?').split('\\').pop() : wohin === 'unter' ? 'Unterordner' : 'neben Original'}` : 'los geht’s';
+    $('f-2').textContent = fertig ? (fertig.fehl ? `${umwandelbar().length - fertig.fehl} von ${umwandelbar().length} · ${fertig.fehl} Fehler` : `fertig · −${fertig.p} %`) : hat ? `≈ ${mb(summeNachher())} MB · ${wohin === 'eigen' ? (eigener || '?').split('\\').pop() : wohin === 'unter' ? 'Unterordner' : 'neben Original'}` : 'los geht’s';
   }
   function renderLeiste() {
     const hat = dateien.some(d => d.kat);
@@ -4701,7 +4749,319 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     else if (schritt === 1) { w.hidden = false; w.textContent = 'Weiter: Umwandeln'; }
     else { w.hidden = laeuft; w.disabled = !hat || (wohin === 'eigen' && !eigener); w.textContent = fertig ? 'Neue Runde' : `Umwandeln · ${umwandelbar().length} ${umwandelbar().length === 1 ? 'Datei' : 'Dateien'}`; }
   }
+  // ===== Übergänge zwischen den Schritten und Abschluss
+  // Eine Überlagerung über dem Fenster: Kopien der Fächer und Symbole fliegen, das Loch fliegt mit.
+  // Die Seiten selbst bleiben unverändert; die neue Ebene blendet erst ein, wenn alles gelandet ist.
+  const UEB = (() => {
+    const lage = document.createElement('div'); lage.className = 'ueb'; lage.setAttribute('aria-hidden', 'true');
+    const cv = document.createElement('canvas'); lage.append(cv);
+    const schatten = id => { const h = document.createElement('div'); h.className = 'ueb-host'; lage.append(h); const sh = h.attachShadow({ mode: 'open' }); sh.append(document.getElementById(id).content.cloneNode(true)); const st = document.createElement('style'); st.textContent = '.ueb-g{position:absolute;left:0;top:0;margin:0;transform-origin:0 0;pointer-events:none;will-change:transform,opacity}'; sh.append(st); return sh; };
+    const shG = schatten('gal-stil'), shZ = schatten('ziel-stil');
+    win.append(lage);
+    const ctx = cv.getContext('2d'); let cw = 0, ch = 0;
+    new ResizeObserver(() => { const r = win.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); cw = r.width; ch = r.height; cv.width = Math.round(cw * d); cv.height = Math.round(ch * d); ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(win);
+
+    const Z = { loch: null, mini: null, ringe: [], funken: [], ende: null, blitz: null };
+    const jetzt = () => performance.now();
+    const rahmen = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+    let WR = win.getBoundingClientRect();
+    const R = el => { const r = el.getBoundingClientRect(); return { x: r.left - WR.left, y: r.top - WR.top, w: r.width, h: r.height }; };
+    const M = r => ({ x: r.x + r.w / 2, y: r.y + r.h / 2 });
+    const P = (x, y) => ({ x: x - WR.left, y: y - WR.top });
+    const knotenM = s => M(R(document.querySelector(`.knoten[data-s="${s}"] i`)));
+    const farbeK = k => F[KF[k]] || F.mint;
+
+    /* ---------- Zeichnen ---------- */
+    function lochMalen(x, y, r, a = 1) {
+      if (r <= .3 || a <= .01) return;
+      ctx.globalAlpha = a;
+      glühen(ctx, x, y, r * 3.2, F.violet, .18); glühen(ctx, x, y, r * 1.9, F.mint, .22);
+      ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+      ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 2; ctx.shadowColor = F.mint; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(x, y, r + 1.5, 0, 7); ctx.stroke(); ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+    }
+    const zeitAnteil = (o, t) => clamp((t - o.t0 - (o.warte || 0)) / o.dur);
+    function malen() {
+      requestAnimationFrame(malen);
+      const t = jetzt(), leer = !Z.loch && !Z.mini && !Z.ringe.length && !Z.funken.length && !Z.ende && !Z.blitz;
+      if (leer && !Z.warLeer) { ctx.clearRect(0, 0, cw, ch); Z.warLeer = true; }
+      if (leer) return; Z.warLeer = false;
+      ctx.clearRect(0, 0, cw, ch);
+      if (Z.blitz) { const e = (t - Z.blitz.t0) / 600; if (e >= 1) Z.blitz = null; else glühen(ctx, Z.blitz.x, Z.blitz.y, 260, F.mint, .45 * (1 - e)); }
+      Z.ringe = Z.ringe.filter(g => { const e = (t - g.t0) / g.dur; if (e < 0) return true; if (e >= 1) return false; const rr = lerp(g.r0, g.r1, 1 - Math.pow(1 - e, 3)); ctx.globalAlpha = (1 - e) * (g.a ?? .9); ctx.strokeStyle = g.c; ctx.lineWidth = g.lw * (1 - e * .6); ctx.beginPath(); ctx.ellipse(g.x, g.y, rr, rr * g.fl, 0, 0, 7); ctx.stroke(); ctx.globalAlpha = 1; return true; });
+      Z.funken = Z.funken.filter(f => { const e = (t - f.t0) / f.dur; if (e < 0) return true; if (e >= 1) return false; const k = ease(e), w = f.w + k * 5, r = f.r * (1 - k); ctx.globalAlpha = .85 * (1 - e * .5); ctx.fillStyle = f.c; ctx.fillRect(f.x + Math.cos(w) * r * 1.5 - 1, f.y + Math.sin(w) * r * .5 - 1, 2.2, 2.2); ctx.globalAlpha = 1; return true; });
+      if (Z.loch) {
+        const L = Z.loch, k = ease(zeitAnteil(L, t)), x = lerp(L.a.x, L.b.x, k), y = lerp(L.a.y, L.b.y, k) - Math.sin(Math.PI * k) * (L.bogen || 0), r = lerp(L.a.r, L.b.r, k);
+        const aus = L.aus ? clamp(1 - (t - L.aus) / 280) : 1;
+        if (L.aus && aus <= 0) Z.loch = null; else lochMalen(x, y, r, aus);
+      }
+      if (Z.mini) {
+        const L = Z.mini, k = ease(zeitAnteil(L, t)), a = k <= 0 ? clamp((t - L.t0) / 200) : k >= 1 ? clamp(1 - (t - L.t0 - (L.warte || 0) - L.dur) / 300) : 1;
+        if (k >= 1 && a <= 0) Z.mini = null; else lochMalen(lerp(L.a.x, L.b.x, k), lerp(L.a.y, L.b.y, k), 5, a);
+      }
+      if (Z.ende) endeMalen(t);
+    }
+    requestAnimationFrame(malen);
+
+    /* ---------- Fliegen ---------- */
+    // Station: Mitte x/y, Breite w, Deckkraft von Quelle A, Ziel B und Planet Pl, optional Streckung sx/sy
+    function kf(st, nw, nh, feld) {
+      return st.map(s => { const sc = (feld === 'Pl' ? Math.min(s.w, 18) : s.w) / nw, sx = sc * (s.sx || 1), sy = sc * (s.sy || 1);
+        return { offset: s.o, easing: s.e || 'linear', opacity: s[feld] ?? 0, transform: `translate(${s.x - nw * sx / 2}px, ${s.y - nh * sy / 2}px) rotate(${s.rot || 0}rad) scale(${sx}, ${sy})` }; });
+    }
+    function kopie(sh, el, r, wrapKlasse) {
+      const g = document.createElement(wrapKlasse ? 'nav' : 'div'); g.className = 'ueb-g' + (wrapKlasse ? ' ' + wrapKlasse : '');
+      Object.assign(g.style, { width: r.w + 'px', height: r.h + 'px' });
+      if (wrapKlasse) Object.assign(g.style, { position: 'absolute', left: 0, top: 0, bottom: 'auto', display: 'block' });
+      const c = el.cloneNode(true); c.classList.remove('hell', 'frisch'); Object.assign(c.style, { width: '100%', height: '100%', margin: 0, boxSizing: 'border-box', visibility: 'visible' });
+      g.append(c); sh.append(g); return { g, w: r.w, h: r.h };
+    }
+    const kopieGal = (el, r) => kopie(shG, el, r);
+    const kopieZiel = (el, r) => kopie(shZ, el, r, 'k-liste k3');
+    function planet(k) { const g = document.createElement('div'); g.className = 'ueb-p k-' + k; lage.append(g); return { g, w: 16, h: 16 }; }
+    function blatt(it) {
+      const c = document.createElement('canvas'), d = Math.min(2, devicePixelRatio || 1);
+      c.className = 'ueb-blatt'; c.width = SW * d; c.height = SH * d; Object.assign(c.style, { width: SW + 'px', height: SH + 'px' });
+      c.getContext('2d').drawImage(daten(it.f).alt, 0, 0, SW * d, SH * d); lage.append(c); return { g: c, w: SW, h: SH };
+    }
+
+    let lauf = null;
+    function sofortFertig() { if (lauf) lauf.fertig(); }
+
+    /* ---------- Wege je Variante ---------- */
+    const WEG = {
+      // direkter Bogen, gestaffelt; Bogenhöhe je Fach verschieden, damit sich Fächer nicht treffen
+      andocken(S, T, i) {
+        const a = M(S), b = M(T);
+        return { d: i * 70, dur: 820, st: [
+          { o: 0, x: a.x, y: a.y, w: S.w, A: 1, B: 0, e: 'cubic-bezier(.45,.05,.3,1)' },
+          { o: .5, x: lerp(a.x, b.x, .5) - 30, y: Math.min(a.y, b.y) + (Math.max(a.y, b.y) - Math.min(a.y, b.y)) * .35 - 40 - i * 14, w: lerp(S.w, T.w, .6), A: .45, B: .55, e: 'cubic-bezier(.3,.1,.25,1)' },
+          { o: 1, x: b.x, y: b.y, w: T.w, A: 0, B: 1 }] };
+      },
+      // Planet auf der eigenen Bahn, eine Runde ums Loch, dann Auswurf nach links
+      vorbeiflug(S, T, i, g) {
+        const a = M(S), b = M(T), c = g.loch, { rx, ry } = g.bahn;
+        const A0 = Math.atan2((a.y - c.y) / ry, (a.x - c.x) / rx);
+        let ende = Math.PI * 1.22; while (ende - A0 < Math.PI * .7) ende += Math.PI * 2; while (ende - A0 > Math.PI * 1.7) ende -= Math.PI * 2;
+        const st = [{ o: 0, x: a.x, y: a.y, w: S.w, A: 1, B: 0, e: 'cubic-bezier(.5,0,.3,1)' }], N = 10;
+        for (let k = 0; k <= N; k++) { const q = k / N, w = lerp(A0, ende, q), s = 1 - q * .22; st.push({ o: .24 + q * .44, x: c.x + Math.cos(w) * rx * s, y: c.y + Math.sin(w) * ry * s, w: 18, A: 0, B: 0, Pl: 1 }); }
+        const L = st[st.length - 1]; L.e = 'cubic-bezier(.2,.8,.3,1)';
+        st.push({ o: .84, x: lerp(L.x, b.x, .7), y: lerp(L.y, b.y, .7), w: lerp(18, T.w, .55), A: 0, B: .7, Pl: .2, e: 'cubic-bezier(.2,.8,.3,1)' }, { o: 1, x: b.x, y: b.y, w: T.w, A: 0, B: 1, Pl: 0 });
+        return { d: i * 100, dur: 1500, st, ring: { o: 1, x: b.x, y: b.y - 8, c: farbeK(g.k) } };
+      },
+      // ins Loch gesogen, am Zielplatz wieder heraus
+      wurmloch(S, T, i, g) {
+        const a = M(S), b = M(T), c = g.loch;
+        return { d: i * 120, dur: 1400, st: [
+          { o: 0, x: a.x, y: a.y, w: S.w, A: 1, B: 0, e: 'cubic-bezier(.6,0,.9,.5)' },
+          { o: .3, x: lerp(a.x, c.x, .62), y: lerp(a.y, c.y, .62), w: S.w * .4, sx: .55, sy: 1.5, rot: -.5, A: 1, B: 0, e: 'cubic-bezier(.6,0,.9,.5)' },
+          { o: .42, x: c.x, y: c.y, w: 6, sx: .3, sy: 2, rot: -1.2, A: 0, B: 0 },
+          { o: .56, x: b.x, y: b.y, w: 6, A: 0, B: 0, e: 'cubic-bezier(.3,1.5,.5,1)' },
+          { o: .82, x: b.x, y: b.y, w: T.w * 1.06, A: 0, B: 1, e: 'ease-out' },
+          { o: 1, x: b.x, y: b.y, w: T.w, A: 0, B: 1 }],
+          ringe: [{ o: .42, x: c.x, y: c.y, c: farbeK(g.k), r0: 14, r1: 44 }, { o: .56, x: b.x, y: b.y - 8, c: F.mint, r0: 2, r1: 40 }] };
+      },
+      // als Punkt hoch zum Faden, mitreisen, links herunterfallen
+      faden(S, T, i, g) {
+        const a = M(S), b = M(T), k0 = g.k0, k1 = g.k1;
+        return { d: i * 80, dur: 1700, st: [
+          { o: 0, x: a.x, y: a.y, w: S.w, A: 1, B: 0, e: 'cubic-bezier(.5,0,.3,1)' },
+          { o: .16, x: a.x, y: a.y - 150, w: 60, A: 0, B: 0, Pl: 1, e: 'cubic-bezier(.3,0,.3,1)' },
+          { o: .34, x: k0.x + 70 + i * 18, y: k0.y, w: 12, Pl: 1, e: 'cubic-bezier(.45,0,.3,1)' },
+          { o: .64, x: k1.x - 170 + i * 18, y: k0.y, w: 12, Pl: 1, e: 'cubic-bezier(.3,0,.2,1)' },
+          { o: .84, x: lerp(k1.x - 170, b.x, .65), y: lerp(k0.y, b.y, .55), w: lerp(12, T.w, .45), B: .5, Pl: .4, e: 'cubic-bezier(.2,.8,.3,1)' },
+          { o: 1, x: b.x, y: b.y, w: T.w, B: 1, Pl: 0 }] };
+      }
+    };
+
+    function fliegen(geister, st, d, dur, liste) {
+      for (const [g, feld] of geister) liste.push(g.g.animate(kf(st, g.w, g.h, feld), { duration: dur, delay: d, fill: 'both' }));
+    }
+    function ringAuf(r, t0) { Z.ringe.push({ x: r.x, y: r.y, r0: r.r0 ?? 4, r1: r.r1 ?? 44, fl: .36, c: r.c, lw: 2, dur: 650, t0 }); }
+
+    /* ---------- Wechsel ---------- */
+    async function wechsel(von, nach, schalten) {
+      sofortFertig();
+      const variante = $('ueb-art').value;
+      const paar = (von === 0 && nach === 1) || (von === 1 && nach === 0) || (von === 1 && nach === 2);
+      const ebA = document.querySelector(`.ebene[data-s="${von}"]`), ebB = document.querySelector(`.ebene[data-s="${nach}"]`);
+      const gal = GAL && GAL.geo && GAL.geo(), zielOk = ZIEL && ZIEL.knopf;
+      if (leise || variante === 'heute' || !paar || !gal || !zielOk || !gruppen().length || !$('verlauf').inert) { schalten(); return; }
+      WR = win.getBoundingClientRect();
+      // Quellen messen, solange die alte Ebene steht
+      const arten = gruppen();
+      const quellen = arten.map(k => { const el = von === 0 ? gal.fach(k) : ZIEL.knopf(k); return el && { k, el, r: R(el) }; }).filter(Boolean);
+      const lochA = von === 0 ? { ...P(gal.x, gal.y), r: gal.r } : (() => { const l = ZIEL.loch(); return l ? { ...P(l.x, l.y), r: l.r } : null; })();
+      const bahnen = von === 0 ? Object.fromEntries(arten.map(k => [k, gal.bahn(k)])) : null;
+      // umschalten: neue Ebene sofort an ihrem Platz, aber unsichtbar; alte bleibt stehen
+      Object.assign(ebB.style, { transition: 'none', opacity: '0', transform: 'none' });
+      Object.assign(ebA.style, { transition: 'none', opacity: '1', transform: 'none' });
+      schalten();
+      if (von === 0) GAL.aktiv = true;
+      if (von === 1) ZIEL.aktiv = true;
+      void ebB.offsetWidth;
+      await rahmen();
+      WR = win.getBoundingClientRect();
+      const anims = [], versteckt = [], zeiten = [];
+      const t0 = jetzt();
+      let fertigZeit = 0, altWeg = 300, lochB;
+      const k0 = knotenM(Math.min(von, nach)), k1 = knotenM(Math.max(von, nach));
+
+      if (nach === 1 || nach === 0) {
+        // Fächer ↔ Symbole
+        const l = nach === 1 ? ZIEL.loch() : GAL.geo();
+        lochB = l ? { ...P(l.x, l.y), r: l.r } : lochA;
+        const weg = nach === 0 ? 'andocken' : variante;
+        quellen.forEach((q, i) => {
+          const zEl = nach === 1 ? ZIEL.knopf(q.k) : gal.fach(q.k); if (!zEl) return;
+          const T = R(zEl);
+          const A = nach === 1 ? kopieGal(q.el, q.r) : kopieZiel(q.el, q.r), B = nach === 1 ? kopieZiel(zEl, T) : kopieGal(zEl, T);
+          const W = WEG[weg](q.r, T, i, { loch: lochA, bahn: bahnen && bahnen[q.k], k: q.k, k0, k1 });
+          const gs = [[A, 'A'], [B, 'B']]; if (weg === 'vorbeiflug' || weg === 'faden') gs.push([planet(q.k), 'Pl']);
+          fliegen(gs, W.st, W.d, W.dur, anims);
+          (W.ringe || []).forEach(r => ringAuf(r, t0 + W.d + r.o * W.dur));
+          if (W.ring) ringAuf(W.ring, t0 + W.d + W.dur - 60);
+          q.el.style.visibility = 'hidden'; versteckt.push(q.el);
+          fertigZeit = Math.max(fertigZeit, W.d + W.dur);
+        });
+        const lochPlan = { vorbeiflug: [fertigZeit * .45, fertigZeit * .5], wurmloch: [fertigZeit * .55, fertigZeit * .4] }[weg] || [0, fertigZeit * .9];
+        Z.loch = { a: lochA, b: lochB, t0, warte: lochPlan[0], dur: lochPlan[1], bogen: 0 };
+        altWeg = { vorbeiflug: fertigZeit * .5, wurmloch: 700, faden: 150 }[weg] ?? 250;
+        if (weg === 'faden') Z.mini = { a: k0, b: k1, t0, warte: 1700 * .34, dur: 1700 * .3 };
+      } else {
+        // Symbole → Blätter auf dem Eingangsstapel, Loch in den Wirbel
+        const cvR = R(S5.cv), n = W5.items.length;
+        lochB = { x: cvR.x + S5.cx, y: cvR.y + S5.cy, r: 0 };
+        quellen.forEach((q, i) => {
+          const A = kopieZiel(q.el, q.r), a = M(q.r);
+          fliegen([[A, 'A']], [{ o: 0, x: a.x, y: a.y, w: q.r.w, A: 1 }, { o: .35, x: a.x, y: a.y, w: q.r.w * 1.04, A: 1 }, { o: 1, x: a.x, y: a.y, w: q.r.w * .9, A: 0 }], i * 60, 1100, anims);
+          q.el.style.visibility = 'hidden'; versteckt.push(q.el);
+        });
+        W5.items.forEach((it, j) => {
+          const q = quellen.find(x => x.k === it.d.kat); if (!q) return;
+          const qq = quelle5(it.i, n), a = variante === 'wurmloch' ? lochA : M(q.r), T = { x: cvR.x + qq.x, y: cvR.y + qq.y, w: SW * qq.s, h: SH * qq.s }, b = M(T);
+          const mitte = variante === 'vorbeiflug' ? { x: lerp(lochA.x, lochB.x, .5) + 60, y: lerp(lochA.y, lochB.y, .5) + 70 } : { x: lerp(a.x, b.x, .5) + 20, y: Math.min(a.y, b.y) - 50 - j * 6 };
+          const G = blatt(it), d = 150 + j * 90, dur = 950;
+          fliegen([[G, 'B']], [
+            { o: 0, x: a.x, y: a.y, w: 10, B: 0, e: 'ease-out' },
+            { o: .18, x: lerp(a.x, mitte.x, .25), y: lerp(a.y, mitte.y, .25), w: 26, B: 1, rot: 0, e: 'cubic-bezier(.3,0,.3,1)' },
+            { o: .55, x: mitte.x, y: mitte.y, w: lerp(26, T.w, .7), B: 1, rot: variante === 'vorbeiflug' ? .6 : .15, e: 'cubic-bezier(.3,.1,.25,1)' },
+            { o: 1, x: b.x, y: b.y, w: T.w, B: 1, rot: qq.rot }], d, dur, anims);
+          fertigZeit = Math.max(fertigZeit, d + dur);
+        });
+        Z.loch = { a: lochA, b: lochB, t0, warte: 0, dur: fertigZeit * .85, bogen: variante === 'vorbeiflug' ? -40 : 30 };
+        altWeg = 200;
+        if (variante === 'faden') Z.mini = { a: k0, b: k1, t0, warte: 150, dur: fertigZeit * .7 };
+      }
+      const altAnim = ebA.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: altWeg, fill: 'forwards' });
+      const neuAnim = ebB.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 320, delay: Math.max(0, fertigZeit - 260), fill: 'forwards' });
+      let fertig = false;
+      const aufraeumen = () => {
+        if (fertig) return; fertig = true; lauf = null;
+        anims.forEach(a => { try { a.cancel(); } catch (e) {} });
+        lage.querySelectorAll('.ueb-p, .ueb-blatt').forEach(x => x.remove());
+        [shG, shZ].forEach(sh => sh.querySelectorAll('.ueb-g').forEach(x => x.remove()));
+        versteckt.forEach(el => { el.style.visibility = ''; });
+        [ebA, ebB].forEach(e => { e.style.transition = 'none'; e.style.opacity = ''; e.style.transform = ''; });
+        altAnim.cancel(); neuAnim.cancel(); void ebA.offsetWidth;
+        ebA.style.transition = ''; ebB.style.transition = '';
+        if (Z.loch) Z.loch.aus = jetzt(); Z.mini = null;
+        if (GAL) GAL.aktiv = schritt === 0; if (ZIEL) ZIEL.aktiv = schritt === 1;
+      };
+      lauf = { fertig: aufraeumen };
+      zeiten.push(setTimeout(aufraeumen, fertigZeit + 80));
+    }
+
+    /* ---------- Abschluss ---------- */
+    let label = null, nr = 0;
+    function endeWeg() {
+      nr++; Z.ende = null; Z.funken = [];
+      if (label) { const l = label; label = null; l.classList.add('weg'); setTimeout(() => l.remove(), 500); }
+    }
+    function labelZeigen(html, x, y, cls = '') {
+      label = document.createElement('div'); label.className = 'ueb-erg weg ' + cls; label.innerHTML = html;
+      Object.assign(label.style, { left: x + 'px', top: y + 'px' }); lage.append(label);
+      requestAnimationFrame(() => requestAnimationFrame(() => label && label.classList.remove('weg')));
+    }
+    function abschluss(e) {
+      const typ = $('ueb-ende').value;
+      if (typ === 'keiner' || schritt !== 2) return;
+      WR = win.getBoundingClientRect();
+      const cvR = R(S5.cv), x = cvR.x + S5.cx, y = cvR.y + S5.cy, n = e.gut + e.fehl;
+      const q = e.fehlI >= 0 ? quelle5(e.fehlI, W5.items.length) : null, stapel = q ? { x: cvR.x + q.x + SW * q.s / 2, y: cvR.y + q.y + SH * q.s / 2 } : null;
+      const p = Math.round((1 - e.nach / e.vor) * 100);
+      const titel = e.fehl ? `${e.gut} von ${n} umgewandelt` : `Alle ${n} Dateien umgewandelt`;
+      const zeile = e.fehl ? `<small class="f">${esc(e.fehlName)}: Datei beschädigt, liegt wieder im Eingang</small>` : `<small>${mb(e.vor)} MB → ${mb(e.nach)} MB · ${p} % kleiner</small>`;
+      const t0 = jetzt(), meins = ++nr, gilt = () => meins === nr && schritt === 2;
+      Z.ende = { typ, t0, x, y, fehl: e.fehl, stapel, schon: {} };
+      if (leise) { labelZeigen(`<span class="hk${e.fehl ? ' teil' : ''}">✓</span><b>${titel}</b>${zeile}`, x, y - 40); Z.ende = null; return; }
+      if (typ === 'welle') {
+        Z.ringe.push({ x, y, r0: 14, r1: Math.max(cw, ch) * 1.1, fl: .42, c: F.mint, lw: 3, dur: 1400, t0, a: .9 });
+        $('auftrag').querySelectorAll('.w5-zeile').forEach((z, j) => {
+          const c = z.dataset.st === 'fehler' ? 'var(--coral)' : 'var(--mint)';
+          z.animate([{ borderColor: 'var(--line)' }, { borderColor: c, boxShadow: `0 0 0 1px ${c}`, offset: .3 }, { borderColor: 'var(--line)' }], { duration: 800, delay: 260 + j * 80, easing: 'ease-out' });
+        });
+        $('aus-spalte').animate([{ transform: 'none' }, { transform: 'scale(1.025)', offset: .4 }, { transform: 'none' }], { duration: 600, delay: 500, easing: 'ease-out' });
+        setTimeout(() => { if (gilt()) labelZeigen(`<span class="hk${e.fehl ? ' teil' : ''}">✓</span><b>${titel}</b>${zeile}`, x, y - 44); }, 700);
+        Z.ende = null;
+      } else {
+        // Loch bildet sich im Wirbel und saugt die letzten Funken ein
+        for (let i = 0; i < 46; i++) Z.funken.push({ x, y, r: 60 + Math.random() * 110, w: Math.random() * 7, c: rgba([F.blue, F.violet, F.amber, F.cyan, F.model][i % 5], 1), t0: t0 + i * 12, dur: 700 });
+        setTimeout(() => { if (gilt()) labelZeigen(`<b>${titel}</b>${zeile}`, x, y + 38); }, typ === 'haken' ? 1500 : 1900);
+      }
+    }
+    function endeMalen(t) {
+      const E = Z.ende, e = (t - E.t0) / 1000, { x, y } = E;
+      const einmal = (k, f) => { if (!E.schon[k]) { E.schon[k] = 1; f(); } };
+      if (e < .5) lochMalen(x, y, 16 * ease(e / .5));
+      else if (e < .75) lochMalen(x, y, lerp(16, 3, ((e - .5) / .25) ** 2));
+      if (e >= .75) einmal('blitz', () => { Z.blitz = { x, y, t0: t }; Z.ringe.push({ x, y, r0: 4, r1: 110, fl: 1, c: F.mint, lw: 2, dur: 700, t0: t }); });
+      if (E.typ === 'haken' && e >= .75) {
+        const R2 = lerp(3, 24, ease(clamp((e - .75) / .4)));
+        glühen(ctx, x, y, 70, F.mint, .1 + .04 * Math.sin(e * 2));
+        ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, R2, 0, 7); ctx.fill();
+        ctx.strokeStyle = F.mint; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, R2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp((e - .75) / .5)); ctx.stroke();
+        const k = clamp((e - 1.15) / .35);
+        if (k > 0) {
+          const s = R2 / 24, pk = [[-9, 1], [-3, 7], [10, -7]];
+          ctx.lineWidth = 3.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x + pk[0][0] * s, y + pk[0][1] * s);
+          if (k < .4) ctx.lineTo(x + lerp(pk[0][0], pk[1][0], k / .4) * s, y + lerp(pk[0][1], pk[1][1], k / .4) * s);
+          else { ctx.lineTo(x + pk[1][0] * s, y + pk[1][1] * s); const m = (k - .4) / .6; ctx.lineTo(x + lerp(pk[1][0], pk[2][0], m) * s, y + lerp(pk[1][1], pk[2][1], m) * s); }
+          ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineWidth = 1;
+        }
+        if (E.fehl && e > 1.3) {
+          // Bruchstück kreist außen weiter
+          const a = clamp((e - 1.3) / .5), w = e * 1.1, bx = x + Math.cos(w) * 62, by = y + Math.sin(w) * 22;
+          ctx.globalAlpha = a * .3; ctx.strokeStyle = F.coral; ctx.lineWidth = 1; ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.ellipse(x, y, 62, 22, 0, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+          ctx.globalAlpha = a; ctx.fillStyle = F.coral; ctx.beginPath(); ctx.moveTo(bx, by - 4.5); ctx.lineTo(bx + 4.5, by + 1); ctx.lineTo(bx - 1, by + 4.5); ctx.lineTo(bx - 4.5, by); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+        }
+      }
+      if (E.typ === 'urknall' && e >= .75) {
+        einmal('sterne', () => { E.sterne = Array.from({ length: 70 }, (_, i) => ({ a: Math.random() * 7, d: 50 + Math.random() * 130, bahn: i % 3, v: .9 - (i % 3) * .22, r: .9 + Math.random() * 1.3, c: [F.blue, F.violet, F.amber, F.cyan, F.model][i % 5] })); if (E.fehl) E.sterne.push({ a: 2.6, d: 80, bahn: 2, v: .4, r: 3, c: F.coral, fehl: 1 }); });
+        const u = e - .75;
+        E.sterne.forEach(s => {
+          const bx = x + Math.cos(s.a) * s.d, by = y + Math.sin(s.a) * s.d * .55;
+          let px, py, al = 1;
+          if (u < .6) { const k = ease(u / .6); px = lerp(x, bx, k); py = lerp(y, by, k); }
+          else if (s.fehl && E.stapel) { const k = ease(clamp((u - .6) / 1.4)); px = lerp(bx, E.stapel.x, k); py = lerp(by, E.stapel.y, k) - Math.sin(Math.PI * k) * 40; al = 1 - clamp((u - 2.2) / .6) * .6; }
+          else { const k = ease(clamp((u - .6) / 1.1)), rx = 32 + s.bahn * 22, w = s.a + (u - .6) * s.v; px = lerp(bx, x + Math.cos(w) * rx, k); py = lerp(by, y + Math.sin(w) * rx * .34, k); }
+          ctx.globalAlpha = al; ctx.fillStyle = s.c; ctx.beginPath(); ctx.arc(px, py, s.r, 0, 7); ctx.fill();
+        });
+        ctx.globalAlpha = 1;
+        lochMalen(x, y, 8 * ease(clamp((u - .7) / .6)));
+      }
+    }
+
+    return { wechsel, abschluss, endeWeg, sofortFertig };
+  })();
+
   function geheZu(s) {
+    UEB.endeWeg();
+    const von = schritt;
+    if (s === von) { geheZuJetzt(s); return; }
+    UEB.wechsel(von, s, () => geheZuJetzt(s));
+  }
+  function geheZuJetzt(s) {
     schritt = s;
     if (GAL) GAL.aktiv = s === 0;
     if (ZIEL) ZIEL.aktiv = s === 1;
