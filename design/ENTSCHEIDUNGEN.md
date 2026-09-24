@@ -16,7 +16,7 @@ Stand: 23.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 3: Favorit ist der Pixel-Tausch. Sechs Canvas-Konzepte in `pixel-konzepte.html` (Pixel-Band, Kern, Pixel-Drucker, LED-Wand, Prisma, Schwarm). Speicherort neu in zwei Stufen: ① für alle (Neben dem Original / Alles in einen Ordner), ② einzelne Dateien mit Schild in der Liste. Liste mit vollem Zielpfad, nach dem Umwandeln „Öffnen“ und „Im Ordner zeigen“ je Datei. Vorschlag: 1 Pixel-Band oder 2 Kern, ab etwa acht Dateien 6 Schwarm. Win2D (MIT) wäre neue Bibliothek, Lizenz-Wächter.
+- Schritt 3: Favorit ist der Pixelwirbel (Schwarm), die Liste aus `pixel-konzepte.html` bleibt. Fünf Wirbel-Varianten für Eingang, Ausgang und Speicherort-Wahl in `wirbel-varianten.html`: Fächer → Docks (Ziehen und Ablegen), Trichter → Ablage (Frage mit drei Karten), Portal → Portal (Satz mit Lücke), Umlaufbahn → Spalte (Adressleiste), Stapel → Zielordner (Ordner als Knopf). Vorschlag: Docks. Win2D (MIT) wäre neue Bibliothek, Lizenz-Wächter.
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
