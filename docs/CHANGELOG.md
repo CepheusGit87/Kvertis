@@ -2,6 +2,17 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-24 – 3D: Vorschau nachrangig
+
+**Geändert**
+
+- Roadmap: 3D-Vorschau nur mit eigenem Renderer auf SkiaSharp ohne neue Bibliothek, sonst entfällt sie. FBX bleibt ausgeschlossen.
+- Design: Entwurf `design/sanduhr-fuenf-kisten.html` mit fünfter Sanduhr für 3D-Modelle.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-23 – 3D-Modelle
 
 **Geändert**

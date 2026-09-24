@@ -44,7 +44,7 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 - [ ] AV1-Ausgabe (SVT-AV1), wenn Tempo für Laien akzeptabel
 - [ ] Weitere Sprachen
 - [x] 3D-Modelle: STL, 3MF, OBJ, PLY, glTF/GLB untereinander, eigene Leser und Schreiber, gratis (ADR-016, 2026-09-23)
-- [ ] 3D-Vorschau (bräuchte einen Renderer; zusammen mit der Vorschau für Dokumente und Ton)
+- [ ] 3D-Vorschau, niedrige Priorität: Kern ist das Umwandeln. Nur mit eigenem Renderer auf SkiaSharp, ohne neue Bibliothek; sonst entfällt sie (Entscheidung Projektinhaber, 2026-09-24)
 
 ### Ideen (geprüft, rechtlich unbedenklich, noch nicht eingeplant)
 
