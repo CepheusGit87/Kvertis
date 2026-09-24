@@ -784,7 +784,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 .e5-z .inhalt, .e5-tuer .inhalt { padding-top: 10px; border-top: 1px solid var(--line); }
 .e5-kopfz { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
 .e5-kopfz b { font-size: 14px; }
-.gleiste:has(.e5-rgriff) { height: 66px; margin-top: 22px; }
+.gleiste:has(.e5-rgriff) { height: 66px; margin-top: 36px; }
 .gleiste .griff.e5-rgriff { width: 46px; height: 46px; margin-left: -23px; top: -1px; background: var(--bg); border: 0; padding: 0; box-shadow: 0 0 16px color-mix(in srgb, var(--mint) 45%, transparent); }
 .gleiste:has(.e5-rgriff) .marke { top: -22px; }
 .gleiste:has(.e5-rgriff) .marke.hoch { top: -34px; }
@@ -822,9 +822,16 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       <div><small>Was sich ändert</small><p>Die Balken je Merkmal und die Hinweise mit Häkchen, Ausrufezeichen oder Kreuz. Zugeklappt steht „alles gut“ oder die Zahl der Hinweise.</p></div>
     </div>
     <nav class="sprung" aria-label="Konzepte">
-      <a href="#d1"><b>1</b>Note über der Leiste</a><a href="#d2"><b>2</b>Note im Griff</a><a href="#d3"><b>3</b>Große Note</a><a href="#d4"><b>4</b>Zwei Reiter</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+      <a href="#d5"><b>✓</b>Gewählt</a><a href="#d1"><b>1</b>Note über der Leiste</a><a href="#d2"><b>2</b>Note im Griff</a><a href="#d3"><b>3</b>Große Note</a><a href="#d4"><b>4</b>Zwei Reiter</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
     </nav>
   </header>
+
+  <section class="idee" id="d5" aria-labelledby="h-d5">
+    <div class="idee-kopf"><h2 id="h-d5">Gewählt · D1 mit der Note im Griff aus D2 <small>die Kombination</small></h2></div>
+    <p>Aufbau wie D1: oben der Ring mit Note, Wort, Größe und Säulen je Merkmal, darunter die Leiste, unten die Zonen „Alle Einstellungen“ und „Was sich ändert“, beide zu. Neu aus D2: Der Griff der Leiste trägt dieselbe Note. Beim Ziehen fallen oder steigen beide Zahlen gleichzeitig, der Ring färbt sich von Grün über Gelb nach Rot.</p>
+    <div class="buehne" data-konzept="A3|D5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die Note steht groß oben und direkt an der Hand</span><span class="plus"><b>+</b>Alle Einzelheiten zugeklappt in zwei Zonen</span><span class="minus"><b>−</b>Die Note erscheint zweimal</span></div>
+  </section>
 
   <section class="idee" id="d1" aria-labelledby="h-d1">
     <div class="idee-kopf"><h2 id="h-d1">D1 · Note über der Leiste <small>die direkte Kombination</small></h2></div>
@@ -1429,6 +1436,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     D1: { // Note oben, Leiste, zwei Zonen
       html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
         ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
+    },
+    D5: { // Kombination: D1 mit der Note im Griff aus D2
+      html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
+        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · Griff ziehen</span>' : ''}${leisteHTML(W, g, true)}${zweiZonen(W, g)}</div>`,
     },
     D2: { // die Note sitzt im Griff der Leiste
       html: (W, g) => `<div class="ein-k"><div class="e5-kopfz" data-live="kopf">${LIVE.kopf(W, g)}</div>
