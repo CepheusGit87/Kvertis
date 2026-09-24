@@ -16,7 +16,7 @@ Stand: 23.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 3: Förderband bleibt, Sanduhr fällt weg. Fünf Stationen in `foerderband-effekte.html` (Lichttor, Stempel, Pixel-Tausch, Tunnel, Wirbel), Liste nur „Format → Format“ in drei Ansichten (Pfeil, Vorher/Nachher, Kapsel). Vorschlag: Lichttor + Pfeil. Die sechs freien Konzepte in `schritt3-konzepte.html` sind verworfen.
+- Schritt 3: Favorit ist der Pixel-Tausch. Sechs Canvas-Konzepte in `pixel-konzepte.html` (Pixel-Band, Kern, Pixel-Drucker, LED-Wand, Prisma, Schwarm). Speicherort neu in zwei Stufen: ① für alle (Neben dem Original / Alles in einen Ordner), ② einzelne Dateien mit Schild in der Liste. Liste mit vollem Zielpfad, nach dem Umwandeln „Öffnen“ und „Im Ordner zeigen“ je Datei. Vorschlag: 1 Pixel-Band oder 2 Kern, ab etwa acht Dateien 6 Schwarm. Win2D (MIT) wäre neue Bibliothek, Lizenz-Wächter.
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.

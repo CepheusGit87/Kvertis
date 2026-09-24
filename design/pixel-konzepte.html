@@ -1,0 +1,959 @@
+<title>Kvertis Pixel-Werkstatt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+/* ===== Fenster ===== */
+.win { height: 880px; min-width: 1040px; }
+.koerper { display: grid; grid-template-rows: 300px auto minmax(0, 1fr); }
+.stage { position: relative; overflow: hidden; }
+.stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.stage-name { position: absolute; left: 20px; top: 12px; font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); pointer-events: none; }
+.toast { position: absolute; left: 50%; bottom: 72px; z-index: 50; transform: translateX(-50%); padding: 8px 14px; border-radius: 10px; background: var(--ink); color: var(--bg); font-size: 12.5px; box-shadow: 0 16px 30px -12px var(--schatten); animation: menue-auf .2s var(--sanft); pointer-events: none; white-space: nowrap; }
+.link { border: 0; background: none; color: var(--mint); font-weight: 600; font-size: inherit; padding: 0; text-decoration: underline; text-underline-offset: 2px; }
+
+/* ===== Ausgabe in zwei Stufen ===== */
+.ausgabe { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.ag-teil { display: grid; gap: 8px; align-content: start; padding: 12px 18px; }
+.ag-2 { border-left: 1px dashed var(--line-stark); }
+.ag-kopf { display: flex; align-items: center; gap: 9px; }
+.ag-kopf b { font-size: 13px; font-weight: 600; }
+.ag-kopf small { font-size: 12px; color: var(--muted); }
+.ag-nr { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 700 11.5px var(--mono); background: var(--mint); color: var(--auf-mint); flex: none; }
+.ag-2 .ag-nr { background: var(--mint-flaeche); color: var(--mint); border: 1px solid var(--mint-rahmen); }
+.ag-wahl { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; }
+.ag-opt { display: grid; grid-template-columns: 16px minmax(0, auto); gap: 10px; align-items: center; padding: 7px 12px 7px 10px; border-radius: 11px; border: 1px solid var(--line-stark); background: var(--panel); text-align: left; min-width: 0; max-width: 100%; }
+.ag-opt:hover { border-color: var(--mint-rahmen); }
+.ag-opt i { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; }
+.ag-opt.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.ag-opt.an i { border-color: var(--mint); }
+.ag-opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.ag-opt span { display: grid; min-width: 0; line-height: 1.3; }
+.ag-opt b { font-size: 12.5px; font-weight: 600; }
+.ag-opt small { font: 11px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-wahl .btn { align-self: center; }
+.ag-2 p { margin: 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+.ag-2 p b { color: var(--mint); font-weight: 600; }
+.win:not([data-st="bereit"]) .ausgabe { opacity: .75; }
+
+/* ===== Liste ===== */
+.liste { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 6px; padding: 8px 18px 8px; min-height: 0; }
+.liste-kopf { display: grid; grid-template-columns: 10px 150px 132px minmax(0, 1fr) 214px 58px; gap: 12px; padding: 0 12px; }
+.zeilen { display: grid; align-content: start; gap: 4px; overflow: auto; min-height: 0; }
+.zeile { display: grid; grid-template-columns: 10px 150px 132px minmax(0, 1fr) 214px 58px; gap: 12px; align-items: center; padding: 4px 12px; border-radius: 11px; border: 1px solid var(--line); background: var(--panel); position: relative; overflow: hidden; }
+.zeile::after { content: ''; position: absolute; left: 0; bottom: 0; height: 2px; width: calc(var(--p, 0) * 100%); background: var(--mint); box-shadow: 0 0 8px var(--mint); }
+.zeile[data-st="fertig"]::after { opacity: 0; }
+.zeile[data-st="laeuft"] { border-color: var(--mint-rahmen); }
+.punkt { width: 10px; height: 10px; border-radius: 50%; background: var(--k); }
+.nm { min-width: 0; line-height: 1.3; }
+.nm b { display: block; font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.nm small { display: block; font: 10.5px var(--mono); color: var(--muted); white-space: nowrap; }
+.fa { display: grid; grid-template-columns: 46px 1fr 46px; gap: 8px; align-items: center; }
+.fchip { display: grid; place-items: center; height: 22px; border-radius: 6px; font: 700 11px var(--mono); }
+.fchip.alt { color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 40%, transparent); }
+.fchip.neu { color: var(--mint); border: 1.5px dashed var(--mint-rahmen); }
+.zeile[data-st="fertig"] .fchip.neu { background: var(--mint); color: var(--auf-mint); border: 1.5px solid var(--mint); }
+.fpfeil { position: relative; height: 2px; background: var(--line-stark); margin-right: 5px; }
+.fpfeil::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--p, 0) * 100%); background: var(--mint); }
+.fpfeil::after { content: ''; position: absolute; right: -6px; top: -4px; border-left: 7px solid var(--line-stark); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+.zeile[data-st="fertig"] .fpfeil::after { border-left-color: var(--mint); }
+.ziel { display: grid; gap: 1px; min-width: 0; padding: 4px 8px; margin: -4px -8px; border: 0; border-radius: 8px; background: transparent; text-align: left; }
+.win[data-st="bereit"] .ziel:hover { background: var(--hover); }
+.z-tag { justify-self: start; font: 600 10px var(--mono); letter-spacing: .02em; color: var(--muted); }
+.z-tag.eigen { color: var(--mint); }
+.z-pfad { font: 11.5px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.z-pfad .dir { color: var(--muted); }
+.z-pfad b { font-weight: 600; }
+.zeile[data-st="fertig"] .z-pfad b { color: var(--mint); }
+.z-aktion { display: flex; gap: 6px; justify-content: flex-end; }
+.z-akt { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel2); font-size: 11.5px; font-weight: 500; white-space: nowrap; }
+.z-akt svg { width: 13px; height: 13px; flex: none; color: var(--muted); }
+.z-akt:hover:not(:disabled) { border-color: var(--mint); }
+.z-akt:disabled { opacity: .45; cursor: default; }
+.z-akt.haupt { border-color: var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); }
+.z-akt.haupt svg { color: var(--mint); }
+.z-st { font: 500 11px var(--mono); color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.zeile[data-st="fertig"] .z-st { color: var(--mint); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Kvertis · Schritt 3 · Pixel-Tausch · Entwürfe vom 24.09.2026</span>
+    <h1>Pixel-Tausch, sechs Mal neu gedacht</h1>
+    <p class="lead">Die Blätter bestehen jetzt aus echten Pixeln, rund 1.300 je Datei, auf einer Zeichenfläche statt aus Kacheln. Der Effekt läuft im Takt des echten Fortschritts: Bei 50 % ist die Hälfte der Pixel umgezogen. Drei Konzepte behalten das Förderband, drei kommen ohne aus. Speicherort und Liste sind in allen sechs gleich und neu.</p>
+    <div class="gemeinsam">
+      <div><small>Speicherort in zwei Stufen</small><p>Unter der Bühne steht <b>① Für alle Dateien</b>: „Neben dem Original“ oder „Alles in einen Ordner“. Daneben <b>② Einzelne Dateien anders</b>, mit Hinweis und Zähler. Jede Zeile trägt ihr Schild „① wie alle“ oder „② eigenes Ziel“.</p></div>
+      <div><small>Pfad genauer</small><p>Jede Zeile zeigt den ganzen Zielpfad samt neuem Dateinamen, zum Beispiel <span class="mono">C:\Users\Anna\Bilder\Handy\Urlaub_Strand.jpg</span>. Ist er zu lang, wird die Mitte gekürzt.</p></div>
+      <div><small>Öffnen und Ordner</small><p>Vor dem Start: „Ändern“. Ist die Datei fertig, stehen dort „Öffnen“ und „Im Ordner zeigen“, für jede Datei einzeln.</p></div>
+      <div><small>Beispiel</small><p><span class="mono">Bandprobe_Take3</span> hat schon ein eigenes Ziel (<span class="mono">Musik\Master</span>). Ausprobieren: oben auf „Alles in einen Ordner“ stellen, die Ausnahme bleibt.</p></div>
+    </div>
+    <nav class="sprung" aria-label="Konzepte">
+      <a href="#k1"><b>1</b>Pixel-Band</a><a href="#k2"><b>2</b>Kern</a><a href="#k3"><b>3</b>Pixel-Drucker</a><a href="#k4"><b>4</b>LED-Wand</a><a href="#k5"><b>5</b>Prisma</a><a href="#k6"><b>6</b>Schwarm</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+    </nav>
+  </header>
+
+  <section class="idee" id="k1" aria-labelledby="h-k1">
+    <div class="idee-kopf"><h2 id="h-k1">1 · Pixel-Band <small>mit Förderband · das Tor ist ein Pixelstrom</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k1">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k1">Zurücksetzen</button></div></div>
+    <p>Das Band bleibt. In der Mitte steht ein Lichttor. Das Blatt löst sich Spalte für Spalte in Pixel auf, die in einem Bogen durch das Tor fliegen und sich dahinter zum neuen Blatt setzen. Im Tor leuchten sie auf und nehmen die neue Farbe an. Das ist der alte Pixel-Tausch, nur als fließender Strom statt als Explosion.</p>
+    <div class="buehne" data-konzept="k1"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Am nächsten an deinem Favoriten, mit Band</span><span class="plus"><b>+</b>Links alt, rechts neu, sofort verständlich</span><span class="minus"><b>−</b>Bei vielen Dateien wartet der Stapel lange</span></div>
+  </section>
+
+  <section class="idee" id="k2" aria-labelledby="h-k2">
+    <div class="idee-kopf"><h2 id="h-k2">2 · Kern <small>ohne Band · alles fließt durch einen leuchtenden Kern</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k2">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k2">Zurücksetzen</button></div></div>
+    <p>In der Mitte schwebt ein Kern mit zwei Ringen. Das Blatt zerfällt in einen Pixelstrom, der in den Kern hineinwirbelt. Der Kern glüht in der Farbe der Dateiart und wechselt auf mint. Auf der anderen Seite strömen die Pixel wieder heraus und bilden das neue Blatt. Der Kern ist Kvertis selbst: ein fester Ort, an dem umgewandelt wird.</p>
+    <div class="buehne" data-konzept="k2"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Wirkt modern und ruhig zugleich, der Kern pulsiert auch im Leerlauf</span><span class="plus"><b>+</b>Gutes Motiv für App-Symbol und Store</span><span class="minus"><b>−</b>Etwas abstrakter als das Band</span></div>
+  </section>
+
+  <section class="idee" id="k3" aria-labelledby="h-k3">
+    <div class="idee-kopf"><h2 id="h-k3">3 · Pixel-Drucker <small>ohne Band · Zeile für Zeile neu gedruckt</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k3">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k3">Zurücksetzen</button></div></div>
+    <p>Oben schwebt das alte Blatt, unten steht ein Druckbett. Das Blatt rieselt von unten her als Pixel herab. Ein leuchtender Druckkopf fährt nach oben und baut das neue Blatt Zeile für Zeile auf, wie ein 3D-Drucker. Der Kopf steht immer genau beim Fortschritt.</p>
+    <div class="buehne" data-konzept="k3"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Der Druckkopf ist ein Fortschrittsbalken, den jeder versteht</span><span class="plus"><b>+</b>Passt zu 3D-Modellen, die Kvertis jetzt auch kann</span><span class="minus"><b>−</b>Senkrecht, braucht Höhe</span></div>
+  </section>
+
+  <section class="idee" id="k4" aria-labelledby="h-k4">
+    <div class="idee-kopf"><h2 id="h-k4">4 · LED-Wand <small>mit Band · Pixel drehen sich um, Welle für Welle</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k4">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k4">Zurücksetzen</button></div></div>
+    <p>Das Blatt fährt auf eine große Anzeigewand und wird dort als LED-Raster gezeigt. Eine diagonale Welle läuft darüber: Jeder Pixel klappt um wie ein Plättchen und zeigt dahinter das neue Blatt. An der Wellenfront glimmt es mint. Danach schrumpft das Blatt und fährt zum Ordner.</p>
+    <div class="buehne" data-konzept="k4"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Groß, klar und sehr modern</span><span class="plus"><b>+</b>Die Welle zeigt den Fortschritt ohne Zahl</span><span class="minus"><b>−</b>Die Wand braucht die ganze Höhe der Bühne</span></div>
+  </section>
+
+  <section class="idee" id="k5" aria-labelledby="h-k5">
+    <div class="idee-kopf"><h2 id="h-k5">5 · Prisma <small>ohne Band · zu Licht zerlegt und neu gebündelt</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k5">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k5">Zurücksetzen</button></div></div>
+    <p>Die Pixel des Blatts bündeln sich zu einem Strahl und treffen auf ein Glasprisma. Dahinter fächern sie sich in ein Farbspektrum auf und sammeln sich wieder zum neuen Blatt. Der schönste Moment ist der Regenbogen hinter dem Glas.</p>
+    <div class="buehne" data-konzept="k5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Der eindrucksvollste Effekt, ideal für Store-Bilder</span><span class="plus"><b>+</b>Ein Bild dafür, dass nur die Form wechselt und der Inhalt bleibt</span><span class="minus"><b>−</b>Viel Farbe, bricht etwas aus dem ruhigen Mint-Stil</span></div>
+  </section>
+
+  <section class="idee" id="k6" aria-labelledby="h-k6">
+    <div class="idee-kopf"><h2 id="h-k6">6 · Schwarm <small>ohne Band · alle Dateien auf einmal</small></h2>
+      <div class="steuer"><button type="button" class="demo" data-start="k6">▶ Ablauf zeigen</button><button type="button" class="btn" data-reset="k6">Zurücksetzen</button></div></div>
+    <p>Beim Start lösen sich alle sieben Blätter zugleich auf und kreisen als Pixelwirbel in der Mitte, jede Datei in ihrer Farbe. Während Kvertis arbeitet, färbt sich der Wirbel nach und nach mint. Jede fertige Datei löst sich aus dem Wirbel und setzt sich rechts als neues Blatt ab. Man sieht den ganzen Auftrag auf einmal.</p>
+    <div class="buehne" data-konzept="k6"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Zeigt den ganzen Stapel, nicht nur eine Datei</span><span class="plus"><b>+</b>Zwei Dateien zugleich wirken hier natürlich</span><span class="minus"><b>−</b>Ab etwa 20 Dateien nur noch der Wirbel, ohne Einzelblätter</span></div>
+  </section>
+
+  <section class="idee" id="vorschlag" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>Mit Band: 1 Pixel-Band.</b> Es ist dein Favorit, nur fließender, und der Ablauf bleibt vertraut. <b>Ohne Band: 2 Kern.</b> Er ist ruhiger, moderner und lässt sich als Motiv auch fürs Symbol und den Store nutzen. Für große Stapel ab etwa acht Dateien schaltet die Bühne auf <b>6 Schwarm</b> um.</p>
+      <p><b>Speicherort:</b> Die zwei nummerierten Stufen ersetzen die Ordner-Reiter. ① gilt für alle, ② erklärt, dass es auch einzeln geht, und zählt die Ausnahmen. In der Liste zeigt jede Zeile den vollen Pfad und das Schild ① oder ②. Nach dem Umwandeln stehen dort „Öffnen“ und „Im Ordner zeigen“.</p>
+      <p class="muted">In WinUI: Pixel über Win2D (<code>CanvasAnimatedControl</code>, MIT-Lizenz, in <code>docs/04</code> nachzutragen) oder Composition-<code>SpriteVisual</code>s. Bei „Animationen reduzieren“ wechselt das Blatt nur die Farbe. „Öffnen“ startet das Standardprogramm, „Im Ordner zeigen“ öffnet den Explorer mit der Datei markiert. Pfade, Namen und Größen sind Beispiele, der Ablauf läuft im Zeitraffer.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NS = 'http://www.w3.org/2000/svg';
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const zahl = (n, st = 1) => n.toLocaleString('de-DE', { minimumFractionDigits: st, maximumFractionDigits: st });
+  const mb = n => n < 0.1 ? Math.max(1, Math.round(n * 1024)) + ' KB' : (n >= 100 ? Math.round(n).toLocaleString('de-DE') : zahl(n)) + ' MB';
+  const kurz = p => p.split('\\').pop();
+  const ICON_ORDNER = '<svg class="ordner-ikon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1.5 4.5a1 1 0 011-1h3.2l1.5 1.5h6.3a1 1 0 011 1v6.5a1 1 0 01-1 1H2.5a1 1 0 01-1-1z"/></svg>';
+  const ICON_WEICHE = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M2 8h5c3 0 3-5 7-5M7 8c3 0 3 5 7 5"/></svg>';
+  const ICON_SCHLOSS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>';
+
+  const DATEIEN = [
+    { id: 'a', name: 'Urlaub_Strand', von: 'HEIC', nach: 'JPG', k: 'bild', mb: 4.2, neu: 1.9, src: 'Bilder\\Handy' },
+    { id: 'b', name: 'Scan_Mietvertrag', von: 'PNG', nach: 'PDF', k: 'bild', mb: 3.1, neu: 0.8, src: 'Downloads' },
+    { id: 'c', name: 'Sprachmemo_Oma', von: 'M4A', nach: 'MP3', k: 'audio', mb: 2.4, neu: 1.1, src: 'Downloads' },
+    { id: 'd', name: 'Bandprobe_Take3', von: 'WAV', nach: 'FLAC', k: 'audio', mb: 48.0, neu: 27.5, src: 'Musik\\Proben' },
+    { id: 'e', name: 'Geburtstag_Lina', von: 'MOV', nach: 'MP4', k: 'video', mb: 312, neu: 96, src: 'Videos' },
+    { id: 'f', name: 'Quartalsbericht', von: 'PPTX', nach: 'MD', k: 'dok', mb: 5.6, neu: 0.02, src: 'Dokumente\\Arbeit' },
+    { id: 'g', name: 'Umsatz_Q3', von: 'XLSX', nach: 'CSV', k: 'dok', mb: 0.9, neu: 0.1, src: 'Dokumente\\Arbeit' },
+  ];
+  const ZULETZT = ['Downloads\\Kvertis', 'Musik\\Master', 'Desktop\\Umgewandelt'];
+  const GEWAEHLT = 'Dokumente\\Export';
+
+  /* ---------- Ziel-Auflösung: Ausnahme je Datei, sonst global ---------- */
+  const ausnahme = (W, f) => W.ov[f.id];
+  const regel = (W, f) => ausnahme(W, f) || W.global;
+  const pfad = (W, f) => { const r = regel(W, f); return r.art === 'orig' ? f.src : r.pfad; };
+  const globalText = W => W.global.art === 'orig' ? 'Neben dem Original' : W.global.pfad;
+  const anzahlAusnahmen = W => W.files.filter(f => ausnahme(W, f)).length;
+  const gruppen = W => {
+    const m = new Map();
+    W.files.forEach(f => { const p = pfad(W, f); if (!m.has(p)) m.set(p, { pfad: p, files: [], std: false }); const g = m.get(p); g.files.push(f); if (!ausnahme(W, f)) g.std = true; });
+    return [...m.values()];
+  };
+  const gesamt = W => { const d = W.files.reduce((s, f) => s + f.d, 0); return W.files.reduce((s, f) => s + f.p * f.d, 0) / d; };
+  const jetztMB = f => f.mb + (f.neu - f.mb) * f.p;
+  const fertigZahl = W => W.files.filter(f => f.st === 'fertig').length;
+  const uhr = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+  const stTxt = f => f.st === 'bereit' ? 'bereit' : f.st === 'laeuft' ? Math.round(f.p * 100) + ' %' : '✓ fertig';
+
+  /* ---------- Zielmenü ---------- */
+  function schliesse(W) {
+    if (!W.menue) return;
+    W.menue.remove(); W.menue = null;
+    document.removeEventListener('pointerdown', W.aussen, true);
+    document.removeEventListener('keydown', W.taste, true);
+  }
+
+  function menue(W, anker, f) {
+    schliesse(W);
+    if (W.status !== 'bereit') return;
+    const m = document.createElement('div');
+    m.className = 'menue'; m.setAttribute('role', 'dialog');
+    const ordner = [...new Set([...ZULETZT, ...W.extra])];
+    let opts = [];
+    if (f) {
+      const ov = ausnahme(W, f);
+      m.setAttribute('aria-label', `Ziel für ${f.name}`);
+      opts.push({ key: 'erbe', t: 'Wie ① für alle', s: W.global.art === 'orig' ? `neben dem Original · ${f.src}` : W.global.pfad, an: !ov });
+      opts.push({ key: 'orig', t: 'Neben dem Original', s: f.src, an: ov && ov.art === 'orig' });
+      ordner.forEach(p => opts.push({ key: 'p:' + p, t: kurz(p), s: p, an: ov && ov.art === 'pfad' && ov.pfad === p }));
+      m.innerHTML = `<h6>② Nur diese Datei speichern in<small>${esc(f.name)}.${f.nach.toLowerCase()}</small></h6>`;
+    } else {
+      m.setAttribute('aria-label', 'Speicherort für alle Dateien');
+      opts.push({ key: 'orig', t: 'Neben dem Original', s: 'jede Datei im Ordner ihrer Quelle', an: W.global.art === 'orig' });
+      ordner.forEach(p => opts.push({ key: 'p:' + p, t: kurz(p), s: p, an: W.global.art === 'pfad' && W.global.pfad === p }));
+      m.innerHTML = `<h6>① Für alle Dateien speichern in<small>gilt für alle ohne eigenes Ziel</small></h6>`;
+    }
+    opts.push({ key: 'wahl', t: 'Ordner wählen …', s: 'öffnet den Ordnerdialog von Windows', wahl: true });
+    m.insertAdjacentHTML('beforeend', opts.map(o => `${o.wahl ? '<hr>' : ''}<button type="button" class="opt${o.an ? ' an' : ''}${o.wahl ? ' wahl' : ''}" data-key="${esc(o.key)}" role="menuitemradio" aria-checked="${!!o.an}"><i></i><b>${esc(o.t)}</b><small>${esc(o.s)}</small></button>`).join(''));
+    const a = anzahlAusnahmen(W);
+    if (!f && a) m.insertAdjacentHTML('beforeend', `<hr><div class="fuss"><span>${a === 1 ? '1 Datei hat' : a + ' Dateien haben'} ein eigenes Ziel und ${a === 1 ? 'behält es' : 'behalten es'}.</span><button type="button" class="btn" data-key="alle">Eigene Ziele aufheben</button></div>`);
+
+    m.addEventListener('click', e => {
+      const b = e.target.closest('[data-key]'); if (!b) return;
+      let key = b.dataset.key;
+      if (key === 'alle') { W.ov = {}; }
+      else {
+        if (key === 'wahl') { if (!W.extra.includes(GEWAEHLT)) W.extra.push(GEWAEHLT); key = 'p:' + GEWAEHLT; }
+        const r = key === 'orig' ? { art: 'orig' } : key.startsWith('p:') ? { art: 'pfad', pfad: key.slice(2) } : null;
+        if (f) { if (key === 'erbe') delete W.ov[f.id]; else W.ov[f.id] = r; }
+        else W.global = r;
+      }
+      schliesse(W);
+      aktualisiere(W);
+      const neu = f ? W.el.querySelector(`.zk[data-id="${f.id}"]`) : anker;
+      neu?.focus({ preventScroll: true });
+    });
+
+    W.el.append(m); W.menue = m;
+    const wr = W.el.getBoundingClientRect(), ar = anker.getBoundingClientRect(), mh = m.offsetHeight, mw = m.offsetWidth;
+    let x = ar.left - wr.left, y = ar.bottom - wr.top + 6;
+    if (y + mh > wr.height - 8) y = ar.top - wr.top - mh - 6;
+    x = Math.max(8, Math.min(x, wr.width - mw - 8)); y = Math.max(8, y);
+    m.style.left = x + 'px'; m.style.top = y + 'px';
+    m.querySelector('.opt.an, .opt')?.focus({ preventScroll: true });
+    W.aussen = e => { if (!m.contains(e.target) && !anker.contains(e.target)) schliesse(W); };
+    W.taste = e => {
+      if (e.key === 'Escape') { schliesse(W); anker.focus({ preventScroll: true }); }
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        const bs = [...m.querySelectorAll('button')], i = bs.indexOf(document.activeElement);
+        if (i < 0) return; e.preventDefault();
+        bs[(i + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length].focus();
+      }
+    };
+    document.addEventListener('pointerdown', W.aussen, true);
+    document.addEventListener('keydown', W.taste, true);
+  }
+
+
+  /* ---------- Pfade ---------- */
+  const HOME = 'C:\\Users\\Anna';
+  const zielName = f => f.name + '.' + f.nach.toLowerCase();
+  const vollOrdner = rel => HOME + '\\' + rel;
+  function ordnerKurz(rel, max) {
+    let teile = vollOrdner(rel).split('\\');
+    let s = teile.join('\\') + '\\';
+    while (s.length > max && teile.length > 2) { teile.splice(1, 1); s = teile[0] + '\\…\\' + teile.slice(1).join('\\') + '\\'; }
+    return s;
+  }
+  const ICON_STIFT = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.5 2.5l3 3L5 14H2v-3z"/></svg>';
+  const ICON_AUF = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 2.5h4.5V7M13.5 2.5L7 9M11.5 9.5v3a1 1 0 01-1 1h-7a1 1 0 01-1-1v-7a1 1 0 011-1h3"/></svg>';
+  const dauer = f => leise ? 0.3 : Math.min(4.8, Math.max(2.4, 1.8 + Math.log10(f.mb + 1) * 1.1));
+  const rest = W => Math.round(W.files.reduce((s, f) => s + (1 - f.p) * f.d, 0) / (W.k.parallel || 1) * 5);
+  const summe = (W, k) => W.files.reduce((a, f) => a + f[k], 0);
+
+  /* ---------- Farben aus den Tokens ---------- */
+  const F = {};
+  const KF = { bild: 'blue', audio: 'violet', video: 'amber', dok: 'cyan' };
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['paper', 'paper-ink', 'blue', 'violet', 'amber', 'cyan', 'mint', 'auf-mint', 'ink', 'muted', 'leise', 'line', 'line-stark', 'panel', 'panel2', 'bg', 'tief'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
+    const [r, g, b] = hexRgb(F.bg); F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
+    F.mintRgb = hexRgb(F.mint);
+  }
+  const rgba = (h, a) => { const [r, g, b] = hexRgb(h); return `rgba(${r},${g},${b},${a})`; };
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (t, a = 0, b = 1) => Math.max(a, Math.min(b, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const hsl = (h, s, l) => { s /= 100; l /= 100; const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l); const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1))); return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)]; };
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  /* ---------- Blatt als Bild und als Pixel ---------- */
+  const SW = 96, SH = 124, SK = 2;
+  function rr(x, a, b, w, h, r) { x.beginPath(); x.roundRect(a, b, w, h, r); }
+  function inhalt(x, k, neu, a, b, w, h) {
+    x.save(); rr(x, a, b, w, h, 3); x.clip();
+    if (k === 'bild') {
+      const g = x.createLinearGradient(0, b, 0, b + h); g.addColorStop(0, '#9cc3ee'); g.addColorStop(.62, '#e6eef6'); g.addColorStop(.62, '#d9c9a4'); g.addColorStop(1, '#cbb88c');
+      x.fillStyle = g; x.fillRect(a, b, w, h);
+      x.fillStyle = '#5f7c9c'; x.beginPath(); x.moveTo(a + 8, b + h * .66); x.lineTo(a + 30, b + 14); x.lineTo(a + 44, b + 30); x.lineTo(a + 56, b + 18); x.lineTo(a + w - 6, b + h * .66); x.fill();
+      x.fillStyle = '#f2c46a'; x.beginPath(); x.arc(a + w - 16, b + 12, 7, 0, 7); x.fill();
+    } else if (k === 'audio') {
+      x.fillStyle = '#f1ecfb'; x.fillRect(a, b, w, h);
+      x.fillStyle = '#7b61c4';
+      [8, 14, 22, 30, 18, 26, 38, 44, 30, 20, 34, 40, 26, 16, 28, 36, 22, 12, 20, 14].forEach((v, i) => { const hh = v * .9; x.fillRect(a + 4 + i * 3.7, b + h / 2 - hh / 2, 2.4, hh); });
+    } else if (k === 'video') {
+      x.fillStyle = '#1d2226'; x.fillRect(a, b, w, h);
+      x.fillStyle = '#f2b45a'; x.beginPath(); x.moveTo(a + w / 2 - 9, b + h / 2 - 12); x.lineTo(a + w / 2 + 13, b + h / 2); x.lineTo(a + w / 2 - 9, b + h / 2 + 12); x.fill();
+      x.fillStyle = '#ffffff22'; for (let i = 0; i < 8; i++) { x.fillRect(a + 3 + i * 10, b + 3, 6, 4); x.fillRect(a + 3 + i * 10, b + h - 7, 6, 4); }
+    } else {
+      x.fillStyle = '#ffffff'; x.fillRect(a, b, w, h);
+      x.fillStyle = neu ? '#0a6851' : '#095c78'; x.fillRect(a + 5, b + 6, w * .6, 5);
+      x.fillStyle = '#c5ccd1'; [1, .8, .95, .6, .9, .7].forEach((l, i) => x.fillRect(a + 5, b + 16 + i * 5.5, (w - 10) * l, 2.6));
+    }
+    x.restore();
+  }
+  function blattBild(f, neu) {
+    const c = document.createElement('canvas'); c.width = SW * SK; c.height = SH * SK;
+    const x = c.getContext('2d'); x.scale(SK, SK);
+    const kf = F[KF[f.k]];
+    x.fillStyle = neu ? F.mint : kf; rr(x, 6, 0, 42, 18, 5); x.fill();
+    x.fillStyle = neu ? F['auf-mint'] : '#0b0f12'; x.font = `700 9px ${MONO}`; x.textBaseline = 'middle'; x.fillText(neu ? f.nach : f.von, 12, 7);
+    x.fillStyle = F.paper; rr(x, 0, 12, SW, SH - 12, 6); x.fill();
+    if (neu) { x.strokeStyle = F.mint; x.lineWidth = 2; rr(x, 1, 13, SW - 2, SH - 14, 5); x.stroke(); }
+    inhalt(x, f.k, neu, 8, 22, SW - 16, 52);
+    x.textBaseline = 'alphabetic';
+    x.fillStyle = neu ? '#0a6851' : '#3b4247'; x.font = `700 17px ${MONO}`; x.fillText(neu ? f.nach : f.von, 8, SH - 22);
+    x.fillStyle = '#5b646a'; x.font = `500 7px ${MONO}`;
+    let n = neu ? zielName(f) : f.name + '.' + f.von.toLowerCase();
+    if (x.measureText(n).width > SW - 14) { while (x.measureText(n + '…').width > SW - 14) n = n.slice(0, -1); n += '…'; }
+    x.fillText(n, 8, SH - 9);
+    return c;
+  }
+  function probe(a, b, step) {
+    const da = a.getContext('2d').getImageData(0, 0, a.width, a.height).data, db = b.getContext('2d').getImageData(0, 0, b.width, b.height).data;
+    const P = [];
+    for (let gy = 0; gy < SH; gy += step) for (let gx = 0; gx < SW; gx += step) {
+      const px = Math.min(a.width - 1, Math.floor((gx + step / 2) * SK)), py = Math.min(a.height - 1, Math.floor((gy + step / 2) * SK));
+      const i = (py * a.width + px) * 4, A = da[i + 3], B = db[i + 3];
+      if (A < 40 && B < 40) continue;
+      P.push({ gx, gy, c0: [da[i], da[i + 1], da[i + 2], A / 255], c1: [db[i], db[i + 1], db[i + 2], B / 255], r1: Math.random(), r2: Math.random(), r3: Math.random(), px: null, py: null });
+    }
+    return P;
+  }
+  const CACHE = new Map();
+  function daten(f, step) {
+    const key = f.id + ':' + step;
+    if (!CACHE.has(key)) { const alt = blattBild(f, false), neu = blattBild(f, true); CACHE.set(key, { alt, neu, P: probe(alt, neu, step) }); }
+    return CACHE.get(key);
+  }
+
+  /* ---------- Zeichnen ---------- */
+  function blatt(ctx, img, x, y, s = 1, a = 1) { if (a <= 0) return; ctx.globalAlpha = a; ctx.drawImage(img, x, y, SW * s, SH * s); ctx.globalAlpha = 1; }
+  // fn(p) -> { x, y, k (0 alt … 1 neu), u (0 ruht, 1 angekommen), farbe?, o? }
+  function pixel(ctx, P, fn, size) {
+    const flug = [];
+    for (const p of P) {
+      const r = fn(p); if (!r) continue;
+      if (r.u > 0 && r.u < 1) { r.p = p; flug.push(r); continue; }
+      const c = r.k >= 1 ? p.c1 : p.c0;
+      if (c[3] < .05) { p.px = null; continue; }
+      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${c[3]})`; ctx.fillRect(r.x, r.y, size, size); p.px = r.x; p.py = r.y;
+    }
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (const r of flug) {
+      const p = r.p, k = r.k;
+      let R = lerp(p.c0[0], p.c1[0], k), G = lerp(p.c0[1], p.c1[1], k), B = lerp(p.c0[2], p.c1[2], k);
+      const A = Math.max(.35, lerp(p.c0[3], p.c1[3], k));
+      if (r.farbe) { const o = r.o ?? 1; R = lerp(R, r.farbe[0], o); G = lerp(G, r.farbe[1], o); B = lerp(B, r.farbe[2], o); }
+      const col = `rgba(${R | 0},${G | 0},${B | 0},${A})`;
+      const s = size * (r.gross || 1);
+      ctx.fillStyle = col; ctx.fillRect(r.x, r.y, s, s);
+      if (p.px != null) {
+        const dx = r.x - p.px, dy = r.y - p.py;
+        if (dx * dx + dy * dy > 6) { ctx.strokeStyle = `rgba(${R | 0},${G | 0},${B | 0},${A * .35})`; ctx.lineWidth = s * .8; ctx.beginPath(); ctx.moveTo(p.px + s / 2, p.py + s / 2); ctx.lineTo(r.x + s / 2, r.y + s / 2); ctx.stroke(); }
+      }
+      p.px = r.x; p.py = r.y;
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function stapelZ(ctx, files, x, y, s, neu, label) {
+    const zeig = files.slice(0, 4);
+    for (let i = zeig.length - 1; i >= 0; i--) { const d = daten(zeig[i], 3); blatt(ctx, neu ? d.neu : d.alt, x + i * 5, y - i * 5, s, 1 - i * .12); }
+    ctx.fillStyle = F.muted; ctx.font = `500 11px ${MONO}`; ctx.textBaseline = 'alphabetic';
+    if (label) ctx.fillText(label, x, y + SH * s + 18);
+  }
+  const warten = W => W.files.filter(f => f.st === 'bereit');
+  const fertige = W => W.fertigReihe.map(id => W.files.find(f => f.id === id));
+  function glühen(ctx, x, y, r, farbe, a) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, rgba(farbe, a)); g.addColorStop(1, rgba(farbe, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+  }
+  const mischHex = (a, b, t) => { const A = hexRgb(a), B = hexRgb(b); return '#' + A.map((v, i) => Math.round(lerp(v, B[i], t)).toString(16).padStart(2, '0')).join(''); };
+
+  /* =========================================================
+     Die sechs Bühnen. t = Fortschritt der Datei (0 … 1)
+     ========================================================= */
+  const K = {};
+
+  K.k1 = { name: 'Pixel-Band',
+    layout(S) { S.gate = Math.round(S.w * .5); S.beltY = S.h - 46; S.sy = S.beltY - SH; S.xs = S.gate - SW - 40; S.xd = S.gate + 40; S.pileX = 34; S.doneX = S.w - SW - 44; },
+    draw(S, T) {
+      const { ctx, W } = S, laeuft = W.status === 'laeuft';
+      ctx.fillStyle = F.panel2; rr(ctx, 16, S.beltY + 2, S.w - 32, 14, 7); ctx.fill();
+      ctx.strokeStyle = F['line-stark']; ctx.lineWidth = 1; ctx.stroke();
+      const off = laeuft ? (T * 70) % 18 : 0;
+      ctx.beginPath(); for (let x = 22 + off; x < S.w - 22; x += 18) { ctx.moveTo(x, S.beltY + 5); ctx.lineTo(x, S.beltY + 13); } ctx.stroke();
+      // Tor
+      const akt = W.files.find(f => f.st === 'laeuft');
+      const puls = .5 + .5 * Math.sin(T * 3);
+      glühen(ctx, S.gate, S.beltY - 70, 110, F.mint, akt ? .16 : .05 + puls * .03);
+      const g = ctx.createLinearGradient(0, S.beltY - 200, 0, S.beltY); g.addColorStop(0, rgba(F.mint, 0)); g.addColorStop(.4, rgba(F.mint, .9)); g.addColorStop(1, rgba(F.mint, .3));
+      ctx.fillStyle = g; ctx.fillRect(S.gate - 1.5, S.beltY - 200, 3, 200);
+      ctx.strokeStyle = rgba(F.mint, .5); ctx.lineWidth = 2;
+      [[-26, -190, 1], [26, -190, -1]].forEach(([dx, dy, s]) => { ctx.beginPath(); ctx.moveTo(S.gate + dx, S.beltY + dy + 14); ctx.lineTo(S.gate + dx, S.beltY + dy); ctx.lineTo(S.gate + dx + 12 * s, S.beltY + dy); ctx.stroke(); });
+      stapelZ(ctx, warten(W), S.pileX, S.sy, 1, false);
+      stapelZ(ctx, fertige(W).slice().reverse(), S.doneX, S.sy, 1, true);
+      for (const f of W.files.filter(f => f.st === 'laeuft')) {
+        const d = daten(f, 3), t = f.p;
+        if (t < .15) blatt(ctx, d.alt, lerp(S.pileX, S.xs, ease(t / .15)), S.sy);
+        else if (t < .85) {
+          const k = (t - .15) / .7;
+          pixel(ctx, d.P, p => {
+            const u = clamp((k - (1 - p.gx / SW) * .45) / .55), e = ease(u);
+            const bogen = Math.sin(Math.PI * u);
+            return { x: lerp(S.xs, S.xd, e) + p.gx, y: S.sy + p.gy - bogen * (30 + p.r1 * 80) + Math.sin(u * 10 + p.r2 * 6) * 5 * bogen, k: clamp((u - .35) / .3), u, farbe: F.mintRgb, o: clamp(1 - Math.abs(u - .5) * 3), gross: 1 + bogen * .6 };
+          }, 3);
+        } else blatt(ctx, d.neu, lerp(S.xd, S.doneX, ease((t - .85) / .15)), S.sy);
+      }
+    } };
+
+  K.k2 = { name: 'Kern',
+    layout(S) { S.cx = S.w / 2; S.cy = S.h / 2 - 6; S.sx = S.cx - 250 - SW / 2; S.dx = S.cx + 250 - SW / 2; S.y = S.cy - SH / 2; S.pileX = 30; S.doneX = S.w - SW - 44; },
+    draw(S, T) {
+      const { ctx, W } = S, akt = W.files.find(f => f.st === 'laeuft');
+      const fp = akt ? clamp((akt.p - .1) / .8) : W.status === 'fertig' ? 1 : 0;
+      const farbe = akt ? mischHex(F[KF[akt.k]], F.mint, clamp((fp - .35) / .3)) : W.status === 'fertig' ? F.mint : F['line-stark'];
+      const puls = .5 + .5 * Math.sin(T * (akt ? 7 : 2));
+      glühen(ctx, S.cx, S.cy, 120, farbe, akt ? .28 : .1);
+      ctx.save(); ctx.translate(S.cx, S.cy);
+      [[62, .35, T * .8, [10, 8]], [48, .55, -T * 1.4, [3, 6]]].forEach(([r, a, rot, dash]) => {
+        ctx.save(); ctx.rotate(rot); ctx.scale(1, .42); ctx.setLineDash(dash); ctx.strokeStyle = rgba(farbe, a); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.stroke(); ctx.restore();
+      });
+      ctx.setLineDash([]);
+      const kg = ctx.createRadialGradient(-8, -10, 2, 0, 0, 30 + puls * 4);
+      kg.addColorStop(0, '#ffffff'); kg.addColorStop(.35, farbe); kg.addColorStop(1, rgba(farbe, 0));
+      ctx.fillStyle = kg; ctx.beginPath(); ctx.arc(0, 0, 30 + puls * 4, 0, 7); ctx.fill();
+      ctx.restore();
+      stapelZ(ctx, warten(W), S.pileX, S.y, 1, false);
+      stapelZ(ctx, fertige(W).slice().reverse(), S.doneX, S.y, 1, true);
+      if (!akt) return;
+      const d = daten(akt, 3), t = akt.p;
+      if (t < .1) { blatt(ctx, d.alt, lerp(S.pileX, S.sx, ease(t / .1)), S.y); return; }
+      if (t >= .9) { blatt(ctx, d.neu, lerp(S.dx, S.doneX, ease((t - .9) / .1)), S.y); return; }
+      const k = (t - .1) / .8, orb = hexRgb(farbe);
+      pixel(ctx, d.P, p => {
+        const u = clamp((k - p.r3 * .3) / .7);
+        const w = p.r1 * 6.283 + T * (2.2 + p.r2 * 2), rad = 6 + p.r2 * 34;
+        const ox = S.cx + Math.cos(w) * rad, oy = S.cy + Math.sin(w) * rad * .45;
+        if (u < .5) { const e = ease(u * 2); return { x: lerp(S.sx + p.gx, ox, e), y: lerp(S.y + p.gy, oy, e), k: 0, u, farbe: orb, o: e, gross: 1 + e * .4 }; }
+        const e = ease((u - .5) * 2);
+        return { x: lerp(ox, S.dx + p.gx, e), y: lerp(oy, S.y + p.gy, e), k: e, u, farbe: orb, o: 1 - e, gross: 1.4 - e * .4 };
+      }, 3);
+    } };
+
+  K.k3 = { name: 'Pixel-Drucker',
+    layout(S) { S.cx = S.w / 2; S.sx = S.cx - SW / 2; S.sy = 10; S.dy = S.h - SH - 16; S.pileX = 40; S.doneX = S.w - SW - 50; S.py = S.h / 2 - SH / 2; },
+    draw(S, T) {
+      const { ctx, W } = S, akt = W.files.find(f => f.st === 'laeuft');
+      // Druckbett
+      ctx.fillStyle = F.panel2; rr(ctx, S.cx - 90, S.h - 16, 180, 8, 4); ctx.fill();
+      glühen(ctx, S.cx, S.h - 12, 100, F.mint, akt ? .14 : .05);
+      ctx.strokeStyle = rgba(F.mint, .18); ctx.setLineDash([2, 5]); ctx.strokeRect(S.sx - .5, S.dy - .5, SW + 1, SH + 1); ctx.setLineDash([]);
+      stapelZ(ctx, warten(W), S.pileX, S.py, 1, false);
+      stapelZ(ctx, fertige(W).slice().reverse(), S.doneX, S.py, 1, true);
+      let kopfY = S.dy - 14;
+      if (akt) {
+        const d = daten(akt, 3), t = akt.p;
+        if (t < .1) blatt(ctx, d.alt, lerp(S.pileX, S.sx, ease(t / .1)), lerp(S.py, S.sy, ease(t / .1)));
+        else if (t >= .9) { blatt(ctx, d.neu, lerp(S.sx, S.doneX, ease((t - .9) / .1)), lerp(S.dy, S.py, ease((t - .9) / .1))); }
+        else {
+          const k = (t - .1) / .8;
+          pixel(ctx, d.P, p => {
+            const u = clamp((k - (1 - p.gy / SH) * .6) / .4);
+            const fall = u * u;
+            return { x: S.sx + p.gx + Math.sin(Math.PI * u) * (p.r1 - .5) * 36, y: lerp(S.sy, S.dy, fall) + p.gy, k: clamp((u - .6) / .3), u, farbe: F.mintRgb, o: Math.sin(Math.PI * u) * .7 };
+          }, 3);
+          kopfY = S.dy + SH * (1 - clamp((k - .4) / .6)) - 6;
+        }
+      }
+      // Druckkopf
+      glühen(ctx, S.cx, kopfY + 3, 70, F.mint, akt ? .22 : .06);
+      ctx.fillStyle = F['line-stark']; rr(ctx, S.sx - 22, kopfY, SW + 44, 7, 3.5); ctx.fill();
+      ctx.fillStyle = akt ? F.mint : F.muted; ctx.fillRect(S.sx - 2, kopfY + 6, SW + 4, 2);
+    } };
+
+  K.k4 = { name: 'LED-Wand',
+    layout(S) { S.s = (S.h - 36) / SH; S.X = S.w / 2 - SW * S.s / 2; S.Y = 18; S.beltY = S.h - 18; S.pileX = 34; S.doneX = S.w - SW - 50; S.py = S.h - 28 - SH; },
+    draw(S, T) {
+      const { ctx, W } = S, akt = W.files.find(f => f.st === 'laeuft'), s = S.s, step = 4, size = step * s - 1.8;
+      // Wand
+      ctx.fillStyle = F.tief; rr(ctx, S.X - 14, S.Y - 10, SW * s + 28, SH * s + 20, 14); ctx.fill();
+      ctx.strokeStyle = F['line-stark']; ctx.lineWidth = 1; ctx.stroke();
+      const leer = daten(W.files[0], step);
+      ctx.fillStyle = rgba(F['line-stark'], .35);
+      for (let gy = 0; gy < SH; gy += step) for (let gx = 0; gx < SW; gx += step) ctx.fillRect(S.X + gx * s, S.Y + gy * s, size, size);
+      ctx.fillStyle = F.panel2; ctx.fillRect(0, S.beltY, S.w, 3);
+      stapelZ(ctx, warten(W), S.pileX, S.py, 1, false);
+      stapelZ(ctx, fertige(W).slice().reverse(), S.doneX, S.py, 1, true);
+      const zeige = akt || (W.status === 'bereit' ? warten(W)[0] : null);
+      if (!zeige) return;
+      const d = daten(zeige, step), t = akt ? akt.p : 0;
+      if (akt && t < .12) { const e = ease(t / .12); blatt(ctx, d.alt, lerp(S.pileX, S.X, e), lerp(S.py, S.Y, e), lerp(1, s, e)); return; }
+      if (akt && t >= .88) { const e = ease((t - .88) / .12); blatt(ctx, d.neu, lerp(S.X, S.doneX, e), lerp(S.Y, S.py, e), lerp(s, 1, e)); return; }
+      const k = akt ? (t - .12) / .76 : 0;
+      const ruhe = akt ? 1 : .35;
+      const flug = [];
+      for (const p of d.P) {
+        const u = clamp((k - ((p.gx / SW) * .6 + (p.gy / SH) * .4) * .6) / .4);
+        const hf = Math.max(.08, Math.abs(Math.cos(Math.PI * u)));
+        const c = u < .5 ? p.c0 : p.c1;
+        const x = S.X + p.gx * s, y = S.Y + p.gy * s + (1 - hf) * size / 2;
+        if (c[3] > .05) { ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},${c[3] * ruhe})`; ctx.fillRect(x, y, size, size * hf); }
+        if (u > 0 && u < 1) flug.push([x, y, size * hf, Math.sin(Math.PI * u)]);
+      }
+      ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+      for (const [x, y, h, a] of flug) { ctx.fillStyle = rgba(F.mint, a * .75); ctx.fillRect(x - 1, y - 1, size + 2, h + 2); }
+      ctx.globalCompositeOperation = 'source-over';
+    } };
+
+  K.k5 = { name: 'Prisma',
+    layout(S) { S.cx = S.w / 2; S.cy = S.h / 2 + 4; S.sx = S.cx - 270 - SW / 2; S.dx = S.cx + 270 - SW / 2; S.y = S.cy - SH / 2; S.E = [S.cx - 30, S.cy + 8]; S.A = [S.cx + 30, S.cy + 8]; S.pileX = 24; S.doneX = S.w - SW - 40; },
+    draw(S, T) {
+      const { ctx, W } = S, akt = W.files.find(f => f.st === 'laeuft');
+      stapelZ(ctx, warten(W), S.pileX, S.y, 1, false);
+      stapelZ(ctx, fertige(W).slice().reverse(), S.doneX, S.y, 1, true);
+      if (akt) {
+        const d = daten(akt, 3), t = akt.p;
+        if (t < .1) blatt(ctx, d.alt, lerp(S.pileX, S.sx, ease(t / .1)), S.y);
+        else if (t >= .9) blatt(ctx, d.neu, lerp(S.dx, S.doneX, ease((t - .9) / .1)), S.y);
+        else {
+          const k = (t - .1) / .8;
+          // Strahl
+          ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+          const g = ctx.createLinearGradient(S.sx + SW, 0, S.E[0], 0); g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(255,255,255,.5)');
+          ctx.strokeStyle = g; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(S.sx + SW, S.cy); ctx.lineTo(S.E[0], S.E[1]); ctx.stroke();
+          for (let i = 0; i < 7; i++) { const c = hsl(i * 45, 90, 62); ctx.strokeStyle = `rgba(${c},.18)`; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(S.A[0], S.A[1]); ctx.lineTo(S.A[0] + 120, S.A[1] + (i - 3) * 22); ctx.stroke(); }
+          ctx.globalCompositeOperation = 'source-over';
+          pixel(ctx, d.P, p => {
+            const u = clamp((k - p.r3 * .3) / .7), spek = hsl(p.r1 * 300, 92, 62);
+            if (u < .4) { const e = ease(u / .4); return { x: lerp(S.sx + p.gx, S.E[0] - 2, e), y: lerp(S.y + p.gy, S.E[1] + (p.r1 - .5) * 4, e), k: 0, u, farbe: [255, 255, 255], o: e * .6 }; }
+            if (u < .55) { const e = (u - .4) / .15; return { x: lerp(S.E[0], S.A[0], e), y: S.E[1] + (p.r1 - .5) * lerp(4, 16, e), k: 0, u, farbe: spek, o: e }; }
+            const e = ease((u - .55) / .45);
+            return { x: lerp(S.A[0], S.dx + p.gx, e), y: lerp(S.A[1] + (p.r1 - .5) * 16, S.y + p.gy, e) + (p.r1 - .5) * 150 * Math.sin(Math.PI * e), k: e, u, farbe: spek, o: 1 - e, gross: 1.3 - e * .3 };
+          }, 3);
+        }
+      }
+      // Glasprisma
+      const h = 130, b = 72;
+      ctx.beginPath(); ctx.moveTo(S.cx, S.cy - h * .62); ctx.lineTo(S.cx + b, S.cy + h * .38); ctx.lineTo(S.cx - b, S.cy + h * .38); ctx.closePath();
+      const gg = ctx.createLinearGradient(S.cx - b, S.cy - h / 2, S.cx + b, S.cy + h / 2);
+      gg.addColorStop(0, rgba(F.ink, .14)); gg.addColorStop(.5, rgba(F.ink, .04)); gg.addColorStop(1, rgba(F.mint, .14));
+      ctx.fillStyle = gg; ctx.fill();
+      ctx.strokeStyle = rgba(F.ink, .45); ctx.lineWidth = 1.4; ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(S.cx - 6, S.cy - h * .5); ctx.lineTo(S.cx - b * .7, S.cy + h * .3); ctx.stroke();
+    } };
+
+  K.k6 = { name: 'Schwarm', parallel: 2,
+    layout(S) { S.cx = S.w / 2; S.cy = S.h / 2; S.s = .5; },
+    platz(S, i, rechts) { const col = i % 2, row = Math.floor(i / 2); const x = rechts ? S.w - 24 - (2 - col) * 58 + 10 : 24 + col * 58; return [x, 12 + row * 70]; },
+    beginn(W) { W.sw = { t0: performance.now() / 1000, raus: {} }; },
+    fertig(W, f) { W.sw.raus[f.id] = performance.now() / 1000; },
+    draw(S, T) {
+      const { ctx, W } = S, s = S.s, sw = W.sw;
+      const aktiv = W.status === 'laeuft';
+      const mint = W.files.length ? W.files.reduce((a, f) => a + f.p, 0) / W.files.length : 0;
+      glühen(ctx, S.cx, S.cy, 150, mischHex(F.violet, F.mint, mint), aktiv ? .18 : .06);
+      ctx.fillStyle = F.muted; ctx.font = `500 11px ${MONO}`; ctx.textAlign = 'center';
+      ctx.fillText(W.status === 'bereit' ? 'Alle 7 Dateien starten gemeinsam' : W.status === 'laeuft' ? `${W.files.filter(f => f.st !== 'fertig').length} im Wirbel` : 'Alle fertig', S.cx, S.h - 12);
+      ctx.textAlign = 'left';
+      W.files.forEach((f, i) => {
+        const d = daten(f, 4), [sx, sy] = K.k6.platz(S, i, false);
+        const ri = W.fertigReihe.indexOf(f.id), [dx, dy] = K.k6.platz(S, ri < 0 ? i : ri, true);
+        if (!sw || W.status === 'bereit') { blatt(ctx, d.alt, sx, sy, s); return; }
+        const tIn = sw.t0 + i * .12, tOut = sw.raus[f.id];
+        const ein = ease(clamp((T - tIn) / .9)), aus = tOut ? ease(clamp((T - tOut) / .9)) : 0;
+        if (aus >= 1) { blatt(ctx, d.neu, dx, dy, s); return; }
+        pixel(ctx, d.P, p => {
+          const w = p.r1 * 6.283 + (T - tIn) * (0.5 + 1.6 * (1 - p.r2)), rad = 16 + p.r2 * 118;
+          const ox = S.cx + Math.cos(w) * rad, oy = S.cy + Math.sin(w) * rad * .42 + (p.r3 - .5) * 14;
+          let x = lerp(sx + p.gx * s, ox, ein), y = lerp(sy + p.gy * s, oy, ein);
+          if (aus > 0) { x = lerp(ox, dx + p.gx * s, aus); y = lerp(oy, dy + p.gy * s, aus); }
+          return { x, y, k: aus > 0 ? aus : f.p * .7, u: .5, farbe: F.mintRgb, o: f.st === 'fertig' ? 0 : f.p * .5, gross: 1 };
+        }, 2);
+      });
+    } };
+
+  /* ---------- Bühne ---------- */
+  function buehne(W) {
+    const cv = W.body.querySelector('canvas'), ctx = cv.getContext('2d');
+    const S = { W, cv, ctx, w: 0, h: 0, sichtbar: true };
+    const groesse = () => {
+      const r = cv.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1);
+      S.w = r.width; S.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+      ctx.setTransform(d, 0, 0, d, 0, 0); W.k.layout(S);
+    };
+    new ResizeObserver(groesse).observe(cv); groesse();
+    new IntersectionObserver(e => { S.sichtbar = e[0].isIntersecting; }).observe(cv);
+    const loop = now => {
+      if (S.sichtbar && S.w) { ctx.clearRect(0, 0, S.w, S.h); try { W.k.draw(S, now / 1000); } catch (err) { console.error(err); } }
+      requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+    return S;
+  }
+
+  /* ---------- Fenster ---------- */
+  function fenster(W) {
+    const el = document.createElement('div');
+    el.className = 'win'; el.dataset.st = 'bereit';
+    el.innerHTML = `
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><span class="wk" aria-hidden="true"><span>─</span><span>▢</span><span>✕</span></span></div>
+      <nav class="faden" aria-label="Schritte">
+        <span class="knoten"><i>✓</i><b>Sortieren</b><small>7 Dateien, 4 Arten</small></span><span class="seg"></span>
+        <span class="knoten"><i>✓</i><b>Ziel</b><small>7 Formate gewählt</small></span><span class="seg"></span>
+        <span class="knoten an" aria-current="step"><i class="js-f3i">3</i><b>Umwandeln</b><small class="js-f3"></small></span>
+        <span class="bahn js-bahn" role="progressbar" aria-label="Gesamtfortschritt" aria-valuemin="0" aria-valuemax="100"></span>
+        <span class="faden-zahl js-fz"></span>
+      </nav>
+      <div class="koerper">
+        <div class="stage"><canvas aria-label="Animation: ${esc(W.k.name)}" role="img"></canvas><span class="stage-name">${esc(W.k.name)}</span></div>
+        <div class="ausgabe">
+          <div class="ag-teil">
+            <div class="ag-kopf"><span class="ag-nr">1</span><b>Für alle Dateien speichern in</b><small>gilt für jede Datei ohne eigenes Ziel</small></div>
+            <div class="ag-wahl" role="radiogroup" aria-label="Speicherort für alle Dateien">
+              <button type="button" class="ag-opt js-orig" role="radio"><i></i><span><b>Neben dem Original</b><small>jede Datei bleibt in ihrem Ordner</small></span></button>
+              <button type="button" class="ag-opt js-ein" role="radio"><i></i><span><b>Alles in einen Ordner</b><small class="js-einpfad"></small></span></button>
+              <button type="button" class="btn js-global" aria-haspopup="dialog">Ordner wählen …</button>
+            </div>
+          </div>
+          <div class="ag-teil ag-2">
+            <div class="ag-kopf"><span class="ag-nr">2</span><b>Einzelne Dateien anders</b></div>
+            <p class="js-agaus" aria-live="polite"></p>
+          </div>
+        </div>
+        <div class="liste">
+          <div class="liste-kopf" aria-hidden="true"><span></span><span class="label">Datei</span><span class="label">Format</span><span class="label">Wird gespeichert als</span><span class="label" style="text-align:right">Aktion</span><span class="label" style="text-align:right">Status</span></div>
+          <div class="zeilen js-zeilen" role="list"></div>
+        </div>
+      </div>
+      <div class="leiste">
+        <span class="vertrauen">${ICON_SCHLOSS}Ihre Dateien verlassen nie diesen PC.</span><span class="platz"></span>
+        <span class="summe js-sum" style="font:600 12px var(--mono);color:var(--muted)"></span>
+        <button type="button" class="btn js-zurueck">Zurück</button>
+        <button type="button" class="taste js-los"></button>
+      </div>`;
+    return el;
+  }
+
+  function status(W) {
+    const q = s => W.el.querySelector(s);
+    const gp = gesamt(W), n = fertigZahl(W);
+    W.el.dataset.st = W.status;
+    q('.js-bahn').style.setProperty('--gp', gp.toFixed(4));
+    q('.js-bahn').setAttribute('aria-valuenow', Math.round(gp * 100));
+    q('.js-fz').innerHTML = W.status === 'bereit' ? `0 von 7 · ca. ${uhr(rest(W))}` : W.status === 'laeuft' ? `<b>${n}</b> von 7 · noch ${uhr(rest(W))}` : `<b>7 von 7</b> · fertig`;
+    q('.js-f3').textContent = W.status === 'bereit' ? 'bereit' : W.status === 'laeuft' ? Math.round(gp * 100) + ' %' : 'fertig';
+    q('.js-f3i').textContent = W.status === 'fertig' ? '✓' : '3';
+  }
+
+  function aktualisiere(W) {
+    const q = s => W.el.querySelector(s);
+    if (W.global.art === 'pfad') W.letzter = W.global.pfad;
+    status(W);
+    const orig = W.global.art === 'orig';
+    q('.js-orig').classList.toggle('an', orig); q('.js-orig').setAttribute('aria-checked', orig);
+    q('.js-ein').classList.toggle('an', !orig); q('.js-ein').setAttribute('aria-checked', !orig);
+    q('.js-einpfad').textContent = vollOrdner(W.letzter);
+    const a = anzahlAusnahmen(W);
+    q('.js-agaus').innerHTML = a
+      ? `<b>${a === 1 ? '1 Datei hat' : a + ' Dateien haben'} ein eigenes Ziel</b> (Schild ②). Weitere: in der Liste auf „Ändern“ klicken. <button type="button" class="link js-alle">Alle wieder wie ①</button>`
+      : 'Soll eine Datei woanders hin? In der Liste bei ihr auf „Ändern“ klicken. Sie bekommt dann das Schild ②.';
+    q('.js-sum').textContent = `${mb(summe(W, 'mb'))} → ${W.status === 'fertig' ? '' : '~'}${mb(summe(W, 'neu'))}`;
+    const los = q('.js-los');
+    los.classList.toggle('halt', W.status === 'laeuft');
+    los.textContent = W.status === 'bereit' ? '7 Dateien umwandeln' : W.status === 'laeuft' ? 'Abbrechen' : 'Ordner öffnen';
+    q('.js-zurueck').textContent = W.status === 'fertig' ? 'Zurücksetzen (Demo)' : 'Zurück';
+    liste(W);
+  }
+
+  function zeileHTML(W, f) {
+    const eigen = !!ausnahme(W, f), rel = pfad(W, f), voll = vollOrdner(rel) + '\\' + zielName(f);
+    const aktion = f.st === 'fertig'
+      ? `<button type="button" class="z-akt haupt js-oeffnen" data-id="${f.id}" aria-label="${esc(zielName(f))} öffnen">${ICON_AUF}Öffnen</button><button type="button" class="z-akt js-ordner" data-id="${f.id}" aria-label="${esc(zielName(f))} im Ordner zeigen">${ICON_ORDNER}Im Ordner zeigen</button>`
+      : `<button type="button" class="zk z-akt" data-id="${f.id}" aria-haspopup="dialog" aria-label="Ziel für ${esc(f.name)} ändern"${f.st === 'bereit' ? '' : ' disabled'}>${ICON_STIFT}Ändern</button>`;
+    return `<div class="zeile k-${f.k}" role="listitem" data-id="${f.id}" data-st="${f.st}" style="--p:${f.p.toFixed(3)}">
+      <span class="punkt" aria-hidden="true"></span>
+      <span class="nm"><b>${esc(f.name)}.${f.von.toLowerCase()}</b><small>${mb(f.mb)} → ${f.st === 'fertig' ? '' : '~'}${mb(f.neu)}</small></span>
+      <span class="fa" aria-label="${f.von} zu ${f.nach}"><span class="fchip alt">${f.von}</span><span class="fpfeil"></span><span class="fchip neu">${f.nach}</span></span>
+      <button type="button" class="zk ziel" data-id="${f.id}" aria-haspopup="dialog" title="${esc(voll)}" aria-label="Wird gespeichert als ${esc(voll)}${eigen ? ', eigenes Ziel' : ', wie alle'}"${f.st === 'bereit' ? '' : ' tabindex="-1"'}>
+        <span class="z-tag${eigen ? ' eigen' : ''}">${eigen ? '② eigenes Ziel' : '① wie alle'}</span>
+        <span class="z-pfad"><span class="dir">${esc(ordnerKurz(rel, 44))}</span><b>${esc(zielName(f))}</b></span></button>
+      <span class="z-aktion">${aktion}</span>
+      <span class="z-st">${stTxt(f)}</span></div>`;
+  }
+  function liste(W) { W.el.querySelector('.js-zeilen').innerHTML = W.files.map(f => zeileHTML(W, f)).join(''); }
+  function zeile(W, f) {
+    const z = W.el.querySelector(`.zeile[data-id="${f.id}"]`); if (!z) return;
+    if (z.dataset.st !== f.st) { z.outerHTML = zeileHTML(W, f); return; }
+    z.style.setProperty('--p', f.p.toFixed(3)); z.querySelector('.z-st').textContent = stTxt(f);
+  }
+  function toast(W, text) {
+    W.el.querySelector('.toast')?.remove();
+    const t = document.createElement('div'); t.className = 'toast'; t.setAttribute('role', 'status'); t.textContent = text;
+    W.el.append(t); setTimeout(() => t.remove(), 2200);
+  }
+
+  /* ---------- Ablauf ---------- */
+  function starte(W) {
+    if (W.status !== 'bereit') return;
+    schliesse(W);
+    W.status = 'laeuft'; W.fertigReihe = [];
+    W.k.beginn?.(W);
+    aktualisiere(W);
+    const warte = W.files.slice(), aktiv = new Set(), par = W.k.parallel || 1;
+    let zuletzt = performance.now();
+    const tick = jetzt => {
+      const dt = Math.min(0.1, (jetzt - zuletzt) / 1000); zuletzt = jetzt;
+      while (aktiv.size < par && warte.length) { const f = warte.shift(); f.st = 'laeuft'; f.p = 0; aktiv.add(f); zeile(W, f); }
+      for (const f of [...aktiv]) {
+        f.p = Math.min(1, f.p + dt / f.d);
+        if (f.p >= 1) { f.st = 'fertig'; aktiv.delete(f); W.fertigReihe.push(f.id); W.k.fertig?.(W, f); }
+        zeile(W, f);
+      }
+      status(W);
+      if (!aktiv.size && !warte.length) { W.status = 'fertig'; W.raf = 0; aktualisiere(W); return; }
+      W.raf = requestAnimationFrame(tick);
+    };
+    W.raf = requestAnimationFrame(tick);
+  }
+  function zuruecksetzen(W) {
+    cancelAnimationFrame(W.raf); W.raf = 0; schliesse(W);
+    W.files.forEach(f => { f.st = 'bereit'; f.p = 0; });
+    W.status = 'bereit'; W.fertigReihe = []; W.sw = null;
+    aktualisiere(W);
+  }
+
+  /* ---------- Start ---------- */
+  farbenLesen();
+  const FENSTER = {};
+  const neuZeichnen = () => { farbenLesen(); CACHE.clear(); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', neuZeichnen);
+  new MutationObserver(neuZeichnen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  document.fonts?.ready.then(() => CACHE.clear());
+
+  document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const k = K[host.dataset.konzept];
+    const W = { k, files: DATEIEN.map(f => ({ ...f, st: 'bereit', p: 0, d: dauer(f) })), global: { art: 'orig' }, letzter: 'Downloads\\Kvertis', ov: { d: { art: 'pfad', pfad: 'Musik\\Master' } }, extra: [], status: 'bereit', raf: 0, menue: null, fertigReihe: [], sw: null };
+    W.el = fenster(W); host.append(W.el);
+    W.body = W.el.querySelector('.koerper');
+    aktualisiere(W);
+    buehne(W);
+    W.el.addEventListener('click', e => {
+      const t = e.target;
+      const oe = t.closest('.js-oeffnen'), or = t.closest('.js-ordner');
+      if (oe || or) { const f = W.files.find(x => x.id === (oe || or).dataset.id); toast(W, oe ? `Öffnet ${zielName(f)} im Standardprogramm` : `Öffnet den Explorer: ${vollOrdner(pfad(W, f))}, Datei markiert`); return; }
+      const zk = t.closest('.zk');
+      if (zk) { if (W.status !== 'bereit') return; const f = W.files.find(x => x.id === zk.dataset.id); if (W.menue && W.menueAnker === zk) schliesse(W); else { menue(W, zk, f); W.menueAnker = zk; } return; }
+      if (W.status === 'bereit') {
+        if (t.closest('.js-orig')) { W.global = { art: 'orig' }; aktualisiere(W); return; }
+        if (t.closest('.js-ein')) { W.global = { art: 'pfad', pfad: W.letzter }; aktualisiere(W); return; }
+        if (t.closest('.js-alle')) { W.ov = {}; aktualisiere(W); return; }
+        const g = t.closest('.js-global');
+        if (g) { if (W.menue && W.menueAnker === g) schliesse(W); else { menue(W, g, null); W.menueAnker = g; } return; }
+      }
+      if (t.closest('.js-los')) {
+        if (W.status === 'bereit') starte(W);
+        else if (W.status === 'laeuft') zuruecksetzen(W);
+        else toast(W, W.global.art === 'orig' ? 'Öffnet die Ordner der Originale im Explorer' : `Öffnet ${vollOrdner(W.global.pfad)}`);
+        return;
+      }
+      if (t.closest('.js-zurueck') && W.status === 'fertig') zuruecksetzen(W);
+    });
+    FENSTER[host.dataset.konzept] = W;
+  });
+  document.addEventListener('click', e => {
+    const s = e.target.closest('[data-start]'), r = e.target.closest('[data-reset]');
+    if (s) { const W = FENSTER[s.dataset.start]; if (W.status !== 'bereit') zuruecksetzen(W); requestAnimationFrame(() => starte(W)); }
+    if (r) zuruecksetzen(FENSTER[r.dataset.reset]);
+  });
+})();
+</script>
