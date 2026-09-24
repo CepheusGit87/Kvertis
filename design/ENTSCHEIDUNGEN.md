@@ -13,11 +13,11 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 | Sanduhr im Sortierregal | Glas-Sanduhr in 3D, alle Formate sichtbar; kippt nach vorn (Konzept 4), eigener Takt je Kiste: 25 / 35 / 45 / 55 / 65 s | `sanduhr-wende.html` |
 | Schritt 3 | Förderband + Sanduhr-Station 1: Datei zerfällt zu Partikeln, sickert durch, kommt als neues Blatt heraus, Sanduhr kippt nach vorn und bleibt so stehen; darunter die Kompakt-Liste | `sanduhr-foerderband.html` |
 | 3D-Modelle | Fünfte Kiste (ADR-016) in Rosa (#f08fd0 dunkel, #9a2f7d hell), Takt 65 s. Schritt 2 ohne Qualitätsregler und Metadaten-Schalter, nur Hinweis „Form verlustfrei, Farben und Materialien fallen weg“. Breite: 5 groß ab 1 350 px, 5 verkleinert ab 1 000 px, darunter 3 + 2 | `oberflaeche-mischentwurf.html`, `sanduhr-fuenf-kisten.html` |
+| Schritt 2 (Ziel) | Eine Zeile je Dateiart: „4 Bilder werden zu [Etiketten]“, Chips und Etiketten aus der Sanduhr, Vorschlag vorgewählt. „Einzeln anpassen“ klappt die Dateien auf, Ausnahmen gelb, „wie alle“ setzt zurück. Die Zeile bietet nur Formate, die für alle Dateien der Art gehen; einzeln hat jede Datei ihre eigene Liste. „Einstellungen“ je Art (Qualität, Zielgröße, Metadaten). Rechts Glasbehälter für alle Dateien. Karussell und Zweck-Knöpfe entfallen | `oberflaeche-mischentwurf.html` (aus `ziel-konzepte-2.html`, Konzept 1) |
 | Pro | In den Konzepten ausgeblendet, alle Funktionen sichtbar | alle |
 
 ## Offen
 
-- Schritt 2 (Ziel): einzelne Dateien auswählen und Formatwahl ohne Karussell. Erste Runde `ziel-konzepte.html` abgelehnt (zu kompliziert). Regel: erst ein Format für alle einer Art, dann bei Bedarf einzelne; Chips und Etiketten aus Schritt 1 wiederverwenden; roter Faden sichtbar. Zweite Runde: drei Konzepte in `ziel-konzepte-2.html` (Vorschlag: 1 Zeile je Dateiart mit Satz-Überschrift).
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
