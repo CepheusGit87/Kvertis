@@ -17,7 +17,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Einheitliche Designsprache „schwarzes Loch“ für Schritt 1 bis 3: fünf Konzepte in `ereignishorizont-konzepte.html` (Mini-Wirbel, Umlaufbahnen, Ereignishorizont, Galaxie, Sanduhr mit Wirbel). Vorschlag: Umlaufbahnen + Einwurf aus Ereignishorizont. Würde die Sanduhren im Sortierregal ersetzen.
+- Einheitliche Designsprache „schwarzes Loch“: Favorit sind die Umlaufbahnen aus `ereignishorizont-konzepte.html`. Fünf Varianten mit sichtbaren Formaten (liest → wird zu) in `umlaufbahn-varianten.html`: Formatzug, Links liest / rechts wird, Atom, Fokus, Tafel und Bahn. Vorschlag: Links liest / rechts wird. Würde die Sanduhren im Sortierregal ersetzen.
 - Win2D (MIT) für den Pixelwirbel: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
