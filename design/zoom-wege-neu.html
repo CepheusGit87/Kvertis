@@ -1,0 +1,857 @@
+<title>Kvertis Zoom-Wege neu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+.k-model { --k: var(--model); }
+/* ===== Fenster im Weltraum-Motiv ===== */
+.win { height: 700px; grid-template-rows: 40px 58px minmax(0, 1fr) auto; background: radial-gradient(900px 500px at 50% 60%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 70%), var(--bg); }
+/* Logo als kleines schwarzes Loch */
+.logo { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #000 0 34%, var(--mint) 38%, color-mix(in srgb, var(--mint) 30%, transparent) 55%, transparent 72%); }
+.logo::before, .logo::after { display: none; }
+/* Roter Faden als Umlaufbahn: der aktuelle Schritt dreht sich */
+.faden { position: relative; }
+.faden .seg { height: 1px; background: repeating-linear-gradient(90deg, var(--mint) 0 4px, transparent 4px 8px); width: 60px; }
+.knoten i { border-radius: 50%; }
+.knoten.an i { background: conic-gradient(from var(--dreh, 0deg), var(--mint), color-mix(in srgb, var(--mint) 20%, var(--bg)), var(--mint)); color: var(--auf-mint); box-shadow: 0 0 14px color-mix(in srgb, var(--mint) 60%, transparent); animation: knotendreh 3s linear infinite; }
+@property --dreh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes knotendreh { to { --dreh: 360deg; } }
+.knoten.an i span { background: var(--mint); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); }
+.knoten.aus i { border-color: var(--line-stark); color: var(--muted); }
+.knoten.aus small { color: var(--leise); }
+
+.welt { position: relative; overflow: hidden; }
+.welt canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.ov > * { pointer-events: auto; }
+.einwurf { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); transition: opacity .4s; white-space: nowrap; }
+.einwurf b { font-size: 13px; display: block; }
+.einwurf small { font-size: 11.5px; color: var(--muted); }
+.einwurf.klar { border: 0; background: transparent; backdrop-filter: none; text-align: center; flex-direction: column; gap: 2px; padding: 0; }
+.art { position: absolute; display: grid; gap: 1px; width: 170px; transition: opacity .5s, transform .5s var(--sanft); pointer-events: none; }
+.art.mitte { transform: translateX(-50%); text-align: center; justify-items: center; }
+.art.rechts { transform: translateX(-100%); text-align: right; justify-items: end; }
+.art b { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.art b em { font: 700 11px var(--mono); font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--k); color: #0b0f12; }
+.art b em.null { background: transparent; color: var(--leise); border: 1px dashed var(--line-stark); }
+.art small { font: 10.5px var(--mono); color: var(--muted); line-height: 1.45; }
+.art small i { font-style: normal; color: var(--mint); }
+.abweis { position: absolute; right: 16px; bottom: 12px; max-width: 250px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 75%, transparent); font-size: 11.5px; color: var(--muted); transition: opacity .4s; }
+.abweis b { color: var(--coral); font-weight: 600; font-size: 12px; }
+.mitte3 { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; opacity: 0; transition: opacity .5s; pointer-events: none; }
+.mitte3 b { font-size: 14px; } .mitte3 small { font: 11px var(--mono); color: var(--muted); }
+.welt[data-modus="wirbel"] .art, .welt[data-modus="wirbel"] .einwurf, .welt[data-modus="wirbel"] .abweis { opacity: 0; pointer-events: none; }
+.welt[data-modus="wirbel"] .mitte3 { opacity: 1; }
+.leiste .tipp { font-size: 12px; color: var(--muted); }
+
+.ideen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.idee-k { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idee-k small { font: 600 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.idee-k b { font-size: 14.5px; }
+.idee-k p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.idee-k .da { color: var(--mint); font: 600 11px var(--mono); }
+
+
+.win { height: 820px; }
+.welt.zeigt { cursor: zoom-in; }
+.welt[data-modus="wirbel"] .panel { opacity: 0 !important; pointer-events: none; }
+.panel { transition: opacity .45s; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fc { display: inline-grid; place-items: center; font: 700 10.5px var(--mono); padding: 2px 7px; border-radius: 6px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); white-space: nowrap; transition: background .3s, color .3s, box-shadow .3s; }
+.fc.m { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.fc.da { background: var(--k); color: #0b0f12; box-shadow: 0 0 12px var(--k); }
+.fc.m.da, .fc.m.an { background: var(--mint); color: var(--auf-mint); box-shadow: 0 0 12px color-mix(in srgb, var(--mint) 60%, transparent); }
+
+/* Auswahl unten, Titel oben */
+.wahl { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 3px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(8px); z-index: 3; }
+.wahl button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); transition: background .35s, color .35s, box-shadow .35s; white-space: nowrap; }
+.wahl button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.wahl button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.wahl button:hover { color: var(--ink); }
+.wahl button.an { background: color-mix(in srgb, var(--k, var(--mint)) 16%, var(--panel)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k, var(--mint)) 55%, transparent); }
+.wahl .ueber { --k: var(--mint); }
+.titel { position: absolute; left: 50%; top: 14px; transform: translateX(-50%) translateY(-6px); text-align: center; display: grid; gap: 1px; opacity: 0; transition: opacity .45s, transform .45s var(--sanft); pointer-events: none; z-index: 2; }
+.titel b { font-size: 17px; } .titel small { font-size: 12.5px; color: var(--muted); }
+.titel.sichtbar { opacity: 1; transform: translateX(-50%); }
+.js-ein { transition: opacity .4s; }
+.js-ein.weg { opacity: 0; pointer-events: none; }
+.hin-ueber { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: 12px; color: var(--muted); transition: opacity .4s; white-space: nowrap; }
+.hin-ueber.weg { opacity: 0; }
+
+/* Seitenspalten: gleiten herein, wenn die Kamera ankommt */
+.seite-l, .seite-r { position: absolute; top: 74px; width: 250px; display: grid; gap: 8px; align-content: start; z-index: 2; }
+.seite-l { left: 16px; } .seite-r { right: 16px; }
+.seite-l > *, .seite-r > * { opacity: 0; transform: translateX(var(--vx, -14px)); transition: opacity .4s, transform .5s var(--sanft); transition-delay: calc(var(--i, 0) * 35ms); }
+.seite-r > * { --vx: 14px; }
+.panel.sichtbar .seite-l > *, .panel.sichtbar .seite-r > * { opacity: 1; transform: none; }
+.kopf-s { display: grid; gap: 1px; padding-bottom: 2px; }
+.kopf-s b { font-size: 13.5px; } .kopf-s small { font-size: 11.5px; color: var(--muted); }
+.kopf-s.m b { color: var(--mint); }
+.zeile-d { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.seite-r .zeile-d { grid-template-columns: 1fr 56px; text-align: right; }
+.seite-r .zeile-d .fc { justify-self: end; }
+.zeile-d .fc { justify-self: start; }
+.gruppe { display: grid; gap: 5px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); }
+.gruppe > span { font-size: 12px; font-weight: 600; }
+.seite-r .gruppe { justify-items: end; text-align: right; }
+.seite-r .gruppe .chips { justify-content: flex-end; }
+.kachel { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); text-align: left; font-size: 12.5px; cursor: pointer; transition: border-color .25s, background .25s; }
+.kachel b { font-weight: 600; }
+.kachel:hover, .kachel.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.seite-r .kachel:hover, .seite-r .kachel.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.seite-r .kachel.an b { color: var(--mint); }
+.empf-tag { font: 600 9.5px var(--mono); padding: 1px 6px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); margin-left: 6px; }
+.knopf-l { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; text-align: left; font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color .25s, background .25s; }
+.knopf-l:hover, .knopf-l.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); color: var(--ink); }
+.knopf-r { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 1fr 56px; gap: 8px; align-items: center; text-align: right; font-size: 12px; color: var(--muted); transition: border-color .25s, background .25s, opacity .25s; }
+.knopf-r .fc { justify-self: end; }
+.knopf-r.aus { opacity: .3; }
+.knopf-r.an { border-color: var(--mint); background: var(--mint-flaeche); color: var(--ink); }
+.zusammen { font-size: 12px; color: var(--muted); } .zusammen b { color: var(--ink); }
+
+/* 6 · Tiefenregler */
+.tiefe { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: 22px auto; gap: 0 10px; z-index: 3; }
+.tiefe .spur { grid-row: 1 / span 6; position: relative; width: 4px; justify-self: center; border-radius: 2px; background: var(--line); }
+.tiefe .spur i { position: absolute; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); transform: translateY(-50%); top: calc(var(--u) * 20% + 10px); }
+.tiefe button { grid-column: 2; height: 40px; display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; font-size: 12.5px; color: var(--muted); padding: 0 8px; border-radius: 8px; text-align: left; }
+.tiefe button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.tiefe button.an { color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--k, var(--mint)) 12%, transparent); }
+.tiefe-hin { position: absolute; left: 16px; bottom: 16px; font-size: 11.5px; color: var(--leise); }
+.welt.k6 .seite-l { left: 180px; width: 220px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0ms !important; }
+}
+
+/* ===== Zoom-Wege: Seiten und Artwahl neu ===== */
+.win { height: 780px; }
+.innen { position: relative; min-height: 0; overflow: hidden; }
+.innen > canvas.lage { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.knoten.fertig i { border-color: var(--mint-rahmen); color: var(--mint); }
+.knoten.fertig small { color: var(--mint); }
+.leiste .summe { font: 500 12px var(--mono); color: var(--muted); display: inline-flex; gap: 6px; align-items: baseline; }
+.leiste .summe b { color: var(--ink); font-size: 13px; }
+.leiste .summe em { font-style: normal; color: var(--mint); font-weight: 600; font-size: 13px; }
+.punkt { width: 9px; height: 9px; border-radius: 50%; background: var(--k); box-shadow: 0 0 8px var(--k); flex: none; display: inline-block; }
+.fc.gelb { color: var(--amber); background: color-mix(in srgb, var(--amber) 12%, var(--panel)); border-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+.mono { font-family: var(--mono); }
+.gr { font: 500 11px var(--mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gr em { font-style: normal; color: var(--mint); font-weight: 600; }
+.z-titel { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); text-align: center; display: grid; gap: 1px; z-index: 2; pointer-events: none; }
+.z-titel b { font-size: 17px; } .z-titel small { font: 11.5px var(--mono); color: var(--muted); }
+.v-l, .v-r { position: absolute; top: 14px; display: grid; gap: 7px; align-content: start; z-index: 2; }
+.v-l { left: 16px; width: 256px; } .v-r { right: 16px; width: 276px; }
+.v-u { position: absolute; left: 16px; right: 16px; bottom: 12px; z-index: 2; }
+.ueber { font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.ueber.m { color: var(--mint); }
+.thumb { width: 38px; height: 30px; border-radius: 6px; overflow: hidden; display: grid; place-items: center; flex: none; background: color-mix(in srgb, var(--k) 16%, var(--panel2)); color: var(--k); }
+.thumb svg { width: 100%; height: 100%; display: block; }
+.thumb .ik { width: 18px; height: 18px; }
+.einst-k { display: grid; gap: 8px; padding: 9px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); }
+.regler { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); }
+.regler b { font: 600 11.5px var(--mono); color: var(--ink); }
+.regler input { accent-color: var(--mint); width: 100%; margin: 0; }
+.schalter { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); border: 0; background: none; padding: 2px; }
+.schalter i { width: 30px; height: 17px; border-radius: 9px; background: var(--line-stark); position: relative; flex: none; transition: background .2s; }
+.schalter i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--panel); transition: left .2s var(--feder); }
+.schalter[aria-pressed="true"] i { background: var(--mint); }
+.schalter[aria-pressed="true"] i::after { left: 15px; background: var(--auf-mint); }
+.haken { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--line-stark); display: grid; place-items: center; font: 700 10px var(--mono); color: transparent; flex: none; }
+[aria-pressed="true"] > .haken, [aria-checked="true"] > .haken { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); }
+.emp { font: 600 8.5px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 1px 5px; border-radius: 4px; background: var(--mint); color: var(--auf-mint); }
+
+/* V1 · Karten und Dock */
+.modus { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 2px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.modus button { border: 0; background: transparent; border-radius: 8px; padding: 5px; font-size: 12px; color: var(--muted); }
+.modus button[aria-pressed="true"] { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--mint-rahmen) inset; }
+.art-kopf { display: flex; align-items: center; gap: 10px; }
+.art-kopf .ik-gross { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: var(--k); background: color-mix(in srgb, var(--k) 16%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 40%, transparent); }
+.art-kopf .ik-gross svg { width: 22px; height: 22px; }
+.art-kopf b { display: block; font-size: 16px; }
+.art-kopf small { font: 11px var(--mono); color: var(--muted); }
+.dk { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 9px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 12px; transition: border-color .2s, background .2s; }
+.dk b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dk small { font: 10.5px var(--mono); color: var(--muted); }
+.dk.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); }
+.dk.blass { opacity: .55; }
+.zr { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; transition: border-color .2s, background .2s; }
+.zr .fmt { font: 700 15px var(--mono); }
+.zr .was { display: grid; gap: 1px; font-size: 12px; color: var(--muted); }
+.zr .was .emp { justify-self: start; }
+.zr:hover { border-color: var(--mint-rahmen); }
+.zr[aria-checked="true"] { border-color: var(--mint); background: var(--mint-flaeche); }
+.zr[aria-checked="true"] .fmt { color: var(--mint); }
+.zr.gelb { border-color: color-mix(in srgb, var(--amber) 60%, transparent); }
+.zr .rechts { display: grid; justify-items: end; gap: 3px; }
+.dock { display: flex; justify-content: center; align-items: flex-end; gap: 22px; height: 98px; padding-bottom: 2px; }
+.dock button { position: relative; display: grid; justify-items: center; gap: 3px; border: 0; background: none; padding: 4px 8px; border-radius: 14px; transition: transform .35s var(--feder); }
+.dock .pl { width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--k) 40%, #fff), var(--k) 55%, color-mix(in srgb, var(--k) 40%, #000)); box-shadow: 0 6px 18px -6px var(--k); transition: width .35s var(--feder), height .35s var(--feder), box-shadow .35s; }
+.dock b { font-size: 12.5px; font-weight: 600; }
+.dock small { font: 600 10.5px var(--mono); color: var(--mint); }
+.dock .zahl { position: absolute; top: 0; right: 4px; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 10px; background: var(--panel2); border: 1.5px solid var(--k); font: 700 10.5px/17px var(--mono); color: var(--ink); }
+.dock button:hover { transform: translateY(-4px); }
+.dock button.an .pl { width: 52px; height: 52px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--k) 25%, transparent), 0 0 26px var(--k); }
+.dock button.an b { color: var(--k); }
+
+/* V2 · Von → Nach mit Größe */
+.gross-art { font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+.dz { display: grid; gap: 4px; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 12px; transition: border-color .2s; }
+.dz .n { display: flex; justify-content: space-between; gap: 8px; }
+.dz .n b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dz.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.dz.alle { font-weight: 600; }
+.dz .bar { height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--k) 60%, var(--tief)); }
+.ergebnis-k { display: grid; gap: 2px; padding: 12px 14px; border-radius: 16px; border: 1.5px solid var(--mint); background: var(--mint-flaeche); box-shadow: 0 0 26px -10px var(--mint); }
+.ergebnis-k .fmt { font: 700 34px var(--mono); color: var(--mint); line-height: 1.05; letter-spacing: -.02em; }
+.ergebnis-k .was { font-size: 13px; color: var(--ink); }
+.ergebnis-k .gr { font-size: 12px; }
+.ergebnis-k.gelb { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 8%, var(--panel)); }
+.ergebnis-k.gelb .fmt { color: var(--amber); }
+.andere { display: grid; gap: 4px; }
+.az2 { display: grid; grid-template-columns: 56px minmax(0, 1fr) 72px; gap: 8px; align-items: center; padding: 5px 9px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 11.5px; color: var(--muted); }
+.az2 b { font: 700 12px var(--mono); color: var(--ink); }
+.az2:hover { border-color: var(--mint-rahmen); }
+.az2.gelb { border-color: color-mix(in srgb, var(--amber) 60%, transparent); }
+.az2 .bar2 { display: grid; gap: 2px; justify-items: end; }
+.az2 .bar2 i { display: block; height: 4px; border-radius: 2px; background: var(--mint); max-width: 100%; }
+.tabs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border-top: 1px solid var(--line); margin: 0 -16px -12px; background: color-mix(in srgb, var(--panel) 50%, transparent); }
+.tabs button { display: grid; grid-template-columns: auto 1fr; gap: 1px 10px; align-items: center; padding: 10px 14px 12px; border: 0; border-right: 1px solid var(--line); background: transparent; text-align: left; position: relative; transition: background .2s; }
+.tabs button:last-child { border-right: 0; }
+.tabs button svg { width: 24px; height: 24px; color: var(--k); grid-row: span 2; }
+.tabs button b { font-size: 13.5px; }
+.tabs button small { font: 11px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tabs button small i { font-style: normal; color: var(--mint); font-weight: 600; }
+.tabs button:hover { background: var(--hover); }
+.tabs button.an { background: color-mix(in srgb, var(--k) 10%, transparent); }
+.tabs button.an::before { content: ''; position: absolute; left: 0; right: 0; top: -1px; height: 3px; background: var(--k); box-shadow: 0 0 12px var(--k); }
+
+/* V3 · Satz */
+.satz-l { font-size: 13px; color: var(--muted); }
+.satz-l b { display: block; font-size: 26px; color: var(--ink); letter-spacing: -.02em; line-height: 1.1; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { display: inline-flex; align-items: center; gap: 7px; padding: 5px 11px 5px 5px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); font-size: 12px; transition: border-color .2s, background .2s; }
+.pill .thumb { width: 26px; height: 26px; border-radius: 50%; }
+.pill.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); }
+.pill.alle { padding-left: 11px; font-weight: 600; }
+.zpills { display: flex; flex-wrap: wrap; gap: 8px; }
+.zp { display: grid; justify-items: center; gap: 0; min-width: 76px; padding: 8px 12px 7px; border-radius: 16px; border: 1.5px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); transition: border-color .2s, background .2s, transform .25s var(--feder); position: relative; }
+.zp b { font: 700 15px var(--mono); }
+.zp small { font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+.zp .gr { font-size: 10px; }
+.zp .emp { position: absolute; top: -8px; }
+.zp:hover { transform: translateY(-2px); border-color: var(--mint-rahmen); }
+.zp[aria-checked="true"] { border-color: var(--mint); background: var(--mint); }
+.zp[aria-checked="true"] b, .zp[aria-checked="true"] small, .zp[aria-checked="true"] .gr, .zp[aria-checked="true"] .gr em { color: var(--auf-mint); }
+.zp.gelb { border-color: var(--amber); }
+.galerie { display: flex; justify-content: center; gap: 14px; }
+.galerie button { width: 128px; height: 84px; border: 1px solid transparent; border-radius: 14px; background: transparent; display: grid; align-content: end; justify-items: center; padding: 0 0 6px; font-size: 12px; transition: border-color .2s, background .2s; }
+.galerie button b { font-weight: 600; }
+.galerie button small { font: 600 10px var(--mono); color: var(--mint); }
+.galerie button:hover { border-color: var(--line); }
+.galerie button.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 8%, transparent); }
+
+/* V4 · Fortschritt */
+.rl { display: grid; gap: 4px; }
+.rb { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 12.5px; transition: border-color .2s, background .2s; }
+.rb b { font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rb small { font: 10.5px var(--mono); color: var(--muted); }
+.rb[aria-checked="true"] { border-color: var(--mint); background: var(--mint-flaeche); }
+.rb .kreis { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; }
+.rb[aria-checked="true"] .kreis { border-color: var(--mint); }
+.rb[aria-checked="true"] .kreis::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.rb.gelb { border-color: color-mix(in srgb, var(--amber) 60%, transparent); }
+.frage-k { font-size: 13.5px; font-weight: 600; }
+.stepper { display: grid; grid-template-columns: repeat(5, auto) 1fr; align-items: center; gap: 0; height: 64px; }
+.schritt-a { display: grid; grid-template-columns: 30px auto; gap: 0 9px; align-items: center; border: 0; background: none; padding: 6px 10px 6px 6px; border-radius: 12px; text-align: left; position: relative; }
+.schritt-a + .schritt-a::before { content: ''; position: absolute; right: 100%; top: 50%; width: 26px; height: 2px; background: var(--line-stark); }
+.schritt-a.besucht + .schritt-a::before { background: var(--mint); }
+.schritt-a { margin-left: 26px; }
+.schritt-a:first-child { margin-left: 0; }
+.schritt-a i { grid-row: span 2; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font: 700 12px var(--mono); font-style: normal; border: 2px solid var(--k); color: var(--k); background: var(--bg); }
+.schritt-a.besucht i { background: var(--k); color: #0b0f12; }
+.schritt-a.an i { box-shadow: 0 0 0 4px color-mix(in srgb, var(--k) 25%, transparent), 0 0 18px var(--k); }
+.schritt-a b { font-size: 13px; }
+.schritt-a small { font: 600 10.5px var(--mono); color: var(--muted); }
+.schritt-a.besucht small { color: var(--mint); }
+.schritt-a:hover { background: var(--hover); }
+.stepper .naechste { justify-self: end; }
+.taste.klein { padding: 9px 16px; font-size: 13px; }
+
+/* V5 · Kacheln und Gruppen */
+.kgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.kt { display: grid; gap: 5px; padding: 6px; border-radius: 12px; border: 1.5px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 11.5px; transition: border-color .2s; position: relative; }
+.kt .thumb { width: 100%; height: 70px; border-radius: 8px; }
+.kt .thumb .ik { width: 30px; height: 30px; }
+.kt b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kt .fcs { display: flex; gap: 4px; align-items: center; font: 600 10px var(--mono); color: var(--muted); }
+.kt .fcs i { font-style: normal; color: var(--mint); }
+.kt.an { border-color: var(--k); box-shadow: 0 0 0 3px color-mix(in srgb, var(--k) 20%, transparent); }
+.link { border: 0; background: none; color: var(--mint); font-size: 12px; font-weight: 500; padding: 3px 6px; border-radius: 7px; justify-self: start; }
+.link:hover { background: var(--mint-flaeche); }
+.gruppe-z { display: grid; gap: 5px; }
+.gruppe-z > span { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+.gruppe-z > span svg { width: 15px; height: 15px; color: var(--mint); }
+.gruppe-z .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.gc { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 10px; border: 1.5px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); font: 700 12.5px var(--mono); transition: border-color .2s, background .2s; }
+.gc small { font: 500 10px var(--mono); color: var(--muted); }
+.gc:hover { border-color: var(--mint-rahmen); }
+.gc[aria-checked="true"] { border-color: var(--mint); background: var(--mint); color: var(--auf-mint); }
+.gc[aria-checked="true"] small { color: var(--auf-mint); }
+.gc.gelb { border-color: var(--amber); }
+.ikacheln { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+.ik-t { display: grid; grid-template-columns: auto 1fr auto; gap: 2px 12px; align-items: center; padding: 10px 12px; border-radius: 14px; border: 1.5px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); text-align: left; transition: border-color .2s, background .2s; }
+.ik-t svg { width: 28px; height: 28px; color: var(--k); grid-row: span 2; }
+.ik-t b { font-size: 13.5px; }
+.ik-t small { font: 600 10.5px var(--mono); color: var(--muted); }
+.ik-t small i { font-style: normal; color: var(--mint); }
+.ik-t em { grid-row: span 2; font: 700 20px var(--mono); font-style: normal; color: var(--k); }
+.ik-t:hover { border-color: color-mix(in srgb, var(--k) 50%, transparent); }
+.ik-t.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 14%, var(--panel)); }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Kvertis · Schritt 2 · Entwürfe vom 24.09.2026</span>
+    <h1>Zoom-Wege, klarer links, rechts und unten</h1>
+    <p class="lead">Die Mitte bleibt genau wie bei „2 · Zoom-Wege“: die Bahn der Dateiart, das Loch und die Wege von jeder Datei zu ihrem Ziel. Neu sind nur die linke Seite (Ihre Dateien), die rechte Seite (die Ziele) und unten die Wahl zwischen Bildern, Audio, Video, Dokumenten und 3D-Modellen. Fünf Varianten.</p>
+    <div class="gemeinsam">
+      <div><small>Links</small><p>Was Sie eingeworfen haben, mit Vorschau oder Symbol, Format und Größe. Klar erkennbar, ob das Ziel für alle Dateien gilt oder nur für eine.</p></div>
+      <div><small>Rechts</small><p>Die Ziele mit einem Satz, wofür sie gut sind, der Größe danach und einer deutlichen Markierung der Wahl. Die Empfehlung ist gekennzeichnet.</p></div>
+      <div><small>Unten</small><p>Die fünf Dateiarten groß und eindeutig, mit Anzahl und gewähltem Ziel, damit man jederzeit sieht, was wohin geht.</p></div>
+      <div><small>Ausprobieren</small><p>Alles ist klickbar, die Wege in der Mitte folgen der Wahl. Gelb heißt: diese Datei hat ein eigenes Ziel.</p></div>
+    </div>
+    <nav class="sprung" aria-label="Varianten">
+      <a href="#k1"><b>1</b>Karten und Dock</a><a href="#k2"><b>2</b>Haben → Wird</a><a href="#k3"><b>3</b>Als Satz</a><a href="#k4"><b>4</b>Schritt für Schritt</a><a href="#k5"><b>5</b>Kacheln und Zwecke</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+    </nav>
+  </header>
+
+  <section class="idee" id="k1" aria-labelledby="h-k1">
+    <div class="idee-kopf"><h2 id="h-k1">1 · Karten und Dock <small>Vorschau links, Größe rechts, Planeten unten</small></h2></div>
+    <p><b>Links</b> oben die Art mit Symbol und Summe, darunter ein Schalter „Alle gleich / Jede einzeln“ und die Dateien als Karten mit Vorschau. <b>Rechts</b> jede Zielzeile mit großem Format, einem Satz dazu, der Größe danach und einem Haken bei der Wahl. <b>Unten</b> ein Dock mit fünf Planeten: Die aktive Art ist größer und leuchtet, jede zeigt Anzahl und Ziel.</p>
+    <div class="buehne" data-konzept="v1"></div>
+    <div class="urteil"><span class="plus"><b>+</b>„Alle gleich“ oder „Jede einzeln“ ist ausdrücklich</span><span class="plus"><b>+</b>Größe steht direkt am Ziel</span><span class="minus"><b>−</b>Das Dock braucht etwas Höhe</span></div>
+  </section>
+
+  <section class="idee" id="k2" aria-labelledby="h-k2">
+    <div class="idee-kopf"><h2 id="h-k2">2 · Haben → Wird <small>großes Ergebnis rechts, Reiter unten</small></h2></div>
+    <p><b>Links</b> „Das haben Sie“ mit Größenbalken je Datei. <b>Rechts</b> „Das wird daraus“: das gewählte Format groß in einem hellen Kasten, mit Größe und Ersparnis, darunter die anderen Möglichkeiten mit kleinem Balken, wie groß sie würden. <b>Unten</b> Reiter über die ganze Breite mit Symbol, Anzahl und „HEIC, PNG → JPG“.</p>
+    <div class="buehne" data-konzept="v2"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Das Ergebnis springt sofort ins Auge</span><span class="plus"><b>+</b>Reiter kennt jeder</span><span class="minus"><b>−</b>Die Wahl steht nicht mehr in der Liste, sondern oben</span></div>
+  </section>
+
+  <section class="idee" id="k3" aria-labelledby="h-k3">
+    <div class="idee-kopf"><h2 id="h-k3">3 · Als Satz <small>links und rechts lesen sich wie ein Satz</small></h2></div>
+    <p>Links „Diese 2 Bilder“, rechts „werden zu JPG“. Die Dateien sind runde Chips mit Vorschau, die Ziele große Knöpfe mit Größe; der gewählte ist ganz in Mint gefüllt. <b>Unten</b> fünf kleine Galaxien, eine je Art: Die Dateien kreisen als Planeten um ein Mini-Loch, die aktive dreht sich schneller und leuchtet.</p>
+    <div class="buehne" data-konzept="v3"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Man liest einfach von links nach rechts</span><span class="plus"><b>+</b>Unten wiederholt sich das Motiv aus Schritt 1</span><span class="minus"><b>−</b>Viele Dateien werden als Chips unübersichtlich</span></div>
+  </section>
+
+  <section class="idee" id="k4" aria-labelledby="h-k4">
+    <div class="idee-kopf"><h2 id="h-k4">4 · Schritt für Schritt <small>zwei klare Fragen, unten der Weg durch alle Arten</small></h2></div>
+    <p><b>Links</b> die Frage „Für welche Datei gilt das Ziel?“ mit runden Auswahlknöpfen: alle oder eine bestimmte. <b>Rechts</b> „In welches Format?“ ebenso, mit Größe. <b>Unten</b> ein Fortschritt wie der rote Faden: Bilder, Audio, Video, Dokumente, 3D, jede mit Haken, sobald angesehen, dazu „Weiter mit Audio →“.</p>
+    <div class="buehne" data-konzept="v4"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die bekanntesten Bedienelemente, keine Rätsel</span><span class="plus"><b>+</b>Man vergisst keine Art</span><span class="minus"><b>−</b>Eher sachlich als verspielt</span></div>
+  </section>
+
+  <section class="idee" id="k5" aria-labelledby="h-k5">
+    <div class="idee-kopf"><h2 id="h-k5">5 · Kacheln und Zwecke <small>Bilder groß, Ziele nach Zweck sortiert</small></h2></div>
+    <p><b>Links</b> die Dateien als große Kacheln mit Vorschau; eine antippen heißt „nur für sie“. <b>Rechts</b> die Ziele nach Zweck gruppiert: Zum Teilen, Fürs Web, Ohne Verlust, Als Dokument. <b>Unten</b> fünf große Symbolkacheln mit Anzahl und Ziel.</p>
+    <div class="buehne" data-konzept="v5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Man sucht nach Zweck, nicht nach Abkürzung</span><span class="plus"><b>+</b>Eigene Fotos erkennt man sofort</span><span class="minus"><b>−</b>Kacheln brauchen links mehr Platz</span></div>
+  </section>
+
+  <section class="idee" id="vorschlag" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>Links aus 1</b> (Karten mit Vorschau und der Schalter „Alle gleich / Jede einzeln“), <b>rechts aus 2</b> (das Ergebnis groß, darunter die anderen Formate mit Größe) und <b>unten das Dock aus 1</b> mit den Planeten, weil es zu den Bahnen aus Schritt 1 passt.</p>
+      <p class="muted">Die Mitte ist unverändert „Zoom-Wege“. Größen sind Schätzungen wie im Mischentwurf. Bei „Animationen reduzieren“ stehen Bahn und Planeten still.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (t, a = 0, b = 1) => Math.max(a, Math.min(b, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const TAU = Math.PI * 2;
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  /* ---------- Daten wie im Mischentwurf ---------- */
+  const GR = [
+    { k: 'bild', name: 'Bilder', eins: 'Bild', kurz: 'Bilder', cls: 'bild', tok: 'blue', meta: 'Aufnahmeort entfernen',
+      files: [{ n: 'IMG_2041.heic', f: 'HEIC', mb: 8.4 }, { n: 'Scan.jpg', f: 'PNG', mb: 2.2 }],
+      ziele: [['JPG', 'überall lesbar', .13], ['PNG', 'verlustfrei', .6], ['WEBP', 'klein, fürs Web', .09], ['TIFF', 'zum Drucken', 1.1], ['PDF', 'als Dokument', .2], ['GIF', 'einfach', .3]] },
+    { k: 'audio', name: 'Audiodateien', eins: 'Audiodatei', kurz: 'Audio', cls: 'audio', tok: 'violet', meta: 'Titel-Infos entfernen',
+      files: [{ n: 'Probe_03.wav', f: 'WAV', mb: 19.7 }, { n: 'Interview.m4a', f: 'M4A', mb: 6.1 }],
+      ziele: [['MP3', 'überall abspielbar', .13], ['M4A', 'klein, gut', .11], ['FLAC', 'verlustfrei', .55], ['WAV', 'unkomprimiert', 1], ['OGG', 'offen', .12], ['OPUS', 'sehr klein', .07]] },
+    { k: 'video', name: 'Videos', eins: 'Video', kurz: 'Video', cls: 'video', tok: 'amber', meta: 'Aufnahmeort entfernen',
+      files: [{ n: 'Urlaub_Clip.mov', f: 'MOV', mb: 148 }],
+      ziele: [['MP4', 'überall abspielbar', .2], ['MKV', 'flexibel', .22], ['WEBM', 'fürs Web', .17], ['nur Ton', 'Tonspur als MP3', .01]] },
+    { k: 'dok', name: 'Dokumente', eins: 'Dokument', kurz: 'Dokumente', cls: 'dok', tok: 'cyan', meta: 'Autor entfernen',
+      files: [{ n: 'Protokoll.docx', f: 'DOCX', mb: .4 }],
+      ziele: [['TXT', 'nur Text', .05], ['MD', 'mit Gliederung', .06], ['HTML', 'für den Browser', .1]] },
+    { k: 'model', name: '3D-Modelle', eins: '3D-Modell', kurz: '3D-Modelle', cls: 'model', tok: 'model', nurForm: true,
+      files: [{ n: 'Halterung_v3.stl', f: 'STL', mb: 12.6 }],
+      ziele: [['STL', 'binär, kleiner', .25], ['3MF', 'Druck mit Maßen', .3], ['GLB', 'fürs Web', .45], ['OBJ', 'für 3D-Programme', 1.4], ['PLY', 'kompakt', .5]] },
+  ];
+  const KOMP = new Set(['HEIC', 'M4A', 'MOV', 'DOCX']);
+  const G = k => GR.find(g => g.k === k);
+  const mbT = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const anzahl = g => `${g.files.length} ${g.files.length === 1 ? g.eins : g.name}`;
+
+  function zustand() {
+    const Z = { wahl: {}, ausn: {}, qual: {}, meta: {} };
+    GR.forEach(g => { Z.wahl[g.k] = 0; Z.qual[g.k] = 72; Z.meta[g.k] = true; });
+    return Z;
+  }
+  const zielDef = (Z, g) => g.ziele[Z.wahl[g.k]][0];
+  const zielVon = (Z, g, f) => Z.ausn[f.n] || zielDef(Z, g);
+  const faktor = (g, t) => (g.ziele.find(z => z[0] === t) || g.ziele[0])[2];
+  const schF = (Z, g, f) => { const q = g.nurForm ? 1 : .35 + .65 * Math.pow(Z.qual[g.k] / 100, 1.8); return f.mb * Math.min(1.3, faktor(g, zielVon(Z, g, f)) * (KOMP.has(f.f) ? 4 : 1)) * q; };
+  const schG = (Z, g) => g.files.reduce((s, f) => s + schF(Z, g, f), 0);
+  const vorG = g => g.files.reduce((s, f) => s + f.mb, 0);
+  const VOR = GR.reduce((s, g) => s + vorG(g), 0);
+  const nachAlle = Z => GR.reduce((s, g) => s + schG(Z, g), 0);
+  function setzeArt(Z, g, i) { Z.wahl[g.k] = i; const t = g.ziele[i][0]; g.files.forEach(f => { if (Z.ausn[f.n] === t) delete Z.ausn[f.n]; }); }
+  function setzeDatei(Z, g, f, t) { if (t === zielDef(Z, g)) delete Z.ausn[f.n]; else Z.ausn[f.n] = t; }
+  const ausnVon = (Z, g) => g.files.filter(f => Z.ausn[f.n]);
+  const grHTML = (Z, g) => `${mbT(vorG(g))} MB → <em>≈ ${mbT(schG(Z, g))} MB</em>`;
+  const chipsVon = g => { const m = {}; g.files.forEach(f => m[f.f] = (m[f.f] || 0) + 1); return Object.entries(m).map(([f, n]) => `<span class="fc">${f}${n > 1 ? ' ×' + n : ''}</span>`).join(''); };
+  function reglerHTML(W, g) {
+    if (g.nurForm) return '<span class="gr">Form verlustfrei, Farben und Materialien fallen weg</span>';
+    return `<label class="regler" for="${W.id}-q-${g.k}">Qualität<input type="range" id="${W.id}-q-${g.k}" min="10" max="100" value="${W.Z.qual[g.k]}" data-q="${g.k}"><b data-qw="${g.k}">${W.Z.qual[g.k]}</b></label>`;
+  }
+  const metaHTML = (W, g) => g.nurForm ? '' : `<button type="button" class="schalter" data-meta="${g.k}" aria-pressed="${W.Z.meta[g.k]}"><i></i>${g.meta}</button>`;
+  const einstHTML = (W, g) => `<div class="einst">${reglerHTML(W, g)}${g.nurForm ? '<span></span>' : `<input class="eingabe" id="${W.id}-zg-${g.k}" placeholder="Zielgröße, z. B. 1 MB" aria-label="Zielgröße für ${g.name}">`}${metaHTML(W, g) || '<span></span>'}</div>`;
+
+  /* ---------- Farben und Zeichnen ---------- */
+  const F = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'coral', 'bg', 'ink', 'muted', 'line-stark', 'paper'].forEach(k => { F[k] = hexRgb(norm(cs.getPropertyValue('--' + k))); });
+    F.dunkel = (F.bg[0] * .3 + F.bg[1] * .59 + F.bg[2] * .11) < 128;
+  }
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+  const farbe = g => F[g.tok];
+  function glow(ctx, x, y, r, c, a) { if (a <= 0 || r <= 0) return; const q = ctx.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, rgba(c, a)); q.addColorStop(1, rgba(c, 0)); ctx.fillStyle = q; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  function loch(ctx, x, y, r) {
+    glow(ctx, x, y, r * 3.4, F.violet, .22); glow(ctx, x, y, r * 2, F.mint, .25);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, TAU); ctx.stroke();
+  }
+  const bez = (a, b, c, d, t) => { const u = 1 - t; return [u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * d[0], u * u * u * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t * t * t * d[1]]; };
+  // Weg als Kurve, optional mit wandernden Teilchen
+  function weg(ctx, a, b, c, d, col, alpha, breite, T, teilchen, strich) {
+    ctx.strokeStyle = rgba(col, alpha); ctx.lineWidth = breite; if (strich) ctx.setLineDash(strich);
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.bezierCurveTo(b[0], b[1], c[0], c[1], d[0], d[1]); ctx.stroke(); ctx.setLineDash([]);
+    if (!teilchen || leise) return;
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (let i = 0; i < teilchen; i++) { const t = (T * .55 + i / teilchen) % 1, [x, y] = bez(a, b, c, d, t); ctx.fillStyle = rgba(col, .9 * Math.sin(Math.PI * t)); ctx.beginPath(); ctx.arc(x, y, breite > 1.5 ? 2.3 : 1.7, 0, TAU); ctx.fill(); }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function kugel(ctx, x, y, r, c, a = 1) {
+    if (r < .5) return;
+    ctx.globalAlpha = a;
+    const q = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+    q.addColorStop(0, rgba(c.map(v => Math.min(255, v + 70)), 1)); q.addColorStop(.55, rgba(c, 1)); q.addColorStop(1, rgba(c.map(v => v * .35), 1));
+    ctx.fillStyle = q; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+  }
+  function rel(W, el) { const a = el.getBoundingClientRect(), b = W.innen.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; }
+
+  /* ---------- Konzepte ---------- */
+  const K = {};
+
+  /* ---------- gemeinsame Bausteine für alle Varianten ---------- */
+  const IK = {
+    bild: '<svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 16l5-5 4 4 3-3 5 5"/><circle cx="16" cy="9" r="1.6"/></svg>',
+    audio: '<svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></svg>',
+    video: '<svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="6" width="14" height="12" rx="2"/><path d="M16.5 10.5l5-3v9l-5-3"/></svg>',
+    dok: '<svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2.5h8l4.5 4.5v14.5H6z"/><path d="M13.5 2.5V7h5M9 12h7M9 15.5h7"/></svg>',
+    model: '<svg class="ik" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2.5l8.5 4.8v9.4L12 21.5l-8.5-4.8V7.3z"/><path d="M3.5 7.3L12 12l8.5-4.7M12 12v9.5"/></svg>',
+  };
+  const FOTO = '<svg viewBox="0 0 40 30" preserveAspectRatio="xMidYMid slice"><rect width="40" height="30" fill="#8fbbe9"/><circle cx="31" cy="7" r="3.2" fill="#f2c46a"/><path d="M0 21 12 7 19 14 26 8 40 21V30H0z" fill="#5f7c9c"/><path d="M10 9.5 12 7 14 9.2z" fill="#f7f9fb"/><rect y="21" width="40" height="9" fill="#b8a47a"/></svg>';
+  const SCAN = '<svg viewBox="0 0 40 30" preserveAspectRatio="xMidYMid slice"><rect width="40" height="30" fill="#fff"/><rect x="5" y="4" width="18" height="3" fill="#1a53a8"/><g fill="#9aa4ab"><rect x="5" y="10" width="28" height="1.4"/><rect x="5" y="13.5" width="24" height="1.4"/><rect x="5" y="17" width="29" height="1.4"/><rect x="5" y="20.5" width="20" height="1.4"/></g><circle cx="31" cy="24" r="3.4" fill="none" stroke="#9e3123" stroke-width="1"/></svg>';
+  const thumb = (g, f) => `<span class="thumb">${g.k === 'bild' ? (f.f === 'PNG' ? SCAN : FOTO) : IK[g.k]}</span>`;
+  const selDatei = W => { const g = GR[W.art]; return W.sel ? g.files.find(f => f.n === W.sel) : null; };
+  // Größe, wenn man dieses Ziel wählt (für alle oder nur für die gewählte Datei)
+  function groesseMit(W, t) {
+    const g = GR[W.art], Y = JSON.parse(JSON.stringify(W.Z)), f = selDatei(W);
+    if (f) { setzeDatei(Y, g, f, t); return schF(Y, g, f); }
+    setzeArt(Y, g, g.ziele.findIndex(z => z[0] === t)); return schG(Y, g);
+  }
+  const istAn = (W, t) => { const g = GR[W.art], f = selDatei(W); return f ? zielVon(W.Z, g, f) === t : zielDef(W.Z, g) === t; };
+  const istGelb = (W, t) => { const g = GR[W.art], f = selDatei(W); return f ? istAn(W, t) && !!W.Z.ausn[f.n] : ausnVon(W.Z, g).some(x => W.Z.ausn[x.n] === t); };
+  function wahlDaten(W, t, i) { const g = GR[W.art], f = selDatei(W); return f ? `data-datei="${esc(f.n)}" data-k="${g.k}" data-t="${t}"` : `data-art="${g.k}" data-i="${i}"`; }
+  const einstHTML2 = (W, g) => g.nurForm ? '<span class="gr" style="white-space:normal">Form verlustfrei, Farben und Materialien fallen weg</span>' : `<div class="einst-k">${reglerHTML(W, g)}${metaHTML(W, g)}</div>`;
+  const titelHTML = (W, g) => `<div class="z-titel" aria-live="polite"><b>${anzahl(g)}</b><small data-gr="${g.k}">${grHTML(W.Z, g)}</small></div>`;
+  const wieVorher = g => [...new Set(g.files.map(f => f.f))].join(', ');
+
+  // Bühne wie in „Zoom-Wege“: Bahn der Art, Loch, Wege von jeder Datei zu ihrem Ziel
+  function buehne(W, T, o = {}) {
+    const ctx = W.ctx, Z = W.Z, g = GR[W.art], c = farbe(g);
+    const z = leise ? 1 : ease(clamp((T - W.tZoom) / .9));
+    const links = o.links ?? 272, rechts = o.rechts ?? 292, unten = o.unten ?? 90;
+    const cx = (links + W.w - rechts) / 2, cy = (W.h - unten) * .5 + 10, rx = Math.min((W.w - links - rechts) / 2 - 40, 190) * lerp(.25, 1, z), ry = rx * .42;
+    ctx.strokeStyle = rgba(c, .45 * z); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.stroke();
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (let i = 0; i < 90; i++) { const a = i / 90 * TAU + T * .12 * (leise ? 0 : 1), d = ((i * 37) % 11 - 5) * 1.4; ctx.fillStyle = rgba(c, .5 * z); ctx.fillRect(cx + Math.cos(a) * (rx + d) - 1, cy + Math.sin(a) * (ry + d * .5) - 1, 2, 2); }
+    ctx.globalCompositeOperation = 'source-over';
+    const sel = W.sel;
+    g.files.forEach((f, j) => {
+      const b = W.innen.querySelector(`.v-l [data-wf="${CSS.escape(f.n)}"]`), t = zielVon(Z, g, f), e2 = W.innen.querySelector(`.v-r [data-wt="${CSS.escape(t)}"]`);
+      if (b && e2) {
+        const a = rel(W, b), e = rel(W, e2), p0 = [a.x + a.w + 3, a.y + a.h / 2], p3 = [e.x - 3, e.y + e.h / 2], gelb = !!Z.ausn[f.n];
+        const hell = !sel || sel === f.n, al = z * (hell ? 1 : .3);
+        weg(ctx, p0, [p0[0] + 60, p0[1]], [cx - 60, cy], [cx, cy], c, .6 * al, 1.5, T + j * .2, hell ? 6 : 0);
+        weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, gelb ? F.amber : F.mint, .8 * al, 2, T + j * .2, hell ? 7 : 0, gelb ? [5, 4] : null);
+      }
+      const A = Math.PI * .75 + j * 1.3 + T * .12 * (leise ? 0 : 1);
+      kugel(ctx, cx + Math.cos(A) * rx, cy + Math.sin(A) * ry, 5 + Math.sqrt(f.mb) * .6, c, z);
+    });
+    if (o.leise !== false) W.innen.querySelectorAll('.v-r [data-wt]').forEach(b => { if (istAn(W, b.dataset.wt) || istGelb(W, b.dataset.wt)) return; const e = rel(W, b), p3 = [e.x - 3, e.y + e.h / 2]; weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, F['line-stark'], .25 * z, 1); });
+    loch(ctx, cx, cy, lerp(18, 12, z));
+    return { cx, cy };
+  }
+  function grundgeruest(W) { W.art = 0; W.sel = null; W.tZoom = -9; W.besucht = new Set(['bild']); W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel-platz"></div><div class="v-l"></div><div class="v-r"></div><div class="v-u"></div>'); }
+  function setzeSeiten(W, l, r, u) {
+    const g = GR[W.art];
+    W.innen.className = 'innen k-' + g.k;
+    W.innen.querySelector('.z-titel-platz').innerHTML = titelHTML(W, g);
+    W.innen.querySelector('.v-l').innerHTML = l; W.innen.querySelector('.v-r').innerHTML = r; W.innen.querySelector('.v-u').innerHTML = u;
+    W.innen.querySelectorAll('.v-l, .v-r').forEach(el => el.style.setProperty('--k', `var(--${g.tok})`));
+  }
+
+  // V1 · Karten mit Vorschau, Ziele mit Größe, Dock mit Planeten
+  K.v1 = {
+    aufbau: grundgeruest,
+    render(W) {
+      const Z = W.Z, g = GR[W.art], f = selDatei(W), einzeln = W.einzeln && g.files.length > 1;
+      const l = `<div class="art-kopf k-${g.k}"><span class="ik-gross">${IK[g.k]}</span><span><b>${anzahl(g)}</b><small>${wieVorher(g)} · ${mbT(vorG(g))} MB</small></span></div>
+        ${g.files.length > 1 ? `<div class="modus" role="group" aria-label="Ziel gilt für"><button type="button" data-modus="alle" aria-pressed="${!einzeln}">Alle gleich</button><button type="button" data-modus="einzeln" aria-pressed="${einzeln}">Jede einzeln</button></div>` : ''}
+        ${g.files.map(x => `<button type="button" class="dk${f === x || g.files.length === 1 ? ' an' : ''}${einzeln && f && f !== x ? ' blass' : ''}" data-w2f="${einzeln ? esc(x.n) : ''}" data-wf="${esc(x.n)}">${thumb(g, x)}<span style="min-width:0"><b>${esc(x.n)}</b><small>${x.f} · ${mbT(x.mb)} MB</small></span><span class="fc ${Z.ausn[x.n] ? 'gelb' : 'm'}">${zielVon(Z, g, x)}</span></button>`).join('')}
+        ${einzeln ? `<span class="gr" style="white-space:normal">${f ? 'Rechts ein Ziel nur für diese Datei wählen.' : 'Erst links eine Datei antippen.'}</span>` : ''}`;
+      const r = `<span class="ueber m">${f ? 'wird zu, nur ' + esc(f.n) : 'wird zu'}</span><div role="radiogroup" aria-label="Zielformat" style="display:grid;gap:5px">${g.ziele.map((z, i) => { const an = istAn(W, z[0]), n = groesseMit(W, z[0]); return `<button type="button" class="zr${istGelb(W, z[0]) ? ' gelb' : ''}" role="radio" aria-checked="${an}" data-wt="${z[0]}" ${wahlDaten(W, z[0], i)}><span class="fmt">${z[0]}</span><span class="was">${z[1]}${i === 0 ? '<span class="emp">Empfohlen</span>' : ''}</span><span class="rechts"><span class="haken">✓</span><span class="gr"><em>${mbT(n)} MB</em></span></span></button>`; }).join('')}</div>${einstHTML2(W, g)}`;
+      const u = `<div class="dock" role="tablist" aria-label="Dateiart">${GR.map((x, i) => `<button type="button" role="tab" class="k-${x.k}${i === W.art ? ' an' : ''}" aria-selected="${i === W.art}" data-w2k="${i}"><span class="pl"></span><span class="zahl">${x.files.length}</span><b>${x.kurz}</b><small>→ ${zielDef(Z, x)}</small></button>`).join('')}</div>`;
+      setzeSeiten(W, l, r, u);
+    },
+    zeichnen(W, T) { buehne(W, T, { links: 282, rechts: 292, unten: 110 }); },
+  };
+
+  // V2 · Das haben Sie → Das wird daraus, mit Größenbalken, Reiter unten
+  K.v2 = {
+    aufbau: grundgeruest,
+    render(W) {
+      const Z = W.Z, g = GR[W.art], f = selDatei(W), max = Math.max(...g.files.map(x => x.mb));
+      const l = `<span class="ueber">Das haben Sie</span><span class="gross-art">${anzahl(g)}</span>
+        ${g.files.length > 1 ? `<button type="button" class="dz alle${f ? '' : ' an'}" data-w2f=""><span class="n"><b>Alle ${g.files.length} zusammen</b><span class="gr">${mbT(vorG(g))} MB</span></span></button>` : ''}
+        ${g.files.map(x => `<button type="button" class="dz${f === x || g.files.length === 1 ? ' an' : ''}" data-w2f="${esc(x.n)}" data-wf="${esc(x.n)}"><span class="n"><b>${esc(x.n)}</b><span class="gr">${x.f} · ${mbT(x.mb)} MB</span></span><span class="bar" style="width:${Math.max(4, x.mb / max * 100)}%"></span></button>`).join('')}
+        <span class="gr" style="white-space:normal">Eine Datei antippen, um nur ihr ein anderes Ziel zu geben.</span>`;
+      const akt = f ? zielVon(Z, g, f) : zielDef(Z, g), i0 = g.ziele.findIndex(z => z[0] === akt), vor = f ? f.mb : vorG(g), nach = groesseMit(W, akt), gelb = f && Z.ausn[f.n];
+      const r = `<span class="ueber m">Das wird daraus${f ? ', nur ' + esc(f.n) : ''}</span>
+        <div class="ergebnis-k${gelb ? ' gelb' : ''}" data-wt="${akt}"><span class="fmt">${akt}</span><span class="was">${g.ziele[i0][1]}${i0 === 0 ? ' · empfohlen' : ''}</span><span class="gr">${mbT(vor)} MB → <em>≈ ${mbT(nach)} MB</em>${nach < vor ? ` · ${Math.round((1 - nach / vor) * 100)} % kleiner` : ' · größer'}</span></div>
+        <span class="ueber">Andere Möglichkeiten</span><div class="andere" role="radiogroup" aria-label="Anderes Zielformat">${g.ziele.map((z, i) => { if (z[0] === akt) return ''; const n = groesseMit(W, z[0]); return `<button type="button" class="az2${istGelb(W, z[0]) ? ' gelb' : ''}" role="radio" aria-checked="false" data-wt="${z[0]}" ${wahlDaten(W, z[0], i)}><b>${z[0]}</b><span>${z[1]}</span><span class="bar2"><span class="gr">${mbT(n)} MB</span><i style="width:${Math.min(100, n / vor * 100)}%"></i></span></button>`; }).join('')}</div>${einstHTML2(W, g)}`;
+      const u = `<div class="tabs" role="tablist" aria-label="Dateiart">${GR.map((x, i) => `<button type="button" role="tab" class="k-${x.k}${i === W.art ? ' an' : ''}" aria-selected="${i === W.art}" data-w2k="${i}">${IK[x.k]}<b>${x.kurz} · ${x.files.length}</b><small>${wieVorher(x)} → <i>${zielDef(Z, x)}</i></small></button>`).join('')}</div>`;
+      setzeSeiten(W, l, r, u);
+    },
+    zeichnen(W, T) { buehne(W, T, { links: 272, rechts: 292, unten: 80 }); },
+  };
+
+  // V3 · als Satz: „Diese 2 Bilder werden zu JPG“, unten kleine Galaxien
+  K.v3 = {
+    aufbau: grundgeruest,
+    render(W) {
+      const Z = W.Z, g = GR[W.art], f = selDatei(W);
+      const l = `<span class="satz-l">${f ? 'Nur diese Datei' : g.files.length === 1 ? 'Diese Datei' : 'Diese'}<b>${f ? esc(f.n) : anzahl(g)}</b></span>
+        <div class="pills">${g.files.length > 1 ? `<button type="button" class="pill alle${f ? '' : ' an'}" data-w2f="">alle</button>` : ''}${g.files.map(x => `<button type="button" class="pill${f === x || g.files.length === 1 ? ' an' : ''}" data-w2f="${esc(x.n)}" data-wf="${esc(x.n)}">${thumb(g, x)}${esc(x.n)}</button>`).join('')}</div>`;
+      const r = `<span class="satz-l">${f ? 'wird' : g.files.length === 1 ? 'wird' : 'werden'} zu<b style="color:var(--mint)">${f ? zielVon(Z, g, f) : zielDef(Z, g)}</b></span>
+        <div class="zpills" role="radiogroup" aria-label="Zielformat">${g.ziele.map((z, i) => `<button type="button" class="zp${istGelb(W, z[0]) && !istAn(W, z[0]) ? ' gelb' : ''}" role="radio" aria-checked="${istAn(W, z[0])}" data-wt="${z[0]}" ${wahlDaten(W, z[0], i)}>${i === 0 ? '<span class="emp">Empfohlen</span>' : ''}<b>${z[0]}</b><small>${z[1]}</small><span class="gr"><em>${mbT(groesseMit(W, z[0]))} MB</em></span></button>`).join('')}</div>${einstHTML2(W, g)}`;
+      const u = `<div class="galerie" role="tablist" aria-label="Dateiart">${GR.map((x, i) => `<button type="button" role="tab" class="k-${x.k}${i === W.art ? ' an' : ''}" aria-selected="${i === W.art}" data-w2k="${i}" data-gal="${i}"><b>${x.kurz} · ${x.files.length}</b><small>→ ${zielDef(Z, x)}</small></button>`).join('')}</div>`;
+      setzeSeiten(W, l, r, u);
+    },
+    zeichnen(W, T) {
+      buehne(W, T, { links: 272, rechts: 292, unten: 110 });
+      const ctx = W.ctx;
+      W.innen.querySelectorAll('[data-gal]').forEach(b => {
+        const i = +b.dataset.gal, x = GR[i], r = rel(W, b), c = farbe(x), mx = r.x + r.w / 2, my = r.y + 26, an = i === W.art, rx = an ? 40 : 32;
+        ctx.strokeStyle = rgba(c, an ? .9 : .45); ctx.lineWidth = an ? 1.6 : 1; ctx.beginPath(); ctx.ellipse(mx, my, rx, rx * .38, 0, 0, TAU); ctx.stroke();
+        x.files.forEach((f, j) => { const A = j * 2.4 + T * (an ? .8 : .3) * (leise ? 0 : 1); kugel(ctx, mx + Math.cos(A) * rx, my + Math.sin(A) * rx * .38, 3 + Math.sqrt(f.mb) * .3, c); });
+        ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(mx, my, 5, 0, TAU); ctx.fill(); ctx.strokeStyle = rgba(F.mint, an ? 1 : .5); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(mx, my, 5.6, 0, TAU); ctx.stroke();
+        if (an) glow(ctx, mx, my, 50, c, .18);
+      });
+    },
+  };
+
+  // V4 · klare Auswahl mit Kreisen, unten ein Fortschritt durch alle Arten
+  K.v4 = {
+    aufbau: grundgeruest,
+    render(W) {
+      const Z = W.Z, g = GR[W.art], f = selDatei(W);
+      W.besucht.add(g.k);
+      const l = `<span class="frage-k">Für welche Datei gilt das Ziel?</span><div class="rl" role="radiogroup" aria-label="Ziel gilt für">
+        ${g.files.length > 1 ? `<button type="button" class="rb" role="radio" aria-checked="${!f}" data-w2f=""><span class="kreis"></span><span><b>Alle ${g.files.length} ${g.name}</b><small>${wieVorher(g)} · ${mbT(vorG(g))} MB</small></span><span></span></button>` : ''}
+        ${g.files.map(x => `<button type="button" class="rb${Z.ausn[x.n] ? ' gelb' : ''}" role="radio" aria-checked="${f === x || g.files.length === 1}" data-w2f="${esc(x.n)}" data-wf="${esc(x.n)}"><span class="kreis"></span><span style="min-width:0"><b>${esc(x.n)}</b><small>${x.f} · ${mbT(x.mb)} MB</small></span><span class="fc ${Z.ausn[x.n] ? 'gelb' : 'm'}">${zielVon(Z, g, x)}</span></button>`).join('')}</div>`;
+      const r = `<span class="frage-k">In welches Format${f ? ' (nur ' + esc(f.n) + ')' : ''}?</span><div class="rl" role="radiogroup" aria-label="Zielformat">${g.ziele.map((z, i) => `<button type="button" class="rb${istGelb(W, z[0]) && !istAn(W, z[0]) ? ' gelb' : ''}" role="radio" aria-checked="${istAn(W, z[0])}" data-wt="${z[0]}" ${wahlDaten(W, z[0], i)}><span class="kreis"></span><span><b class="mono">${z[0]}${i === 0 ? ' <span class="emp">Empfohlen</span>' : ''}</b><small>${z[1]}</small></span><span class="gr"><em>${mbT(groesseMit(W, z[0]))} MB</em></span></button>`).join('')}</div>${einstHTML2(W, g)}`;
+      const naechste = GR.findIndex((x, i) => i > W.art && !W.besucht.has(x.k));
+      const u = `<div class="stepper" role="tablist" aria-label="Dateiarten nacheinander">${GR.map((x, i) => `<button type="button" role="tab" class="schritt-a k-${x.k}${W.besucht.has(x.k) ? ' besucht' : ''}${i === W.art ? ' an' : ''}" aria-selected="${i === W.art}" data-w2k="${i}" style="--k:var(--${x.tok})"><i>${W.besucht.has(x.k) && i !== W.art ? '✓' : x.files.length}</i><b>${x.kurz}</b><small>${W.besucht.has(x.k) ? '→ ' + zielDef(Z, x) : 'noch offen'}</small></button>`).join('')}${naechste >= 0 ? `<button type="button" class="taste klein naechste" data-w2k="${naechste}">Weiter mit ${GR[naechste].kurz} →</button>` : '<span class="gr naechste" style="justify-self:end">Alle Arten angesehen</span>'}</div>`;
+      setzeSeiten(W, l, r, u);
+    },
+    zeichnen(W, T) { buehne(W, T, { links: 272, rechts: 292, unten: 76 }); },
+  };
+
+  // V5 · Kacheln mit Vorschau, Ziele nach Zweck gruppiert, große Symbolkacheln unten
+  const ZWECKGRUPPEN = {
+    bild: [['Zum Teilen', ['JPG']], ['Fürs Web', ['WEBP', 'GIF']], ['Ohne Verlust', ['PNG', 'TIFF']], ['Als Dokument', ['PDF']]],
+    audio: [['Zum Teilen', ['MP3', 'M4A']], ['Sehr klein', ['OPUS', 'OGG']], ['Ohne Verlust', ['FLAC', 'WAV']]],
+    video: [['Überall abspielbar', ['MP4']], ['Fürs Web', ['WEBM']], ['Mit mehreren Spuren', ['MKV']], ['Nur den Ton', ['nur Ton']]],
+    dok: [['Nur der Text', ['TXT']], ['Mit Gliederung', ['MD', 'HTML']]],
+    model: [['3D-Druck', ['STL', '3MF']], ['3D-Programme', ['OBJ', 'PLY']], ['Web', ['GLB']]],
+  };
+  const GS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+  K.v5 = {
+    aufbau: grundgeruest,
+    render(W) {
+      const Z = W.Z, g = GR[W.art], f = selDatei(W);
+      const l = `<span class="ueber">Ihre ${g.name}</span><div class="kgrid">${g.files.map(x => `<button type="button" class="kt${f === x || g.files.length === 1 ? ' an' : ''}" data-w2f="${f === x ? '' : esc(x.n)}" data-wf="${esc(x.n)}" aria-pressed="${f === x}">${thumb(g, x)}<b>${esc(x.n)}</b><span class="fcs">${x.f} · ${mbT(x.mb)} MB <i>→ ${zielVon(Z, g, x)}</i></span></button>`).join('')}</div>
+        ${g.files.length > 1 ? `<span class="gr" style="white-space:normal">${f ? 'Ziel gilt nur für die markierte Datei. Nochmal antippen: wieder für alle.' : 'Ziel gilt für alle. Eine Kachel antippen: nur für sie.'}</span>` : ''}`;
+      const r = `<span class="ueber m">Wofür? Dann dieses Format${f ? ' · nur ' + esc(f.n) : ''}</span>${ZWECKGRUPPEN[g.k].map(([name, fs]) => `<div class="gruppe-z"><span>${GS}${name}</span><div class="chips">${fs.map(t => { const i = g.ziele.findIndex(z => z[0] === t); return `<button type="button" class="gc${istGelb(W, t) && !istAn(W, t) ? ' gelb' : ''}" role="radio" aria-checked="${istAn(W, t)}" data-wt="${t}" ${wahlDaten(W, t, i)} title="${g.ziele[i][1]}">${t}${i === 0 ? ' ★' : ''}<small>${mbT(groesseMit(W, t))} MB</small></button>`; }).join('')}</div></div>`).join('')}<span class="gr" style="white-space:normal">★ empfohlen</span>${einstHTML2(W, g)}`;
+      const u = `<div class="ikacheln" role="tablist" aria-label="Dateiart">${GR.map((x, i) => `<button type="button" role="tab" class="ik-t k-${x.k}${i === W.art ? ' an' : ''}" aria-selected="${i === W.art}" data-w2k="${i}">${IK[x.k]}<b>${x.kurz}</b><em>${x.files.length}</em><small>${wieVorher(x)} <i>→ ${zielDef(Z, x)}</i></small></button>`).join('')}</div>`;
+      setzeSeiten(W, l, r, u);
+    },
+    zeichnen(W, T) { buehne(W, T, { links: 272, rechts: 292, unten: 80 }); },
+  };
+
+  /* ---------- Fenster ---------- */
+  function fenster(W) {
+    const el = document.createElement('div'); el.className = 'win';
+    el.innerHTML = `
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><span class="wk" aria-hidden="true"><span>─</span><span>▢</span><span>✕</span></span></div>
+      <nav class="faden" aria-label="Schritte">
+        <span class="knoten fertig"><i><span>✓</span></i><b>Dateien</b><small>7 erkannt · 1 nicht</small></span><span class="seg"></span>
+        <span class="knoten an"><i><span>2</span></i><b>Ziel</b><small class="js-f1"></small></span><span class="seg"></span>
+        <span class="knoten aus"><i><span>3</span></i><b>Umwandeln</b><small class="js-f2"></small></span>
+      </nav>
+      <div class="innen"><canvas class="lage" aria-hidden="true"></canvas></div>
+      <div class="leiste">
+        <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+        <span class="platz"></span><span class="summe js-summe" aria-live="polite"></span>
+        <button type="button" class="btn">Zurück</button>
+        <button type="button" class="taste">Weiter: Umwandeln</button>
+      </div>`;
+    return el;
+  }
+  function zahlen(W) {
+    const Z = W.Z, n = nachAlle(Z);
+    GR.forEach(g => { W.el.querySelectorAll(`[data-gr="${g.k}"]`).forEach(e => e.innerHTML = grHTML(Z, g)); W.el.querySelectorAll(`[data-qw="${g.k}"]`).forEach(e => e.textContent = Z.qual[g.k]); });
+    W.el.querySelector('.js-summe').innerHTML = `7 Dateien <b>${mbT(VOR)} MB</b> → <em>≈ ${mbT(n)} MB</em>`;
+    W.el.querySelector('.js-f1').textContent = GR.map(g => zielDef(Z, g)).join(' · ');
+    W.el.querySelector('.js-f2').textContent = `≈ ${mbT(n)} MB`;
+    W.k.zahlen?.(W);
+  }
+  function neu(W) { W.k.render(W); zahlen(W); }
+
+  farbenLesen();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', farbenLesen);
+  new MutationObserver(farbenLesen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const ALLE = [];
+  document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const W = { id: host.dataset.konzept, k: K[host.dataset.konzept], Z: zustand(), offen: new Set(), sichtbar: true, w: 0, h: 0, jetzt: 0, mx: null, my: null };
+    W.el = fenster(W); host.append(W.el);
+    W.innen = W.el.querySelector('.innen');
+    const cv = W.innen.querySelector('canvas'); W.ctx = cv.getContext('2d');
+    new ResizeObserver(() => { const r = W.innen.getBoundingClientRect(); if (!r.width) return; const d = Math.min(2, devicePixelRatio || 1); W.w = r.width; W.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); W.ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(W.innen);
+    new IntersectionObserver(en => { W.sichtbar = en[0].isIntersecting; }).observe(W.el);
+    W.innen.addEventListener('pointermove', e => { const r = W.innen.getBoundingClientRect(); W.mx = e.clientX - r.left; W.my = e.clientY - r.top; });
+    W.innen.addEventListener('pointerleave', () => { W.mx = W.my = null; });
+    W.k.aufbau(W);
+    W.el.addEventListener('click', e => {
+      const t = e.target, Z = W.Z;
+      if (W.rad && !t.closest('.rad') && !t.closest('[data-rad]')) K.k5.zu(W);
+      const md = t.closest('[data-modus]'); if (md) { W.einzeln = md.dataset.modus === 'einzeln'; W.sel = W.einzeln ? GR[W.art].files[0].n : null; neu(W); return; }
+      const a = t.closest('[data-art][data-i]'); if (a) { setzeArt(Z, G(a.dataset.art), +a.dataset.i); neu(W); return; }
+      const d = t.closest('[data-datei]'); if (d) { const g = G(d.dataset.k); setzeDatei(Z, g, g.files.find(f => f.n === d.dataset.datei), d.dataset.t); neu(W); return; }
+      const m = t.closest('[data-meta]'); if (m) { Z.meta[m.dataset.meta] = !Z.meta[m.dataset.meta]; m.setAttribute('aria-pressed', Z.meta[m.dataset.meta]); return; }
+      const o = t.closest('[data-auf]'); if (o) { const k = o.dataset.auf; W.offen.has(k) ? W.offen.delete(k) : W.offen.add(k); neu(W); W.el.querySelector(`[data-auf="${k}"]`)?.focus(); return; }
+      const s = t.closest('[data-w2k]'); if (s) { W.art = +s.dataset.w2k; W.sel = null; W.einzeln = false; W.tZoom = W.jetzt; neu(W); W.el.querySelector(`[role="tab"][data-w2k="${W.art}"]`)?.focus(); return; }
+      const f = t.closest('[data-w2f]'); if (f) { W.sel = f.dataset.w2f || null; if (GR[W.art].files.length === 1) W.sel = null; neu(W); return; }
+      const p = t.closest('[data-planet]'); if (p) { W.sel3 = +p.dataset.planet; neu(W); return; }
+      const r = t.closest('[data-rad]'); if (r) { W.rad && W.rad.knopf === r ? K.k5.zu(W) : K.k5.auf(W, r); return; }
+    });
+    W.el.addEventListener('change', e => { const k = e.target.dataset.q; if (k) { neu(W); W.el.querySelector(`[data-q="${k}"]`)?.focus(); } });
+    W.el.addEventListener('input', e => { const k = e.target.dataset.q; if (!k) return; W.Z.qual[k] = +e.target.value; zahlen(W); });
+    W.el.addEventListener('keydown', e => {
+      const b = e.target.closest('[role="radio"]'); if (!b || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+      e.preventDefault(); const alle = [...b.parentElement.querySelectorAll('[role="radio"]')], i = alle.indexOf(b), n = alle[(i + (e.key === 'ArrowRight' ? 1 : alle.length - 1)) % alle.length];
+      n.click(); W.el.querySelector(`[data-art="${n.dataset.art}"][data-i="${n.dataset.i}"][role="radio"]`)?.focus();
+    });
+    neu(W);
+    ALLE.push(W);
+  });
+  let zuletzt = performance.now();
+  const loop = t => {
+    const T = t / 1000, dt = Math.min(.05, (t - zuletzt) / 1000); zuletzt = t;
+    for (const W of ALLE) { W.jetzt = T; if (!W.sichtbar || !W.w) continue; W.ctx.clearRect(0, 0, W.w, W.h); try { W.k.zeichnen(W, T, dt); } catch (err) { console.error(err); } }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+})();
+</script>

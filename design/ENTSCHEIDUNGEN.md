@@ -18,7 +18,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 2: `ziel-konzepte.html` → „Zoom-Wege“ gewählt, die Ausbauten in `zoom-einstellungen.html` wurden als zu unübersichtlich verworfen. Neuer Anlauf `ziel-einfach.html` mit der Regel „eine Frage auf einmal, große Knöpfe mit Größe, Details hinter ‚Mehr‘“: Ein Schieber, Wofür?, Vergleich, Karten, Einer für alle. Vorschlag: „Einer für alle“ als Einstieg, „Anders“ öffnet den Schieber je Art, Vergleich beim Überfahren. Bis zur Wahl bleibt Schritt 2 im Mischentwurf wie er ist.
+- Schritt 2: „Zoom-Wege“ aus `ziel-konzepte.html` bleibt der Favorit; die Mitte (Bahn, Loch, Wege je Datei) bleibt unverändert. `zoom-einstellungen.html` und `ziel-einfach.html` sind verworfen. Neue Varianten für links, rechts und die Artwahl unten in `zoom-wege-neu.html`: Karten und Dock, Haben → Wird, Als Satz, Schritt für Schritt, Kacheln und Zwecke. Vorschlag: links Karten mit „Alle gleich / Jede einzeln“, rechts großes Ergebnis mit anderen Formaten und Größe, unten Dock mit Planeten. Bis zur Wahl bleibt Schritt 2 im Mischentwurf wie er ist.
 - Win2D (MIT) für den Pixelwirbel und die Galaxie: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
@@ -26,4 +26,4 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Weitere Entwurfsseiten (Zwischenstände)
 
-`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-foerderband.html`, `schritt3-konzepte.html`, `foerderband-effekte.html`, `pixel-konzepte.html`, `wirbel-varianten.html`, `sanduhr-wende.html`, `ereignishorizont-konzepte.html`, `umlaufbahn-varianten.html`, `fokus-varianten.html`, `zoom-varianten.html`, `einwurf-varianten.html`, `einwurf-uebersicht.html`, `ziel-konzepte.html`, `zoom-einstellungen.html`, `ziel-einfach.html`.
+`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-foerderband.html`, `schritt3-konzepte.html`, `foerderband-effekte.html`, `pixel-konzepte.html`, `wirbel-varianten.html`, `sanduhr-wende.html`, `ereignishorizont-konzepte.html`, `umlaufbahn-varianten.html`, `fokus-varianten.html`, `zoom-varianten.html`, `einwurf-varianten.html`, `einwurf-uebersicht.html`, `ziel-konzepte.html`, `zoom-einstellungen.html`, `ziel-einfach.html`, `zoom-wege-neu.html`.
