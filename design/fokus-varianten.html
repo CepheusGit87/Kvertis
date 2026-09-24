@@ -1,0 +1,763 @@
+<title>Kvertis Ereignishorizont</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+.k-model { --k: var(--model); }
+/* ===== Fenster im Weltraum-Motiv ===== */
+.win { height: 700px; grid-template-rows: 40px 58px minmax(0, 1fr) auto; background: radial-gradient(900px 500px at 50% 60%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 70%), var(--bg); }
+/* Logo als kleines schwarzes Loch */
+.logo { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #000 0 34%, var(--mint) 38%, color-mix(in srgb, var(--mint) 30%, transparent) 55%, transparent 72%); }
+.logo::before, .logo::after { display: none; }
+/* Roter Faden als Umlaufbahn: der aktuelle Schritt dreht sich */
+.faden { position: relative; }
+.faden .seg { height: 1px; background: repeating-linear-gradient(90deg, var(--mint) 0 4px, transparent 4px 8px); width: 60px; }
+.knoten i { border-radius: 50%; }
+.knoten.an i { background: conic-gradient(from var(--dreh, 0deg), var(--mint), color-mix(in srgb, var(--mint) 20%, var(--bg)), var(--mint)); color: var(--auf-mint); box-shadow: 0 0 14px color-mix(in srgb, var(--mint) 60%, transparent); animation: knotendreh 3s linear infinite; }
+@property --dreh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes knotendreh { to { --dreh: 360deg; } }
+.knoten.an i span { background: var(--mint); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); }
+.knoten.aus i { border-color: var(--line-stark); color: var(--muted); }
+.knoten.aus small { color: var(--leise); }
+
+.welt { position: relative; overflow: hidden; }
+.welt canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.ov > * { pointer-events: auto; }
+.einwurf { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); transition: opacity .4s; white-space: nowrap; }
+.einwurf b { font-size: 13px; display: block; }
+.einwurf small { font-size: 11.5px; color: var(--muted); }
+.einwurf.klar { border: 0; background: transparent; backdrop-filter: none; text-align: center; flex-direction: column; gap: 2px; padding: 0; }
+.art { position: absolute; display: grid; gap: 1px; width: 170px; transition: opacity .5s, transform .5s var(--sanft); pointer-events: none; }
+.art.mitte { transform: translateX(-50%); text-align: center; justify-items: center; }
+.art.rechts { transform: translateX(-100%); text-align: right; justify-items: end; }
+.art b { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.art b em { font: 700 11px var(--mono); font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--k); color: #0b0f12; }
+.art b em.null { background: transparent; color: var(--leise); border: 1px dashed var(--line-stark); }
+.art small { font: 10.5px var(--mono); color: var(--muted); line-height: 1.45; }
+.art small i { font-style: normal; color: var(--mint); }
+.abweis { position: absolute; right: 16px; bottom: 12px; max-width: 250px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 75%, transparent); font-size: 11.5px; color: var(--muted); transition: opacity .4s; }
+.abweis b { color: var(--coral); font-weight: 600; font-size: 12px; }
+.mitte3 { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; opacity: 0; transition: opacity .5s; pointer-events: none; }
+.mitte3 b { font-size: 14px; } .mitte3 small { font: 11px var(--mono); color: var(--muted); }
+.welt[data-modus="wirbel"] .art, .welt[data-modus="wirbel"] .einwurf, .welt[data-modus="wirbel"] .abweis { opacity: 0; pointer-events: none; }
+.welt[data-modus="wirbel"] .mitte3 { opacity: 1; }
+.leiste .tipp { font-size: 12px; color: var(--muted); }
+
+.ideen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.idee-k { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idee-k small { font: 600 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.idee-k b { font-size: 14.5px; }
+.idee-k p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.idee-k .da { color: var(--mint); font: 600 11px var(--mono); }
+
+
+.win { height: 800px; }
+.welt.zeigt { cursor: pointer; }
+.welt[data-modus="wirbel"] .panel { opacity: 0; pointer-events: none; }
+.panel { transition: opacity .4s; }
+@keyframes weich { from { opacity: 0; transform: translateY(6px); } }
+.neu-rein { animation: weich .35s var(--sanft); }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.chips span { font: 600 10.5px var(--mono); padding: 2px 6px; border-radius: 5px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 40%, transparent); transition: box-shadow .3s, background .3s; }
+.chips.mint span { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.chips span.da, .liste-f li.da b { background: var(--k); color: #0b0f12; box-shadow: 0 0 12px var(--k); }
+.bsp { display: flex; flex-wrap: wrap; gap: 6px; }
+.bsp span { font-size: 11.5px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); white-space: nowrap; }
+.bsp span b { font-family: var(--mono); font-size: 11px; color: var(--k); }
+.bsp span b.m { color: var(--mint); }
+.liste-f { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.liste-f li { display: grid; grid-template-columns: 52px 1fr; gap: 8px; align-items: baseline; font-size: 12px; color: var(--muted); }
+.liste-f li b { justify-self: start; font: 600 10.5px var(--mono); padding: 1px 6px; border-radius: 5px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 40%, transparent); }
+.liste-f.mint li b { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.kl { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.runde-dateien { font-size: 11.5px; color: var(--muted); }
+.runde-dateien b { color: var(--ink); font-weight: 600; }
+
+/* 1 · Planeten und Übersetzer */
+.planeten { position: absolute; left: 14px; top: 76px; display: grid; gap: 4px; width: 170px; }
+.planet { display: grid; grid-template-columns: 38px 1fr; gap: 0 8px; align-items: center; padding: 6px 8px 6px 4px; border: 0; border-radius: 12px; background: transparent; text-align: left; transition: background .3s, opacity .3s; opacity: .72; }
+.planet:hover { background: var(--hover); opacity: 1; }
+.planet .pl { grid-row: span 2; position: relative; width: 38px; height: 38px; display: grid; place-items: center; }
+.planet .pl i { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, var(--k) 45%, color-mix(in srgb, var(--k) 40%, #000)); transition: transform .45s var(--feder), box-shadow .45s; }
+.planet .pl::after { content: ''; position: absolute; inset: 11px 1px; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--k) 60%, transparent); transform: rotate(-18deg); transition: inset .45s var(--feder); }
+.planet b { font-size: 13px; font-weight: 600; }
+.planet small { font: 10.5px var(--mono); color: var(--muted); }
+.planet.an { opacity: 1; background: color-mix(in srgb, var(--k) 10%, transparent); }
+.planet.an .pl i { transform: scale(1.35); box-shadow: 0 0 16px var(--k); }
+.planet.an .pl::after { inset: 9px -2px; }
+.uebersetzer { position: absolute; right: 14px; top: 64px; width: 372px; display: grid; gap: 10px; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--k, var(--mint)) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 84%, transparent); backdrop-filter: blur(8px); box-shadow: 0 24px 40px -26px var(--schatten); transition: border-color .4s; }
+.uebersetzer h4 { margin: 0; font-size: 16px; display: grid; gap: 1px; }
+.uebersetzer h4 small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.spalten2 { display: grid; grid-template-columns: 1fr 18px 1fr; gap: 6px; align-items: start; }
+.spalten2 > .pf { color: var(--mint); text-align: center; padding-top: 18px; font-size: 15px; }
+.spalten2 > div { display: grid; gap: 5px; align-content: start; }
+
+/* 2 · An der Bahn */
+.wahl-leiste { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 4px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(6px); }
+.wahl-leiste button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); transition: background .3s, color .3s; }
+.wahl-leiste button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k); }
+.wahl-leiste button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.wahl-leiste button.an { background: color-mix(in srgb, var(--k) 16%, var(--panel)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k) 55%, transparent); }
+.bahn-satz { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); text-align: center; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.bahn-satz b { color: var(--ink); } .bahn-satz code { color: var(--k); font-family: var(--mono); } .bahn-satz code.m { color: var(--mint); }
+
+/* 3 · Reiter oben, Info unten */
+.reiter-oben { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--tief); border: 1px solid var(--line); }
+.reiter-oben button { position: relative; border: 0; background: transparent; padding: 7px 14px 9px; border-radius: 9px; font-size: 12.5px; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.reiter-oben button::after { content: ''; position: absolute; left: 14px; right: 14px; bottom: 3px; height: 2px; border-radius: 1px; background: var(--k); transform: scaleX(0); transition: transform .4s var(--feder); }
+.reiter-oben button.an { background: var(--panel2); color: var(--ink); }
+.reiter-oben button.an::after { transform: none; }
+.reiter-oben button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.info-unten { position: absolute; left: 14px; right: 14px; bottom: 12px; display: grid; grid-template-columns: 190px minmax(0, 1.1fr) 20px minmax(0, 1fr) 220px; gap: 14px; align-items: start; padding: 12px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--k, var(--mint)) 40%, var(--line)); background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(8px); transition: border-color .4s; }
+.info-unten h4 { margin: 0; font-size: 16px; display: grid; gap: 2px; }
+.info-unten h4 small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.info-unten > div { display: grid; gap: 6px; align-content: start; }
+.info-unten .pf { color: var(--mint); font-size: 16px; padding-top: 20px; text-align: center; }
+
+/* 4 · Drehrad und Karte mit Reitern */
+.rad { position: absolute; left: 14px; top: 50%; width: 180px; height: 300px; transform: translateY(-50%); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
+.rad button { position: absolute; left: 0; right: 0; top: 50%; height: 44px; margin-top: -22px; display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; padding: 0 12px; border: 1px solid transparent; border-radius: 12px; background: transparent; text-align: left; font-size: 14px; font-weight: 600; transform: translateY(calc(var(--o) * 50px)) scale(calc(1 - var(--a) * .14)); opacity: calc(1 - var(--a) * .32); transition: transform .5s var(--feder), opacity .5s, border-color .4s, background .4s; }
+.rad button i { width: 12px; height: 12px; border-radius: 50%; background: var(--k); box-shadow: 0 0 0 3px color-mix(in srgb, var(--k) 20%, transparent); }
+.rad button em { font: 700 10.5px var(--mono); font-style: normal; color: var(--muted); }
+.rad button.an { border-color: color-mix(in srgb, var(--k) 55%, transparent); background: color-mix(in srgb, var(--k) 12%, var(--panel)); }
+.rad-hin { position: absolute; left: 22px; bottom: 16px; font-size: 11px; color: var(--leise); }
+.karte4 { position: absolute; right: 14px; top: 76px; width: 318px; display: grid; gap: 10px; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--k, var(--mint)) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 84%, transparent); backdrop-filter: blur(8px); transition: border-color .4s; }
+.karte4 h4 { margin: 0; font-size: 16px; display: grid; gap: 1px; } .karte4 h4 small { font-size: 12px; font-weight: 400; color: var(--muted); }
+.tabs { display: flex; gap: 2px; padding: 3px; border-radius: 10px; background: var(--tief); }
+.tabs button { flex: 1; border: 0; background: transparent; padding: 5px 6px; border-radius: 7px; font-size: 11.5px; color: var(--muted); }
+.tabs button.an { background: var(--panel2); color: var(--ink); box-shadow: 0 1px 0 var(--line-stark) inset; }
+
+/* 5 · Zoom */
+.stationen { position: absolute; left: 14px; top: 76px; display: grid; gap: 4px; width: 150px; }
+.stationen button { display: grid; grid-template-columns: 10px 1fr auto; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 10px; border: 1px solid transparent; background: transparent; text-align: left; font-size: 12.5px; font-weight: 600; color: var(--muted); transition: color .3s, background .3s, border-color .3s; }
+.stationen button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k); }
+.stationen button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.stationen button.an { color: var(--ink); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border-color: color-mix(in srgb, var(--k) 45%, transparent); }
+.stationen .ueber { grid-template-columns: 1fr; color: var(--mint); border: 1px dashed var(--mint-rahmen); margin-bottom: 6px; font-weight: 500; }
+.stationen .ueber.an { background: var(--mint-flaeche); color: var(--mint); border-color: var(--mint); }
+.zoom-satz { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; }
+.zoom-satz b { font-size: 15px; } .zoom-satz small { font-size: 12px; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Kvertis · Umlaufbahnen mit Fokus · Entwürfe vom 24.09.2026</span>
+    <h1>Fokus, fünf Mal feiner</h1>
+    <p class="lead">Die Grundidee bleibt: Bahnen um das Loch, eine Art steht im Fokus und zeigt, was sie liest und was daraus wird. Neu in allen fünf: Der Wechsel ist eine weiche Überblendung. Die gewählte Bahn wird heller und dichter und läuft schneller, die anderen treten langsam zurück. Die Maus wirkt auf die Bahnen, und die Formate haben Alltagsbeschreibungen und Beispiele.</p>
+    <div class="gemeinsam">
+      <div><small>Maus</small><p>Die nächste Bahn beult sich zur Maus hin aus und leuchtet. Ihre Teilchen folgen dem Zeiger stärker. Ein Klick auf die Bahn wählt sie.</p></div>
+      <div><small>Wechsel</small><p>Keine harten Sprünge mehr: Helligkeit, Dichte, Tempo und Neigung gleiten in etwa einer halben Sekunde.</p></div>
+      <div><small>Verständlich</small><p>Zu jedem Format steht in einfachen Worten, wofür es gut ist, dazu Beispiele wie „HEIC → JPG: Handyfotos überall öffnen“.</p></div>
+      <div><small>Erkannt</small><p>„Beispieldateien einwerfen“: Der Fokus springt zur Art der Datei, ihr Format leuchtet auf.</p></div>
+    </div>
+    <nav class="sprung" aria-label="Varianten">
+      <a href="#k1"><b>1</b>Planeten und Übersetzer</a><a href="#k2"><b>2</b>An der Bahn</a><a href="#k3"><b>3</b>Reiter und Infoleiste</a><a href="#k4"><b>4</b>Drehrad und Karte</a><a href="#k5"><b>5</b>Zoom</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+    </nav>
+  </header>
+
+  <section class="idee" id="k1" aria-labelledby="h-k1">
+    <div class="idee-kopf"><h2 id="h-k1">1 · Planeten und Übersetzer <small>links Planeten, rechts ein Übersetzer</small></h2></div>
+    <p>Links ist jede Art ein kleiner Planet mit Ring. Der gewählte wächst und glüht. Rechts steht ein „Übersetzer“: links, was Kvertis öffnet, rechts, was daraus werden kann, jeweils mit einem Wort dazu, wofür das Format ist. Unten stehen beliebte Umwandlungen. Beim Wechsel gleitet der Inhalt weich herein.</p>
+    <div class="buehne" data-konzept="k1"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Am ausführlichsten, jedes Format erklärt</span><span class="plus"><b>+</b>Die Planeten passen zum Motiv</span><span class="minus"><b>−</b>Die Karte ist bei Bildern (11 Formate) recht lang</span></div>
+  </section>
+
+  <section class="idee" id="k2" aria-labelledby="h-k2">
+    <div class="idee-kopf"><h2 id="h-k2">2 · An der Bahn <small>keine Seitenfelder, die Formate entfalten sich auf der Bahn</small></h2></div>
+    <p>Keine Kästen links und rechts. Die gewählte Bahn neigt sich nach vorn, und ihre Formate entfalten sich aus den Teilchen direkt auf der Bahn: links vorn, was Kvertis liest, rechts vorn in mint, was daraus wird. Gewählt wird unten in einer schlichten Leiste oder mit einem Klick auf die Bahn.</p>
+    <div class="buehne" data-konzept="k2"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die ganze Bühne gehört den Bahnen</span><span class="plus"><b>+</b>Die Entfaltung ist ein schöner, ruhiger Moment</span><span class="minus"><b>−</b>Ohne Beschreibungen, nur Formatnamen</span></div>
+  </section>
+
+  <section class="idee" id="k3" aria-labelledby="h-k3">
+    <div class="idee-kopf"><h2 id="h-k3">3 · Reiter und Infoleiste <small>oben wählen, unten lesen</small></h2></div>
+    <p>Oben eine Reiterleiste mit den fünf Arten, wie man es aus Windows kennt. Unten eine breite Infoleiste: Was ist das, öffnet, wird zu, Beispiele, alles in einer Zeile. Beim Wechsel läuft eine Lichtwelle einmal um die gewählte Bahn.</p>
+    <div class="buehne" data-konzept="k3"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Sehr vertraut, sofort bedienbar</span><span class="plus"><b>+</b>Die Bahnen haben links und rechts Platz</span><span class="minus"><b>−</b>Die Infoleiste nimmt unten Höhe weg</span></div>
+  </section>
+
+  <section class="idee" id="k4" aria-labelledby="h-k4">
+    <div class="idee-kopf"><h2 id="h-k4">4 · Drehrad und Karte <small>links ein Rad, rechts eine Karte mit Reitern</small></h2></div>
+    <p>Links ein Drehrad: Die gewählte Art steht groß in der Mitte, die anderen darüber und darunter kleiner. Es dreht sich mit dem Mausrad, den Pfeiltasten oder einem Klick. Die gewählte Bahn kippt dabei leicht nach vorn. Rechts eine kurze Karte mit drei Reitern: „Öffnet“, „Wird zu“ und „Beispiele“. So ist sie nie zu lang.</p>
+    <div class="buehne" data-konzept="k4"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Das Rad macht den Wechsel greifbar</span><span class="plus"><b>+</b>Die Karte bleibt kurz und ordentlich</span><span class="minus"><b>−</b>Ein Klick mehr, um alles zu sehen</span></div>
+  </section>
+
+  <section class="idee" id="k5" aria-labelledby="h-k5">
+    <div class="idee-kopf"><h2 id="h-k5">5 · Zoom <small>die Kamera fliegt auf die Bahn</small></h2></div>
+    <p>Zuerst die Übersicht mit allen Bahnen. Wählt man eine Art, zoomt die Ansicht auf ihre Bahn: Die inneren Bahnen sinken ins Loch, die äußeren fliegen nach außen weg. Um die große Bahn stehen dann links die lesbaren Formate, rechts die Zielformate mit einem Wort dazu. „Übersicht“ zoomt wieder heraus.</p>
+    <div class="buehne" data-konzept="k5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Der eindrucksvollste Wechsel</span><span class="plus"><b>+</b>Viel Platz für die Formate einer Art</span><span class="minus"><b>−</b>Man sieht beim Fokus die anderen Arten nicht</span></div>
+  </section>
+
+  <section class="idee" id="vorschlag" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>4 · Drehrad und Karte</b> als Grundlage. Das Rad macht den Wechsel zwischen den Arten zu einer eigenen, ruhigen Bewegung, die zur Bahn passt. Die Karte mit Reitern bleibt kurz und erklärt jedes Format in Alltagssprache.</p>
+      <p><b>Aus 2 die Entfaltung</b> dazu: Die ersten Formate erscheinen zusätzlich klein auf der gewählten Bahn, so verbindet sich die Karte mit dem Bild. <b>Aus 3 die Lichtwelle</b> als Wechsel-Animation.</p>
+      <p class="muted">Die Formatlisten folgen docs/05-formate.md, die Beschreibungen sind ein Vorschlag für die .resw-Texte. Ohne fremde Markennamen: HEIC heißt hier „Handyfoto“. Bei „Animationen reduzieren“ entfallen Wölbung, Welle und Zoom, die Auswahl bleibt.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (t, a = 0, b = 1) => Math.max(a, Math.min(b, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const TAU = Math.PI * 2;
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  const ARTEN = [
+    { name: 'Bilder', cls: 'bild', tok: 'blue', sub: 'Fotos, Scans und Grafiken',
+      liest: [['JPG', 'Foto'], ['PNG', 'Grafik'], ['HEIC', 'Handyfoto'], ['WEBP', 'Webbild'], ['RAW', 'Kamera-Rohdaten'], ['TIFF', 'Druckvorlage'], ['GIF', 'Animation'], ['BMP', 'unkomprimiert'], ['SVG', 'Vektorgrafik'], ['PSD', 'Ebenenbild'], ['ICO', 'Symbol']],
+      wird: [['JPG', 'überall lesbar'], ['PNG', 'verlustfrei'], ['WEBP', 'klein, fürs Web'], ['PDF', 'als Dokument'], ['TIFF', 'zum Drucken'], ['GIF', 'einfach'], ['BMP', 'unkomprimiert'], ['ICO', 'als Symbol']],
+      bsp: [['HEIC', 'JPG', 'Handyfotos überall öffnen'], ['PNG', 'WEBP', 'kleiner fürs Web'], ['JPG', 'PDF', 'Scan als Dokument']] },
+    { name: 'Audio', cls: 'audio', tok: 'violet', sub: 'Musik, Sprachaufnahmen, Podcasts',
+      liest: [['MP3', 'Musik'], ['WAV', 'unkomprimiert'], ['M4A', 'Sprachmemo'], ['FLAC', 'verlustfrei'], ['OGG', 'offen'], ['OPUS', 'Sprachnachricht'], ['WMA', 'älteres Format'], ['AIFF', 'Studio']],
+      wird: [['MP3', 'überall abspielbar'], ['M4A', 'klein und gut'], ['FLAC', 'verlustfrei'], ['WAV', 'unkomprimiert'], ['OGG', 'offen'], ['OPUS', 'sehr klein']],
+      bsp: [['WAV', 'MP3', 'klein zum Verschicken'], ['M4A', 'MP3', 'läuft überall'], ['FLAC', 'M4A', 'fürs Handy']] },
+    { name: 'Video', cls: 'video', tok: 'amber', sub: 'Clips und Filme, auch nur den Ton',
+      liest: [['MP4', 'Standard'], ['MOV', 'Handyvideo'], ['MKV', 'Film'], ['WEBM', 'Webvideo'], ['AVI', 'älteres Format'], ['WMV', 'älteres Format'], ['3GP', 'altes Handy'], ['MPG', 'ältere Kameras']],
+      wird: [['MP4', 'überall abspielbar'], ['MKV', 'flexibel'], ['WEBM', 'fürs Web'], ['nur Ton', 'Tonspur als MP3']],
+      bsp: [['MOV', 'MP4', 'überall abspielbar'], ['MP4', 'nur Ton', 'Musik aus dem Video'], ['AVI', 'MP4', 'alte Clips retten']] },
+    { name: 'Dokumente', cls: 'dok', tok: 'cyan', sub: 'Texte, Tabellen, Präsentationen',
+      liest: [['PDF', 'Dokument'], ['DOCX', 'Text'], ['XLSX', 'Tabelle'], ['PPTX', 'Präsentation'], ['TXT', 'reiner Text'], ['MD', 'Notizen'], ['HTML', 'Webseite']],
+      wird: [['TXT', 'nur Text'], ['MD', 'mit Gliederung'], ['CSV', 'Tabelle je Blatt'], ['HTML', 'für den Browser'], ['PDF', 'zum Drucken']],
+      bsp: [['DOCX', 'TXT', 'nur den Text'], ['XLSX', 'CSV', 'Tabelle weitergeben'], ['MD', 'PDF', 'Notizen drucken']] },
+    { name: '3D-Modelle', cls: 'model', tok: 'model', sub: 'Modelle für Druck und Web',
+      liest: [['STL', '3D-Druck'], ['3MF', '3D-Druck'], ['OBJ', '3D-Programme'], ['PLY', 'Scan'], ['GLB', 'Web'], ['GLTF', 'Web']],
+      wird: [['STL', 'für den 3D-Druck'], ['3MF', 'Druck mit Maßeinheit'], ['OBJ', 'für 3D-Programme'], ['PLY', 'kompakt'], ['GLB', 'fürs Web']],
+      bsp: [['STL', '3MF', 'mit Maßeinheit drucken'], ['OBJ', 'GLB', 'im Browser zeigen']] },
+  ];
+  const BAHN = { 3: 0, 4: 1, 2: 2, 1: 3, 0: 4 };
+  const DATEIEN = [
+    { n: 'IMG_2041.heic', k: 0, f: 'HEIC' }, { n: 'Probe_03.wav', k: 1, f: 'WAV' }, { n: 'Scan.jpg', k: 0, f: 'PNG' }, { n: 'Urlaub_Clip.mov', k: 2, f: 'MOV' },
+    { n: 'Protokoll.docx', k: 3, f: 'DOCX' }, { n: 'Fotos.zip', k: -1, f: 'ZIP' }, { n: 'Halterung_v3.stl', k: 4, f: 'STL' }, { n: 'Interview.m4a', k: 1, f: 'M4A' },
+  ];
+
+  /* Farben */
+  const F = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'coral', 'bg', 'line-stark', 'ink', 'paper', 'muted'].forEach(k => { F[k] = norm(cs.getPropertyValue('--' + k)); F[k + 'R'] = hexRgb(F[k]); });
+    const [r, g, b] = F.bgR; F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
+    F.art = ARTEN.map(a => F[a.tok + 'R']);
+  }
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+  function glow(ctx, x, y, r, c, a) { if (a <= 0) return; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(c, a)); g.addColorStop(1, rgba(c, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  function loch(ctx, x, y, r, e = 1) {
+    glow(ctx, x, y, r * 3.2, F.violetR, .18 * e); glow(ctx, x, y, r * 1.9, F.mintR, .22 * e);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mintR, .95 * e); ctx.lineWidth = 2; ctx.shadowColor = F.mint; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(x, y, r + 1.5, 0, TAU); ctx.stroke(); ctx.shadowBlur = 0;
+  }
+  const breiten = new Map();
+  function chip(ctx, x, y, t, farbe, mint, a = 1, s = 1, hell = false, unter = null) {
+    if (a <= .02) return;
+    ctx.font = `600 ${9.5 * s}px ${MONO}`;
+    const key = t + '|' + s; let w = breiten.get(key); if (w == null) { w = ctx.measureText(t).width; breiten.set(key, w); }
+    const W = w + 10 * s, H = 15 * s;
+    ctx.globalAlpha = a;
+    ctx.beginPath(); ctx.roundRect(x - W / 2, y - H / 2, W, H, 4 * s);
+    ctx.fillStyle = rgba(F.bgR, .9); ctx.fill();
+    ctx.fillStyle = hell ? rgba(farbe, .9) : mint ? rgba(F.mintR, .16) : rgba(farbe, .14); ctx.fill();
+    ctx.strokeStyle = mint ? rgba(F.mintR, .75) : rgba(farbe, .7); ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = hell ? '#0b0f12' : mint ? F.mint : rgba(farbe, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y + .5);
+    if (unter) { ctx.font = `500 ${9 * s}px "Geist", system-ui, sans-serif`; ctx.fillStyle = rgba(F.mutedR, 1); ctx.fillText(unter, x, y + H * .5 + 7 * s); }
+    ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  }
+
+  /* ---------- Bahnen: Fokus, Mauswölbung, Phase ---------- */
+  const tempo = k => .2 - BAHN[k] * .026;
+  function basis(S, k) { return S.r0 + BAHN[k] * S.dr; }
+  // Radius und Abflachung einer Bahn, inklusive Zoom (Variante 5) und Neigung beim Fokus
+  function bahnMass(S, k) {
+    const W = S.W; let rx = basis(S, k), fl = S.fl + (S.W.k.neigen || 0) * W.fw[k];
+    if (W.k.zoom) {
+      const am = W.fw.indexOf(Math.max(...W.fw)), z = ease(clamp(W.fw[am]));
+      if (z > 0) rx = k === am ? lerp(rx, S.rZoom, z) : rx * lerp(1, BAHN[k] < BAHN[am] ? .18 : 2.6, z);
+    }
+    return [rx, rx * fl];
+  }
+  function punkt(S, k, A, d = 0) {
+    const W = S.W, [rx, ry] = bahnMass(S, k);
+    let bul = 0;
+    if (W.hw[k] > .01) { let da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 18 * Math.exp(-da * da / .22); }
+    const s = 1 + (bul + d) / rx;
+    return [S.c.x + Math.cos(A) * rx * s, S.c.y + Math.sin(A) * ry * s];
+  }
+  function sichtbarkeit(W, k) { const any = Math.max(...W.fw); return 1 - .62 * any * (1 - Math.max(W.fw[k], W.hw[k] * .8)); }
+  function zoomAlpha(W, k) { if (!W.k.zoom) return 1; const am = W.fw.indexOf(Math.max(...W.fw)); return k === am ? 1 : 1 - ease(clamp(W.fw[am])); }
+
+  function ringe(S, e) {
+    const { ctx, W } = S;
+    ARTEN.forEach((a, k) => {
+      const f = W.fw[k], h = W.hw[k], al = (.14 + .45 * f + .3 * h) * sichtbarkeit(W, k) * zoomAlpha(W, k) * (1 - e);
+      if (al < .01) return;
+      ctx.strokeStyle = rgba(F.art[k], al); ctx.lineWidth = 1 + 1.2 * f + .8 * h;
+      if (f > .05 || h > .05) { ctx.shadowColor = F[a.tok]; ctx.shadowBlur = 10 * Math.max(f, h); }
+      ctx.beginPath();
+      for (let i = 0; i <= 96; i++) { const [x, y] = punkt(S, k, i / 96 * TAU); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke(); ctx.shadowBlur = 0;
+    });
+  }
+  const erkannt = (W, k, t) => W.files.some(f => f.k === k && f.f === t && f.st === 'drin' && W.jetzt - f.tAn < 3.5);
+
+  /* =========================================================
+     Fünf Varianten
+     ========================================================= */
+  const chipsHTML = (liste, mint, k, W) => `<div class="chips${mint ? ' mint' : ''}">${liste.map(([t, d]) => `<span title="${esc(d)}"${mint ? '' : ` data-f="${t}"`}>${t}</span>`).join('')}</div>`;
+  const listeHTML = (liste, mint) => `<ul class="liste-f${mint ? ' mint' : ''}">${liste.map(([t, d]) => `<li${mint ? '' : ` data-f="${t}"`}><b>${t}</b><span>${esc(d)}</span></li>`).join('')}</ul>`;
+  const bspHTML = a => `<div class="bsp">${a.bsp.map(([v, n, t]) => `<span><b>${v}</b> → <b class="m">${n}</b> ${esc(t)}</span>`).join('')}</div>`;
+  const rundeHTML = (W, k) => { const d = W.files.filter(f => f.k === k && f.st === 'drin'); return `<span class="runde-dateien">${d.length ? `In dieser Runde: <b>${d.map(f => esc(f.n)).join(', ')}</b>` : 'In dieser Runde: noch keine Datei'}</span>`; };
+  const auswahl = (W, sel) => W.el.querySelectorAll(sel).forEach(b => { const an = +b.dataset.fok === W.fok; b.classList.toggle('an', an); b.setAttribute('aria-pressed', an); });
+
+  const K = {};
+
+  K.k1 = { tour: true, neigen: .05,
+    layout(S) { S.c = { x: S.w * .42, y: S.h * .52 }; S.r0 = 80; S.dr = 40; S.fl = .38; S.ein = { x: S.w * .42, y: 12 }; S.drop = { x: S.w * .42, y: 60 }; },
+    dom: W => `<div class="panel"><div class="planeten" role="group" aria-label="Dateiart wählen">${ARTEN.map((a, i) => `<button type="button" class="planet k-${a.cls}" data-fok="${i}" data-art="${i}"><span class="pl" aria-hidden="true"><i></i></span><b>${a.name}</b><small><span class="js-n">0</span> in dieser Runde</small></button>`).join('')}</div><div class="uebersetzer" aria-live="polite"></div></div>`,
+    render(W) {
+      auswahl(W, '.planet');
+      const c = W.el.querySelector('.uebersetzer'), a = ARTEN[W.fok ?? 0];
+      c.className = 'uebersetzer k-' + a.cls;
+      c.innerHTML = `<div class="neu-rein" style="display:grid;gap:10px"><h4>${a.name}<small>${a.sub}</small></h4>
+        <div class="spalten2"><div><span class="kl">Kvertis öffnet</span>${listeHTML(a.liest, false)}</div><span class="pf" aria-hidden="true">→</span><div><span class="kl">und macht daraus</span>${listeHTML(a.wird, true)}</div></div>
+        <div style="display:grid;gap:5px"><span class="kl">Beliebt</span>${bspHTML(a)}</div>${rundeHTML(W, W.fok ?? 0)}</div>`;
+    },
+  };
+
+  K.k2 = { tour: true, neigen: .2,
+    layout(S) { S.c = { x: S.w * .5, y: S.h * .46 }; S.r0 = 104; S.dr = 54; S.fl = .36; S.ein = { x: S.w / 2, y: 12 }; S.drop = { x: S.w / 2, y: 60 }; },
+    dom: W => `<div class="panel"><div class="bahn-satz" aria-live="polite"></div><div class="wahl-leiste" role="group" aria-label="Dateiart wählen">${ARTEN.map((a, i) => `<button type="button" class="k-${a.cls}" data-fok="${i}" data-art="${i}"><i></i>${a.name}<em class="js-n">0</em></button>`).join('')}</div></div>`,
+    render(W) {
+      auswahl(W, '.wahl-leiste button');
+      const a = ARTEN[W.fok ?? 0], b = a.bsp[0];
+      const s = W.el.querySelector('.bahn-satz'); s.className = 'bahn-satz k-' + a.cls;
+      s.innerHTML = `<span class="neu-rein" style="display:inline-block"><b>${a.name}</b> · ${a.sub} · zum Beispiel <code>${b[0]}</code> → <code class="m">${b[1]}</code>, ${esc(b[2])}</span>`;
+    },
+    deko(S, T, e) {
+      const { ctx, W } = S;
+      ARTEN.forEach((a, k) => {
+        const f = W.fw[k]; if (f < .02) return;
+        const n1 = a.liest.length, n2 = a.wird.length;
+        a.liest.forEach(([t], j) => { const A = Math.PI * .96 - (n1 === 1 ? 0 : j / (n1 - 1)) * Math.PI * .42, [x, y] = punkt(S, k, A, 18); chip(ctx, x, y, t, F.art[k], false, clamp(f * 1.7 - j * .06) * (1 - e), 1, erkannt(W, k, t)); });
+        a.wird.forEach(([t], j) => { const A = Math.PI * .04 + (n2 === 1 ? 0 : j / (n2 - 1)) * Math.PI * .42, [x, y] = punkt(S, k, A, 18); chip(ctx, x, y, t, F.art[k], true, clamp(f * 1.7 - j * .06 - .2) * (1 - e)); });
+      });
+    },
+  };
+
+  K.k3 = { tour: true, neigen: .06,
+    layout(S) { S.c = { x: S.w * .5, y: S.h * .42 }; S.r0 = 100; S.dr = 50; S.fl = .36; S.ein = { x: S.w - 170, y: 12 }; S.drop = { x: S.w - 170, y: 56 }; },
+    dom: W => `<div class="panel"><div class="reiter-oben" role="tablist" aria-label="Dateiart">${ARTEN.map((a, i) => `<button type="button" role="tab" class="k-${a.cls}" data-fok="${i}" data-art="${i}">${a.name}<em class="js-n">0</em></button>`).join('')}</div><div class="info-unten" aria-live="polite"></div></div>`,
+    render(W) {
+      auswahl(W, '.reiter-oben button');
+      W.el.querySelectorAll('.reiter-oben button').forEach(b => b.setAttribute('aria-selected', +b.dataset.fok === W.fok));
+      const a = ARTEN[W.fok ?? 0], c = W.el.querySelector('.info-unten');
+      c.className = 'info-unten k-' + a.cls;
+      c.innerHTML = `<div class="neu-rein"><h4>${a.name}<small>${a.sub}</small></h4>${rundeHTML(W, W.fok ?? 0)}</div>
+        <div class="neu-rein"><span class="kl">Kvertis öffnet</span>${chipsHTML(a.liest, false)}</div><span class="pf" aria-hidden="true">→</span>
+        <div class="neu-rein"><span class="kl">und macht daraus</span>${chipsHTML(a.wird, true)}</div>
+        <div class="neu-rein"><span class="kl">Beliebt</span>${bspHTML(a)}</div>`;
+    },
+    wechsel(W, T) { W.welle = { k: W.fok, t0: T }; },
+    deko(S, T, e) {
+      const { ctx, W } = S, w = W.welle; if (!w || w.k == null) return;
+      const u = (T - w.t0) / 1.3; if (u > 1 || u < 0) return;
+      const A0 = Math.PI / 2 + u * TAU, a = Math.sin(Math.PI * u) * (1 - e);
+      ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+      for (let i = 0; i < 26; i++) { const A = A0 - i * .035, [x, y] = punkt(S, w.k, A); ctx.fillStyle = rgba(F.art[w.k], a * (1 - i / 26)); ctx.beginPath(); ctx.arc(x, y, 3.2 - i * .09, 0, TAU); ctx.fill(); }
+      const [hx, hy] = punkt(S, w.k, A0); glow(ctx, hx, hy, 26, F.art[w.k], .7 * a);
+      ctx.globalCompositeOperation = 'source-over';
+    },
+  };
+
+  K.k4 = { tour: true, neigen: .16,
+    layout(S) { S.c = { x: S.w * .47, y: S.h * .52 }; S.r0 = 90; S.dr = 44; S.fl = .36; S.ein = { x: S.w * .47, y: 12 }; S.drop = { x: S.w * .47, y: 60 }; },
+    dom: W => `<div class="panel"><div class="rad" role="listbox" aria-label="Dateiart wählen" tabindex="0">${ARTEN.map((a, i) => `<button type="button" role="option" class="k-${a.cls}" data-fok="${i}" data-art="${i}" tabindex="-1"><i></i>${a.name}<em class="js-n">0</em></button>`).join('')}</div><span class="rad-hin">Mausrad oder ↑ ↓</span><div class="karte4" aria-live="polite"></div></div>`,
+    render(W) {
+      const f = W.fok ?? 0;
+      W.el.querySelectorAll('.rad button').forEach(b => { const i = +b.dataset.fok; let o = i - f; if (o > 2) o -= 5; if (o < -2) o += 5; b.style.setProperty('--o', o); b.style.setProperty('--a', Math.abs(o)); b.classList.toggle('an', i === f); b.setAttribute('aria-selected', i === f); });
+      const a = ARTEN[f], c = W.el.querySelector('.karte4'), tab = W.tab || 'liest';
+      c.className = 'karte4 k-' + a.cls;
+      c.innerHTML = `<div class="neu-rein" style="display:grid;gap:10px"><h4>${a.name}<small>${a.sub}</small></h4>
+        <div class="tabs" role="tablist">${[['liest', `Öffnet (${a.liest.length})`], ['wird', `Wird zu (${a.wird.length})`], ['bsp', 'Beispiele']].map(([id, t]) => `<button type="button" role="tab" data-tab="${id}" class="${tab === id ? 'an' : ''}" aria-selected="${tab === id}">${t}</button>`).join('')}</div>
+        <div role="tabpanel">${tab === 'liest' ? listeHTML(a.liest, false) : tab === 'wird' ? listeHTML(a.wird, true) : bspHTML(a)}</div>${rundeHTML(W, f)}</div>`;
+    },
+  };
+
+  K.k5 = { zoom: true, neigen: .12,
+    layout(S) { S.c = { x: S.w * .54, y: S.h * .5 }; S.r0 = 92; S.dr = 46; S.fl = .36; S.rZoom = Math.min(S.w * .27, 280); S.ein = { x: S.w * .54, y: 12 }; S.drop = { x: S.w * .54, y: 60 }; },
+    dom: W => `<div class="panel"><div class="stationen" role="group" aria-label="Ansicht wählen"><button type="button" class="ueber" data-fok="-1">◎ Übersicht</button>${ARTEN.map((a, i) => `<button type="button" class="k-${a.cls}" data-fok="${i}" data-art="${i}"><i></i>${a.name}<em class="js-n">0</em></button>`).join('')}</div><div class="zoom-satz" aria-live="polite"></div></div>`,
+    render(W) {
+      W.el.querySelectorAll('.stationen button').forEach(b => { const i = +b.dataset.fok, an = i === -1 ? W.fok == null : i === W.fok; b.classList.toggle('an', an); b.setAttribute('aria-pressed', an); });
+      const s = W.el.querySelector('.zoom-satz');
+      if (W.fok == null) { s.className = 'zoom-satz'; s.innerHTML = `<b class="neu-rein">Fünf Arten, 40 Formate lesbar, 28 Ziele</b><small>Eine Art links oder eine Bahn anklicken</small>`; return; }
+      const a = ARTEN[W.fok]; s.className = 'zoom-satz k-' + a.cls; s.innerHTML = `<b class="neu-rein">${a.name}</b><small>${a.sub}</small>`;
+    },
+    deko(S, T, e) {
+      const { ctx, W } = S;
+      const am = W.fw.indexOf(Math.max(...W.fw)), z = ease(clamp(W.fw[am])); if (z < .05) return;
+      const a = ARTEN[am], [rx, ry] = bahnMass(S, am);
+      const spalte = (liste, links, mint) => {
+        const n = liste.length, x0 = S.c.x + (links ? -1 : 1) * (rx + 58), hoehe = Math.min(ry * 2 + 70, n * (mint ? 36 : 26));
+        liste.forEach(([t, d], j) => { const y = S.c.y - hoehe / 2 + (n === 1 ? hoehe / 2 : j / (n - 1) * hoehe); chip(ctx, x0, y, t, F.art[am], mint, clamp(z * 1.6 - j * .05 - (mint ? .15 : 0)) * (1 - e), 1.05, !mint && erkannt(W, am, t), mint ? d : null); });
+      };
+      spalte(a.liest, true, false); spalte(a.wird, false, true);
+      ctx.globalAlpha = z * (1 - e); ctx.font = `600 10.5px ${MONO}`; ctx.textAlign = 'center';
+      ctx.fillStyle = rgba(F.art[am], 1); ctx.fillText('ÖFFNET', S.c.x - rx - 58, S.c.y - Math.min(ry * 2 + 70, a.liest.length * 26) / 2 - 20);
+      ctx.fillStyle = F.mint; ctx.fillText('WIRD ZU', S.c.x + rx + 58, S.c.y - Math.min(ry * 2 + 70, a.wird.length * 36) / 2 - 20);
+      ctx.textAlign = 'left'; ctx.globalAlpha = 1;
+    },
+  };
+
+  /* ---------- Fenster ---------- */
+  function fenster(W) {
+    const el = document.createElement('div');
+    el.className = 'win';
+    el.innerHTML = `
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><span class="wk" aria-hidden="true"><span>─</span><span>▢</span><span>✕</span></span></div>
+      <nav class="faden" aria-label="Schritte">
+        <span class="knoten js-kn" data-s="0"><i><span>1</span></i><b>Dateien</b><small>7 erkannt · 1 nicht</small></span><span class="seg"></span>
+        <span class="knoten js-kn" data-s="1"><i><span>2</span></i><b>Ziel</b><small>JPG · MP3 · MP4 · TXT · 3MF</small></span><span class="seg"></span>
+        <span class="knoten js-kn" data-s="2"><i><span>3</span></i><b>Umwandeln</b><small>7 Dateien</small></span>
+      </nav>
+      <div class="welt" data-modus="regal">
+        <canvas role="img" aria-label="Sortierregal als Umlaufbahnen: jede Dateiart kreist um Kvertis"></canvas>
+        <div class="ov">
+          <div class="einwurf js-ein"><div><b>Alles hier hineinwerfen</b><small>Kvertis erkennt die Art selbst</small></div><button type="button" class="btn js-einwerfen">Dateien wählen</button></div>
+          ${W.k.dom(W)}
+          <div class="abweis js-abweis" hidden${W.k === K.k3 ? ' style="top:74px;bottom:auto"' : W.k === K.k1 ? ' style="left:16px;right:auto"' : W.k === K.k2 ? ' style="top:12px;bottom:auto"' : ''}><b>Nicht umwandelbar</b><span>Fotos.zip · Archive werden nicht entpackt</span></div>
+          <div class="mitte3" aria-live="polite"><b>Schritt 3 · 7 Dateien im Wirbel</b><small>Farbe der Art → Mint heißt umgewandelt</small></div>
+        </div>
+      </div>
+      <div class="leiste">
+        <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+        <span class="platz"></span><span class="tipp">Maus an eine Bahn führen, Bahn anklicken</span>
+        <button type="button" class="btn js-einwerfen">Beispieldateien einwerfen</button>
+        <button type="button" class="btn js-leeren">Leeren</button>
+        <button type="button" class="taste js-weiter">Weiter zu Schritt 3 ›</button>
+      </div>`;
+    return el;
+  }
+  function knoten(W) {
+    const s = W.modus === 'wirbel' ? 2 : 0;
+    W.el.querySelectorAll('.js-kn').forEach(k => { const i = +k.dataset.s; k.classList.toggle('an', i === s); k.classList.toggle('aus', i > s); k.querySelector('i span').textContent = i < s ? '✓' : i + 1; });
+    W.el.querySelector('.js-weiter').textContent = W.modus === 'wirbel' ? '‹ Zurück zu Schritt 1' : 'Weiter zu Schritt 3 ›';
+    W.welt.dataset.modus = W.modus;
+  }
+  function zaehlen(W) {
+    W.el.querySelectorAll('[data-art]').forEach(a => { const i = +a.dataset.art, n = W.files.filter(f => f.k === i && f.st === 'drin').length; a.querySelectorAll('.js-n').forEach(em => em.textContent = n); });
+    W.el.querySelector('.js-abweis').hidden = !W.files.some(f => f.k < 0 && f.st === 'drin');
+  }
+  function markieren(W) {
+    const k = W.fok ?? 0;
+    W.el.querySelectorAll('[data-f]').forEach(c => c.classList.toggle('da', W.files.some(f => f.k === k && f.f === c.dataset.f && f.st === 'drin')));
+  }
+  function fokus(W, k, T, vonNutzer) {
+    if (k === W.fok) return;
+    W.fok = k; W.k.wechsel?.(W, T ?? W.jetzt); W.k.render(W); markieren(W);
+    if (vonNutzer) W.tourNext = (T ?? W.jetzt) + 15;
+  }
+  function einwerfen(W) {
+    if (W.modus !== 'regal') { W.modus = 'regal'; W.tUeb = W.jetzt; knoten(W); }
+    W.files.forEach(f => { f.st = 'draussen'; f.spur = []; });
+    zaehlen(W); W.k.render(W); markieren(W);
+    W.files.forEach((f, i) => setTimeout(() => { f.st = 'fliegt'; f.t0 = performance.now() / 1000; }, leise ? 0 : 250 + i * 480));
+  }
+  function leeren(W) { W.files.forEach(f => { f.st = 'draussen'; }); if (W.modus !== 'regal') { W.modus = 'regal'; W.tUeb = W.jetzt; knoten(W); } zaehlen(W); W.k.render(W); markieren(W); }
+
+  function zeichnen(W, T, dt) {
+    const S = W.S, ctx = S.ctx, k = W.k;
+    ctx.clearRect(0, 0, S.w, S.h);
+    const roh = W.modus === 'wirbel' ? clamp((T - W.tUeb) / 1.8) : 1 - clamp((T - W.tUeb) / 1.2);
+    const e = leise ? (W.modus === 'wirbel' ? 1 : 0) : ease(roh);
+    const m = W.modus === 'wirbel' ? clamp((T - W.tUeb - 1.8) / 6) : 0;
+    const R3 = Math.min(S.w, S.h) * .3;
+    // Maus: nächste Bahn finden
+    W.hov = null;
+    if (W.mx != null && e < .5) {
+      let best = 24;
+      ARTEN.forEach((a, i) => {
+        if (zoomAlpha(W, i) < .3) return;
+        const [rx, ry] = bahnMass(S, i), dx = (W.mx - S.c.x) / rx, dy = (W.my - S.c.y) / ry, th = Math.atan2(dy, dx), r = Math.hypot(dx, dy);
+        W.hA[i] = th;
+        const d = Math.abs(r - 1) * Math.hypot(rx * Math.cos(th), ry * Math.sin(th));
+        if (d < best) { best = d; W.hov = i; }
+      });
+    }
+    W.welt.classList.toggle('zeigt', W.hov != null);
+    // weiche Übergänge
+    const rf = leise ? 1 : 1 - Math.exp(-dt * 4.5), rh = leise ? 1 : 1 - Math.exp(-dt * 9);
+    ARTEN.forEach((a, i) => {
+      W.fw[i] += ((W.fok === i ? 1 : 0) - W.fw[i]) * rf;
+      W.hw[i] += ((W.hov === i ? 1 : 0) - W.hw[i]) * rh;
+      W.ph[i] += dt * tempo(i) * (1 + .9 * W.fw[i] + .6 * W.hw[i]) * (leise ? 0 : 1);
+    });
+    ringe(S, e);
+    if (e > 0) glow(ctx, S.c.x, S.c.y, R3 + 60, F.violetR.map((v, i) => lerp(v, F.mintR[i], m)), .22 * e);
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (const p of W.P) {
+      let f = null;
+      if (p.d >= 0) { f = W.files[p.d]; if (f.st !== 'drin') continue; }
+      const kk = p.k, ph = W.ph[kk];
+      let x, y;
+      if (p.d >= 0) { const A = p.d * 1.9 + ph, [cx, cy] = punkt(S, kk, A), a2 = p.r1 * TAU + T * 2, pr = 3 + p.r2 * 7; x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .6; }
+      else [x, y] = punkt(S, kk, p.r1 * TAU + ph, (p.r2 - .5) * (12 + 10 * W.fw[kk]));
+      if (f && T - f.tAn < .7) { const t = ease(clamp((T - f.tAn) / .7)); x = lerp(f.ax, x, t); y = lerp(f.ay, y, t); }
+      if (e > 0) { const w = p.r1 * TAU + T * (.5 + 1.6 * (1 - p.r2)), rad = 12 + p.r2 * R3; x = lerp(x, S.c.x + Math.cos(w) * rad, e); y = lerp(y, S.c.y + Math.sin(w) * rad * .42 + (p.r3 - .5) * 10, e); }
+      if (W.mx != null && e < 1) { const dx = W.mx - x, dy = W.my - y, d = Math.hypot(dx, dy), rr = kk === W.hov ? 170 : 110; if (d < rr) { const g = (kk === W.hov ? .55 : .15) * (1 - d / rr) ** 2 * (1 - e); x += dx * g; y += dy * g; } }
+      const vis = sichtbarkeit(W, kk) * zoomAlpha(W, kk);
+      if (vis < .02 && e < .5) continue;
+      const base = F.art[kk], mm = m * (.35 + .65 * p.r3);
+      const c = mm > 0 ? base.map((v, i) => lerp(v, F.mintR[i], mm)) : base;
+      const hell = p.d >= 0, s = (hell ? 2.4 : 1.6) + .8 * W.fw[kk] * (1 - e);
+      ctx.fillStyle = rgba(c, (hell ? .95 : .5 + .35 * W.fw[kk]) * lerp(vis, 1, e)); ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    for (const f of W.files) {
+      if (f.st !== 'fliegt') continue;
+      const u = clamp((T - f.t0) / .9), a = S.drop, b = f.k >= 0 ? (() => { const [x, y] = punkt(S, f.k, .7 + W.ph[f.k]); return { x, y }; })() : { x: S.w - 150, y: S.h - 40 };
+      const t = ease(u), mxp = (a.x + b.x) / 2, myp = Math.min(a.y, b.y) - 40;
+      const x = (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * mxp + t * t * b.x, y = (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * myp + t * t * b.y;
+      f.spur.push([x, y]); if (f.spur.length > 10) f.spur.shift();
+      const c = f.k >= 0 ? F.art[f.k] : F.coralR;
+      ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+      f.spur.forEach(([sx, sy], i) => { ctx.fillStyle = rgba(c, i / f.spur.length * .5); ctx.beginPath(); ctx.arc(sx, sy, 1 + i * .35, 0, TAU); ctx.fill(); });
+      ctx.globalCompositeOperation = 'source-over';
+      glow(ctx, x, y, 18, c, .5); chip(ctx, x, y - 14, f.f, c, false, 1, .9);
+      ctx.fillStyle = F.paper; ctx.fillRect(x - 5, y - 6, 10, 13); ctx.fillStyle = rgba(c, 1); ctx.fillRect(x - 5, y - 8, 5, 3);
+      if (u >= 1) {
+        f.st = 'drin'; f.tAn = T; f.ax = x; f.ay = y; f.spur = []; zaehlen(W);
+        if (f.k >= 0 && !k.zoom) { fokus(W, f.k, T, false); W.tourNext = T + 3; }
+        markieren(W);
+      }
+    }
+    k.deko?.(S, T, e);
+    loch(ctx, S.c.x, S.c.y, lerp(18 * (k.zoom ? 1 - .35 * Math.max(...W.fw) : 1), 12 + 4 * m, e));
+    if (k.tour && W.modus === 'regal' && T > W.tourNext) { fokus(W, W.fok == null ? 0 : (W.fok + 1) % 5, T, false); W.tourNext = T + 5; }
+  }
+
+  /* ---------- Start ---------- */
+  farbenLesen();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', farbenLesen);
+  new MutationObserver(farbenLesen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const ALLE = [];
+  document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const k = K[host.dataset.konzept];
+    const W = { k, modus: 'regal', tUeb: -99, mx: null, my: null, jetzt: 0, sichtbar: true, fok: k.zoom ? null : 0, tourNext: 4, hov: null, tab: 'liest', welle: null,
+      fw: ARTEN.map((a, i) => !k.zoom && i === 0 ? 1 : 0), hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU) };
+    W.files = DATEIEN.map(d => ({ ...d, st: 'drin', tAn: -99, spur: [] }));
+    W.P = [];
+    ARTEN.forEach((a, i) => { for (let j = 0; j < 170; j++) W.P.push({ k: i, d: -1, r1: Math.random(), r2: Math.random(), r3: Math.random() }); });
+    W.files.forEach((f, fi) => { if (f.k >= 0) for (let j = 0; j < 34; j++) W.P.push({ k: f.k, d: fi, r1: Math.random(), r2: Math.random(), r3: Math.random() }); });
+    W.el = fenster(W); host.append(W.el);
+    W.welt = W.el.querySelector('.welt');
+    const cv = W.welt.querySelector('canvas');
+    W.S = { cv, ctx: cv.getContext('2d'), w: 0, h: 0, W };
+    const groesse = () => {
+      const r = cv.getBoundingClientRect(); if (!r.width) return;
+      const d = Math.min(2, devicePixelRatio || 1);
+      W.S.w = r.width; W.S.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+      W.S.ctx.setTransform(d, 0, 0, d, 0, 0); k.layout(W.S);
+      const ein = W.el.querySelector('.js-ein'); ein.style.left = W.S.ein.x + 'px'; ein.style.top = W.S.ein.y + 'px';
+    };
+    new ResizeObserver(groesse).observe(cv);
+    new IntersectionObserver(en => { W.sichtbar = en[0].isIntersecting; }).observe(cv);
+    W.welt.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); W.mx = e.clientX - r.left; W.my = e.clientY - r.top; });
+    W.welt.addEventListener('pointerleave', () => { W.mx = W.my = null; });
+    cv.style.pointerEvents = 'auto';
+    W.welt.addEventListener('click', e => { if (e.target === cv && W.hov != null && W.modus === 'regal') fokus(W, W.hov, null, true); });
+    W.el.addEventListener('click', e => {
+      if (e.target.closest('.js-einwerfen')) einwerfen(W);
+      if (e.target.closest('.js-leeren')) leeren(W);
+      if (e.target.closest('.js-weiter')) { W.modus = W.modus === 'wirbel' ? 'regal' : 'wirbel'; W.tUeb = W.jetzt; knoten(W); }
+      const fk = e.target.closest('[data-fok]'); if (fk) fokus(W, +fk.dataset.fok < 0 ? null : +fk.dataset.fok, null, true);
+      const tb = e.target.closest('[data-tab]'); if (tb) { W.tab = tb.dataset.tab; W.tourNext = W.jetzt + 15; k.render(W); markieren(W); }
+    });
+    W.el.addEventListener('keydown', e => {
+      if (!['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key) || !e.target.closest?.('.panel')) return;
+      if (e.target.closest('.tabs')) return;
+      e.preventDefault(); const vor = e.key === 'ArrowDown' || e.key === 'ArrowRight';
+      const n = ((W.fok ?? -1) + (vor ? 1 : 4) + (W.fok == null && !vor ? 1 : 0)) % 5;
+      fokus(W, n, null, true);
+      W.el.querySelector(`.panel [data-fok="${n}"]`)?.focus({ preventScroll: true });
+    });
+    const rad = W.el.querySelector('.rad');
+    if (rad) rad.addEventListener('wheel', e => { e.preventDefault(); if (W.radSperre > performance.now()) return; W.radSperre = performance.now() + 260; fokus(W, ((W.fok ?? 0) + (e.deltaY > 0 ? 1 : 4)) % 5, null, true); }, { passive: false });
+    knoten(W); zaehlen(W); k.render(W); markieren(W);
+    ALLE.push(W);
+  });
+  let zuletzt = performance.now();
+  const loop = t => {
+    const T = t / 1000, dt = Math.min(.05, (t - zuletzt) / 1000); zuletzt = t;
+    for (const W of ALLE) { W.jetzt = T; if (W.sichtbar && W.S.w) { try { zeichnen(W, leise ? 0 : T, dt); } catch (err) { console.error(err); } } }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+})();
+</script>
