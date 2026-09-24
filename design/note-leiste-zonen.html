@@ -1,4 +1,4 @@
-<title>Kvertis Einstellungen final</title>
+<title>Kvertis Note Leiste Zonen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
@@ -782,64 +782,83 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 .e5-fmtkopf { display: flex; justify-content: space-between; width: 100%; border: 0; background: none; padding: 0 2px 4px; font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mint); }
 .e5-fmtkopf b { font-weight: 600; color: var(--muted); letter-spacing: 0; text-transform: none; }
 .e5-z .inhalt, .e5-tuer .inhalt { padding-top: 10px; border-top: 1px solid var(--line); }
+.e5-kopfz { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; }
+.e5-kopfz b { font-size: 14px; }
+.gleiste:has(.e5-rgriff) { height: 66px; margin-top: 22px; }
+.gleiste .griff.e5-rgriff { width: 46px; height: 46px; margin-left: -23px; top: -1px; background: var(--bg); border: 0; padding: 0; box-shadow: 0 0 16px color-mix(in srgb, var(--mint) 45%, transparent); }
+.gleiste:has(.e5-rgriff) .marke { top: -22px; }
+.gleiste:has(.e5-rgriff) .marke.hoch { top: -34px; }
+.gleiste:has(.e5-rgriff) .skala { top: 46px; }
+.e5-rgriff .rg { position: absolute; inset: 0; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--f) var(--w), var(--tief) 0); }
+.e5-rgriff .rg::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: var(--bg); }
+.e5-rgriff .rg b { position: relative; font: 700 14px var(--mono); color: var(--ink); }
+.e5-gross { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: center; }
+.e5-gross .ring.gross { width: 92px; height: 92px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: conic-gradient(var(--f) var(--w), var(--tief) 0); position: relative; }
+.e5-gross .ring.gross::before { content: ''; position: absolute; inset: 8px; border-radius: 50%; background: var(--bg); }
+.e5-gross .ring.gross b { position: relative; font: 700 26px var(--mono); line-height: 1; }
+.e5-gross .ring.gross small { position: relative; font: 500 9.5px var(--mono); color: var(--muted); }
+.e5-spar { font: 500 10.5px var(--mono); color: var(--muted); }
+.e5-gross .e5-note-t b { font-size: 17px; }
+.e5-reiter { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.e5-reiter button { display: grid; gap: 1px; text-align: left; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); border-radius: 11px; padding: 7px 10px; }
+.e5-reiter small { font-size: 11.5px; color: var(--ink); }
+.e5-reiter b { font: 600 11px var(--mono); color: var(--mint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.e5-reiter button[aria-selected="true"] { border-color: var(--mint); background: var(--mint-flaeche); }
+.e5-reiter button::after { content: '▾'; font-size: 10px; color: var(--muted); justify-self: end; margin-top: -26px; }
+.e5-reiter button[aria-selected="true"]::after { content: '▴'; }
+.e5-z > button span { white-space: nowrap; }
+.e5-z > button b { max-width: 128px; }
 </style>
 
 <main class="seite">
   <header class="kopf">
-    <span class="augenbraue">Kvertis · Schritt 2 · Finale Entwürfe vom 24.09.2026</span>
-    <h1>Ausgabe-Einstellungen, fünf finale Konzepte</h1>
-    <p class="lead">Festgehalten ist: links die Leiste mit den Dateiarten (A3), daneben die Dateien als Karten, in der Mitte Bahn und Loch, rechts die Ziele. Die Einstellungen rechts verbinden drei Dinge: die Größenleiste mit Ampel (aus B2), die Balken „Was vom Original bleibt“ (aus B4) und die Zonen zum Auf- und Zuklappen (aus B3). Am Anfang ist jede Zone zu. Die fünf Konzepte unterscheiden sich darin, wie diese drei Teile angeordnet sind.</p>
+    <span class="augenbraue">Kvertis · Schritt 2 · Entwürfe vom 24.09.2026</span>
+    <h1>Note, Leiste und zwei Zonen</h1>
+    <p class="lead">Kombiniert werden drei Teile: die Note von 0 bis 100 im Ring (aus C5), die Größenleiste von Rot bis Grün (aus B2) und zwei eigene Zonen, „Alle Einstellungen“ und „Was sich ändert“ (aus C3). Beide Zonen sind am Anfang zu. Links bleibt die Leiste mit den Dateiarten (A3). Vier Varianten, wie die drei Teile zusammensitzen.</p>
     <div class="gemeinsam">
-      <div><small>Wenige Griffe</small><p>Die Leiste ziehen oder eine Marke wie „E-Mail“ antippen. Kvertis stellt Qualität und Auflösung passend ein.</p></div>
-      <div><small>Sofort sichtbar</small><p>Die Balken zeigen in Grün, Gelb und Rot, was vom Original bleibt: Schärfe, Details, Klang, Bewegung. Auch ohne Vorwissen verständlich.</p></div>
-      <div><small>Tiefer, wenn man will</small><p>Jede Zone zeigt zugeklappt ihren Wert, zum Beispiel „Bildgröße · wie Original“. Aufklappen zeigt die Regler.</p></div>
-      <div><small>Ausprobieren</small><p>Alles ist klickbar, auch die Arten links. Beim Ziehen der Leiste bewegen sich die Balken mit.</p></div>
+      <div><small>Note</small><p>Eine Zahl und ein Wort wie „Sehr gut“ oder „Brauchbar“. Sie fasst Schärfe, Details, Klang oder Bewegung zusammen.</p></div>
+      <div><small>Leiste</small><p>Ziehen verkleinert die Dateien. Die Farbe zeigt vorher, ab wo man es sieht. Beim Ziehen ändert sich die Note sofort mit.</p></div>
+      <div><small>Alle Einstellungen</small><p>Zielgröße genau, Qualität, Bildgröße, Privatsphäre und so weiter, nach Bereichen geordnet. Zugeklappt steht der aktuelle Wert.</p></div>
+      <div><small>Was sich ändert</small><p>Die Balken je Merkmal und die Hinweise mit Häkchen, Ausrufezeichen oder Kreuz. Zugeklappt steht „alles gut“ oder die Zahl der Hinweise.</p></div>
     </div>
     <nav class="sprung" aria-label="Konzepte">
-      <a href="#c1"><b>1</b>Drei Schichten</a><a href="#c2"><b>2</b>Balken als Türen</a><a href="#c3"><b>3</b>Eine Spalte</a><a href="#c4"><b>4</b>Chips</a><a href="#c5"><b>5</b>Gesamtnote</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+      <a href="#d1"><b>1</b>Note über der Leiste</a><a href="#d2"><b>2</b>Note im Griff</a><a href="#d3"><b>3</b>Große Note</a><a href="#d4"><b>4</b>Zwei Reiter</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
     </nav>
   </header>
 
-  <section class="idee" id="c1" aria-labelledby="h-c1">
-    <div class="idee-kopf"><h2 id="h-c1">C1 · Drei Schichten <small>Balken, Leiste, Zonen übereinander</small></h2></div>
-    <p>Oben die Balken, was vom Original bleibt, daneben die Größe. In der Mitte die Leiste. Unten die Zonen, alle zu: Zielgröße genau, Qualität, Bildgröße, Privatsphäre und „Was sich ändert“ mit der Zahl der Hinweise.</p>
-    <div class="buehne" data-konzept="A3|C1"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Klar von oben nach unten: sehen, ziehen, verfeinern</span><span class="plus"><b>+</b>Jede Zone zeigt ihren Wert</span><span class="minus"><b>−</b>Drei Teile, etwas Höhe</span></div>
+  <section class="idee" id="d1" aria-labelledby="h-d1">
+    <div class="idee-kopf"><h2 id="h-d1">D1 · Note über der Leiste <small>die direkte Kombination</small></h2></div>
+    <p>Oben der Ring mit der Note, daneben die Größe und kleine Säulen je Merkmal. Darunter die Leiste zum Ziehen, ganz unten die zwei Zonen. Die Formate rechts oben bleiben offen.</p>
+    <div class="buehne" data-konzept="A3|D1"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Alles, was du genannt hast, genau so</span><span class="plus"><b>+</b>Note und Größe auf einen Blick</span><span class="minus"><b>−</b>Ring und Leiste brauchen zusammen etwas Höhe</span></div>
   </section>
 
-  <section class="idee" id="c2" aria-labelledby="h-c2">
-    <div class="idee-kopf"><h2 id="h-c2">C2 · Balken als Türen <small>jeder Balken klappt seine Einstellung auf</small></h2></div>
-    <p>Oben die Leiste. Darunter sind die Balken selbst die Zonen: Ein Klick auf „Schärfe“ öffnet die Bildgröße, „Details“ die Qualität, „Privatsphäre“ den Schalter für Ort und Kamera. Man stellt ein, was einem wichtig ist, nicht einen Fachbegriff.</p>
-    <div class="buehne" data-konzept="A3|C2"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Kein Fachwissen nötig, man denkt in „schärfer“ statt „Pixel“</span><span class="plus"><b>+</b>Balken und Einstellung an einer Stelle</span><span class="minus"><b>−</b>Manche Balken hängen nur am Format</span></div>
+  <section class="idee" id="d2" aria-labelledby="h-d2">
+    <div class="idee-kopf"><h2 id="h-d2">D2 · Note im Griff <small>der Ring ist der Griff der Leiste</small></h2></div>
+    <p>Die Note sitzt im Griff selbst. Wer ihn nach links zieht, sieht die Zahl sinken und den Ring gelb oder rot werden. Darüber in einer Zeile „Qualität Sehr gut“ und die Größe. Am kompaktesten.</p>
+    <div class="buehne" data-konzept="A3|D2"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Größe und Qualität in einer Bewegung</span><span class="plus"><b>+</b>Sehr wenig Platz</span><span class="minus"><b>−</b>Die Säulen je Merkmal gibt es erst in „Was sich ändert“</span></div>
   </section>
 
-  <section class="idee" id="c3" aria-labelledby="h-c3">
-    <div class="idee-kopf"><h2 id="h-c3">C3 · Eine Spalte <small>auch das Format ist zugeklappt</small></h2></div>
-    <p>Rechts steht zuerst nur das gewählte Format mit Größe, „ändern ▾“ zeigt alle. So ist Platz für Balken, Stufen (Bestmöglich bis Winzig) und Leiste. Alle Einzelheiten liegen gesammelt in einer Zone „Alle Einstellungen“.</p>
-    <div class="buehne" data-konzept="A3|C3"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Am aufgeräumtesten, auch die Mitte wird ruhiger</span><span class="plus"><b>+</b>Stufen und Leiste zugleich</span><span class="minus"><b>−</b>Andere Formate erst nach einem Klick</span></div>
+  <section class="idee" id="d3" aria-labelledby="h-d3">
+    <div class="idee-kopf"><h2 id="h-d3">D3 · Große Note <small>Format zugeklappt, Note groß in der Mitte</small></h2></div>
+    <p>Rechts oben steht nur das gewählte Format, „ändern ▾“ zeigt alle. Darunter die Note groß mit Größe und „87 % kleiner als vorher“, dann die Stufen, die Leiste und die zwei Zonen.</p>
+    <div class="buehne" data-konzept="A3|D3"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die Note ist das Erste, was man sieht</span><span class="plus"><b>+</b>Stufen für einen Klick, Leiste für genau</span><span class="minus"><b>−</b>Andere Formate erst nach einem Klick</span></div>
   </section>
 
-  <section class="idee" id="c4" aria-labelledby="h-c4">
-    <div class="idee-kopf"><h2 id="h-c4">C4 · Chips <small>kompakte Balken, Feinheiten als Chips</small></h2></div>
-    <p>Die Balken stehen knapp in zwei Spalten, darunter die Leiste. Die Zonen sind kleine Chips mit ihrem Wert, zum Beispiel „Qualität 82“ oder „Bildgröße wie Original“. Ein Chip öffnet seine Regler direkt darunter. Die Hinweise stehen kurz als Liste.</p>
-    <div class="buehne" data-konzept="A3|C4"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Braucht am wenigsten Höhe</span><span class="plus"><b>+</b>Alle Werte auf einen Blick</span><span class="minus"><b>−</b>Balken ohne Erklärung darunter</span></div>
-  </section>
-
-  <section class="idee" id="c5" aria-labelledby="h-c5">
-    <div class="idee-kopf"><h2 id="h-c5">C5 · Gesamtnote <small>ein Ring für die Qualität, daneben die Größe</small></h2></div>
-    <p>Oben ein Ring mit einer Note von 0 bis 100 und einem Wort wie „Sehr gut“, daneben die Größe und kleine Säulen für jedes Merkmal. Darunter die Leiste. „Warum diese Note?“ klappt die Balken mit Erklärung auf, darunter die Zonen.</p>
-    <div class="buehne" data-konzept="A3|C5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Eine Zahl, die jeder versteht</span><span class="plus"><b>+</b>Größe und Qualität direkt nebeneinander</span><span class="minus"><b>−</b>Die Note ist eine Vereinfachung</span></div>
+  <section class="idee" id="d4" aria-labelledby="h-d4">
+    <div class="idee-kopf"><h2 id="h-d4">D4 · Zwei Reiter <small>die Zonen nebeneinander statt untereinander</small></h2></div>
+    <p>Wie D1, aber „Alle Einstellungen“ und „Was sich ändert“ stehen als zwei Reiter nebeneinander, jeder mit seinem Wert. Ein Klick klappt den Inhalt darunter auf, ein zweiter wieder zu.</p>
+    <div class="buehne" data-konzept="A3|D4"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Beide Zonen gleich wichtig, gleich sichtbar</span><span class="plus"><b>+</b>Eine Zeile weniger</span><span class="minus"><b>−</b>Immer nur eine Zone offen</span></div>
   </section>
 
   <section class="idee" id="vorschlag" aria-labelledby="h-v">
     <h2 id="h-v">Mein Vorschlag</h2>
     <div class="empf">
-      <p><b>C2 · Balken als Türen</b>, weil sie genau das verbindet, was du beschrieben hast: Die Balken zeigen sofort, was sich ändert, und sind zugleich die zugeklappten Zonen. Die Leiste darüber ist der schnelle Griff. Wer lieber klassisch sortiert: <b>C1</b>.</p>
-      <p class="muted">Größen und Balken sind Schätzungen aus Auflösung, Qualität, Bitrate und Dauer. Die Zielgröße gilt je Datei. Video in H.264 und HEVC kodiert die App über Windows (Media Foundation).</p>
+      <p><b>D1</b> als Grundlage, weil sie alle drei Teile ohne Umweg zeigt. Aus <b>D2</b> würde ich die Zahl im Griff übernehmen: Dann sieht man beim Ziehen direkt an der Hand, wie die Note fällt.</p>
+      <p class="muted">Die Note ist eine Schätzung aus den Merkmalen (Mittelwert, das schwächste Merkmal zählt stärker). Größen sind Schätzungen, die Zielgröße gilt je Datei.</p>
     </div>
   </section>
 </main>
@@ -1300,13 +1319,13 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     return ids.map(id => { const d = P[g.k].find(x => x.id === id); if (!d) return ''; if (d.gilt && !d.gilt(z)) return d.aus; if (d.typ === 'schalter') return p[id] ? 'entfernt' : 'bleibt'; return d.typ === 'regler' ? p[id] : pWert(d, p[id]); }).filter(Boolean).join(' · ');
   }
   // Größenleiste mit Ampel, ohne Karte drumherum
-  function leisteHTML(W, g) {
+  function leisteHTML(W, g, ringGriff) {
     const Z = W.Z;
     if (!KAND[g.k]) return `<span class="fest">Verlustfrei, die Größe steht fest: ≈ ${mbT(nachG(Z, g))} MB.</span>`;
     const max = Math.max(...g.files.map(f => f.mb)), m = groesstes(Z, g), zonen = EIN.zonen(W, g, max), skal = v => clamp(Math.log10(v / (max * .02)) / Math.log10(50));
     let letzt = -1, hoch = false;
     const marken = SCHNELL[g.k].filter(([, v]) => v < max && v > max * .02).map(([n, v]) => [n, skal(v)]).sort((a, b) => a[1] - b[1]).map(([n, x]) => { hoch = x - letzt < .22 ? !hoch : false; letzt = x; return `<span class="marke${hoch ? ' hoch' : ''}" style="left:${x * 100}%">${n}</span>`; }).join('');
-    return `<div class="gleiste" data-gleiste="${g.k}" data-max="${max}">${marken}<div class="spur">${zonen.map(s => `<i style="background:${s === 'warn' ? 'var(--coral)' : s === 'hinweis' ? 'var(--amber)' : 'var(--mint)'};opacity:.75"></i>`).join('')}</div><button type="button" class="griff" role="slider" aria-label="Größe je Datei" aria-valuetext="${mbT(m)} MB" style="left:${skal(Math.max(m, max * .02)) * 100}%"></button><div class="skala"><span>klein</span><span>${mbT(max)} MB</span></div></div>
+    return `<div class="gleiste" data-gleiste="${g.k}" data-max="${max}">${marken}<div class="spur">${zonen.map(s => `<i style="background:${s === 'warn' ? 'var(--coral)' : s === 'hinweis' ? 'var(--amber)' : 'var(--mint)'};opacity:.75"></i>`).join('')}</div><button type="button" class="griff${ringGriff ? ' e5-rgriff' : ''}" role="slider" aria-label="Größe je Datei" aria-valuetext="${mbT(m)} MB" style="left:${skal(Math.max(m, max * .02)) * 100}%">${ringGriff ? `<span data-live="griff">${LIVE.griff(W, g)}</span>` : ''}</button><div class="skala"><span>klein</span><span>${mbT(max)} MB</span></div></div>
       ${Z.ziel[g.k].an ? zielHTML(W, g).replace(/^[\s\S]*?<div class="ergebnis-z">[\s\S]*?<\/div>/, '') : ''}`;
   }
   const gesamtHTML = (Z, g) => { const m = KAND[g.k] ? groesstes(Z, g) : nachG(Z, g); return `<b class="e5-mb${schlimmste(Z, g) === 'warn' ? ' warn' : ''}">≈ ${mbT(m)} MB</b>`; };
@@ -1390,6 +1409,46 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
         <span class="e5-mini">${l.map(([nm, v]) => `<span title="${nm}"><i style="height:${Math.max(8, v * 100)}%;background:${farbeA(v)}"></i><small>${nm.slice(0, 1)}</small></span>`).join('')}</span>`;
     },
   };
+  /* ================= Kombination: Note, Leiste, zwei Zonen ================= */
+  const notenWort = n => n >= .85 ? 'Sehr gut' : n >= .65 ? 'Gut' : n >= .45 ? 'Brauchbar' : 'Stark verkleinert';
+  function aenderWert(Z, g) { const l = folgen(Z, g), w = l.filter(x => x[0] === 'warn').length, h = l.filter(x => x[0] === 'hinweis').length; return w ? `<span style="color:var(--coral)">${w} deutlich</span>` : h ? `<span style="color:var(--amber)">${h} ${h === 1 ? 'Hinweis' : 'Hinweise'}</span>` : 'alles gut'; }
+  const aenderInhalt = (W, g) => `<span class="folgen-kopf">Was vom Original bleibt</span>${balkenHTML(W.Z, g)}<span class="folgen-kopf">Im Einzelnen</span>${folgenHTML(W.Z, g)}`;
+  const alleInhalt = (W, g) => `<div class="akk">${KAND[g.k] ? `<div class="e5-gruppe"><span class="folgen-kopf">Zielgröße genau</span>${zielEingabe(W, g)}</div>` : ''}${ZONEN[g.k].map(([, name, ids]) => `<div class="e5-gruppe"><span class="folgen-kopf">${name}</span>${teilReihen(W, g, ids)}</div>`).join('')}</div>`;
+  const alleWert = (W, g) => esc(kurzP(W.Z, g, false).slice(0, 2).join(' · ') || 'wie Original');
+  const zweiZonen = (W, g) => `<div class="akk">${zoneHTML(W, 'alle', 'Alle Einstellungen', alleWert(W, g), () => alleInhalt(W, g))}${zoneHTML(W, 'folgen', 'Was sich ändert', aenderWert(W.Z, g), () => aenderInhalt(W, g))}</div>`;
+  Object.assign(LIVE, {
+    griff(W, g) { const n = note(aspekte(W.Z, g)); return `<span class="rg" style="--w:${n * 100}%;--f:${farbeA(n)}"><b>${Math.round(n * 100)}</b></span>`; },
+    kopf(W, g) { const n = note(aspekte(W.Z, g)); return `<span>Qualität <b style="color:${farbeA(n)}">${notenWort(n)}</b></span>${gesamtHTML(W.Z, g)}`; },
+    gross(W, g) {
+      const n = note(aspekte(W.Z, g)), m = KAND[g.k] ? groesstes(W.Z, g) : nachG(W.Z, g), v = Math.max(...g.files.map(f => f.mb));
+      return `<span class="ring gross" role="meter" aria-label="Qualität gesamt: ${notenWort(n)}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(n * 100)}" style="--w:${n * 100}%;--f:${farbeA(n)}"><b>${Math.round(n * 100)}</b><small>von 100</small></span>
+        <span class="e5-note-t"><small>Qualität</small><b style="color:${farbeA(n)}">${notenWort(n)}</b><small>Größte Datei</small>${gesamtHTML(W.Z, g)}<span class="e5-spar">${m < v ? `${Math.round((1 - m / v) * 100)} % kleiner als vorher` : 'so groß wie vorher'}</span></span>`;
+    },
+  });
+  Object.assign(EIN, {
+    D1: { // Note oben, Leiste, zwei Zonen
+      html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
+        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
+    },
+    D2: { // die Note sitzt im Griff der Leiste
+      html: (W, g) => `<div class="ein-k"><div class="e5-kopfz" data-live="kopf">${LIVE.kopf(W, g)}</div>
+        ${KAND[g.k] ? leisteHTML(W, g, true) : `<div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>${leisteHTML(W, g)}`}${zweiZonen(W, g)}</div>`,
+    },
+    D3: { // Format zugeklappt, große Note in der Mitte
+      kompakt: true,
+      html: (W, g) => `<div class="ein-k"><div class="e5-gross" data-live="gross">${LIVE.gross(W, g)}</div>
+        ${PRESETS[g.k].length ? presetHTML(W, g) : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
+    },
+    D4: { // zwei Reiter statt zwei Zeilen
+      html(W, g) {
+        const r = (id, name, wert) => `<button type="button" role="tab" data-zone="${id}" aria-selected="${W.zone === id}" aria-expanded="${W.zone === id}"><small>${name}</small><b>${wert}</b></button>`;
+        return `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>${leisteHTML(W, g)}
+          <div class="e5-reiter" role="tablist" aria-label="Mehr">${r('alle', 'Alle Einstellungen', alleWert(W, g))}${r('folgen', 'Was sich ändert', aenderWert(W.Z, g))}</div>
+          ${W.zone === 'alle' ? `<div class="e5-offen">${alleInhalt(W, g)}</div>` : W.zone === 'folgen' ? `<div class="e5-offen">${aenderInhalt(W, g)}</div>` : ''}</div>`;
+      },
+    },
+  });
+
   // C3: Formatliste zugeklappt, nur die Wahl sichtbar
   function zieleKompakt(W) {
     const g = GR[W.art], t = zielDef(W.Z, g), eig = g.files.filter(f => W.Z.ausn[f.n]).length;
