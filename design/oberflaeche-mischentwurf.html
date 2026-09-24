@@ -8,7 +8,7 @@
   --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
   --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
   --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
-  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
   --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
   --coral-rahmen: #5e2f29; --amber-rahmen: #5e4722;
   --paper: #f2f0ea; --paper-ink: #23272a; --paper-linie: #cfcbc1;
@@ -25,7 +25,7 @@
     --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
     --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
     --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
-    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
     --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
     --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
     --paper: #ffffff; --paper-linie: #d8d5cd;
@@ -38,7 +38,7 @@
   --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
   --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
   --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
-  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
   --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
   --coral-rahmen: #e8b5ac; --amber-rahmen: #e0c692;
   --paper: #ffffff; --paper-linie: #d8d5cd;
@@ -55,7 +55,7 @@ button:disabled { cursor: default; }
 :focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
 .muted { color: var(--muted); }
 
-.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 52px; }
+.seite { max-width: 1320px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 52px; }
 .kopf { display: grid; gap: 14px; }
 .augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
 h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 20ch; }
@@ -138,7 +138,7 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .blatt::before { content: attr(data-f); position: absolute; top: -13px; left: var(--tab, 10px); padding: 2px 7px 3px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font: 600 9px var(--mono); letter-spacing: .05em; }
 .szene:hover .blatt { transform: translate(-50%, -50%) translateY(-20px) translateZ(var(--z)); }
 @keyframes rein { from { transform: translate(-50%, -50%) translateY(-90px) translateZ(var(--z)); opacity: 0; } }
-.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); } .k-nein { --k: var(--coral); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); } .k-model { --k: var(--model); } .k-nein { --k: var(--coral); }
 
 .flieger { position: absolute; left: 0; top: 0; z-index: 15; width: 104px; height: 58px; border-radius: 7px; background: var(--paper); box-shadow: 0 20px 30px -10px #000a; pointer-events: none; display: grid; place-items: center; padding: 14px 6px 0; font: 600 10px var(--mono); color: var(--paper-ink); text-align: center; overflow: visible; }
 .flieger::before { content: attr(data-f); position: absolute; top: -14px; left: 8px; padding: 2px 8px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; }
@@ -152,9 +152,9 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .einwurf .knoepfe { display: flex; gap: 6px; }
 .erkannt-log { justify-self: center; min-height: 20px; font: 500 11.5px var(--mono); color: var(--muted); display: flex; gap: 8px; align-items: center; }
 .erkannt-log .punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--k, var(--mint)); box-shadow: 0 0 10px var(--k, var(--mint)); }
-.faecher { display: grid; grid-template-columns: repeat(4, 1fr) 150px; gap: 8px; align-items: start; padding-top: 6px; }
+.faecher { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) 140px; gap: 8px; align-items: start; padding-top: 6px; }
 .fach { display: grid; justify-items: center; gap: 6px; text-align: center; border: 0; background: transparent; padding: 0; border-radius: 14px; }
-.fach .szene { width: 190px; height: 128px; transition: filter .4s; }
+.fach .szene { width: 176px; height: 128px; transition: filter .4s; }
 .fach .kiste { --W: 140px; --D: 96px; --H: 60px; --c: var(--k); transform: rotateX(-26deg) rotateY(-22deg); }
 .fach .szene:hover .kiste { transform: rotateX(-28deg) rotateY(-14deg) translateY(-8px); }
 .fach .kiste .fr::after { letter-spacing: .18em; }
@@ -457,8 +457,8 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 @keyframes dreh { to { transform: rotate(360deg); } }
 
 /* Sanduhr im Sortierregal: kippt nach vorn, eigener Takt je Kiste */
-.uhr-platz { position: relative; width: 192px; height: 320px; justify-self: center; }
-.uhr-platz .uhr3d { position: absolute; left: 0; top: 0; transform: scale(.8); transform-origin: 0 0; perspective: 1100px; }
+.uhr-platz { position: relative; width: 178px; height: 296px; justify-self: center; }
+.uhr-platz .uhr3d { position: absolute; left: 0; top: 0; transform: scale(.74); transform-origin: 0 0; perspective: 1100px; }
 .fach.offen .uhr-platz { display: none; }
 .uhr-platz .chip { display: inline-block; font: 600 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--k) 60%, transparent); box-shadow: 0 2px 5px -1px #0009; white-space: nowrap; }
 .uhr-platz .eti { display: inline-block; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003, 0 4px 8px -3px #0008; white-space: nowrap; }
@@ -641,7 +641,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
               <div style="display:grid;gap:8px">
                 <div class="einwurf" id="einwurf">
                   <span class="pfeil" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M2.5 13.5h11"/></svg></span>
-                  <div><b>Alles hier hineinwerfen</b><span>Bilder, Musik, Videos, Dokumente, auch gemischt. Kvertis erkennt die Art selbst.</span></div>
+                  <div><b>Alles hier hineinwerfen</b><span>Bilder, Musik, Videos, Dokumente, 3D-Modelle, auch gemischt. Kvertis erkennt die Art selbst.</span></div>
                   <div class="knoepfe"><button class="btn">Dateien wählen</button><button class="btn">Ordner</button></div>
                 </div>
                 <div class="erkannt-log" id="log" aria-live="polite"><span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span></div>
@@ -693,7 +693,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
             <span class="sub"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Nur auf diesem PC gespeichert</span>
             <span class="platz"></span>
             <div class="segment" id="v-filter" role="group" aria-label="Nach Dateiart filtern">
-              <button class="an" data-f="alle">Alle</button><button data-f="bild" class="k-bild"><i></i>Bilder</button><button data-f="audio" class="k-audio"><i></i>Audio</button><button data-f="video" class="k-video"><i></i>Video</button><button data-f="dok" class="k-dok"><i></i>Dokumente</button>
+              <button class="an" data-f="alle">Alle</button><button data-f="bild" class="k-bild"><i></i>Bilder</button><button data-f="audio" class="k-audio"><i></i>Audio</button><button data-f="video" class="k-video"><i></i>Video</button><button data-f="dok" class="k-dok"><i></i>Dokumente</button><button data-f="model" class="k-model"><i></i>3D</button>
             </div>
             <span id="v-leeren-bereich"><button class="btn" id="v-leeren">Verlauf leeren</button></span>
           </div>
@@ -733,8 +733,13 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       <div class="ue k-dok"><h3><i></i>Dokumente</h3>
         <dl><dt>PDF</dt><dd>TXT</dd><dt>DOCX</dt><dd>TXT, Markdown, HTML</dd><dt>XLSX</dt><dd>CSV je Blatt, TXT</dd><dt>PPTX</dt><dd>TXT, Markdown</dd><dt>TXT, MD</dt><dd>PDF, HTML</dd><dt>HTML</dt><dd>TXT, Markdown</dd><dt>Bilder</dt><dd>zusammen als PDF</dd></dl>
       </div>
+      <div class="ue k-model"><h3><i></i>3D-Modelle</h3>
+        <div class="formate"><span>STL</span><span>3MF</span><span>OBJ</span><span>PLY</span><span>GLB</span><span>GLTF</span></div>
+        <p>Übernommen wird die Form. Farben, Materialien und Texturen fallen weg. glTF wird immer als GLB geschrieben, Text-STL als kleineres binäres STL.</p>
+        <dl><dt>wird zu</dt><dd>STL, 3MF, OBJ, PLY, GLB</dd></dl>
+      </div>
       <div class="ue nein k-nein"><h3><i></i>Geht nicht (mit Begründung)</h3>
-        <ul><li>DOC, XLS, PPT: alte Binärformate</li><li>Dateien mit Kennwort: keine Umgehung</li><li>AVIF: vorerst gesperrt (offene Lizenzfrage O-01)</li><li>Archive wie ZIP: werden nicht entpackt (Vorschlag)</li><li>Fehlende Windows-Erweiterung: Kvertis sagt, welche</li></ul>
+        <ul><li>DOC, XLS, PPT: alte Binärformate</li><li>Dateien mit Kennwort: keine Umgehung</li><li>AVIF: vorerst gesperrt (offene Lizenzfrage O-01)</li><li>Archive wie ZIP: werden nicht entpackt (Vorschlag)</li><li>3D-Herstellerformate (FBX, USDZ): nicht offen</li><li>Fehlende Windows-Erweiterung: Kvertis sagt, welche</li></ul>
       </div>
     </div>
   </section>
@@ -763,9 +768,10 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     bild:  { name: 'Bilder', kiste: 'BILDER', formate: ['JPG','PNG','HEIC','WEBP','RAW','TIFF','GIF','BMP','SVG','PSD','ICO'], raus: ['JPG','PNG','WEBP','PDF','TIFF','GIF','BMP','ICO'], wird: 'JPG, PNG, WebP, PDF …', mehrzahl: 'Bilder', meta: 'EXIF/GPS entfernen', metaText: 'Aufnahmeort und Kameradaten werden nicht mitgegeben.' },
     audio: { name: 'Audio', kiste: 'AUDIO', formate: ['MP3','WAV','M4A','FLAC','OGG','OPUS','WMA','AIFF'], raus: ['MP3','M4A','FLAC','WAV','OGG','OPUS'], wird: 'MP3, M4A, FLAC, WAV …', mehrzahl: 'Audiodateien', meta: 'Titel-Infos entfernen', metaText: 'Interpret, Album und Kommentare werden nicht mitgegeben.' },
     video: { name: 'Video', kiste: 'VIDEO', mehrzahl: 'Videos', meta: 'Metadaten entfernen', metaText: 'Aufnahmeort und Gerätedaten werden nicht mitgegeben.', formate: ['MP4','MOV','MKV','WEBM','AVI','WMV','3GP','MPG'], raus: ['MP4','MKV','WEBM','nur Ton'], wird: 'MP4, MKV, WebM, nur Ton' },
-    dok:   { name: 'Dokumente', kiste: 'DOKUMENTE', formate: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','CSV','HTML','PDF'], wird: 'TXT, Markdown, CSV, PDF …', mehrzahl: 'Dokumente', meta: 'Dokument-Infos entfernen', metaText: 'Autor und Bearbeitungsdaten werden nicht mitgegeben.' }
+    dok:   { name: 'Dokumente', kiste: 'DOKUMENTE', formate: ['PDF','DOCX','XLSX','PPTX','TXT','MD','HTML'], raus: ['TXT','MD','CSV','HTML','PDF'], wird: 'TXT, Markdown, CSV, PDF …', mehrzahl: 'Dokumente', meta: 'Dokument-Infos entfernen', metaText: 'Autor und Bearbeitungsdaten werden nicht mitgegeben.' },
+    model: { name: '3D-Modelle', kiste: '3D', formate: ['STL','3MF','OBJ','PLY','GLB','GLTF'], raus: ['STL','3MF','OBJ','PLY','GLB'], wird: 'STL, 3MF, OBJ, PLY, GLB', mehrzahl: '3D-Modelle', nurForm: true }
   };
-  const KATS = ['bild', 'audio', 'video', 'dok'];
+  const KATS = ['bild', 'audio', 'video', 'dok', 'model'];
   const KOMPRIMIERT = new Set(['JPG','HEIC','WEBP','GIF','MP3','M4A','OGG','OPUS','WMA','MP4','MOV','MKV','WEBM','PDF','DOCX','XLSX','PPTX']);
   const ZWECK = { video: ['Für E-Mail','Für Website','Für Messenger','Original'], bild: ['Für E-Mail','Für Website','Für Messenger','Zum Archivieren','Original'], audio: ['Für E-Mail','Für Website','Zum Archivieren','Original'], dok: ['Nur Text','Mit Gliederung'] };
   const ZWECK_F = { 'Für E-Mail': .6, 'Für Website': .75, 'Für Messenger': .55, 'Zum Archivieren': 1.8, 'Original': 1.2, 'Nur Text': 1, 'Mit Gliederung': 1.15 };
@@ -774,6 +780,11 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     if (k === 'bild') return [['JPG','überall lesbar',.13],['PNG','verlustfrei',.6],['WEBP','klein, fürs Web',.09],['TIFF','zum Drucken',1.1],['PDF','als Dokument',.2],['GIF','einfach',.3]];
     if (k === 'audio') return [['MP3','überall abspielbar',.13],['M4A','klein, gut',.11],['FLAC','verlustfrei',.55],['WAV','unkomprimiert',1],['OGG','offen',.12],['OPUS','sehr klein',.07]];
     if (k === 'video') return [['MP4','überall abspielbar',.35],['MKV','flexibel',.4],['WEBM','fürs Web',.3],['TON','nur Tonspur',.03]];
+    if (k === 'model') {
+      const m = (dateien.find(d => d.kat === 'model') || {}).fmt;
+      const alle = [['STL','für den 3D-Druck',.5],['3MF','3D-Druck mit Maßeinheit',.3],['OBJ','für 3D-Programme',1.4],['PLY','kompakt',.5],['GLB','fürs Web, eine Datei',.45]];
+      return m === 'STL' ? [...alle.filter(z => z[0] !== 'STL'), ['STL','binär, kleiner',.25]] : alle.filter(z => z[0] !== m);
+    }
     const f = (dateien.find(d => d.kat === 'dok') || {}).fmt;
     if (f === 'PDF') return [['TXT','nur Text',.05]];
     if (f === 'XLSX') return [['CSV','je Blatt',.2],['TXT','nur Text',.2]];
@@ -790,6 +801,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     { name: 'Urlaub_Clip.mov', mb: 148, ordner: 'Videos', kat: 'video', fmt: 'MOV', meta: '0:48 min' },
     { name: 'Protokoll.docx', mb: 0.4, ordner: 'Dokumente\\Verein', kat: 'dok', fmt: 'DOCX', meta: '6 Seiten' },
     { name: 'Fotos.zip', mb: 54, ordner: 'Downloads', kat: null, fmt: 'ZIP', grund: 'Archive werden nicht entpackt.' },
+    { name: 'Halterung_v3.stl', mb: 12.6, ordner: 'Dokumente\\3D-Druck', kat: 'model', fmt: 'STL', meta: '252 000 Dreiecke' },
     { name: 'Interview.m4a', mb: 6.1, ordner: 'Musik\\Proben', kat: 'audio', fmt: 'M4A', meta: '12:40 min' }
   ];
 
@@ -804,7 +816,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   const umwandelbar = () => dateien.filter(d => d.kat);
   function schaetze(k) {
     const z = ziele(k)[wahl[k]] || ziele(k)[0];
-    const q = .35 + .65 * Math.pow(qual[k] / 100, 1.8);
+    const q = KAT[k].nurForm ? 1 : .35 + .65 * Math.pow(qual[k] / 100, 1.8);
     return dateien.filter(d => d.kat === k).reduce((s, d) => s + d.mb * Math.min(1.3, z[2] * (KOMPRIMIERT.has(d.fmt) ? 4 : 1)) * q * (ZWECK_F[zweck[k]] || 1), 0);
   }
   const summeVorher = () => umwandelbar().reduce((s, d) => s + d.mb, 0);
@@ -919,9 +931,9 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     $('mehr').innerHTML = `
       <div style="display:grid;gap:4px"><span class="label">Einstellungen</span><h4>${KAT[aktiv].name} · ${n} ${n === 1 ? 'Datei' : 'Dateien'}</h4></div>
       <div class="glas-rahmen">${GLAS_SVG}<p class="g-satz" id="g-satz" aria-live="polite"></p></div>
-      <div class="feld"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><div class="regler"><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}">${damals ? `<span class="alt-marke" style="left:calc(8px + (100% - 16px) * ${(damals.qual - 10) / 90})">damals ${damals.qual}</span>` : ''}</div></div>
+      ${KAT[aktiv].nurForm ? `<p class="muted" style="margin:0;font-size:12.5px">Die Form wird verlustfrei übernommen, eine Qualitätsstufe gibt es nicht. Farben, Materialien und Texturen fallen weg.</p>` : `<div class="feld"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><div class="regler"><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}">${damals ? `<span class="alt-marke" style="left:calc(8px + (100% - 16px) * ${(damals.qual - 10) / 90})">damals ${damals.qual}</span>` : ''}</div></div>
       <div class="feld"><label for="zielgroesse">Zielgröße (optional)</label><input id="zielgroesse" class="eingabe" placeholder="z. B. 1 MB"></div>
-      <div class="schalter"><div>${KAT[aktiv].meta}<span>${KAT[aktiv].metaText}</span></div><button class="toggle" id="meta" aria-pressed="${meta[aktiv]}" aria-label="${KAT[aktiv].meta}"></button></div>
+      <div class="schalter"><div>${KAT[aktiv].meta}<span>${KAT[aktiv].metaText}</span></div><button class="toggle" id="meta" aria-pressed="${meta[aktiv]}" aria-label="${KAT[aktiv].meta}"></button></div>`}
       <span class="muted" style="font-size:11.5px">Gilt für alle ${KAT[aktiv].mehrzahl} dieser Runde. Einzelne Dateien lassen sich links abweichend einstellen.</span>`;
     renderSchaetzung();
   }
@@ -1109,7 +1121,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   }
 
 
-  const FARBE = { bild: 'var(--blue)', audio: 'var(--violet)', video: 'var(--amber)', dok: 'var(--cyan)' };
+  const FARBE = { bild: 'var(--blue)', audio: 'var(--violet)', video: 'var(--amber)', dok: 'var(--cyan)', model: 'var(--model)' };
   document.querySelectorAll('#kipp .flaeche').forEach(f => { f.innerHTML = glasSvg(); sandZeichnen(f.querySelector('svg'), 1, false); });
   const uhr = { L: 1, seite: 0, winkel: 0 };
   const schaetzeDatei = d => { const l = dateien.filter(x => x.kat === d.kat), s = l.reduce((a, x) => a + x.mb, 0); return s ? d.mb * schaetze(d.kat) / s : d.mb; };
@@ -1235,7 +1247,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     for (const d of liste) {
       dateien.push(d);
       const log = $('log');
-      log.style.setProperty('--k', d.kat ? `var(--${{ bild: 'blue', audio: 'violet', video: 'amber', dok: 'cyan' }[d.kat]})` : 'var(--coral)');
+      log.style.setProperty('--k', d.kat ? `var(--${{ bild: 'blue', audio: 'violet', video: 'amber', dok: 'cyan', model: 'model' }[d.kat]})` : 'var(--coral)');
       log.innerHTML = `<span class="punkt"></span>${esc(d.name)} → ${d.kat ? KAT[d.kat].name + (d.hinweis ? ` <span class="muted">(${esc(d.hinweis)})</span>` : '') : `<span style="color:var(--coral)">nicht umwandelbar</span>`}`;
       if (animiert) {
         const ziel = d.kat ? $('fach-' + d.kat).querySelector('.szene') : $('abweis');
@@ -1284,12 +1296,16 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     else if (hex(0, 4) === '3026b275') [kat, fmt] = ext === 'wma' ? ['audio', 'WMA'] : ['video', 'WMV'];
     else if (hex(0, 4) === '1a45dfa3') [kat, fmt] = ['video', ext === 'webm' ? 'WEBM' : 'MKV'];
     else if (asc(0, 4) === '%PDF') [kat, fmt] = ['dok', 'PDF'];
+    else if (asc(0, 4) === 'glTF') [kat, fmt] = ['model', 'GLB'];
+    else if (asc(0, 4) === 'ply\n' || asc(0, 5) === 'ply\r\n') [kat, fmt] = ['model', 'PLY'];
     else if (hex(0, 4) === '504b0304') {
       if (['docx', 'xlsx', 'pptx'].includes(ext)) [kat, fmt] = ['dok', ext.toUpperCase()];
+      else if (ext === '3mf') [kat, fmt] = ['model', '3MF'];
       else { fmt = 'ZIP'; grund = 'Archive werden nicht entpackt.'; }
     }
     else if (hex(0, 8) === 'd0cf11e0a1b11ae1') grund = 'Altes Binärformat (DOC, XLS, PPT) wird nicht unterstützt.';
     else if (['svg'].includes(ext)) [kat, fmt] = ['bild', 'SVG'];
+    else if (['stl', 'obj', 'gltf'].includes(ext)) [kat, fmt] = ['model', ext.toUpperCase()];
     else if (['txt', 'md', 'html', 'htm'].includes(ext)) [kat, fmt] = ['dok', ext === 'htm' ? 'HTML' : ext.toUpperCase()];
     const d = { name: file.name, mb: Math.max(file.size / 1e6, .01), kat, fmt, grund };
     const gleich = { JPG: ['jpg', 'jpeg', 'jfif'], TIFF: ['tif', 'tiff'], MP4: ['mp4', 'm4v'], HEIC: ['heic', 'heif'], MD: ['md', 'markdown'] }[fmt] || [fmt.toLowerCase()];
@@ -1388,13 +1404,15 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       V('Podcast_Folge12.wav', 214, 'audio', 'WAV', 'MP3', 28, 'Musik\\Podcast') ] },
     { tag: 'Gestern', zeit: '14:03', zweck: 'Nur Text', wohin: 'Unterordner „Kvertis“', dateien: [
       V('Angebot_Garten.docx', 0.6, 'dok', 'DOCX', 'TXT', 0.02, 'Dokumente\\Angebote'), V('Preise_2026.xlsx', 0.3, 'dok', 'XLSX', 'CSV', 0.05, 'Dokumente\\Angebote', true, false) ] },
+    { tag: 'Gestern', zeit: '10:37', wohin: 'Neben dem Original', dateien: [
+      V('Vase_Scan.obj', 38.2, 'model', 'OBJ', '3MF', 6.9, 'Dokumente\\3D-Druck') ] },
     { tag: 'Sonntag, 20. September', zeit: '11:20', qual: 55, zweck: 'Für Messenger', wohin: 'Desktop', dateien: [
       V('Hochzeit_Clip.mov', 1240, 'video', 'MOV', 'MP4', 182, 'Videos\\Hochzeit') ] },
     { tag: 'Sonntag, 20. September', zeit: '10:02', zweck: 'Zum Archivieren', wohin: 'Neben dem Original', dateien: [
       V('Scan_01.png', 3.4, 'bild', 'PNG', 'PDF', 0.8, 'Downloads', false, true), V('Scan_02.png', 3.1, 'bild', 'PNG', 'PDF', 0.7, 'Downloads', false, true) ] }
   ];
   let vFilter = 'alle', vOffen = new Set([0]), vFrage = false;
-  const katNamen = { bild: ['Bild', 'Bilder'], audio: ['Audiodatei', 'Audiodateien'], video: ['Video', 'Videos'], dok: ['Dokument', 'Dokumente'] };
+  const katNamen = { bild: ['Bild', 'Bilder'], audio: ['Audiodatei', 'Audiodateien'], video: ['Video', 'Videos'], dok: ['Dokument', 'Dokumente'], model: ['3D-Modell', '3D-Modelle'] };
   function rundenTitel(r) {
     const ks = [...new Set(r.dateien.map(d => d.kat))], ziele_ = [...new Set(r.dateien.map(d => d.nach))];
     const n = r.dateien.length;
@@ -1498,7 +1516,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     vOffen = new Set([...vOffen].map(i => i + 1)); vOffen.add(0);
   }
 
-  // ===== Sanduhren im Sortierregal (kippen nach vorn, Takt 25/35/45/55 s)
+  // ===== Sanduhren im Sortierregal (kippen nach vorn, Takt 25/35/45/55/65 s)
   const zeilenR = (liste, caps) => { const out = []; let i = 0, c = 0; while (i < liste.length) { const n = caps[Math.min(c, caps.length - 1)]; out.push(liste.slice(i, i + n)); i += n; c++; } return out; };
   const regalInnen = k => {
     const o = zeilenR(KAT[k].formate, [4, 4, 3, 2, 2]);
@@ -1524,7 +1542,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   }
   let regalZeit = performance.now();
   function regalSchleife(t) {
-    const dt = Math.min(.1, (t - regalZeit) / 1000); regalZeit = t;
+    const dt = Math.max(0, Math.min(.1, (t - regalZeit) / 1000)); regalZeit = t;
     if (schritt === 0 && !document.hidden && !leise) REGAL.forEach(u => {
       if (u.dreht || !u.platz.offsetParent) return;
       u.L -= dt / u.dauer;
