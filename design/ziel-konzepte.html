@@ -1,0 +1,496 @@
+<title>Kvertis Ziel-Konzepte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus ShoeBox (tokens.css) plus Rosa für 3D. Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --paper: #f2f0ea; --paper-ink: #23272a;
+  --karton-tief: #0c0f11; --karton-kante: #ffffff0d; --boden: #080a0b; --boden-schein: #0009; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --paper: #ffffff; --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --paper: #ffffff; --karton-kante: #00000014; --boden: #d9dcde; --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { cursor: default; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.muted { color: var(--muted); }
+code { font: 12px var(--mono); background: var(--panel2); padding: 1px 5px; border-radius: 4px; }
+
+.seite { max-width: 1240px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 48px; }
+.kopf { display: grid; gap: 12px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; text-wrap: balance; }
+h2 small { font: 500 12px var(--mono); color: var(--leise); letter-spacing: .06em; }
+.lead { margin: 0; max-width: 70ch; color: var(--muted); font-size: 16.5px; }
+.lead b { color: var(--ink); font-weight: 600; }
+.ziele { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; max-width: 76ch; }
+.ziele b { color: var(--ink); font-weight: 600; }
+
+.konzept { display: grid; gap: 14px; padding-top: 26px; border-top: 1px solid var(--line); }
+.konzept > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 22px; font-size: 13.5px; color: var(--muted); }
+.urteil .plus b { color: var(--mint); }
+.urteil .minus b { color: var(--coral); }
+.buehne { overflow-x: auto; padding: 6px 2px 14px; }
+
+/* Fenster */
+.win { position: relative; min-width: 1040px; height: 560px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; font-size: 13px;
+  background: radial-gradient(1000px 420px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); display: grid; grid-template-rows: 44px 1fr auto; }
+.faden { display: flex; align-items: center; gap: 10px; padding: 0 18px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 45%, transparent); font-size: 12.5px; }
+.faden .kn { display: inline-flex; gap: 8px; align-items: center; color: var(--muted); }
+.faden .kn i { width: 22px; height: 22px; border-radius: 7px; display: grid; place-items: center; font: 600 11px var(--mono); font-style: normal; border: 1px solid var(--line-stark); }
+.faden .kn.an { color: var(--ink); font-weight: 600; }
+.faden .kn.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); }
+.faden .kn.ok i { color: var(--mint); border-color: var(--mint-rahmen); }
+.faden .sg { flex: 1; max-width: 120px; height: 2px; background: var(--line-stark); border-radius: 1px; }
+.faden .sg.voll { background: var(--mint); }
+.faden .platz { flex: 1; }
+.leiste { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.leiste .sum { font: 500 12px var(--mono); color: var(--muted); }
+.leiste .sum b { color: var(--mint); }
+.leiste .platz { flex: 1; }
+.taste { border: 0; border-radius: 11px; padding: 9px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 45%, #000), inset 0 1px 0 #ffffff55; transform: translateY(-2px); }
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 6px 11px; font-weight: 500; font-size: 12px; }
+.btn:hover:not(:disabled) { border-color: var(--line-stark); }
+.btn:disabled { opacity: .45; }
+.link { border: 0; background: none; color: var(--mint); font-weight: 500; font-size: 12px; padding: 4px 6px; border-radius: 7px; }
+.link:hover { background: var(--mint-flaeche); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); } .k-model { --k: var(--model); }
+.etikett { display: inline-flex; align-items: center; gap: 4px; padding: 2px 7px; background: var(--paper); color: var(--paper-ink); border-radius: 3px; font: 600 10.5px var(--mono); transform: rotate(-1.5deg); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.etikett.anders { box-shadow: 0 0 0 2px var(--amber), 0 2px 0 #0003; }
+.chipf { justify-self: start; font: 500 10px var(--mono); padding: 1px 5px; border-radius: 4px; background: color-mix(in srgb, var(--k) 14%, var(--panel)); color: var(--k); border: 1px solid color-mix(in srgb, var(--k) 28%, transparent); white-space: nowrap; }
+
+/* Dateiarten oben (gemeinsam für A, B, C) */
+.arten { display: flex; gap: 6px; flex-wrap: wrap; }
+.art { display: inline-flex; gap: 7px; align-items: center; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 4px 11px 4px 8px; font-size: 12px; color: var(--muted); }
+.art i { width: 9px; height: 9px; border-radius: 3px; background: var(--k); }
+.art b { font: 600 10.5px var(--mono); color: var(--leise); }
+.art.an { color: var(--ink); border-color: color-mix(in srgb, var(--k) 60%, var(--line)); background: color-mix(in srgb, var(--k) 10%, var(--panel)); box-shadow: 0 6px 14px -10px var(--k); }
+.art.an b { color: var(--k); }
+
+/* ===== A · Karten und Formatregal ===== */
+.a { display: grid; grid-template-columns: 330px 1fr; min-height: 0; }
+.a-links { border-right: 1px solid var(--line); padding: 12px 14px; display: grid; grid-template-rows: auto auto 1fr; gap: 10px; min-height: 0; }
+.a-kopf { display: flex; justify-content: space-between; align-items: center; }
+.a-karten { display: grid; gap: 8px; align-content: start; overflow: auto; padding: 4px 4px 10px; perspective: 900px; }
+.karte { position: relative; display: grid; grid-template-columns: 22px 1fr auto; gap: 4px 10px; align-items: center; text-align: left; padding: 9px 10px; border-radius: 11px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); transition: transform .3s var(--feder), box-shadow .3s, border-color .2s; }
+.karte:hover { transform: translateY(-1px); }
+.karte .haken { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line-stark); display: grid; place-items: center; font-size: 11px; color: transparent; transition: background .2s, border-color .2s; }
+.karte[aria-checked="true"] { border-color: var(--mint); transform: translateZ(18px) translateY(-2px); box-shadow: 0 0 0 3px var(--mint-flaeche), 0 14px 22px -14px var(--mint); }
+.karte[aria-checked="true"] .haken { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); }
+.karte .nm b { display: block; font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.karte .nm small { display: block; font: 10.5px var(--mono); color: var(--muted); }
+.a-rechts { padding: 14px 20px; display: grid; grid-template-rows: auto 1fr auto; gap: 12px; min-height: 0; }
+.a-frage { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.a-frage h3 { margin: 0; font-size: 15px; }
+.a-frage .muted { font-size: 12px; }
+.regal-f { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-content: start; perspective: 1100px; padding: 8px 4px; }
+.kachel { position: relative; display: grid; gap: 4px; justify-items: start; text-align: left; padding: 14px 14px 12px; border-radius: 14px; border: 1px solid var(--line-stark); background: linear-gradient(170deg, var(--panel2), var(--panel)); transform: rotateX(10deg); transform-origin: 50% 100%; box-shadow: 0 7px 0 -1px color-mix(in srgb, var(--line-stark) 70%, var(--karton-tief)), 0 18px 24px -16px var(--schatten); transition: transform .35s var(--feder), box-shadow .35s, border-color .2s; }
+.kachel:hover:not(:disabled) { transform: rotateX(0) translateY(-4px); }
+.kachel:disabled { opacity: .4; }
+.kachel .fm { font: 600 22px var(--mono); letter-spacing: .02em; }
+.kachel .wz { font-size: 12px; color: var(--muted); }
+.kachel .gr { font: 500 11px var(--mono); color: var(--muted); }
+.kachel .gr b { color: var(--ink); }
+.kachel .bal { width: 100%; height: 5px; border-radius: 3px; background: var(--tief); overflow: hidden; margin-top: 4px; }
+.kachel .bal i { display: block; height: 100%; width: var(--w); border-radius: 3px; background: color-mix(in srgb, var(--mint) 70%, transparent); }
+.kachel .bal i.mehr { background: var(--amber); }
+.kachel .vorschlag { position: absolute; top: 10px; right: 10px; font: 600 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.kachel.an { border-color: var(--mint); transform: rotateX(0) translateY(-6px); box-shadow: 0 7px 0 -1px color-mix(in srgb, var(--mint) 45%, #000), 0 0 0 4px var(--mint-flaeche), 0 22px 30px -14px var(--mint); }
+.kachel.an .fm { color: var(--mint); }
+.kachel.teil { border-style: dashed; border-color: var(--mint-rahmen); }
+.kachel .zahl { position: absolute; top: -9px; left: 12px; font: 700 10px var(--mono); padding: 1px 7px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); }
+.kachel.teil .zahl { background: var(--panel2); color: var(--mint); border: 1px dashed var(--mint-rahmen); }
+.a-fuss { font-size: 12px; color: var(--muted); }
+
+/* ===== B · Etiketten kleben ===== */
+.b { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+.b-oben { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px 0; }
+.tisch { perspective: 1100px; padding: 14px 18px 4px; overflow: hidden; }
+.tisch-flaeche { transform: rotateX(20deg); transform-origin: 50% 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; padding: 18px 22px 26px; border-radius: 16px; background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 60%, transparent), var(--panel)); border: 1px solid var(--line); box-shadow: inset 0 1px 0 var(--karton-kante); }
+.blatt { position: relative; min-height: 118px; display: grid; align-content: space-between; gap: 6px; text-align: left; padding: 18px 12px 12px; border: 0; border-radius: 5px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 10px 18px -10px #000c, 0 1px 0 #0002; transition: transform .3s var(--feder), box-shadow .3s; }
+.blatt::before { content: attr(data-f); position: absolute; top: -11px; left: 10px; padding: 1px 7px; border-radius: 4px 4px 0 0; background: var(--k); color: #0b0f12; font: 600 9.5px var(--mono); }
+.blatt b { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.blatt small { font: 10.5px var(--mono); color: #5b646a; }
+.b.stempeln .blatt:hover { transform: translateY(-6px) rotate(-.8deg); box-shadow: 0 0 0 2px var(--mint), 0 18px 24px -12px #000c; cursor: copy; }
+.blatt .klebt { justify-self: end; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 3px; font: 700 11px var(--mono); background: var(--mint); color: var(--auf-mint); transform: rotate(-3deg); box-shadow: 0 2px 0 #0003; }
+.blatt .klebt small { color: inherit; opacity: .7; font-weight: 500; }
+.blatt.neu .klebt { animation: kleben .38s var(--feder); }
+@keyframes kleben { from { transform: rotate(-14deg) scale(1.6) translateY(-14px); opacity: 0; } }
+.rolle { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 12px 18px 14px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.rolle-etis { display: flex; gap: 10px; flex-wrap: wrap; }
+.eti-w { position: relative; display: grid; gap: 1px; text-align: left; padding: 7px 12px 7px 14px; border: 0; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 0 #0003, 0 10px 16px -10px #000c; transition: transform .25s var(--feder), box-shadow .25s; }
+.eti-w::before { content: ''; position: absolute; left: 5px; top: 50%; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%; background: #0003; }
+.eti-w b { font: 700 14px var(--mono); }
+.eti-w small { font-size: 10.5px; color: #5b646a; }
+.eti-w:hover { transform: translateY(-3px) rotate(-1deg); }
+.eti-w[aria-pressed="true"] { transform: translateY(-8px) rotate(-3deg); box-shadow: 0 0 0 2px var(--mint), 0 16px 22px -10px var(--mint); }
+.b-hinweis { font-size: 12px; color: var(--muted); max-width: 190px; }
+.b-hinweis b { color: var(--mint); }
+
+/* ===== C · Fächer ===== */
+.c { display: grid; grid-template-rows: auto 1fr; min-height: 0; }
+.c-oben { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 18px 4px; }
+.faecher { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(158px, 1fr); gap: 14px; padding: 18px 18px 12px; overflow-x: auto; align-items: end; perspective: 1200px; }
+.fach { position: relative; display: grid; grid-template-rows: 1fr auto; min-height: 330px; border-radius: 14px; transition: transform .3s var(--feder); }
+.fach.drueber { transform: translateY(-6px); }
+.fach .innen { position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 0; padding: 10px 10px 0; border-radius: 12px 12px 0 0; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--mint) 5%, var(--tief))); border: 1px solid var(--line); border-bottom: 0; min-height: 230px; transform: rotateX(8deg); transform-origin: 50% 100%; }
+.fach.leer .innen::after { content: 'hierher ziehen'; position: absolute; inset: auto 0 44% 0; text-align: center; font: 500 10.5px var(--mono); color: var(--leise); }
+.fach .front { position: relative; z-index: 2; display: grid; gap: 2px; padding: 12px 12px 10px; border-radius: 4px 4px 14px 14px; text-align: left; border: 0; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 38%, var(--karton-tief)), color-mix(in srgb, var(--mint) 18%, var(--karton-tief))); box-shadow: inset 0 1px 0 #ffffff26, 0 18px 24px -16px var(--schatten); color: var(--ink); }
+.fach.leer .front { background: linear-gradient(180deg, color-mix(in srgb, var(--line-stark) 55%, var(--karton-tief)), color-mix(in srgb, var(--line-stark) 25%, var(--karton-tief))); }
+.fach .front b { font: 700 18px var(--mono); }
+.fach .front small { font-size: 11.5px; color: color-mix(in srgb, var(--ink) 75%, transparent); }
+.fach .front em { font: 500 10.5px var(--mono); font-style: normal; color: color-mix(in srgb, var(--ink) 70%, transparent); }
+.fach .front .vs { position: absolute; top: 8px; right: 10px; font: 700 9px var(--mono); letter-spacing: .08em; color: var(--mint); }
+.fach.ziel-an .front { box-shadow: 0 0 0 2px var(--mint), 0 18px 24px -16px var(--mint); }
+.zettel { position: relative; margin-top: -16px; display: grid; gap: 1px; text-align: left; padding: 8px 10px 30px; border: 0; border-radius: 4px 4px 0 0; background: var(--paper); color: var(--paper-ink); box-shadow: 0 -2px 6px -2px #0006; cursor: grab; transition: transform .25s var(--feder), box-shadow .25s; }
+.zettel:first-child { margin-top: 0; }
+.zettel::before { content: attr(data-f); position: absolute; top: -10px; left: 8px; padding: 0 6px; border-radius: 3px 3px 0 0; background: var(--k); color: #0b0f12; font: 600 8.5px/11px var(--mono); }
+.zettel b { font-size: 11.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zettel small { font: 10px var(--mono); color: #5b646a; }
+.zettel:hover { transform: translateY(-8px); z-index: 1; }
+.zettel[aria-pressed="true"] { transform: translateY(-14px); z-index: 1; box-shadow: 0 0 0 2px var(--mint), 0 14px 18px -8px var(--mint); }
+.zettel.gezogen { opacity: .4; }
+.c-hinweis { font-size: 12px; color: var(--muted); }
+.c-hinweis b { color: var(--mint); }
+
+/* ===== D · Liste und Zweck-Leiste ===== */
+.d { display: grid; grid-template-rows: auto 1fr auto; min-height: 0; }
+.d-oben { display: flex; gap: 12px; align-items: center; padding: 10px 18px; }
+.tabelle { overflow: auto; padding: 0 18px; min-height: 0; }
+.zeile { display: grid; grid-template-columns: 30px 56px minmax(0, 1fr) 18px 70px 150px; gap: 10px; align-items: center; padding: 6px 10px; border-radius: 9px; text-align: left; width: 100%; border: 1px solid transparent; background: transparent; }
+.zeile + .zeile { margin-top: 2px; }
+.zeile:hover { background: var(--hover); }
+.zeile[aria-checked="true"] { background: color-mix(in srgb, var(--mint) 7%, var(--panel)); border-color: var(--mint-rahmen); }
+.zeile .haken { width: 18px; height: 18px; border-radius: 6px; border: 1.5px solid var(--line-stark); display: grid; place-items: center; font-size: 11px; color: transparent; }
+.zeile[aria-checked="true"] .haken { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); }
+.zeile .nm { font-weight: 600; font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zeile .pf { color: var(--mint); }
+.zeile .gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.zeile .gr b { color: var(--ink); }
+.zeile.kopfz { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); position: sticky; top: 0; background: var(--bg); z-index: 1; }
+.dock { margin: 0 14px 12px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line-stark); background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: 0 -10px 30px -18px var(--schatten), inset 0 1px 0 var(--karton-kante); display: grid; grid-template-columns: 150px 1fr; gap: 10px 18px; align-items: center; }
+.dock .wer b { display: block; font-size: 14px; }
+.dock .wer small { font-size: 11.5px; color: var(--muted); }
+.zwecke { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; perspective: 900px; }
+.zk { position: relative; height: 64px; border: 0; padding: 0; background: none; transform-style: preserve-3d; transition: transform .5s var(--feder); }
+.zk:hover:not(:disabled) { transform: rotateX(180deg); }
+.zk:disabled { opacity: .35; }
+.zk .s { position: absolute; inset: 0; backface-visibility: hidden; border-radius: 12px; display: grid; place-items: center; align-content: center; gap: 1px; border: 1px solid var(--line-stark); background: var(--panel2); box-shadow: 0 5px 0 -1px color-mix(in srgb, var(--line-stark) 70%, var(--karton-tief)); }
+.zk .s b { font-size: 13px; }
+.zk .s small { font-size: 10.5px; color: var(--muted); }
+.zk .r { transform: rotateX(180deg); border-color: var(--mint); background: var(--mint-flaeche); }
+.zk .r b { font: 600 13px var(--mono); color: var(--mint); }
+.zk.an .v { border-color: var(--mint); box-shadow: 0 5px 0 -1px color-mix(in srgb, var(--mint) 45%, #000), 0 0 0 3px var(--mint-flaeche); }
+.genau { grid-column: 2; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.genau button { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 3px 9px; font: 600 11.5px var(--mono); color: var(--muted); }
+.genau button.an { border-color: var(--mint); color: var(--mint); background: var(--mint-flaeche); }
+
+.empf { display: grid; gap: 10px; padding: 20px 22px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf ul { margin: 0; padding-left: 18px; color: var(--muted); display: grid; gap: 4px; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .001s !important; }
+  .kachel, .tisch-flaeche, .fach .innen { transform: none !important; }
+}
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <div class="augenbraue">Kvertis · Schritt 2 · Ziel wählen</div>
+    <h1>Einzelne Dateien, klares Format</h1>
+    <p class="lead">Bisher gilt ein Format immer für die ganze Gruppe, und das Karussell zeigt nur drei Formate auf einmal. Vier Konzepte, die beides lösen. Alle sind klickbar, die Beispieldateien sind erfunden.</p>
+    <ul class="ziele">
+      <li><b>Einzelne Dateien:</b> Standard bleibt „alle Bilder → JPG“. Wer will, wählt einzelne Dateien und gibt ihnen ein anderes Format.</li>
+      <li><b>Format auf einen Blick:</b> Alle Formate der Dateiart sind gleichzeitig sichtbar, mit Zweck in Worten und geschätzter Größe.</li>
+      <li><b>Abweichungen sieht man:</b> Eine Datei mit anderem Ziel als dem Vorschlag ist markiert.</li>
+    </ul>
+  </header>
+
+  <section class="konzept" aria-labelledby="h-a">
+    <h2 id="h-a">A · Karten und Formatregal <small>auswählen, dann Format antippen</small></h2>
+    <p>Links liegen die Dateien als Karten, anfangs sind alle ausgewählt. Rechts stehen alle Formate als 3D-Kacheln mit Zweck und Größe. Ein Klick auf eine Kachel gilt für die ausgewählten Karten. Die Zahl an der Kachel zeigt, wie viele Dateien dieses Format schon haben.</p>
+    <div class="buehne"><div class="win" id="win-a"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> vertraut wie im Explorer (Strg und Umschalt zum Mehrfachwählen), alle Formate sofort sichtbar</span><span class="minus"><b>Schwäche:</b> zwei Schritte je Änderung (erst wählen, dann Format)</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-b">
+    <h2 id="h-b">B · Etiketten kleben <small>Format nehmen, auf Dateien kleben</small></h2>
+    <p>Die Dateien liegen als Blätter auf einem schräg gestellten Tisch. Unten hängt eine Etikettenrolle mit allen Formaten. Man nimmt ein Etikett und klickt auf die Blätter, die es bekommen sollen, oder klebt es mit einem Knopf auf alle.</p>
+    <div class="buehne"><div class="win" id="win-b"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> sehr anschaulich, eine Datei ändern ist ein einziger Klick</span><span class="minus"><b>Schwäche:</b> bei 200 Dateien wird der Tisch unübersichtlich; der „Klebe-Modus“ muss erst verstanden werden</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-c">
+    <h2 id="h-c">C · Fächer je Format <small>Dateien ins richtige Fach legen</small></h2>
+    <p>Jedes Format ist ein offenes Fach, wie die Kisten aus Schritt 1. Anfangs liegen alle Dateien im vorgeschlagenen Fach. Man zieht eine Datei in ein anderes Fach, oder tippt sie an und dann auf das Fach. „Alle hierher“ verschiebt die ganze Dateiart. Wo was landet, sieht man ohne Suchen.</p>
+    <div class="buehne"><div class="win" id="win-c"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> knüpft an die Kisten aus Schritt 1 an, die Aufteilung ist auf einen Blick sichtbar, Größe je Fach</span><span class="minus"><b>Schwäche:</b> viele Formate brauchen Breite (Bilder haben sechs Fächer)</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-d">
+    <h2 id="h-d">D · Liste und Zweck-Leiste <small>Wozu? statt Welches Format?</small></h2>
+    <p>Eine schlichte Liste mit Häkchen, über alle Dateiarten hinweg. Unten eine Leiste mit vier Zweck-Karten: Verschicken, Fürs Web, Aufheben, Drucken. Fährt man darüber, dreht sich die Karte und zeigt das Format dahinter. Ein Zweck passt für gemischte Auswahl: Bilder werden JPG, Videos MP4, Audio MP3. Darunter lässt sich das Format genau wählen.</p>
+    <div class="buehne"><div class="win" id="win-d"></div></div>
+    <div class="urteil"><span class="plus"><b>Stärke:</b> für Laien am einfachsten, funktioniert auch mit gemischter Auswahl, skaliert auf viele Dateien</span><span class="minus"><b>Schwäche:</b> am wenigsten „3D“, die Liste ist nüchtern</span></div>
+  </section>
+
+  <section class="konzept" aria-labelledby="h-e">
+    <h2 id="h-e">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>C · Fächer</b> als Grundform, ergänzt um die Zweck-Karten aus <b>D</b>.</p>
+      <ul>
+        <li>Die Fächer greifen die Kisten aus Schritt 1 auf: erst sortiert Kvertis nach Art, dann verteilt man nach Format. Das ist derselbe Gedanke, nur eine Ebene tiefer.</li>
+        <li>Über den Fächern stehen die vier Zweck-Karten. Ein Klick auf „Fürs Web“ legt alle ausgewählten Dateien ins passende Fach. Wer das Format kennt, zieht direkt.</li>
+        <li>Die Größe steht an jedem Fach, dadurch entfällt die Schätzung unter dem Karussell.</li>
+        <li>Bei sehr vielen Dateien schaltet die Ansicht auf die Liste aus D um (Umschalter oben rechts), die Fächer zeigen dann nur Zähler.</li>
+      </ul>
+      <p class="muted">WinUI 3: Fächer als <code>ItemsRepeater</code> mit horizontalem Layout, Dateien per <code>CanDrag</code>/<code>AllowDrop</code>; Tastatur: Datei fokussieren, Pfeil links/rechts wechselt das Fach. Die 3D-Neigung über <code>PerspectiveTransform3D</code>, bei „Animationen reduzieren“ flach. Jede Datei und jedes Fach bekommt einen <code>AutomationProperties.Name</code> wie „IMG_2041.heic, Ziel JPG“.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const mb = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+  const ARTEN = { bild: 'Bilder', audio: 'Audio', video: 'Video', dok: 'Dokumente', model: '3D-Modelle' };
+  const DATEIEN = [
+    { id: 1, name: 'IMG_2041.heic', kat: 'bild', fmt: 'HEIC', mb: 8.4, info: '4032 × 3024' },
+    { id: 2, name: 'IMG_2042.heic', kat: 'bild', fmt: 'HEIC', mb: 7.9, info: '4032 × 3024' },
+    { id: 3, name: 'Scan.jpg', kat: 'bild', fmt: 'PNG', mb: 2.2, info: '2480 × 3508' },
+    { id: 4, name: 'Logo_Verein.png', kat: 'bild', fmt: 'PNG', mb: 0.6, info: 'mit Transparenz' },
+    { id: 5, name: 'Probe_03.wav', kat: 'audio', fmt: 'WAV', mb: 19.7, info: '1:52 min' },
+    { id: 6, name: 'Interview.m4a', kat: 'audio', fmt: 'M4A', mb: 6.1, info: '12:40 min' },
+    { id: 7, name: 'Urlaub_Clip.mov', kat: 'video', fmt: 'MOV', mb: 148, info: '0:48 min' },
+    { id: 8, name: 'Protokoll.docx', kat: 'dok', fmt: 'DOCX', mb: 0.4, info: '6 Seiten' },
+    { id: 9, name: 'Halterung_v3.stl', kat: 'model', fmt: 'STL', mb: 12.6, info: '252 000 Dreiecke' }
+  ];
+  // [Format, wofür, Größenfaktor]; das erste ist der Vorschlag
+  const FORMATE = {
+    bild: [['JPG', 'überall lesbar', .13], ['PNG', 'verlustfrei, durchsichtig', .6], ['WEBP', 'klein, fürs Web', .09], ['PDF', 'als Dokument', .2], ['TIFF', 'zum Drucken', 1.1], ['GIF', 'einfach, alt', .3]],
+    audio: [['MP3', 'überall abspielbar', .13], ['M4A', 'klein, gut', .11], ['FLAC', 'verlustfrei', .55], ['WAV', 'zum Bearbeiten', 1], ['OPUS', 'sehr klein', .07], ['OGG', 'offen', .12]],
+    video: [['MP4', 'überall abspielbar', .2], ['WEBM', 'fürs Web', .17], ['MKV', 'flexibel', .22], ['MP3', 'nur der Ton', .01]],
+    dok: [['TXT', 'nur Text', .05], ['MD', 'mit Gliederung', .06], ['HTML', 'für den Browser', .1]],
+    model: [['3MF', '3D-Druck mit Maßen', .3], ['STL', 'binär, kleiner', .25], ['GLB', 'fürs Web, eine Datei', .45], ['OBJ', 'für 3D-Programme', 1.4], ['PLY', 'kompakt', .5]]
+  };
+  const ZWECKE = [
+    { n: 'Verschicken', s: 'klein, überall lesbar', f: { bild: 'JPG', audio: 'MP3', video: 'MP4', dok: 'TXT', model: 'GLB' } },
+    { n: 'Fürs Web', s: 'so klein wie möglich', f: { bild: 'WEBP', audio: 'OPUS', video: 'WEBM', dok: 'HTML', model: 'GLB' } },
+    { n: 'Aufheben', s: 'ohne Verlust', f: { bild: 'PNG', audio: 'FLAC', video: 'MKV', dok: 'MD', model: '3MF' } },
+    { n: 'Drucken', s: 'Papier oder 3D-Druck', f: { bild: 'TIFF', audio: null, video: null, dok: null, model: 'STL' } }
+  ];
+  const KOMP = new Set(['HEIC', 'JPG', 'M4A', 'MP3', 'MOV', 'MP4', 'DOCX']);
+  const faktor = (d, f) => (FORMATE[d.kat].find(x => x[0] === f) || [0, 0, 1])[2];
+  const schaetze = (d, f) => d.mb * Math.min(1.3, faktor(d, f) * (KOMP.has(d.fmt) ? 4 : 1));
+  const vorschlag = k => FORMATE[k][0][0];
+  const neuesZiel = () => Object.fromEntries(DATEIEN.map(d => [d.id, vorschlag(d.kat)]));
+  const vonArt = k => DATEIEN.filter(d => d.kat === k);
+  const summe = ziel => DATEIEN.reduce((s, d) => s + schaetze(d, ziel[d.id]), 0);
+  const vorher = DATEIEN.reduce((s, d) => s + d.mb, 0);
+
+  const faden = () => `<nav class="faden" aria-label="Ablauf"><span class="kn ok"><i>✓</i>Dateien</span><span class="sg voll"></span><span class="kn an"><i>2</i>Ziel</span><span class="sg"></span><span class="kn"><i>3</i>Umwandeln</span><span class="platz"></span><span class="label">${DATEIEN.length} Dateien</span></nav>`;
+  const leiste = ziel => `<div class="leiste"><span class="sum">${mb(vorher)} MB → <b>≈ ${mb(summe(ziel))} MB</b></span><span class="platz"></span><button class="btn">Zurück</button><button class="taste">Weiter: Umwandeln</button></div>`;
+  const arten = aktiv => `<div class="arten" role="tablist" aria-label="Dateiart">${Object.keys(ARTEN).map(k => `<button class="art k-${k} ${k === aktiv ? 'an' : ''}" role="tab" aria-selected="${k === aktiv}" data-art="${k}"><i></i>${ARTEN[k]}<b>${vonArt(k).length}</b></button>`).join('')}</div>`;
+  const abweichend = (ziel, d) => ziel[d.id] !== vorschlag(d.kat);
+
+  // ===== A
+  const A = { art: 'bild', ziel: neuesZiel(), wahl: new Set(vonArt('bild').map(d => d.id)), anker: null };
+  function renderA() {
+    const liste = vonArt(A.art), gew = liste.filter(d => A.wahl.has(d.id));
+    const alle = gew.length === liste.length;
+    $('win-a').innerHTML = faden() + `<div class="a">
+      <div class="a-links">
+        ${arten(A.art)}
+        <div class="a-kopf"><span class="label">${ARTEN[A.art]} · ${gew.length} von ${liste.length} gewählt</span><button class="link" data-a="alle">${alle ? 'Keine' : 'Alle'} wählen</button></div>
+        <div class="a-karten" role="listbox" aria-multiselectable="true" aria-label="${ARTEN[A.art]}">
+          ${liste.map(d => `<button class="karte k-${d.kat}" role="option" aria-checked="${A.wahl.has(d.id)}" aria-selected="${A.wahl.has(d.id)}" data-id="${d.id}">
+            <span class="haken">✓</span><span class="nm"><b>${esc(d.name)}</b><small>${esc(d.fmt)} · ${mb(d.mb)} MB · ${esc(d.info)}</small></span>
+            <span class="etikett ${abweichend(A.ziel, d) ? 'anders' : ''}" title="Ziel">→ ${A.ziel[d.id]}</span></button>`).join('')}
+        </div>
+      </div>
+      <div class="a-rechts">
+        <div class="a-frage"><h3>${gew.length ? `${gew.length === liste.length ? 'Alle ' + ARTEN[A.art] : gew.length === 1 ? esc(gew[0].name) : gew.length + ' ' + ARTEN[A.art]} umwandeln in` : 'Links Dateien antippen'}</h3><span class="muted">Strg-Klick wählt mehrere, Umschalt-Klick einen Bereich</span></div>
+        <div class="regal-f" role="radiogroup" aria-label="Zielformat">
+          ${FORMATE[A.art].map(([f, w], i) => {
+            const n = gew.filter(d => A.ziel[d.id] === f).length;
+            const vor = gew.reduce((s, d) => s + d.mb, 0), nach = gew.reduce((s, d) => s + schaetze(d, f), 0);
+            const cls = gew.length && n === gew.length ? 'an' : n ? 'teil' : '';
+            return `<button class="kachel ${cls}" role="radio" aria-checked="${cls === 'an'}" data-f="${f}" ${gew.length ? '' : 'disabled'}>
+              ${n ? `<span class="zahl">${n === gew.length ? '✓' : n + ' von ' + gew.length}</span>` : ''}${i === 0 ? '<span class="vorschlag">Vorschlag</span>' : ''}
+              <span class="fm">${f}</span><span class="wz">${w}</span>
+              <span class="gr">${gew.length ? `≈ <b>${mb(nach)} MB</b> statt ${mb(vor)}` : '&nbsp;'}</span>
+              <span class="bal"><i class="${nach > vor ? 'mehr' : ''}" style="--w:${gew.length ? Math.min(100, nach / vor * 100) : 0}%"></i></span></button>`;
+          }).join('')}
+        </div>
+        <div class="a-fuss">Ein Etikett mit gelbem Rand heißt: diese Datei weicht vom Vorschlag ab. Ein einfacher Klick auf eine Karte wählt nur diese.</div>
+      </div></div>` + leiste(A.ziel);
+  }
+  $('win-a').addEventListener('click', e => {
+    const art = e.target.closest('[data-art]');
+    if (art) { A.art = art.dataset.art; A.wahl = new Set(vonArt(A.art).map(d => d.id)); A.anker = null; renderA(); return; }
+    if (e.target.closest('[data-a="alle"]')) { const l = vonArt(A.art); A.wahl = A.wahl.size === l.length ? new Set() : new Set(l.map(d => d.id)); renderA(); return; }
+    const k = e.target.closest('.karte');
+    if (k) {
+      const id = +k.dataset.id, liste = vonArt(A.art).map(d => d.id);
+      if (e.shiftKey && A.anker) { const [a, b] = [liste.indexOf(A.anker), liste.indexOf(id)].sort((x, y) => x - y); liste.slice(a, b + 1).forEach(x => A.wahl.add(x)); }
+      else if (e.ctrlKey || e.metaKey || A.wahl.size < liste.length) { A.wahl.has(id) ? A.wahl.delete(id) : A.wahl.add(id); }
+      else A.wahl = new Set([id]); // alle gewählt + einfacher Klick = nur diese
+      A.anker = id; renderA(); $('win-a').querySelector(`.karte[data-id="${id}"]`).focus(); return;
+    }
+    const t = e.target.closest('.kachel');
+    if (t && !t.disabled) { vonArt(A.art).filter(d => A.wahl.has(d.id)).forEach(d => A.ziel[d.id] = t.dataset.f); renderA(); $('win-a').querySelector(`.kachel[data-f="${t.dataset.f}"]`).focus(); }
+  });
+  renderA();
+
+  // ===== B
+  const B = { art: 'bild', ziel: neuesZiel(), eti: null, neu: null };
+  function renderB() {
+    const liste = vonArt(B.art);
+    $('win-b').innerHTML = faden() + `<div class="b ${B.eti ? 'stempeln' : ''}">
+      <div class="b-oben">${arten(B.art)}<button class="btn" data-a="alle" ${B.eti ? '' : 'disabled'}>${B.eti ? `„${B.eti}“ auf alle ${ARTEN[B.art]} kleben` : 'Erst ein Etikett nehmen'}</button></div>
+      <div class="tisch"><div class="tisch-flaeche">
+        ${liste.map(d => `<button class="blatt k-${d.kat} ${B.neu === d.id ? 'neu' : ''}" data-f="${esc(d.fmt)}" data-id="${d.id}" aria-label="${esc(d.name)}, Ziel ${B.ziel[d.id]}${B.eti ? ', klicken klebt ' + B.eti : ''}">
+          <span><b>${esc(d.name)}</b><br><small>${mb(d.mb)} MB · ${esc(d.info)}</small></span>
+          <span class="klebt">${B.ziel[d.id]}<small>≈ ${mb(schaetze(d, B.ziel[d.id]))} MB</small></span></button>`).join('')}
+      </div></div>
+      <div class="rolle">
+        <span class="label">Etiketten</span>
+        <div class="rolle-etis" role="radiogroup" aria-label="Etikett nehmen">
+          ${FORMATE[B.art].map(([f, w]) => `<button class="eti-w" role="radio" aria-pressed="${B.eti === f}" aria-checked="${B.eti === f}" data-f="${f}"><b>${f}</b><small>${w}</small></button>`).join('')}
+        </div>
+        <span class="b-hinweis">${B.eti ? `<b>${B.eti}</b> hängt am Mauszeiger. Blätter anklicken. Esc legt es zurück.` : 'Etikett nehmen, dann auf Blätter klicken.'}</span>
+      </div></div>` + leiste(B.ziel);
+    B.neu = null;
+  }
+  $('win-b').addEventListener('click', e => {
+    const art = e.target.closest('[data-art]');
+    if (art) { B.art = art.dataset.art; B.eti = null; renderB(); return; }
+    const w = e.target.closest('.eti-w');
+    if (w) { B.eti = B.eti === w.dataset.f ? null : w.dataset.f; renderB(); $('win-b').querySelector(`.eti-w[data-f="${w.dataset.f}"]`).focus(); return; }
+    if (e.target.closest('[data-a="alle"]') && B.eti) { vonArt(B.art).forEach(d => B.ziel[d.id] = B.eti); renderB(); return; }
+    const bl = e.target.closest('.blatt');
+    if (bl && B.eti) { B.ziel[+bl.dataset.id] = B.eti; B.neu = +bl.dataset.id; renderB(); $('win-b').querySelector(`.blatt[data-id="${bl.dataset.id}"]`).focus(); }
+  });
+  $('win-b').addEventListener('keydown', e => { if (e.key === 'Escape' && B.eti) { B.eti = null; renderB(); } });
+  renderB();
+
+  // ===== C
+  const C = { art: 'bild', ziel: neuesZiel(), gew: null, zieht: null };
+  function renderC() {
+    const liste = vonArt(C.art);
+    $('win-c').innerHTML = faden() + `<div class="c">
+      <div class="c-oben">${arten(C.art)}<span class="c-hinweis">${C.gew ? `<b>${esc(DATEIEN.find(d => d.id === C.gew).name)}</b> gewählt: jetzt ein Fach antippen.` : 'Datei ziehen, oder antippen und dann ein Fach wählen.'}</span></div>
+      <div class="faecher">
+        ${FORMATE[C.art].map(([f, w], i) => {
+          const drin = liste.filter(d => C.ziel[d.id] === f);
+          const nach = drin.reduce((s, d) => s + schaetze(d, f), 0);
+          return `<div class="fach ${drin.length ? '' : 'leer'} ${C.gew ? 'ziel-an' : ''}" data-f="${f}">
+            <div class="innen">${drin.map(d => `<button class="zettel k-${d.kat}" draggable="true" data-f="${esc(d.fmt)}" data-id="${d.id}" aria-pressed="${C.gew === d.id}" aria-label="${esc(d.name)}, liegt im Fach ${f}"><b>${esc(d.name)}</b><small>${mb(d.mb)} → ≈ ${mb(schaetze(d, f))} MB</small></button>`).join('')}</div>
+            <div class="front" role="group" aria-label="Fach ${f}, ${w}, ${drin.length} Dateien">
+              ${i === 0 ? '<span class="vs">VORSCHLAG</span>' : ''}<b>${f}</b><small>${w}</small>
+              <em>${drin.length ? `${drin.length} ${drin.length === 1 ? 'Datei' : 'Dateien'} · ≈ ${mb(nach)} MB` : 'leer'}</em>
+              <button class="link" data-alle="${f}" style="justify-self:start;padding-left:0">Alle hierher</button>
+            </div></div>`;
+        }).join('')}
+      </div></div>` + leiste(C.ziel);
+  }
+  $('win-c').addEventListener('click', e => {
+    const art = e.target.closest('[data-art]');
+    if (art) { C.art = art.dataset.art; C.gew = null; renderC(); return; }
+    const alle = e.target.closest('[data-alle]');
+    if (alle) { vonArt(C.art).forEach(d => C.ziel[d.id] = alle.dataset.alle); C.gew = null; renderC(); return; }
+    const z = e.target.closest('.zettel');
+    if (z) { C.gew = C.gew === +z.dataset.id ? null : +z.dataset.id; renderC(); const n = $('win-c').querySelector(`.zettel[data-id="${z.dataset.id}"]`); if (n) n.focus(); return; }
+    const fach = e.target.closest('.fach');
+    if (fach && C.gew) { C.ziel[C.gew] = fach.dataset.f; const id = C.gew; C.gew = null; renderC(); $('win-c').querySelector(`.zettel[data-id="${id}"]`).focus(); }
+  });
+  $('win-c').addEventListener('keydown', e => {
+    const z = e.target.closest('.zettel'); if (!z || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+    e.preventDefault();
+    const id = +z.dataset.id, fs = FORMATE[C.art].map(x => x[0]), i = fs.indexOf(C.ziel[id]);
+    C.ziel[id] = fs[(i + (e.key === 'ArrowRight' ? 1 : fs.length - 1)) % fs.length]; renderC();
+    $('win-c').querySelector(`.zettel[data-id="${id}"]`).focus();
+  });
+  $('win-c').addEventListener('dragstart', e => { const z = e.target.closest('.zettel'); if (!z) return; C.zieht = +z.dataset.id; e.dataTransfer.setData('text/plain', z.dataset.id); e.dataTransfer.effectAllowed = 'move'; requestAnimationFrame(() => z.classList.add('gezogen')); });
+  $('win-c').addEventListener('dragend', () => { C.zieht = null; $('win-c').querySelectorAll('.gezogen, .drueber').forEach(x => x.classList.remove('gezogen', 'drueber')); });
+  $('win-c').addEventListener('dragover', e => { const f = e.target.closest('.fach'); if (!f || C.zieht == null) return; e.preventDefault(); $('win-c').querySelectorAll('.fach').forEach(x => x.classList.toggle('drueber', x === f)); });
+  $('win-c').addEventListener('drop', e => { const f = e.target.closest('.fach'); if (!f || C.zieht == null) return; e.preventDefault(); C.ziel[C.zieht] = f.dataset.f; C.zieht = null; C.gew = null; renderC(); });
+  renderC();
+
+  // ===== D
+  const D = { ziel: neuesZiel(), wahl: new Set(vonArt('bild').map(d => d.id)), filter: 'alle' };
+  function renderD() {
+    const sicht = DATEIEN.filter(d => D.filter === 'alle' || d.kat === D.filter);
+    const gew = DATEIEN.filter(d => D.wahl.has(d.id));
+    const arten_ = [...new Set(gew.map(d => d.kat))];
+    const zweckAn = z => gew.length && gew.every(d => !z.f[d.kat] || D.ziel[d.id] === z.f[d.kat]) && gew.some(d => z.f[d.kat]);
+    const alleSicht = sicht.every(d => D.wahl.has(d.id));
+    $('win-d').innerHTML = faden() + `<div class="d">
+      <div class="d-oben"><div class="arten">${['alle', ...Object.keys(ARTEN)].map(k => `<button class="art ${k === 'alle' ? '' : 'k-' + k} ${D.filter === k ? 'an' : ''}" data-filter="${k}">${k === 'alle' ? '' : '<i></i>'}${k === 'alle' ? 'Alle' : ARTEN[k]}<b>${k === 'alle' ? DATEIEN.length : vonArt(k).length}</b></button>`).join('')}</div></div>
+      <div class="tabelle" role="listbox" aria-multiselectable="true" aria-label="Dateien">
+        <div class="zeile kopfz"><button class="haken" data-a="alle" aria-label="Alle sichtbaren wählen" style="${alleSicht ? 'background:var(--mint);border-color:var(--mint);color:var(--auf-mint)' : ''}">✓</button><span>Art</span><span>Datei</span><span></span><span>Ziel</span><span style="text-align:right">Größe</span></div>
+        ${sicht.map(d => `<button class="zeile k-${d.kat}" role="option" aria-checked="${D.wahl.has(d.id)}" aria-selected="${D.wahl.has(d.id)}" data-id="${d.id}">
+          <span class="haken">✓</span><span class="chipf">${esc(d.fmt)}</span><span class="nm">${esc(d.name)}</span><span class="pf">→</span><span class="etikett ${abweichend(D.ziel, d) ? 'anders' : ''}">${D.ziel[d.id]}</span>
+          <span class="gr">${mb(d.mb)} → <b>≈ ${mb(schaetze(d, D.ziel[d.id]))} MB</b></span></button>`).join('')}
+      </div>
+      <div class="dock">
+        <div class="wer"><b>${gew.length ? gew.length + ' ausgewählt' : 'Nichts ausgewählt'}</b><small>${gew.length ? arten_.map(k => ARTEN[k]).join(', ') : 'Häkchen setzen'}</small></div>
+        <div class="zwecke" role="group" aria-label="Wozu?">
+          ${ZWECKE.map((z, i) => { const geht = gew.some(d => z.f[d.kat]); const fs = [...new Set(gew.map(d => z.f[d.kat]).filter(Boolean))];
+            return `<button class="zk ${zweckAn(z) ? 'an' : ''}" data-z="${i}" ${geht ? '' : 'disabled'} aria-label="${z.n}: ${fs.join(', ') || 'passt nicht'}"><span class="s v"><b>${z.n}</b><small>${z.s}</small></span><span class="s r"><b>${fs.join(' · ') || '–'}</b><small>${z.n}</small></span></button>`; }).join('')}
+        </div>
+        <div class="genau">${arten_.length === 1 ? `Genau: ${FORMATE[arten_[0]].map(([f]) => `<button data-f="${f}" class="${gew.every(d => D.ziel[d.id] === f) ? 'an' : ''}">${f}</button>`).join('')}` : arten_.length ? 'Genaues Format: nur eine Dateiart auswählen.' : ''}</div>
+      </div></div>` + leiste(D.ziel);
+  }
+  $('win-d').addEventListener('click', e => {
+    const fl = e.target.closest('[data-filter]');
+    if (fl) { D.filter = fl.dataset.filter; renderD(); return; }
+    if (e.target.closest('[data-a="alle"]')) { const s = DATEIEN.filter(d => D.filter === 'alle' || d.kat === D.filter); const alle = s.every(d => D.wahl.has(d.id)); s.forEach(d => alle ? D.wahl.delete(d.id) : D.wahl.add(d.id)); renderD(); return; }
+    const z = e.target.closest('.zeile[data-id]');
+    if (z) { const id = +z.dataset.id; D.wahl.has(id) ? D.wahl.delete(id) : D.wahl.add(id); renderD(); $('win-d').querySelector(`.zeile[data-id="${id}"]`).focus(); return; }
+    const k = e.target.closest('.zk');
+    if (k && !k.disabled) { const zw = ZWECKE[+k.dataset.z]; DATEIEN.filter(d => D.wahl.has(d.id) && zw.f[d.kat]).forEach(d => D.ziel[d.id] = zw.f[d.kat]); renderD(); return; }
+    const g = e.target.closest('.genau button');
+    if (g) { DATEIEN.filter(d => D.wahl.has(d.id)).forEach(d => D.ziel[d.id] = g.dataset.f); renderD(); }
+  });
+  renderD();
+})();
+</script>
