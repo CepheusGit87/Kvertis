@@ -17,7 +17,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Einheitliche Designsprache „schwarzes Loch“: Favorit ist „Fokus“ aus `umlaufbahn-varianten.html`. Fünf Fokus-Varianten mit weichem Wechsel, Mauswölbung der Bahnen und Formatbeschreibungen in `fokus-varianten.html`: Planeten und Übersetzer, An der Bahn, Reiter und Infoleiste, Drehrad und Karte, Zoom. Vorschlag: Drehrad und Karte, dazu Entfaltung und Lichtwelle. Würde die Sanduhren im Sortierregal ersetzen.
+- Einheitliche Designsprache „schwarzes Loch“: Favorit ist „Zoom“ aus `fokus-varianten.html`. Sechs Zoom-Varianten mit direkter Kamerafahrt von Bahn zu Bahn in `zoom-varianten.html`: Beschriftet, Nach Zweck, Wege durchs Loch, Was hast du / was brauchst du, Satelliten, Tiefenregler. Vorschlag: Nach Zweck plus Wege durchs Loch. Würde die Sanduhren im Sortierregal ersetzen.
 - Win2D (MIT) für den Pixelwirbel: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
