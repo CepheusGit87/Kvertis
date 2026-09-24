@@ -110,7 +110,6 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .knoten.fertig small { color: var(--mint); }
 .knoten:disabled { opacity: .5; }
 .knoten.an.fertig i { color: var(--auf-mint); }
-.ziel .band { display: none; }
 .seg { flex: 1; height: 2px; margin: 0 6px; border-radius: 1px; background: var(--line-stark); position: relative; overflow: hidden; }
 .seg::after { content: ''; position: absolute; inset: 0; background: var(--mint); transform: scaleX(0); transform-origin: left; transition: transform .7s var(--sanft); }
 .seg.voll::after { transform: scaleX(1); }
@@ -143,7 +142,9 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .flieger { position: absolute; left: 0; top: 0; z-index: 15; width: 104px; height: 58px; border-radius: 7px; background: var(--paper); box-shadow: 0 20px 30px -10px #000a; pointer-events: none; display: grid; place-items: center; padding: 14px 6px 0; font: 600 10px var(--mono); color: var(--paper-ink); text-align: center; overflow: visible; }
 .flieger::before { content: attr(data-f); position: absolute; top: -14px; left: 8px; padding: 2px 8px; border-radius: 5px 5px 0 0; background: var(--k); color: #0b0f12; font-size: 9px; }
 
-/* ===== Schritt 1: Sortierregal ===== */
+/* ===== Schritt 1: Fächer-Galaxie (Stil im Shadow DOM, siehe #gal-stil) ===== */
+.gal-host { height: 100%; }
+/* ===== früheres Sortierregal ===== */
 .regal { height: 100%; display: grid; grid-template-rows: auto 1fr; padding: 18px 24px 4px; gap: 4px; }
 .einwurf { justify-self: center; width: min(620px, 92%); display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 12px 14px 12px 16px; border-radius: 16px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 65%, transparent); position: relative; }
 .einwurf .pfeil { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: var(--mint-flaeche); color: var(--mint); border: 1px solid var(--mint-rahmen); }
@@ -242,46 +243,56 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
 
 /* ===== Schritt 2: Ziel ===== */
-.ziel { height: 100%; display: grid; grid-template-columns: 260px 1fr 280px; min-height: 0; }
-.gruppen { border-right: 1px solid var(--line); padding: 14px; display: grid; gap: 6px; align-content: start; overflow: auto; }
-.grp { display: grid; grid-template-columns: 30px 1fr auto; gap: 10px; align-items: center; padding: 8px 10px; border-radius: 11px; border: 1px solid transparent; background: transparent; text-align: left; }
-.grp:hover { background: var(--hover); }
-.grp.an { background: var(--panel2); border-color: var(--line-stark); box-shadow: 0 8px 18px -12px var(--schatten); }
-.grp .mk { width: 28px; height: 22px; position: relative; }
-.grp .mk::before { content: ''; position: absolute; inset: 7px 0 0; border-radius: 3px; background: linear-gradient(180deg, color-mix(in srgb, var(--k) 70%, var(--bg)), color-mix(in srgb, var(--k) 40%, var(--bg))); }
-.grp .mk::after { content: ''; position: absolute; left: 5px; right: 5px; top: 0; height: 13px; border-radius: 2px 2px 0 0; background: var(--paper); }
-.grp b { font-size: 13px; font-weight: 600; display: block; }
-.grp small { font: 500 11px var(--mono); color: var(--muted); }
+.ziel { height: 100%; display: grid; grid-template-columns: 1fr 270px; min-height: 0; }
+.ziel-haupt { overflow: auto; min-height: 0; padding: 16px 22px 22px; display: grid; gap: 12px; align-content: start; }
+.z-frage h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.z-frage p { margin: 2px 0 0; font-size: 12.5px; color: var(--muted); }
+/* Bausteine aus Schritt 1: farbiger Chip = was hineinkommt, Papier-Etikett = was herauskommt */
+.zchip { display: inline-flex; align-items: center; gap: 4px; font: 600 10.5px var(--mono); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--k) 30%, var(--panel2)); color: var(--ink); border: 1px solid color-mix(in srgb, var(--k) 60%, transparent); box-shadow: 0 2px 5px -1px #0009; white-space: nowrap; }
+.zchip small { font-weight: 500; color: var(--muted); }
+.zeti { display: inline-flex; padding: 2px 7px; border-radius: 3px; background: var(--paper); color: var(--paper-ink); font: 600 10.5px var(--mono); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
+.zeti.anders { box-shadow: 0 0 0 2px var(--amber); }
+.zrow { display: grid; grid-template-columns: 190px 62px 1fr 104px; gap: 12px 14px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); box-shadow: inset 0 1px 0 var(--karton-kante), 0 10px 20px -16px var(--schatten); }
+.zr-art { display: grid; gap: 6px; }
+.zr-art b { font-size: 13.5px; display: flex; gap: 7px; align-items: center; }
+.zr-art b i { width: 10px; height: 10px; border-radius: 3px; background: var(--k); }
+.zr-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.zr-wird { font: 500 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mint); text-align: center; }
+.zr-wird::after { content: '→'; display: block; font-size: 18px; letter-spacing: 0; }
+.zr-gr { font: 500 11px var(--mono); color: var(--muted); text-align: right; }
+.zr-gr b { display: block; color: var(--ink); font-size: 13px; }
+.zr-unten { grid-column: 1 / -1; display: grid; gap: 8px; }
+.zr-unten:empty { display: none; }
+.zr-ausn { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.zr-wahlen { display: flex; flex-wrap: wrap; gap: 10px 8px; padding-top: 6px; }
+.zwahl { position: relative; display: grid; gap: 1px; justify-items: start; padding: 6px 11px; border: 0; border-radius: 4px; background: var(--paper); color: var(--paper-ink); box-shadow: 0 3px 0 #0003, 0 8px 14px -8px #000c; transform: rotate(var(--r, -1deg)); transition: transform .25s var(--feder), box-shadow .25s; }
+.zwahl b { font: 700 13px var(--mono); }
+.zwahl small { font-size: 10px; color: #5b646a; }
+.zwahl:hover { transform: translateY(-3px) rotate(0); }
+.zwahl[aria-checked="true"] { transform: translateY(-5px) rotate(0); box-shadow: 0 0 0 2px var(--mint), 0 12px 18px -8px var(--mint); }
+.zwahl[aria-checked="true"]::after { content: '✓'; position: absolute; top: -8px; right: -8px; width: 18px; height: 18px; border-radius: 50%; background: var(--mint); color: var(--auf-mint); font: 700 10px/18px var(--mono); text-align: center; }
+.zwahl .vs { position: absolute; top: -9px; left: 6px; font: 700 8px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 0 4px; border-radius: 3px; background: var(--panel2); color: var(--mint); border: 1px solid var(--mint-rahmen); }
+.zwahl .damals-tag { top: auto; bottom: -10px; right: -6px; }
+.zr-wahlen.klein { gap: 6px; padding-top: 2px; }
+.zr-wahlen.klein .zwahl { padding: 3px 8px; }
+.zr-wahlen.klein .zwahl b { font-size: 11px; }
+.zr-wahlen.klein .zwahl[aria-checked="true"]::after { width: 14px; height: 14px; font-size: 8px; line-height: 14px; top: -6px; right: -6px; }
+.zwahl.anders[aria-checked="true"] { box-shadow: 0 0 0 2px var(--amber), 0 12px 18px -8px var(--amber); }
+.zwahl.anders[aria-checked="true"]::after { background: var(--amber); color: #0b0f12; }
+.zr-einzeln { display: grid; gap: 4px; padding: 8px 10px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.ez-zeile { display: grid; grid-template-columns: 58px minmax(0, 190px) 16px 1fr auto; gap: 10px; align-items: center; padding: 3px 4px; }
+.ez-zeile .nm { font-weight: 600; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ez-zeile .nm small { display: block; font: 500 10px var(--mono); color: var(--muted); }
+.ez-zeile .pfeil { color: var(--mint); font-weight: 600; }
+.zr-einst { display: grid; grid-template-columns: 1.2fr 1fr 1.3fr; gap: 16px; align-items: end; padding: 10px 12px; border-radius: 10px; background: var(--tief); border: 1px solid var(--line); }
+.z-sum { display: grid; gap: 6px; }
+.z-sum div { display: grid; grid-template-columns: 10px 1fr auto auto; gap: 8px; align-items: center; font-size: 12px; padding-bottom: 6px; border-bottom: 1px dashed var(--line); }
+.z-sum i { width: 9px; height: 9px; border-radius: 3px; background: var(--k); }
+.z-sum b { font: 600 11.5px var(--mono); text-align: right; min-width: 58px; }
+.z-sum em { grid-column: 2 / -1; font: 500 10.5px var(--mono); font-style: normal; color: var(--amber); }
 .etikett { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; background: var(--paper); color: var(--paper-ink); border-radius: 3px; font: 600 11px var(--mono); transform: rotate(-1.2deg); box-shadow: 0 2px 0 #0003; white-space: nowrap; }
 .etikett.gesperrt { background: transparent; color: var(--amber); box-shadow: none; border: 1px solid var(--amber-rahmen); transform: none; }
-.dateien-kopf { margin-top: 10px; display: flex; justify-content: space-between; align-items: baseline; }
-.mkarte { position: relative; display: grid; gap: 2px; padding: 9px 10px 8px; margin-top: 9px; border-radius: 10px; border: 1px solid var(--line); background: linear-gradient(180deg, var(--panel2), var(--panel)); transition: transform .3s var(--feder); }
-.mkarte:hover { transform: translateY(-2px); }
-.mkarte::before { content: attr(data-f); position: absolute; top: -9px; left: 10px; padding: 0 6px; border-radius: 4px 4px 0 0; font: 600 9px var(--mono); background: color-mix(in srgb, var(--k) 85%, var(--bg)); color: #0b0f12; }
-.mkarte b { font-size: 12.5px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.mkarte small { font: 11px var(--mono); color: var(--muted); }
-.mkarte .hinw { font: 500 11px var(--schrift); color: var(--cyan); display: flex; gap: 5px; align-items: center; }
-
-.wandler { display: grid; justify-items: center; align-content: center; gap: 16px; padding: 10px 18px; position: relative; }
 .band { position: absolute; left: 0; right: 0; top: 36%; height: 2px; background: repeating-linear-gradient(90deg, var(--mint-rahmen) 0 8px, transparent 8px 16px); }
-.karussell { width: 300px; height: 150px; perspective: 700px; display: grid; place-items: center; position: relative; z-index: 1; }
-.ring { --rot: 0deg; position: relative; width: 0; height: 0; transform-style: preserve-3d; transform: rotateX(-14deg) rotateY(var(--rot)); transition: transform .7s var(--feder); }
-.ring button { position: absolute; left: -40px; top: -28px; width: 80px; height: 56px; border-radius: 12px; border: 1px solid var(--line-stark); background: linear-gradient(180deg, var(--panel2), var(--panel)); font: 600 15px var(--mono); color: var(--muted);
-  transform: rotateY(calc(var(--i) * 48deg)) translateZ(140px); backface-visibility: hidden; transition: color .3s, border-color .3s, box-shadow .3s, opacity .3s; display: grid; place-items: center; align-content: center; line-height: 1.15; }
-.ring button small { font: 500 9.5px var(--schrift); color: var(--leise); }
-.ring button.an { color: var(--mint); border-color: var(--mint); box-shadow: 0 0 0 4px var(--mint-flaeche), 0 18px 30px -12px var(--mint); }
-.ring button.weit { opacity: .0; }
-.teller { position: absolute; left: 50%; bottom: 4px; width: 270px; height: 60px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--mint) 22%, transparent), transparent); border: 1px solid var(--mint-rahmen); }
-.zweck { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; position: relative; z-index: 1; }
-.zweck-frage { font-size: 13px; font-weight: 600; position: relative; z-index: 1; }
-.zweck button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: 12px; color: var(--muted); }
-.zweck button:hover { border-color: var(--line-stark); }
-.zweck button.an { border-color: var(--mint); color: var(--mint); background: var(--mint-flaeche); }
-.schaetzung { font: 500 12px var(--mono); color: var(--muted); text-align: center; }
-.schaetzung b { color: var(--mint); }
-.pro-karte { display: grid; gap: 8px; justify-items: center; text-align: center; max-width: 300px; padding: 18px; border-radius: 14px; border: 1px solid var(--amber-rahmen); background: color-mix(in srgb, var(--amber) 8%, var(--panel)); }
-.pro-karte b { color: var(--amber); }
-.pro-karte p { margin: 0; font-size: 12.5px; color: var(--muted); }
 
 .mehr { border-left: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); padding: 14px 18px; display: grid; gap: 14px; align-content: start; overflow: auto; }
 .mehr h4 { margin: 0; font-size: 13.5px; font-weight: 600; }
@@ -469,7 +480,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .uhr-platz .takt { position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%); font: 500 10px var(--mono); color: var(--leise); white-space: nowrap; }
 
 /* Alte Einstellungen aus dem Verlauf */
-.damals-hinweis { position: relative; z-index: 1; width: min(440px, 100%); display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 85%, transparent); }
+.damals-hinweis { position: relative; z-index: 1; width: 100%; display: grid; grid-template-columns: auto 1fr auto; gap: 4px 12px; align-items: center; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 85%, transparent); }
 .damals-hinweis svg { width: 18px; height: 18px; color: var(--mint); grid-row: span 2; }
 .damals-hinweis b { font-size: 12.5px; font-weight: 600; }
 .damals-hinweis small { font: 11px var(--mono); color: var(--muted); }
@@ -477,8 +488,6 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .damals-hinweis .btn { grid-row: span 2; font-size: 11.5px; padding: 6px 10px; }
 .damals-tag { position: absolute; top: -9px; right: -8px; display: inline-flex; gap: 3px; align-items: center; padding: 1px 6px; border-radius: 999px; font: 600 8.5px var(--mono); font-style: normal; letter-spacing: .04em; background: var(--panel2); color: var(--muted); border: 1px dashed var(--line-stark); white-space: nowrap; }
 .damals-tag::before { content: '↺'; font-size: 9px; }
-.zweck button { position: relative; }
-.zweck button.damals:not(.an) { border-style: dashed; border-color: var(--line-stark); color: var(--ink); }
 .regler { position: relative; padding-bottom: 16px; }
 .alt-marke { position: absolute; bottom: 0; transform: translateX(-50%); font: 600 9px var(--mono); color: var(--muted); white-space: nowrap; }
 .alt-marke::before { content: ''; position: absolute; left: 50%; bottom: 13px; width: 2px; height: 10px; margin-left: -1px; border-radius: 1px; background: var(--muted); }
@@ -688,7 +697,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   <header class="kopf">
     <div class="augenbraue">Kvertis · Mischentwurf · 24. September 2026</div>
     <h1>Hineinwerfen, Kvertis sortiert</h1>
-    <p class="lead">Die Stärken der drei Entwürfe in einem Fenster. Dazu kommt ein Sortierregal als Startansicht: Es zeigt, was Kvertis umwandeln kann, und ordnet abgelegte Dateien selbst ein. Kvertis erkennt die Dateien am Inhalt, nicht an der Endung.</p>
+    <p class="lead">Die Stärken der drei Entwürfe in einem Fenster. Die Startansicht ist eine kleine Galaxie: Um ein schwarzes Loch kreisen fünf Bahnen, eine je Dateiart. Darunter stehen fünf Fächer. Abgelegte Dateien fliegen auf ihre Bahn und in ihr Fach. Kvertis erkennt die Dateien am Inhalt, nicht an der Endung.</p>
   </header>
 
   <section class="abschnitt" aria-labelledby="h-her">
@@ -696,10 +705,10 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     <div class="herkunft">
       <div class="neu"><small>Neu</small><h3>Verlauf</h3><p>Hinter dem Uhr-Symbol: jede Umwandlung mit Zeit, Formaten und Einstellungen. Ist das Original noch da, startet „Nochmal“ sie erneut, „Anpassen“ führt zu Schritt 2.</p></div>
       <div class="neu"><small>Neu</small><h3>Umwandeln als Pixelwirbel</h3><p>Schritt 3: Links der Eingangsstapel, in der Mitte lösen sich die Dateien in Pixel auf und wirbeln, zwei zugleich in Arbeit. Rechts ein großer Zielordner: vorn steht, wohin gespeichert wird, dazu „Speicherort ändern“. Eine Tasche darunter sammelt Dateien mit eigenem Ziel. Die Liste zeigt je Datei Format, vollen Zielpfad, „Ändern“ und danach „Öffnen“ und „Im Ordner zeigen“.</p></div>
-      <div class="neu"><small>Neu</small><h3>Sortierregal</h3><p>Fünf Kisten für Bilder, Audio, Video, Dokumente und 3D-Modelle. Unter jeder Kiste eine Glas-Sanduhr mit allen Formaten, die im eigenen Takt (25 / 35 / 45 / 55 / 65 s) nach vorn kippt. Abgelegte Dateien fliegen in die richtige Kiste; was nicht geht, landet mit Begründung daneben.</p></div>
+      <div class="neu"><small>Neu</small><h3>Fächer-Galaxie</h3><p>Schritt 1: Fünf Bahnen um das schwarze Loch, darunter fünf Fächer mit Zahl, Dateinamen, Vorschaubild und „öffnet X → macht Y Formate“. Leere Fächer zeigen Beispielformate. Ein Klick auf Fach oder Bahn zoomt auf die Wege durchs Loch. Was nicht geht, steht rechts oben mit Grund.</p></div>
       <div><small>aus C · Tiefenebenen</small><h3>Roter Faden</h3><p>Oben die Leiste Dateien → Ziel → Umwandeln. Jeder erledigte Schritt zeigt sein Ergebnis und bleibt anklickbar. Die Schritte wechseln in die Tiefe.</p></div>
-      <div><small>aus A · Durchlauf</small><h3>Karussell und Kisten</h3><p>Das Format-Karussell je Dateiart und am Ende der Flug von der Eingangs- in die Ausgangskiste.</p></div>
-      <div><small>aus B · Kartei</small><h3>Einstellungen</h3><p>Rechts ein Glasbehälter (Umriss = vorher, Füllung = nachher), Qualität, Zielgröße und Metadaten, jeweils für die gewählte Gruppe.</p></div>
+      <div class="neu"><small>Neu</small><h3>Ziel je Dateiart</h3><p>Schritt 2 hat eine Zeile je Dateiart: „4 Bilder werden zu JPG“. Die Kacheln sind dieselben wie in der Sanduhr. Einzelne Dateien lassen sich darunter anders einstellen.</p></div>
+      <div><small>aus B · Kartei</small><h3>Glasbehälter</h3><p>Rechts in Schritt 2 zeigt ein Glasbehälter die Größe aller Dateien vorher (Umriss) und nachher (Füllung). Qualität und Metadaten stehen je Dateiart unter „Einstellungen“.</p></div>
     </div>
   </section>
 
@@ -724,7 +733,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
         <nav class="faden" aria-label="Ablauf">
           <button class="knoten an" data-s="0"><i>1</i><b>Dateien</b><small id="f-0">hineinwerfen</small></button>
           <span class="seg" id="seg-0"></span>
-          <button class="knoten" data-s="1"><i>2</i><b>Ziel</b><small id="f-1">Format und Zweck</small></button>
+          <button class="knoten" data-s="1"><i>2</i><b>Ziel</b><small id="f-1">Format wählen</small></button>
           <span class="seg" id="seg-1"></span>
           <button class="knoten" data-s="2"><i>3</i><b>Umwandeln</b><small id="f-2">los geht’s</small></button>
         </nav>
@@ -732,25 +741,15 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
         <div class="ebenen">
           <!-- Schritt 1 -->
           <section class="ebene" data-pos="0" data-s="0" aria-label="Schritt 1: Dateien">
-            <div class="regal">
-              <div style="display:grid;gap:8px">
-                <div class="einwurf" id="einwurf">
-                  <span class="pfeil" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M2.5 13.5h11"/></svg></span>
-                  <div><b>Alles hier hineinwerfen</b><span>Bilder, Musik, Videos, Dokumente, 3D-Modelle, auch gemischt. Kvertis erkennt die Art selbst.</span></div>
-                  <div class="knoepfe"><button class="btn">Dateien wählen</button><button class="btn">Ordner</button></div>
-                </div>
-                <div class="erkannt-log" id="log" aria-live="polite"><span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span></div>
-              </div>
-              <div class="faecher" id="faecher"></div>
-            </div>
+            <div class="gal-host" id="gal-host"></div>
+            <input type="file" id="datei-wahl" multiple hidden>
           </section>
 
           <!-- Schritt 2 -->
           <section class="ebene" data-pos="1" data-s="1" aria-label="Schritt 2: Ziel">
             <div class="ziel">
-              <div class="gruppen" id="gruppen"></div>
-              <div class="wandler" id="wandler"></div>
-              <aside class="mehr" id="mehr" aria-label="Einstellungen der Gruppe"></aside>
+              <div class="ziel-haupt" id="ziel-haupt"></div>
+              <aside class="mehr" id="mehr" aria-label="Zusammenfassung"></aside>
             </div>
           </section>
 
@@ -803,7 +802,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 
   <section class="abschnitt" aria-labelledby="h-ue">
     <h2 id="h-ue">Was Kvertis erkennt</h2>
-    <p>Dieselbe Übersicht liegt in der App hinter dem Fragezeichen oben und im leeren Sortierregal. Grundlage ist docs/05-formate.md, Stand Phase 1.</p>
+    <p>Dieselbe Übersicht liegt in der App hinter dem Fragezeichen oben, in den leeren Fächern und im Zoom auf eine Bahn. Grundlage ist docs/05-formate.md, Stand Phase 1.</p>
     <div class="uebersicht">
       <div class="ue k-bild"><h3><i></i>Bilder</h3>
         <div class="formate"><span>JPG</span><span>PNG</span><span>WEBP</span><span>GIF</span><span>BMP</span><span>TIFF</span><span>HEIC</span><span>SVG</span><span>ICO</span><span>PSD</span><span>RAW</span></div>
@@ -837,13 +836,1199 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   <section class="abschnitt" aria-labelledby="h-not">
     <h2 id="h-not">Warum so, und wie in WinUI 3</h2>
     <div class="notizen">
-      <div><h3>Bedienung</h3><ul><li>Man muss vorher nichts wissen: Das Regal zeigt die Möglichkeiten, bevor die erste Datei da ist.</li><li>Gemischte Stapel werden automatisch gruppiert. Jede Gruppe bekommt ihr eigenes Ziel und ihre eigenen Einstellungen.</li><li>„Wozu?“ steht vor dem Format. Wer das Format kennt, dreht direkt am Karussell.</li><li>Der Zielordner steht groß rechts, dort wo die Dateien hinfliegen: Standard ist „neben dem Original“, also der Ordner, aus dem die Datei kam. „Speicherort ändern“ oder einen Ordner aus dem Explorer auf ihn ziehen. Einzelne Dateien bekommen in der Liste mit „Ändern“ ein eigenes Ziel und landen in der Tasche.</li><li>Geübte springen mit „Direkt umwandeln“ von Schritt 1 zu Schritt 3; die Vorschläge aus docs/05 gelten.</li></ul></div>
+      <div><h3>Bedienung</h3><ul><li>Man muss vorher nichts wissen: Bahnen und Fächer zeigen alle fünf Dateiarten, bevor die erste Datei da ist.</li><li>Gemischte Stapel werden automatisch gruppiert. Jede Gruppe bekommt ihr eigenes Ziel und ihre eigenen Einstellungen.</li><li>Erst ein Format für alle einer Art, dann bei Bedarf einzelne Dateien anders. Unter jedem Format steht in Worten, wofür es gut ist.</li><li>Der Zielordner steht groß rechts, dort wo die Dateien hinfliegen: Standard ist „neben dem Original“, also der Ordner, aus dem die Datei kam. „Speicherort ändern“ oder einen Ordner aus dem Explorer auf ihn ziehen. Einzelne Dateien bekommen in der Liste mit „Ändern“ ein eigenes Ziel und landen in der Tasche.</li><li>Geübte springen mit „Direkt umwandeln“ von Schritt 1 zu Schritt 3; die Vorschläge aus docs/05 gelten.</li></ul></div>
       <div><h3>Erkennung</h3><ul><li>Magic Bytes wie in docs/05: <code>Scan.jpg</code> mit PNG-Inhalt landet trotzdem richtig, mit Hinweis.</li><li>Nicht Umwandelbares fliegt nicht still heraus, sondern steht mit Grund in „Nicht umwandelbar“.</li></ul></div>
-      <div><h3>Umsetzung</h3><ul><li>Regal und Kisten: <code>PerspectiveTransform3D</code> + <code>CompositeTransform3D</code>, Füllen per <code>Vector3KeyFrameAnimation</code>.</li><li>Faden: eigenes Control über drei Schritt-Knoten, Ebenenwechsel mit <code>Translation</code>/<code>Scale</code> und <code>ImplicitAnimations</code>.</li><li>Gruppierung gehört in den ViewModel, nicht in die Engine; die Engine liefert nur die erkannte Art.</li><li>Pixelwirbel in Schritt 3: Win2D (<code>CanvasAnimatedControl</code>, MIT) oder Composition-<code>SpriteVisual</code>s; Win2D ist noch vom Lizenz-Wächter zu prüfen.</li><li>Hoher Kontrast oder „Animationen reduzieren“: flache Kacheln statt Kisten, Schritte ohne Tiefe, Blätter wechseln ohne Wirbel.</li></ul></div>
+      <div><h3>Umsetzung</h3><ul><li>Galaxie in Schritt 1: eine Zeichenfläche mit Teilchen (Win2D oder Composition), die Fächer als normale WinUI-Liste darüber. Zoom als Kamerafahrt, Wege durchs Loch als Pfade. Spielereien (Planet formen, Urknall) nur bei eingeschalteten Animationen.</li><li>Faden: eigenes Control über drei Schritt-Knoten, Ebenenwechsel mit <code>Translation</code>/<code>Scale</code> und <code>ImplicitAnimations</code>.</li><li>Gruppierung gehört in den ViewModel, nicht in die Engine; die Engine liefert nur die erkannte Art.</li><li>Pixelwirbel in Schritt 3: Win2D (<code>CanvasAnimatedControl</code>, MIT) oder Composition-<code>SpriteVisual</code>s; Win2D ist noch vom Lizenz-Wächter zu prüfen.</li><li>Hoher Kontrast oder „Animationen reduzieren“: Bahnen stehen still, Dateien erscheinen ohne Flug im Fach, keine Spielereien, Schritte ohne Tiefe, Blätter wechseln ohne Wirbel.</li></ul></div>
     </div>
     <p class="hinweis">Offen wie beim letzten Mal: Mint statt Systemakzent braucht eine ADR; die Schrift Geist (SIL OFL) muss erst der Lizenz-Wächter prüfen. Die drei Einzelentwürfe liegen in design/oberflaeche-konzepte.html. Dateinamen und Größen sind Beispiele.</p>
   </section>
 </main>
+
+<template id="gal-stil"><style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+.k-model { --k: var(--model); }
+/* ===== Fenster im Weltraum-Motiv ===== */
+.win { height: 700px; grid-template-rows: 40px 58px minmax(0, 1fr) auto; background: radial-gradient(900px 500px at 50% 60%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 70%), var(--bg); }
+/* Logo als kleines schwarzes Loch */
+.logo { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #000 0 34%, var(--mint) 38%, color-mix(in srgb, var(--mint) 30%, transparent) 55%, transparent 72%); }
+.logo::before, .logo::after { display: none; }
+/* Roter Faden als Umlaufbahn: der aktuelle Schritt dreht sich */
+.faden { position: relative; }
+.faden .seg { height: 1px; background: repeating-linear-gradient(90deg, var(--mint) 0 4px, transparent 4px 8px); width: 60px; }
+.knoten i { border-radius: 50%; }
+.knoten.an i { background: conic-gradient(from var(--dreh, 0deg), var(--mint), color-mix(in srgb, var(--mint) 20%, var(--bg)), var(--mint)); color: var(--auf-mint); box-shadow: 0 0 14px color-mix(in srgb, var(--mint) 60%, transparent); animation: knotendreh 3s linear infinite; }
+@property --dreh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes knotendreh { to { --dreh: 360deg; } }
+.knoten.an i span { background: var(--mint); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); }
+.knoten.aus i { border-color: var(--line-stark); color: var(--muted); }
+.knoten.aus small { color: var(--leise); }
+
+.welt { position: relative; overflow: hidden; }
+.welt canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.ov > * { pointer-events: auto; }
+.einwurf { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); transition: opacity .4s; white-space: nowrap; }
+.einwurf b { font-size: 13px; display: block; }
+.einwurf small { font-size: 11.5px; color: var(--muted); }
+.einwurf.klar { border: 0; background: transparent; backdrop-filter: none; text-align: center; flex-direction: column; gap: 2px; padding: 0; }
+.art { position: absolute; display: grid; gap: 1px; width: 170px; transition: opacity .5s, transform .5s var(--sanft); pointer-events: none; }
+.art.mitte { transform: translateX(-50%); text-align: center; justify-items: center; }
+.art.rechts { transform: translateX(-100%); text-align: right; justify-items: end; }
+.art b { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.art b em { font: 700 11px var(--mono); font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--k); color: #0b0f12; }
+.art b em.null { background: transparent; color: var(--leise); border: 1px dashed var(--line-stark); }
+.art small { font: 10.5px var(--mono); color: var(--muted); line-height: 1.45; }
+.art small i { font-style: normal; color: var(--mint); }
+.abweis { position: absolute; right: 16px; bottom: 12px; max-width: 250px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 75%, transparent); font-size: 11.5px; color: var(--muted); transition: opacity .4s; }
+.abweis b { color: var(--coral); font-weight: 600; font-size: 12px; }
+.mitte3 { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; opacity: 0; transition: opacity .5s; pointer-events: none; }
+.mitte3 b { font-size: 14px; } .mitte3 small { font: 11px var(--mono); color: var(--muted); }
+.welt[data-modus="wirbel"] .art, .welt[data-modus="wirbel"] .einwurf, .welt[data-modus="wirbel"] .abweis { opacity: 0; pointer-events: none; }
+.welt[data-modus="wirbel"] .mitte3 { opacity: 1; }
+.leiste .tipp { font-size: 12px; color: var(--muted); }
+
+.ideen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.idee-k { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idee-k small { font: 600 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.idee-k b { font-size: 14.5px; }
+.idee-k p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.idee-k .da { color: var(--mint); font: 600 11px var(--mono); }
+
+
+.win { height: 820px; }
+.welt.zeigt { cursor: zoom-in; }
+.welt[data-modus="wirbel"] .panel { opacity: 0 !important; pointer-events: none; }
+.panel { transition: opacity .45s; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fc { display: inline-grid; place-items: center; font: 700 10.5px var(--mono); padding: 2px 7px; border-radius: 6px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); white-space: nowrap; transition: background .3s, color .3s, box-shadow .3s; }
+.fc.m { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.fc.da { background: var(--k); color: #0b0f12; box-shadow: 0 0 12px var(--k); }
+.fc.m.da, .fc.m.an { background: var(--mint); color: var(--auf-mint); box-shadow: 0 0 12px color-mix(in srgb, var(--mint) 60%, transparent); }
+
+/* Auswahl unten, Titel oben */
+.wahl { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 3px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(8px); z-index: 3; }
+.wahl button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); transition: background .35s, color .35s, box-shadow .35s; white-space: nowrap; }
+.wahl button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.wahl button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.wahl button:hover { color: var(--ink); }
+.wahl button.an { background: color-mix(in srgb, var(--k, var(--mint)) 16%, var(--panel)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k, var(--mint)) 55%, transparent); }
+.wahl .ueber { --k: var(--mint); }
+.titel { position: absolute; left: 50%; top: 14px; transform: translateX(-50%) translateY(-6px); text-align: center; display: grid; gap: 1px; opacity: 0; transition: opacity .45s, transform .45s var(--sanft); pointer-events: none; z-index: 2; }
+.titel b { font-size: 17px; } .titel small { font-size: 12.5px; color: var(--muted); }
+.titel.sichtbar { opacity: 1; transform: translateX(-50%); }
+.js-ein { transition: opacity .4s; }
+.js-ein.weg { opacity: 0; pointer-events: none; }
+.hin-ueber { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: 12px; color: var(--muted); transition: opacity .4s; white-space: nowrap; }
+.hin-ueber.weg { opacity: 0; }
+
+/* Seitenspalten: gleiten herein, wenn die Kamera ankommt */
+.seite-l, .seite-r { position: absolute; top: 74px; width: 250px; display: grid; gap: 8px; align-content: start; z-index: 2; }
+.seite-l { left: 16px; } .seite-r { right: 16px; }
+.seite-l > *, .seite-r > * { opacity: 0; transform: translateX(var(--vx, -14px)); transition: opacity .4s, transform .5s var(--sanft); transition-delay: calc(var(--i, 0) * 35ms); }
+.seite-r > * { --vx: 14px; }
+.panel.sichtbar .seite-l > *, .panel.sichtbar .seite-r > * { opacity: 1; transform: none; }
+.kopf-s { display: grid; gap: 1px; padding-bottom: 2px; }
+.kopf-s b { font-size: 13.5px; } .kopf-s small { font-size: 11.5px; color: var(--muted); }
+.kopf-s.m b { color: var(--mint); }
+.zeile-d { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.seite-r .zeile-d { grid-template-columns: 1fr 56px; text-align: right; }
+.seite-r .zeile-d .fc { justify-self: end; }
+.zeile-d .fc { justify-self: start; }
+.gruppe { display: grid; gap: 5px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); }
+.gruppe > span { font-size: 12px; font-weight: 600; }
+.seite-r .gruppe { justify-items: end; text-align: right; }
+.seite-r .gruppe .chips { justify-content: flex-end; }
+.kachel { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); text-align: left; font-size: 12.5px; cursor: pointer; transition: border-color .25s, background .25s; }
+.kachel b { font-weight: 600; }
+.kachel:hover, .kachel.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.seite-r .kachel:hover, .seite-r .kachel.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.seite-r .kachel.an b { color: var(--mint); }
+.empf-tag { font: 600 9.5px var(--mono); padding: 1px 6px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); margin-left: 6px; }
+.knopf-l { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; text-align: left; font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color .25s, background .25s; }
+.knopf-l:hover, .knopf-l.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); color: var(--ink); }
+.knopf-r { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 1fr 56px; gap: 8px; align-items: center; text-align: right; font-size: 12px; color: var(--muted); transition: border-color .25s, background .25s, opacity .25s; }
+.knopf-r .fc { justify-self: end; }
+.knopf-r.aus { opacity: .3; }
+.knopf-r.an { border-color: var(--mint); background: var(--mint-flaeche); color: var(--ink); }
+.zusammen { font-size: 12px; color: var(--muted); } .zusammen b { color: var(--ink); }
+
+/* 6 · Tiefenregler */
+.tiefe { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: 22px auto; gap: 0 10px; z-index: 3; }
+.tiefe .spur { grid-row: 1 / span 6; position: relative; width: 4px; justify-self: center; border-radius: 2px; background: var(--line); }
+.tiefe .spur i { position: absolute; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); transform: translateY(-50%); top: calc(var(--u) * 20% + 10px); }
+.tiefe button { grid-column: 2; height: 40px; display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; font-size: 12.5px; color: var(--muted); padding: 0 8px; border-radius: 8px; text-align: left; }
+.tiefe button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.tiefe button.an { color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--k, var(--mint)) 12%, transparent); }
+.tiefe-hin { position: absolute; left: 16px; bottom: 16px; font-size: 11.5px; color: var(--leise); }
+.welt.k6 .seite-l { left: 180px; width: 220px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0ms !important; }
+}
+
+.win { height: 820px; }
+.abweis { transition: opacity .4s; }
+.abweis.weg { opacity: 0; pointer-events: none; }
+.meldung { position: absolute; left: 50%; bottom: 66px; transform: translateX(-50%) translateY(8px); padding: 8px 14px; border-radius: 12px; border: 1px solid var(--mint-rahmen); background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(8px); font-size: 12.5px; opacity: 0; transition: opacity .4s, transform .4s var(--sanft); pointer-events: none; white-space: nowrap; z-index: 4; }
+.meldung b { color: var(--mint); } .meldung em { font-style: normal; color: var(--coral); }
+.meldung.sichtbar { opacity: 1; transform: translateX(-50%); }
+.welt.zieht .einwurf { border-color: var(--mint); color: var(--mint); box-shadow: 0 0 0 4px var(--mint-flaeche); }
+.wahl em.hupf { animation: hupf2 .45s var(--feder); color: var(--ink); }
+@keyframes hupf2 { 40% { transform: scale(1.6); } }
+
+/* 3 · Rundenliste */
+.runde { position: absolute; left: 14px; top: 64px; width: 250px; max-height: calc(100% - 140px); overflow: auto; display: grid; gap: 4px; align-content: start; z-index: 3; transition: opacity .4s; }
+.runde:empty { display: none; }
+.runde h5 { margin: 6px 2px 0; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--k, var(--leise)); display: flex; justify-content: space-between; }
+.rz { position: relative; display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 9px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); font-size: 12px; transition: border-color .3s, background .3s; }
+.rz i { width: 8px; height: 8px; border-radius: 50%; background: var(--k, var(--line-stark)); }
+.rz b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rz small { display: block; font: 10.5px var(--mono); color: var(--muted); }
+.rz .fc { font-size: 10px; }
+.rz.pruefen { color: var(--muted); }
+.rz.pruefen i { animation: puls .8s ease-in-out infinite alternate; }
+@keyframes puls { to { opacity: .3; } }
+.rz.neu { animation: rzRein .4s var(--feder); }
+@keyframes rzRein { from { opacity: 0; transform: translateX(-16px); } }
+.rz.erkannt { animation: flipp .45s var(--feder); }
+@keyframes flipp { 40% { transform: rotateX(70deg); } }
+.rz.nein { border-color: color-mix(in srgb, var(--coral) 45%, var(--line)); }
+.rz.nein small { color: var(--coral); }
+.rz:hover, .rz.hell { border-color: var(--k, var(--line-stark)); background: color-mix(in srgb, var(--k, var(--panel)) 12%, var(--panel)); }
+.rz .warn { display: block; font: 10px var(--mono); color: var(--amber); }
+.welt[data-ziel="zoom"] .runde { opacity: 0; pointer-events: none; }
+
+/* 4 · Tooltip über Planeten */
+.planet-tip { position: absolute; z-index: 6; width: 230px; display: grid; gap: 6px; padding: 10px 12px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--k) 55%, var(--line)); background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(8px); box-shadow: 0 16px 30px -16px var(--schatten); pointer-events: none; opacity: 0; transform: translateY(4px); transition: opacity .2s, transform .2s; font-size: 12px; }
+.planet-tip.sichtbar { opacity: 1; transform: none; }
+.planet-tip b { font-size: 13px; } .planet-tip small { color: var(--muted); font: 10.5px var(--mono); }
+.planet-tip .warn { color: var(--amber); font-size: 11px; }
+
+/* ===== Fächer unter der Galaxie ===== */
+.win { height: 880px; }
+.faecher { position: absolute; left: 16px; right: 16px; bottom: 12px; height: 188px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; z-index: 3; transition: height .5s var(--sanft), opacity .4s; }
+.fach { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 6px; min-height: 0; padding: 9px 10px 8px; border-radius: 14px; border: 1px solid var(--line); border-top: 3px solid color-mix(in srgb, var(--k) 70%, transparent); background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(8px); cursor: pointer; transition: border-color .3s, box-shadow .3s, background .3s, transform .3s var(--sanft); text-align: left; }
+.fach:hover, .fach.hell { border-color: color-mix(in srgb, var(--k) 55%, var(--line)); border-top-color: var(--k); box-shadow: 0 0 0 1px color-mix(in srgb, var(--k) 25%, transparent), 0 12px 30px -18px var(--k); }
+.fach.an { border-color: var(--k); border-top-color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--bg)); box-shadow: 0 0 18px -6px var(--k); }
+.fach.leer { border-top-color: color-mix(in srgb, var(--k) 30%, transparent); }
+.fach-kopf { display: flex; align-items: center; gap: 7px; border: 0; background: none; padding: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.fach-kopf i { width: 9px; height: 9px; border-radius: 50%; background: var(--k); box-shadow: 0 0 8px var(--k); flex: none; }
+.fach-kopf b { font-size: 13.5px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fach-kopf em { font: 700 20px/1 var(--mono); font-style: normal; color: var(--k); display: inline-block; }
+.fach.leer .fach-kopf em { color: var(--leise); font-size: 16px; }
+.fach-kopf em.hupf { animation: hupf3 .45s var(--feder); }
+@keyframes hupf3 { 40% { transform: scale(1.5); } }
+.fach-dat { display: grid; gap: 4px; align-content: start; overflow: auto; min-height: 0; scrollbar-width: thin; }
+.fz { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 7px; align-items: center; padding: 3px 6px 3px 3px; border-radius: 8px; border: 1px solid transparent; background: color-mix(in srgb, var(--panel) 80%, transparent); font-size: 12px; transition: border-color .25s, background .25s; }
+.fz:hover, .fz.hell { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 12%, var(--panel)); }
+.fz .nm { min-width: 0; line-height: 1.2; }
+.fz .nm b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fz .nm small { display: block; font: 10px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fz .nm small.warn { color: var(--amber); }
+.fz .fc { font-size: 9.5px; padding: 1px 5px; }
+.fz.neu { animation: fzRein .45s var(--feder); }
+@keyframes fzRein { from { opacity: 0; transform: translateY(-10px) scale(.96); } }
+.ikon { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; background: color-mix(in srgb, var(--k) 16%, var(--panel2)); color: var(--k); overflow: hidden; }
+.ikon svg { width: 13px; height: 13px; } .ikon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fach-leer { font-size: 11.5px; color: var(--leise); display: grid; gap: 5px; align-content: start; }
+.fach-leer .chips .fc { opacity: .75; font-size: 9.5px; padding: 1px 5px; }
+.fach-fuss { display: flex; align-items: center; gap: 5px; font: 10px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; }
+.fach-fuss .pf { color: var(--mint); }
+.fach-fuss b { color: var(--ink); font-weight: 600; }
+/* im Zoom schrumpfen die Fächer zur Leiste */
+.welt[data-ziel="zoom"] .faecher { height: 52px; }
+.welt[data-ziel="zoom"] .fach { grid-template-rows: auto; padding: 8px 10px; }
+.welt[data-ziel="zoom"] .fach-dat, .welt[data-ziel="zoom"] .fach-fuss { display: none; }
+.welt[data-modus="wirbel"] .faecher { opacity: 0; pointer-events: none; }
+.zurueck { position: absolute; left: 16px; top: 14px; z-index: 4; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: color-mix(in srgb, var(--bg) 80%, transparent); font-size: 12.5px; color: var(--ink); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .4s; }
+.zurueck i { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--mint); }
+.welt[data-ziel="zoom"] .zurueck { opacity: 1; pointer-events: auto; }
+.welt[data-ziel="zoom"] .seite-l, .welt[data-ziel="zoom"] .seite-r { top: 58px; }
+.hin-ueber { bottom: 212px; }
+.meldung { bottom: 214px; }
+.abweis { top: 74px; bottom: auto; }
+.summe { position: absolute; left: 16px; top: 16px; display: grid; gap: 2px; font-size: 12.5px; color: var(--muted); transition: opacity .4s; z-index: 2; }
+.summe b { color: var(--ink); font-size: 15px; font-weight: 600; } .summe em { font-style: normal; color: var(--coral); }
+.welt[data-ziel="zoom"] .summe { opacity: 0; }
+.welt.laedt { cursor: none; }
+.welt.bebt { animation: beben .7s cubic-bezier(.36,.07,.19,.97); }
+@keyframes beben { 10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -2px); } 30%, 50%, 70% { transform: translate(-7px, 3px); } 40%, 60% { transform: translate(7px, -3px); } }
+.welt.bebt .faecher { animation: wackeln .9s var(--feder); }
+@keyframes wackeln { 30% { transform: translateY(8px); } }
+/* Ziele mit .aus dürfen im Ausblenden nicht stehen bleiben */
+.panel:not(.sichtbar) .knopf-r.aus { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .fz.neu, .fach-kopf em.hupf { animation: none; } }
+
+/* ===== im Mischentwurf: Schritt 1 füllt die Ebene ===== */
+:host { display: block; height: 100%; }
+.buehne { height: 100%; padding: 0; margin: 0; overflow: visible; }
+.gal { position: relative; height: 100%; font-size: 13px; }
+.gal .welt { position: absolute; inset: 0; }
+.fz { grid-template-columns: 22px minmax(0, 1fr) auto auto; }
+.fz-weg { width: 18px; height: 18px; border: 0; border-radius: 5px; background: transparent; color: var(--leise); font-size: 11px; line-height: 1; display: grid; place-items: center; padding: 0; opacity: 0; transition: opacity .2s, background .2s, color .2s; }
+.fz:hover .fz-weg, .fz-weg:focus-visible { opacity: 1; }
+.fz-weg:hover { background: color-mix(in srgb, var(--coral) 18%, transparent); color: var(--coral); }
+</style></template>
+<script>
+/* Schritt 1: Fächer-Galaxie. Stand aus design/faecher-galaxie.html, läuft im Shadow DOM von #gal-host. */
+
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (t, a = 0, b = 1) => Math.max(a, Math.min(b, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const glatt = t => t * t * (3 - 2 * t);
+  const TAU = Math.PI * 2;
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  const ARTEN = [
+    { name: 'Bilder', cls: 'bild', tok: 'blue', sub: 'Fotos, Scans und Grafiken',
+      liest: [['JPG', 'Foto'], ['PNG', 'Grafik, Bildschirmfoto'], ['HEIC', 'Handyfoto'], ['WEBP', 'Bild aus dem Web'], ['RAW', 'Kamera-Rohdaten'], ['TIFF', 'Druckvorlage'], ['GIF', 'kleine Animation'], ['BMP', 'unkomprimiert'], ['SVG', 'Vektorgrafik'], ['PSD', 'Bild mit Ebenen'], ['ICO', 'Programmsymbol']],
+      wird: [['JPG', 'überall lesbar'], ['PNG', 'verlustfrei'], ['WEBP', 'klein, fürs Web'], ['PDF', 'als Dokument'], ['TIFF', 'zum Drucken'], ['GIF', 'einfach'], ['BMP', 'unkomprimiert'], ['ICO', 'als Symbol']],
+      gIn: [['Fotos', ['JPG', 'HEIC', 'RAW']], ['Grafiken', ['PNG', 'SVG', 'GIF', 'ICO']], ['Aus dem Web', ['WEBP']], ['Profi-Formate', ['TIFF', 'PSD', 'BMP']]],
+      gOut: [['Zum Teilen', ['JPG']], ['Fürs Web', ['WEBP', 'GIF']], ['Ohne Verlust', ['PNG', 'TIFF', 'BMP']], ['Als Dokument', ['PDF']], ['Als Symbol', ['ICO']]],
+      zwecke: [['Verschicken', 'JPG'], ['Fürs Web', 'WEBP'], ['Ohne Verlust bearbeiten', 'PNG'], ['Drucken', 'TIFF'], ['Als Dokument', 'PDF'], ['Als Symbol', 'ICO']] },
+    { name: 'Audio', cls: 'audio', tok: 'violet', sub: 'Musik, Sprachaufnahmen, Podcasts',
+      liest: [['MP3', 'Musik'], ['WAV', 'unkomprimiert'], ['M4A', 'Sprachmemo'], ['FLAC', 'verlustfrei'], ['OGG', 'offenes Format'], ['OPUS', 'Sprachnachricht'], ['WMA', 'älteres Format'], ['AIFF', 'Studioaufnahme']],
+      wird: [['MP3', 'überall abspielbar'], ['M4A', 'klein und gut'], ['FLAC', 'verlustfrei'], ['WAV', 'unkomprimiert'], ['OGG', 'offen'], ['OPUS', 'sehr klein']],
+      gIn: [['Musik', ['MP3', 'M4A', 'OGG', 'WMA']], ['Sprache', ['OPUS']], ['Hohe Qualität', ['WAV', 'FLAC', 'AIFF']]],
+      gOut: [['Zum Teilen', ['MP3', 'M4A']], ['Sehr klein', ['OPUS', 'OGG']], ['Ohne Verlust', ['FLAC', 'WAV']]],
+      zwecke: [['Verschicken', 'MP3'], ['Aufs Handy', 'M4A'], ['Als Sprachnachricht', 'OPUS'], ['Archivieren', 'FLAC'], ['Bearbeiten', 'WAV']] },
+    { name: 'Video', cls: 'video', tok: 'amber', sub: 'Clips und Filme, auch nur den Ton',
+      liest: [['MP4', 'Standardvideo'], ['MOV', 'Handyvideo'], ['MKV', 'Film'], ['WEBM', 'Webvideo'], ['AVI', 'älteres Format'], ['WMV', 'älteres Format'], ['3GP', 'altes Handy'], ['MPG', 'ältere Kamera']],
+      wird: [['MP4', 'überall abspielbar'], ['MKV', 'flexibel'], ['WEBM', 'fürs Web'], ['nur Ton', 'Tonspur als MP3']],
+      gIn: [['Handy und Kamera', ['MP4', 'MOV']], ['Filme und Web', ['MKV', 'WEBM']], ['Ältere Videos', ['AVI', 'WMV', '3GP', 'MPG']]],
+      gOut: [['Überall abspielbar', ['MP4']], ['Fürs Web', ['WEBM']], ['Mit mehreren Spuren', ['MKV']], ['Nur den Ton', ['nur Ton']]],
+      zwecke: [['Überall abspielen', 'MP4'], ['Fürs Web', 'WEBM'], ['Mehrere Spuren behalten', 'MKV'], ['Nur den Ton', 'nur Ton']] },
+    { name: 'Dokumente', cls: 'dok', tok: 'cyan', sub: 'Texte, Tabellen, Präsentationen',
+      liest: [['PDF', 'fertiges Dokument'], ['DOCX', 'Textdokument'], ['XLSX', 'Tabelle'], ['PPTX', 'Präsentation'], ['TXT', 'reiner Text'], ['MD', 'Notizen'], ['HTML', 'Webseite']],
+      wird: [['TXT', 'nur Text'], ['MD', 'mit Gliederung'], ['CSV', 'Tabelle je Blatt'], ['HTML', 'für den Browser'], ['PDF', 'zum Drucken']],
+      gIn: [['Text, Tabelle, Folien', ['DOCX', 'XLSX', 'PPTX']], ['Fertige Dokumente', ['PDF']], ['Einfacher Text', ['TXT', 'MD', 'HTML']]],
+      gOut: [['Nur der Text', ['TXT']], ['Mit Gliederung', ['MD', 'HTML']], ['Als Tabelle', ['CSV']], ['Zum Drucken', ['PDF']]],
+      zwecke: [['Nur den Text', 'TXT'], ['Mit Gliederung', 'MD'], ['Tabelle weitergeben', 'CSV'], ['Im Browser zeigen', 'HTML'], ['Drucken', 'PDF']] },
+    { name: '3D-Modelle', cls: 'model', tok: 'model', sub: 'Modelle für Druck und Web',
+      liest: [['STL', '3D-Druck'], ['3MF', '3D-Druck mit Maßen'], ['OBJ', '3D-Programme'], ['PLY', '3D-Scan'], ['GLB', 'Web, eine Datei'], ['GLTF', 'Web']],
+      wird: [['STL', 'für den 3D-Druck'], ['3MF', 'Druck mit Maßeinheit'], ['OBJ', 'für 3D-Programme'], ['PLY', 'kompakt'], ['GLB', 'fürs Web']],
+      gIn: [['3D-Druck', ['STL', '3MF']], ['3D-Programme und Scans', ['OBJ', 'PLY']], ['Web', ['GLB', 'GLTF']]],
+      gOut: [['3D-Druck', ['STL', '3MF']], ['3D-Programme', ['OBJ', 'PLY']], ['Web', ['GLB']]],
+      zwecke: [['3D-Druck', 'STL'], ['Druck mit Maßen', '3MF'], ['3D-Programme', 'OBJ'], ['Im Browser', 'GLB'], ['Kompakt', 'PLY']] },
+  ];
+  const EMPF = { HEIC: 'JPG', PNG: 'WEBP', RAW: 'JPG', PSD: 'PNG', SVG: 'PNG', TIFF: 'JPG', BMP: 'PNG', GIF: 'WEBP', ICO: 'PNG', JPG: 'WEBP', WEBP: 'JPG',
+    WAV: 'MP3', FLAC: 'M4A', M4A: 'MP3', OGG: 'MP3', OPUS: 'MP3', WMA: 'MP3', AIFF: 'MP3', MP3: 'M4A',
+    MOV: 'MP4', MKV: 'MP4', WEBM: 'MP4', AVI: 'MP4', WMV: 'MP4', '3GP': 'MP4', MPG: 'MP4', MP4: 'WEBM',
+    PDF: 'TXT', DOCX: 'TXT', XLSX: 'CSV', PPTX: 'MD', TXT: 'PDF', MD: 'PDF', HTML: 'MD',
+    STL: '3MF', '3MF': 'STL', OBJ: 'GLB', PLY: 'STL', GLB: 'OBJ', GLTF: 'GLB' };
+  const DOKWEGE = { PDF: ['TXT'], DOCX: ['TXT', 'MD', 'HTML'], XLSX: ['CSV', 'TXT'], PPTX: ['TXT', 'MD'], TXT: ['PDF', 'HTML', 'TXT'], MD: ['PDF', 'HTML', 'TXT'], HTML: ['TXT', 'MD'] };
+  const wege = (k, f) => k === 3 ? DOKWEGE[f] : k === 4 ? ARTEN[4].wird.map(w => w[0]).filter(w => w !== f || f === 'STL') : ARTEN[k].wird.map(w => w[0]);
+  const BAHN = { 3: 0, 4: 1, 2: 2, 1: 3, 0: 4 };
+  const ORDER = [3, 4, 2, 1, 0];
+  const DATEIEN = [
+    { n: 'IMG_2041.heic', k: 0, f: 'HEIC' }, { n: 'Probe_03.wav', k: 1, f: 'WAV' }, { n: 'Scan.jpg', k: 0, f: 'PNG' }, { n: 'Urlaub_Clip.mov', k: 2, f: 'MOV' },
+    { n: 'Protokoll.docx', k: 3, f: 'DOCX' }, { n: 'Fotos.zip', k: -1, f: 'ZIP' }, { n: 'Halterung_v3.stl', k: 4, f: 'STL' }, { n: 'Interview.m4a', k: 1, f: 'M4A' },
+  ];
+
+  /* Farben */
+  const F = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'coral', 'bg', 'line-stark', 'ink', 'paper', 'muted'].forEach(k => { F[k] = norm(cs.getPropertyValue('--' + k)); F[k + 'R'] = hexRgb(F[k]); });
+    const [r, g, b] = F.bgR; F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
+    F.art = ARTEN.map(a => F[a.tok + 'R']);
+  }
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+  function glow(ctx, x, y, r, c, a) { if (a <= 0) return; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(c, a)); g.addColorStop(1, rgba(c, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  function loch(ctx, x, y, r, e = 1) {
+    glow(ctx, x, y, r * 3.2, F.violetR, .18 * e); glow(ctx, x, y, r * 1.9, F.mintR, .22 * e);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mintR, .95 * e); ctx.lineWidth = 2; ctx.shadowColor = F.mint; ctx.shadowBlur = 12; ctx.beginPath(); ctx.arc(x, y, r + 1.5, 0, TAU); ctx.stroke(); ctx.shadowBlur = 0;
+  }
+  const breiten = new Map();
+  function chip(ctx, x, y, t, farbe, mint, a = 1, s = 1, hell = false, unter = null) {
+    if (a <= .02) return;
+    ctx.font = `600 ${9.5 * s}px ${MONO}`;
+    const key = t + '|' + s; let w = breiten.get(key); if (w == null) { w = ctx.measureText(t).width; breiten.set(key, w); }
+    const W = w + 10 * s, H = 15 * s;
+    ctx.globalAlpha = a;
+    ctx.beginPath(); ctx.roundRect(x - W / 2, y - H / 2, W, H, 4 * s);
+    ctx.fillStyle = rgba(F.bgR, .9); ctx.fill();
+    ctx.fillStyle = hell ? rgba(farbe, .9) : mint ? rgba(F.mintR, .16) : rgba(farbe, .14); ctx.fill();
+    ctx.strokeStyle = mint ? rgba(F.mintR, .75) : rgba(farbe, .7); ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = hell ? '#0b0f12' : mint ? F.mint : rgba(farbe, 1); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(t, x, y + .5);
+    if (unter) { ctx.font = `500 ${10 * s}px "Geist", system-ui, sans-serif`; ctx.fillStyle = rgba(F.mutedR, 1); ctx.fillText(unter, x, y + H * .5 + 8 * s); }
+    ctx.globalAlpha = 1; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  }
+
+  /* ---------- Kamera ---------- */
+  const basis = (S, k) => S.r0 + BAHN[k] * S.dr;
+  function zustand(S, s) {
+    return ARTEN.map((a, k) => {
+      const b = basis(S, k);
+      if (s === -1) return [b, S.fl, 1];
+      if (s === k) return [S.rZoom, S.fl + .15, 1];
+      return [b * (BAHN[k] < BAHN[s] ? .1 : 3.1), S.fl, 0];
+    });
+  }
+  // liefert Bahnmaße, Fortschritt und aktuelles Ziel
+  function kamera(W, T) {
+    const S = W.S;
+    let A, B, p, ziel;
+    if (W.k.tiefe) {
+      const u = clamp(W.u, 0, 5), i0 = Math.floor(u), i1 = Math.min(5, i0 + 1), st = i => i === 0 ? -1 : ORDER[i - 1];
+      A = zustand(S, st(i0)); B = zustand(S, st(i1)); p = glatt(u - i0);
+      const ni = Math.round(u); ziel = Math.abs(u - ni) < .1 ? st(ni) : null;
+      W.camP = ziel === null ? 0 : 1 - Math.abs(u - ni) * 10; W.camBewegt = Math.abs(W.u - W.uT) > .01;
+      W.lochR = lerp(u < 1 ? lerp(18, 10, glatt(u)) : 10, 10, 0);
+    } else {
+      const c = W.cam; p = leise ? 1 : ease(clamp((T - c.t0) / 1.15));
+      A = c.vonGeo || zustand(S, c.a); B = zustand(S, c.b); ziel = c.b; W.camP = p; W.camBewegt = p > 0 && p < 1;
+      W.lochR = lerp(c.vonLoch ?? (c.a === -1 ? 18 : 10), c.b === -1 ? 18 : 10, p);
+    }
+    W.geo = A.map((a, k) => [lerp(a[0], B[k][0], p), lerp(a[1], B[k][1], p), lerp(a[2], B[k][2], p)]);
+    W.ziel = ziel;
+  }
+  function punkt(S, k, A, d = 0) {
+    const W = S.W, [rx, fl] = W.geo[k], ry = rx * fl;
+    let bul = 0;
+    if (W.hw[k] > .01) { const da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 19 * Math.exp(-da * da / .34); }
+    const s = 1 + (bul + d) / rx;
+    return [S.c.x + Math.cos(A) * rx * s, S.c.y + Math.sin(A) * ry * s];
+  }
+  function fahren(W, s) {
+    if (W.k.tiefe) { W.uT = s === -1 ? 0 : ORDER.indexOf(s) + 1; return; }
+    if (W.cam.b === s) return;
+    kamera(W, W.jetzt);
+    // aus der laufenden Fahrt heraus weich neu starten: der aktuelle Zustand wird der Start
+    W.cam = { a: W.cam.b, vonGeo: W.geo.map(g => [...g]), vonLoch: W.lochR, b: s, t0: W.jetzt };
+  }
+
+  /* ---------- Konzepte ---------- */
+  const fc = (t, m, extra = '') => `<span class="fc${m ? ' m' : ''}" data-f="${m ? '' : t}"${m ? ` data-w="${t}"` : ''}${extra}>${t}</span>`;
+  const K = {};
+  const bezugslinien = (S, e, sel, farbeK) => {
+    const { ctx, W } = S, v = W.sicht * (1 - e); if (v < .02 || W.ziel == null || W.ziel < 0) return;
+    const k = W.ziel, b = S.cv.getBoundingClientRect();
+    ['l', 'r'].forEach(seite => {
+      const els = [...W.el.querySelectorAll(`.seite-${seite} ${sel}`)], n = els.length;
+      els.forEach((el, j) => {
+        const r = el.getBoundingClientRect(), y0 = r.top - b.top + r.height / 2, x0 = seite === 'l' ? r.right - b.left + 6 : r.left - b.left - 6;
+        const t = n === 1 ? .5 : j / (n - 1), A = seite === 'l' ? Math.PI + .95 - t * 1.9 : -.95 + t * 1.9;
+        const [x1, y1] = punkt(S, k, A, 0), mitte = seite === 'l' ? x0 + 26 : x0 - 26;
+        const lauf = clamp(W.sicht * 1.6 - j * .05);
+        ctx.strokeStyle = seite === 'l' ? rgba(F.art[k], .45 * v) : rgba(F.mintR, .45 * v); ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(lerp(x0, mitte, lauf), y0);
+        if (lauf > .5) { const q = (lauf - .5) * 2; ctx.lineTo(lerp(mitte, x1, q), lerp(y0, y1, q)); }
+        ctx.stroke();
+        if (lauf >= 1) { ctx.fillStyle = seite === 'l' ? rgba(F.art[k], v) : rgba(F.mintR, v); ctx.beginPath(); ctx.arc(x1, y1, 2.6, 0, TAU); ctx.fill(); }
+      });
+    });
+  };
+  const wegZeichnen = (S, T, e, von, zu, farbe, a, empfohlen) => {
+    const { ctx } = S, b = S.cv.getBoundingClientRect(), r1 = von.getBoundingClientRect(), r2 = zu.getBoundingClientRect();
+    const x0 = r1.right - b.left + 4, y0 = r1.top - b.top + r1.height / 2, x1 = r2.left - b.left - 4, y1 = r2.top - b.top + r2.height / 2, c = S.c;
+    const pt = t => t < .5 ? (u => [(1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * (c.x - 70) + u * u * c.x, (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * y0 + u * u * c.y])(t * 2) : (u => [(1 - u) * (1 - u) * c.x + 2 * (1 - u) * u * (c.x + 70) + u * u * x1, (1 - u) * (1 - u) * c.y + 2 * (1 - u) * u * y1 + u * u * y1])((t - .5) * 2);
+    ctx.strokeStyle = rgba(empfohlen ? F.mintR : farbe, (empfohlen ? .55 : .25) * a); ctx.lineWidth = empfohlen ? 2 : 1;
+    ctx.beginPath(); for (let i = 0; i <= 40; i++) { const [x, y] = pt(i / 40); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (let i = 0; i < 7; i++) { const t = (T * .45 + i / 7) % 1, [x, y] = pt(t), m = clamp((t - .4) / .2), col = farbe.map((v, j) => lerp(v, F.mintR[j], m)); ctx.fillStyle = rgba(col, .9 * a); ctx.beginPath(); ctx.arc(x, y, empfohlen ? 2.6 : 2, 0, TAU); ctx.fill(); }
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
+  K.k1 = {
+    render(W, k) {
+      const a = ARTEN[k];
+      W.el.querySelector('.seite-l').innerHTML = `<div class="kopf-s" style="--i:0"><b>Kvertis öffnet</b><small>${a.liest.length} Formate</small></div>` + a.liest.map(([t, d], i) => `<div class="zeile-d" style="--i:${i + 1}">${fc(t, false)}<span>${esc(d)}</span></div>`).join('');
+      W.el.querySelector('.seite-r').innerHTML = `<div class="kopf-s m" style="--i:0"><b>und macht daraus</b><small>${a.wird.length} Formate</small></div>` + a.wird.map(([t, d], i) => `<div class="zeile-d" style="--i:${i + 1}"><span>${esc(d)}</span>${fc(t, true)}</div>`).join('');
+    },
+    deko(S, T, e) { bezugslinien(S, e, '.zeile-d'); },
+  };
+
+  K.k2 = {
+    render(W, k) {
+      const a = ARTEN[k], desc = Object.fromEntries(a.wird);
+      W.el.querySelector('.seite-l').innerHTML = `<div class="kopf-s" style="--i:0"><b>Das kannst du hineinwerfen</b><small>${a.liest.length} Formate in ${a.gIn.length} Gruppen</small></div>` + a.gIn.map(([g, l], i) => `<div class="gruppe" style="--i:${i + 1}"><span>${esc(g)}</span><div class="chips">${l.map(t => fc(t, false)).join('')}</div></div>`).join('');
+      W.el.querySelector('.seite-r').innerHTML = `<div class="kopf-s m" style="--i:0"><b>Das kommt heraus</b><small>nach Zweck</small></div>` + a.gOut.map(([g, l], i) => `<div class="gruppe" style="--i:${i + 1}"><span>${esc(g)}</span><div class="chips">${l.map(t => fc(t, true, ` title="${esc(desc[t] || '')}"`)).join('')}</div></div>`).join('');
+    },
+    deko(S, T, e) { bezugslinien(S, e, '.gruppe'); },
+  };
+
+  K.k3 = {
+    render(W, k) {
+      const a = ARTEN[k];
+      if (!W.wahlIn || !a.liest.some(l => l[0] === W.wahlIn)) W.wahlIn = a.liest[0][0];
+      W.el.querySelector('.seite-l').innerHTML = `<div class="kopf-s" style="--i:0"><b>Kvertis öffnet</b><small>Format wählen, Wege erscheinen</small></div>` + a.liest.map(([t, d], i) => `<button type="button" class="knopf-l" style="--i:${i + 1}" data-in="${t}">${fc(t, false)}<span>${esc(d)}</span></button>`).join('');
+      W.el.querySelector('.seite-r').innerHTML = `<div class="kopf-s m" style="--i:0"><b>kann werden zu</b><small class="js-wegtext"></small></div>` + a.wird.map(([t, d], i) => `<div class="knopf-r" style="--i:${i + 1}" data-out="${t}"><span>${esc(d)}</span>${fc(t, true)}</div>`).join('');
+      K.k3.wahl(W);
+    },
+    wahl(W) {
+      const k = W.ziel; if (k == null || k < 0) return;
+      const ok = wege(k, W.wahlIn) || [], em = EMPF[W.wahlIn];
+      W.el.querySelectorAll('.knopf-l').forEach(b => b.classList.toggle('an', b.dataset.in === W.wahlIn));
+      W.el.querySelectorAll('.knopf-r').forEach(b => { const t = b.dataset.out; b.classList.toggle('aus', !ok.includes(t)); b.classList.toggle('an', t === em); const s = b.querySelector('span'); s.innerHTML = esc(ARTEN[k].wird.find(w => w[0] === t)[1]) + (t === em ? '<span class="empf-tag">empfohlen</span>' : ''); });
+      const wt = W.el.querySelector('.js-wegtext'); if (wt) wt.textContent = `${W.wahlIn}: ${ok.length} ${ok.length === 1 ? 'Ziel' : 'Ziele'}`;
+    },
+    deko(S, T, e) {
+      const { W } = S, k = W.ziel, v = W.sicht * (1 - e); if (k == null || k < 0 || v < .05) return;
+      const von = W.el.querySelector(`.knopf-l[data-in="${W.wahlIn}"]`); if (!von) return;
+      const ok = wege(k, W.wahlIn) || [], em = EMPF[W.wahlIn];
+      ok.forEach(t => { const zu = W.el.querySelector(`.knopf-r[data-out="${t}"]`); if (zu) wegZeichnen(S, T, e, von, zu, F.art[k], v, t === em); });
+      if (!W.wahlGesperrt || T > W.wahlGesperrt) { if (!W.wahlNext || T > W.wahlNext) { const l = ARTEN[k].liest.map(x => x[0]); W.wahlIn = l[(l.indexOf(W.wahlIn) + 1) % l.length]; W.wahlNext = T + 2.6; K.k3.wahl(W); } }
+    },
+  };
+
+
+  /* =========================================================
+     Einwerfen: gemeinsame Teile
+     ========================================================= */
+  const WEGE = K.k3;
+  const PROBE = [
+    { n: 'IMG_2041.heic', k: 0, f: 'HEIC', mb: 8.4 }, { n: 'Probe_03.wav', k: 1, f: 'WAV', mb: 19.7 },
+    { n: 'Scan.jpg', k: 0, f: 'PNG', mb: 2.2, hin: 'Endung .jpg, Inhalt ist PNG' }, { n: 'Urlaub_Clip.mov', k: 2, f: 'MOV', mb: 148 },
+    { n: 'Protokoll.docx', k: 3, f: 'DOCX', mb: .4 }, { n: 'Fotos.zip', k: -1, f: 'ZIP', mb: 54, grund: 'Archive werden nicht entpackt' },
+    { n: 'Halterung_v3.stl', k: 4, f: 'STL', mb: 12.6 }, { n: 'Interview.m4a', k: 1, f: 'M4A', mb: 6.1 },
+  ];
+  const EXT = { jpg: [0, 'JPG'], jpeg: [0, 'JPG'], jfif: [0, 'JPG'], png: [0, 'PNG'], heic: [0, 'HEIC'], heif: [0, 'HEIC'], webp: [0, 'WEBP'], tif: [0, 'TIFF'], tiff: [0, 'TIFF'], gif: [0, 'GIF'], bmp: [0, 'BMP'], svg: [0, 'SVG'], psd: [0, 'PSD'], ico: [0, 'ICO'],
+    dng: [0, 'RAW'], cr2: [0, 'RAW'], cr3: [0, 'RAW'], nef: [0, 'RAW'], arw: [0, 'RAW'], orf: [0, 'RAW'], raf: [0, 'RAW'], rw2: [0, 'RAW'],
+    mp3: [1, 'MP3'], wav: [1, 'WAV'], m4a: [1, 'M4A'], aac: [1, 'M4A'], flac: [1, 'FLAC'], ogg: [1, 'OGG'], opus: [1, 'OPUS'], wma: [1, 'WMA'], aif: [1, 'AIFF'], aiff: [1, 'AIFF'],
+    mp4: [2, 'MP4'], m4v: [2, 'MP4'], mov: [2, 'MOV'], mkv: [2, 'MKV'], webm: [2, 'WEBM'], avi: [2, 'AVI'], wmv: [2, 'WMV'], '3gp': [2, '3GP'], mpg: [2, 'MPG'], mpeg: [2, 'MPG'],
+    pdf: [3, 'PDF'], docx: [3, 'DOCX'], xlsx: [3, 'XLSX'], pptx: [3, 'PPTX'], txt: [3, 'TXT'], md: [3, 'MD'], html: [3, 'HTML'], htm: [3, 'HTML'],
+    stl: [4, 'STL'], '3mf': [4, '3MF'], obj: [4, 'OBJ'], ply: [4, 'PLY'], glb: [4, 'GLB'], gltf: [4, 'GLTF'] };
+  const GRUND = { zip: 'Archive werden nicht entpackt', rar: 'Archive werden nicht entpackt', '7z': 'Archive werden nicht entpackt', doc: 'altes Binärformat', xls: 'altes Binärformat', ppt: 'altes Binärformat', avif: 'vorerst gesperrt', exe: 'Programme werden nicht umgewandelt' };
+  async function ausDatei(file) {
+    const ext = (file.name.includes('.') ? file.name.split('.').pop() : '').toLowerCase();
+    let [k, f] = EXT[ext] || [-1, (ext || '?').toUpperCase()], hin = null;
+    try {
+      const b = new Uint8Array(await file.slice(0, 8).arrayBuffer()), hex = [...b].map(x => x.toString(16).padStart(2, '0')).join('');
+      if (hex.startsWith('89504e47') && f !== 'PNG') { k = 0; hin = `Endung .${ext}, Inhalt ist PNG`; f = 'PNG'; }
+      else if (hex.startsWith('ffd8ff') && f !== 'JPG') { k = 0; hin = `Endung .${ext}, Inhalt ist JPG`; f = 'JPG'; }
+      else if (hex.startsWith('25504446') && f !== 'PDF') { k = 3; hin = `Endung .${ext}, Inhalt ist PDF`; f = 'PDF'; }
+    } catch (e) { /* ohne Inhaltsprüfung weiter */ }
+    const bild = k === 0 && ['JPG', 'PNG', 'WEBP', 'GIF', 'BMP', 'SVG'].includes(f) ? URL.createObjectURL(file) : null;
+    return { n: file.name, k, f, bild, mb: Math.max(file.size / 1e6, .01), hin, grund: k < 0 ? (GRUND[ext] || 'unbekanntes Format') : null };
+  }
+  const mbText = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const bez = (a, c, b, t) => [(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * c[0] + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * c[1] + t * t * b[1]];
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  function karte(ctx, x, y, s, rot, farbe, a = 1) {
+    ctx.save(); ctx.globalAlpha = a; ctx.translate(x, y); ctx.rotate(rot); ctx.scale(s, s);
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 8; ctx.shadowOffsetY = 3;
+    ctx.fillStyle = F.paper; ctx.beginPath(); ctx.roundRect(-11, -14, 22, 28, 2.5); ctx.fill(); ctx.shadowColor = 'transparent';
+    ctx.fillStyle = rgba(farbe, 1); ctx.beginPath(); ctx.roundRect(-11, -18, 13, 5, [2, 2, 0, 0]); ctx.fill();
+    ctx.fillStyle = '#c5ccd1'; for (let i = 0; i < 4; i++) ctx.fillRect(-7, -8 + i * 5, 14 - (i % 2) * 5, 1.8);
+    ctx.restore();
+  }
+  const planetA = (W, f) => {
+    const A = f.i * 1.9 + W.ph[f.k];
+    if (!W.V.parken || !f.pk) return A;
+    const [pa] = W.V.parken(W, f); let d = pa - A; d = Math.atan2(Math.sin(d), Math.cos(d)); return A + d * f.pk;
+  };
+  function zielPunkt(W, f) { const S = W.S; if (f.k < 0) return abweisPunkt(W); return W.geo[f.k][2] > .3 ? punkt(S, f.k, planetA(W, f)) : [S.c.x, S.c.y]; }
+  function abweisPunkt(W) { const a = W.el.querySelector('.js-abweis'), S = W.S; if (a && !a.hidden) { const r = a.getBoundingClientRect(), b = S.cv.getBoundingClientRect(); if (r.width) return [r.left - b.left + r.width / 2, r.top - b.top + r.height / 2]; } return [S.w - 140, 112]; }
+  function spur(ctx, f, x, y, farbe, n = 10) {
+    f.spur.push([x, y]); if (f.spur.length > n) f.spur.shift();
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    f.spur.forEach(([sx, sy], i) => { ctx.fillStyle = rgba(farbe, i / f.spur.length * .5); ctx.beginPath(); ctx.arc(sx, sy, 1 + i * (3 / n), 0, TAU); ctx.fill(); });
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  const artFarbe = f => f.k >= 0 ? F.art[f.k] : F.coralR;
+  const ext = f => (f.n.split('.').pop() || '').toUpperCase();
+
+  /* =========================================================
+     Fünf Varianten des Einwerfens
+     ========================================================= */
+  const IKON = [
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M2.5 11l3.5-3.5 3 3 2-2 2.5 2.5"/><circle cx="11" cy="6" r="1.1"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 12V3.5l7-1.5V10.5"/><circle cx="4.5" cy="12" r="1.8"/><circle cx="11.5" cy="10.5" r="1.8"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="3.5" width="10" height="9" rx="1.5"/><path d="M11.5 7l3-2v6l-3-2"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9 1.5V5h4M6 8h5M6 10.5h5"/></svg>',
+    '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5l6 3.3v6.4l-6 3.3-6-3.3V4.8z"/><path d="M2 4.8l6 3.3 6-3.3M8 8.1v6.4"/></svg>',
+  ];
+  // kleine Vorschaubilder für die Beispielfotos
+  function probeBild(h1, h2) {
+    const c = document.createElement('canvas'); c.width = c.height = 44; const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 44); g.addColorStop(0, `hsl(${h1} 70% 62%)`); g.addColorStop(1, `hsl(${h2} 60% 38%)`); x.fillStyle = g; x.fillRect(0, 0, 44, 44);
+    x.fillStyle = 'rgba(255,240,200,.9)'; x.beginPath(); x.arc(30, 14, 6, 0, TAU); x.fill();
+    x.fillStyle = `hsl(${h2} 40% 22%)`; x.beginPath(); x.moveTo(0, 44); x.lineTo(0, 30); x.lineTo(14, 20); x.lineTo(26, 32); x.lineTo(34, 26); x.lineTo(44, 34); x.lineTo(44, 44); x.fill();
+    return c.toDataURL();
+  }
+  PROBE.push({ n: 'Sommerfest_12.jpg', k: 0, f: 'JPG', mb: 3.6 }, { n: 'Angebot_2026.pdf', k: 3, f: 'PDF', mb: 1.1 });
+  PROBE[0].bild = probeBild(28, 330); PROBE[2].bild = probeBild(200, 230); PROBE[8].bild = probeBild(45, 12);
+  const V = {};
+  V.fach = { etikett: true, name: 'Fächer',
+    beginn(W, T) { fahren(W, -1); W.files.forEach((f, i) => { f.t0 = T + .1 + i * .16; }); },
+    flug(W, f, T, ctx) {
+      const S = W.S, u = clamp((T - f.t0) / .75), [tx, ty] = zielPunkt(W, f), a = [S.drop.x, S.drop.y + 18], c = [(a[0] + tx) / 2, Math.min(a[1], ty) - 30];
+      const [x, y] = bez(a, c, [tx, ty], ease(u)), farbe = artFarbe(f);
+      spur(ctx, f, x, y, farbe); glow(ctx, x, y, 16, farbe, .5); chip(ctx, x, y - 14, f.f, farbe, false, 1, .9);
+      if (u >= 1) { f.ax = x; f.ay = y; return true; } return false;
+    },
+    zeichneNach(W, T, e) {
+      if (W.hell == null) return; const f = W.files[W.hell]; if (!f || f.k < 0 || f.st !== 'drin') return;
+      const [x, y] = zielPunkt(W, f), ctx = W.S.ctx; glow(ctx, x, y, 28, artFarbe(f), .8 * (1 - e));
+      ctx.strokeStyle = rgba(artFarbe(f), .9 * (1 - e)); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 14 + Math.sin(T * 6) * 2, 0, TAU); ctx.stroke();
+      if (T - f.tAn > 2.8) chip(ctx, x, y - 22, f.f, artFarbe(f), false, 1 - e, 1, true, f.n);
+    },
+  };
+  const ikonHTML = f => `<span class="ikon">${f.bild ? `<img src="${f.bild}" alt="">` : IKON[f.k]}</span>`;
+  const fzHTML = f => `<div class="fz" data-i="${f.i}" title="${esc(f.n)}">${ikonHTML(f)}<span class="nm"><b>${esc(f.n)}</b>${f.hin ? `<small class="warn">⚠ ${esc(f.hin)}</small>` : `<small>${mbText(f.mb)} MB</small>`}</span><span class="fc" data-f="${f.f}">${f.f}</span><button type="button" class="fz-weg" data-weg="${f.i}" aria-label="${esc(f.n)} herausnehmen" title="Herausnehmen">✕</button></div>`;
+  function faecherLeeren(W) {
+    W.el.querySelectorAll('.fach').forEach(fa => { const k = +fa.dataset.art, a = ARTEN[k]; fa.querySelector('.fach-dat').innerHTML = `<div class="fach-leer">noch leer, zum Beispiel<div class="chips">${a.liest.slice(0, 5).map(l => `<span class="fc">${l[0]}</span>`).join('')}</div></div>`; fa.classList.add('leer'); });
+  }
+  function faecherFuellen(W, T) {
+    W.files.forEach(f => {
+      if (f.k < 0 || f.st !== 'drin' || f.imFach) return;
+      f.imFach = true;
+      const fa = W.el.querySelector(`.fach[data-art="${f.k}"]`), d = fa.querySelector('.fach-dat');
+      if (fa.classList.contains('leer')) { d.innerHTML = ''; fa.classList.remove('leer'); }
+      d.insertAdjacentHTML('beforeend', fzHTML(f));
+      if (!leise && T - f.tAn < 1) { d.lastElementChild.classList.add('neu'); d.scrollTop = d.scrollHeight; }
+    });
+  }
+
+  /* ---------- Fenster ---------- */
+  function fenster(W) {
+    const el = document.createElement('div');
+    el.className = 'gal';
+    el.innerHTML = `
+      <div class="welt" data-modus="regal" data-ziel="ueber">
+        <canvas role="img" aria-label="Fünf Umlaufbahnen um das schwarze Loch, eine je Dateiart. Eingeworfene Dateien kreisen auf der Bahn ihrer Art. Eine Bahn anklicken zeigt, was aus dieser Art werden kann."></canvas>
+        <div class="ov">
+          <div class="einwurf js-ein"><div><b class="js-ein-t">Alles hier hineinwerfen</b><small class="js-ein-s">Bilder, Musik, Videos, Dokumente, 3D-Modelle</small></div><button type="button" class="btn js-einwerfen">Dateien wählen</button></div>
+          <div class="titel" aria-live="polite"></div>
+          <div class="panel"><div class="seite-l"></div><div class="seite-r"></div></div>
+          <div class="summe js-summe" aria-live="polite"></div>
+          <button type="button" class="zurueck js-zurueck"><i></i>Übersicht</button>
+          <div class="faecher" role="group" aria-label="Fächer nach Art">${ORDER.slice().reverse().map(i => { const a = ARTEN[i]; return `<div class="fach k-${a.cls} leer" data-art="${i}" data-s="${i}"><button type="button" class="fach-kopf" aria-label="${a.name} ansehen"><i></i><b>${a.name}</b><em class="js-n">0</em></button><div class="fach-dat"></div><div class="fach-fuss" title="${a.liest.length} Formate lesbar, ${a.wird.length} Zielformate">öffnet <b>${a.liest.length}</b> <span class="pf">→</span> macht <b>${a.wird.length}</b> Formate</div></div>`; }).join('')}</div>
+          <span class="hin-ueber">Bahn oder Fach anklicken zum Heranzoomen</span>
+          <div class="abweis js-abweis" hidden style="top:74px;bottom:auto"><b>Nicht umwandelbar</b><span class="js-abweis-t"></span></div>
+          <div class="meldung" role="status"></div>
+        </div>
+      </div>`;
+    return el;
+  }
+  function knoten(W) {
+    const s = W.modus === 'wirbel' ? 2 : 0;
+    W.welt.dataset.modus = W.modus;
+  }
+  function zaehlen(W, hupfK) {
+    W.el.querySelectorAll('[data-art]').forEach(a => {
+      const i = +a.dataset.art, n = W.files.filter(f => f.k === i && f.st === 'drin').length, em = a.querySelector('.js-n');
+      if (em.textContent !== String(n)) { em.textContent = n; if (i === hupfK && !leise) { em.classList.remove('hupf'); void em.offsetWidth; em.classList.add('hupf'); } }
+      a.classList.toggle('hat', n > 0);
+    });
+    const nein = W.files.filter(f => f.k < 0 && f.st === 'drin');
+    const ab = W.el.querySelector('.js-abweis'); ab.hidden = !nein.length;
+    W.el.querySelector('.js-abweis-t').textContent = nein.map(f => `${f.n} · ${f.grund}`).join(' · ');
+    const drin = W.files.filter(f => f.st === 'drin'), ok = drin.filter(f => f.k >= 0).length;
+    faecherFuellen(W, W.jetzt);
+    const arten = new Set(drin.filter(f => f.k >= 0).map(f => f.k)).size;
+    W.el.querySelector('.js-summe').innerHTML = drin.length ? `<b>${drin.length} ${drin.length === 1 ? 'Datei' : 'Dateien'}</b><span>${ok} umwandelbar in ${arten} ${arten === 1 ? 'Art' : 'Arten'}${drin.length > ok ? ` · <em>${drin.length - ok} nicht</em>` : ''}</span>` : '<b>Noch leer</b><span>Alle fünf Arten warten</span>';
+    markieren(W);
+  }
+  function markieren(W) {
+    const k = W.ziel;
+    W.el.querySelectorAll('.panel .fc[data-f]').forEach(c => c.classList.toggle('da', !!c.dataset.f && W.files.some(f => f.k === k && f.f === c.dataset.f && f.st === 'drin')));
+  }
+  function zielGeaendert(W, s) {
+    W.el.querySelectorAll('.fach').forEach(b => { const an = +b.dataset.s === s; b.classList.toggle('an', an); b.querySelector('.fach-kopf').setAttribute('aria-pressed', an); });
+    const t = W.el.querySelector('.titel'), pan = W.el.querySelector('.panel');
+    if (s != null && s >= 0) { const a = ARTEN[s]; t.className = 'titel k-' + a.cls; pan.className = 'panel k-' + a.cls + (pan.classList.contains('sichtbar') ? ' sichtbar' : ''); t.innerHTML = `<b>${a.name}</b><small>${a.sub}</small>`; WEGE.render(W, s); markieren(W); }
+    W.welt.dataset.ziel = s >= 0 ? 'zoom' : 'ueber';
+    W.gerendert = s;
+  }
+  function teilchen(W) {
+    W.P = [];
+    ARTEN.forEach((a, i) => { for (let j = 0; j < 160; j++) W.P.push({ k: i, d: -1, r1: Math.random(), r2: Math.random(), r3: Math.random() }); });
+    W.files.forEach(f => { if (f.k >= 0) for (let j = 0; j < 34; j++) W.P.push({ k: f.k, d: f.i, r1: Math.random(), r2: Math.random(), r3: Math.random() }); });
+    (W.planeten || []).forEach((pl, j) => planetTeilchen(W, pl, j));
+  }
+  function einwerfen(W, liste) {
+    if (W.modus !== 'regal') { W.modus = 'regal'; W.tUeb = W.jetzt; knoten(W); }
+    W.V.abbrechen?.(W);
+    W.files = liste.map((d, i) => ({ ...d, i, st: 'wartet', spur: [], tAn: -99, pk: 0, gr: clamp(.6 + .45 * Math.sqrt(d.mb / 20), .6, 1.8) }));
+    teilchen(W); faecherLeeren(W); W.gemeldet = false; W.el.querySelector('.meldung').classList.remove('sichtbar');
+    if (W.ziel !== -1) fahren(W, -1);
+    W.V.beginn(W, W.jetzt);
+    if (leise) W.files.forEach(f => { f.st = 'drin'; f.tAn = W.jetzt - 5; const [x, y] = zielPunkt(W, f); f.ax = x; f.ay = y; });
+    zaehlen(W);
+  }
+  function leeren(W) { W.V.abbrechen?.(W); W.files = []; teilchen(W); faecherLeeren(W); if (W.modus !== 'regal') { W.modus = 'regal'; W.tUeb = W.jetzt; knoten(W); } const r = W.el.querySelector('.runde'); if (r) r.innerHTML = ''; zaehlen(W); }
+  function melden(W) {
+    const ok = W.files.filter(f => f.k >= 0).length, nein = W.files.length - ok, hin = W.files.filter(f => f.hin).length;
+    const m = W.el.querySelector('.meldung');
+    m.innerHTML = `<b>${ok} erkannt</b>${nein ? ` · <em>${nein} nicht umwandelbar</em>` : ''}${hin ? ` · ${hin} ${hin === 1 ? 'Hinweis' : 'Hinweise'} zur Endung` : ''}`;
+    m.classList.add('sichtbar'); clearTimeout(W.mTimer); W.mTimer = setTimeout(() => m.classList.remove('sichtbar'), 4000);
+  }
+
+  /* ---------- Die Oberfläche wird in den letzten zwei Sekunden eingesogen ---------- */
+  const UI_SEL = '.fach, .js-ein, .js-summe, .js-abweis, .hin-ueber', UI_AUSSEN = '.faden .knoten, .faden .seg, .leiste > *, .tb > b, .tb > .logo, .tb .ikon, .tb .wk';
+  function uiSog(W, T) {
+    const B = W.boom; let s = 0, j = 0, op = 1;
+    if (B.ph === 'ruhe') { const u = clamp((B.lade - .8) / .2); s = .92 * u * u * u; j = u * u * 9; op = 1 - .55 * u * u; }
+    else if (B.ph === 'explo') { s = 1; op = 0; }
+    else { const t = clamp((T - B.t0 - 1.3) / 1.1); s = 1 - easeBack(t); op = t; }
+    if (s === 0 && j === 0 && op === 1) {
+      if (W.uiAn) { W.uiEls.forEach(el => { el.style.transform = ''; el.style.opacity = ''; el.style.transition = ''; el.style.zIndex = ''; }); W.uiAn = false; }
+      return;
+    }
+    if (!W.uiAn) {
+      // Ruhelage merken, bevor irgendetwas verschoben ist
+      W.uiAn = true; const aussen = document.getElementById('win'); W.uiEls = [...W.el.querySelectorAll(UI_SEL), ...(aussen ? aussen.querySelectorAll(UI_AUSSEN) : [])].filter(el => el.offsetParent && !el.hidden);
+      W.uiRuhe = W.uiEls.map(el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2, Math.random() * 2 - 1]; });
+      W.uiEls.forEach(el => { el.style.transition = 'none'; if (getComputedStyle(el).position === 'static') el.style.position = 'relative'; el.style.zIndex = '20'; });
+    }
+    const cr = W.S.cv.getBoundingClientRect(), hx = cr.left + W.S.c.x, hy = cr.top + W.S.c.y;
+    W.uiEls.forEach((el, i) => {
+      const [x, y, d] = W.uiRuhe[i], jx = (Math.random() - .5) * j, jy = (Math.random() - .5) * j;
+      el.style.transform = `translate(${(hx - x) * s + jx}px, ${(hy - y) * s + jy}px) rotate(${d * s * 50 + (Math.random() - .5) * j * .6}deg) scale(${Math.max(.04, 1 - .92 * s)})`;
+      el.style.opacity = op;
+    });
+  }
+
+  /* ---------- Planeten fallen beim Aufladen ins Loch ---------- */
+  function planetPos(W, pl) {
+    const S = W.S, [x0, y0] = punkt(S, pl.k, pl.A + W.ph[pl.k]), f = pl.fall || 0;
+    if (f <= 0) return [x0, y0, 1];
+    const c = S.c, fl = S.fl, dx = x0 - c.x, dy = (y0 - c.y) / fl, rr = Math.hypot(dx, dy), a = Math.atan2(dy, dx), k = Math.pow(f, 1.7);
+    // Spirale, die zur Mitte hin immer schneller wird
+    const r = rr * (1 - k), w = a + k * 5.5;
+    return [c.x + Math.cos(w) * r, c.y + Math.sin(w) * r * fl, 1 - .65 * k];
+  }
+  function planetenSog(W, T, dt, darf) {
+    const B = W.boom;
+    (W.planeten || []).forEach(pl => {
+      if (pl.weg) return;
+      if (pl.start == null) pl.start = .12 + Math.random() * .4;
+      const zieht = darf && B.lade > pl.start;
+      pl.fall = clamp((pl.fall || 0) + (zieht ? dt / (2.2 + pl.r * .05) : -dt / 1.3));
+      if (pl.fall >= 1) {
+        // Einschlag: kleiner Blitz im Loch, Stoß, Planet ist weg
+        pl.weg = true; pl.spur = [];
+        const c = W.S.c; (W.minis = W.minis || []).push({ x: c.x, y: c.y, t: T, c: pl.c1, g: 1.3 });
+        W.blitz = { t: T, c: pl.c1 }; B.stoss = T;
+        W.welt.classList.remove('bebt'); void W.welt.offsetWidth; W.welt.classList.add('bebt');
+      }
+    });
+  }
+
+  /* ---------- Gimmick: still auf einer Bahn, dort formt sich ein Planet ---------- */
+  const PLANETZEIT = 4;
+  // jede Entstehung bringt eine andere Art Planet
+  const PTYPEN = [
+    { ring: true, baender: 3, c1: null, c2: null },
+    { glut: true, c1: [240, 128, 84], c2: [120, 34, 24], krater: 3 },
+    { mond: 1, c1: [214, 238, 246], c2: [80, 128, 158], wolken: true },
+    { baender: 6, gross: 1.3, c1: [232, 196, 138], c2: [150, 96, 56] },
+    { krater: 6, mond: 2, c1: [178, 168, 158], c2: [74, 64, 58] },
+    { wolken: true, ring: true, c1: [86, 156, 232], c2: [22, 52, 112] },
+  ];
+  const mischen = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
+  function planetTeilchen(W, pl, j) { for (let q = 0; q < 44; q++) W.P.push({ k: pl.k, d: -1, pl: j, r1: Math.random(), r2: Math.random(), r3: Math.random() }); }
+  function planetTick(W, T, dt) {
+    const B = W.boom, darf = !leise && B.ph === 'ruhe' && B.lade === 0 && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.mx != null && W.hov != null && W.files.every(f => f.st === 'drin');
+    const w = W.wir;
+    if (w) w.drall += dt * (.5 + 16 * Math.pow(w.lade, 2.2));
+    if (!darf) { if (w) { w.lade = Math.max(0, w.lade - dt * 1.1); if (w.lade <= 0) W.wir = null; } return; }
+    const weg = w && Math.hypot(W.mx - w.x, W.my - w.y) > 12;
+    if (!w || (weg && w.lade <= .02)) { W.wir = { x: W.mx, y: W.my, k: W.hov, A: W.hA[W.hov], lade: 0, drall: 0, sperre: false }; return; }
+    if (w.sperre) return;
+    if (weg) {
+      // Maus bewegt: der Strudel folgt kurz und fällt weich in sich zusammen
+      w.lade = Math.max(0, w.lade - dt * 1.4); const q = 1 - Math.exp(-dt * 4); w.x += (W.mx - w.x) * q; w.y += (W.my - w.y) * q; return;
+    }
+    w.k = W.hov; w.A = W.hA[W.hov];
+    w.lade = Math.min(1, w.lade + dt / PLANETZEIT);
+    if (w.lade >= 1) {
+      const typ = PTYPEN[W.planetNr++ % PTYPEN.length], art = F.art[w.k];
+      const c1 = typ.c1 ? mischen(typ.c1, art, .25) : mischen(art, [255, 255, 255], .15), c2 = typ.c2 ? mischen(typ.c2, art, .2) : mischen(art, [0, 0, 0], .55);
+      const pl = { k: w.k, A: w.A - W.ph[w.k], t: T, typ, c1, c2, r: (9 + Math.random() * 3) * (typ.gross || 1), neig: (Math.random() - .5) * .7,
+        mondP: Math.random() * TAU, seed: Math.random() * 1000 };
+      W.planeten = W.planeten || []; W.planeten.push(pl); planetTeilchen(W, pl, W.planeten.length - 1);
+      (W.minis = W.minis || []).push({ x: w.x, y: w.y + 8, t: T, c: art, g: 1 });
+      W.wir = { x: w.x, y: w.y, k: w.k, A: w.A, lade: 0, drall: w.drall, sperre: true };
+    }
+  }
+  // Strudel in der Ebene der Bahnen: flach wie die Galaxie, mit Trichter nach unten
+  function wirbelPos(W, p, x, y) {
+    const w = W.wir, fl = .4, R = 75 + 70 * w.lade, dx = x - w.x, dy = (y - w.y) / fl, d = Math.hypot(dx, dy);
+    if (d >= R) return [x, y, 1];
+    const f = 1 - d / R, wg = glatt(Math.min(1, w.lade * 2.5)), s = Math.pow(w.lade, 1.2) * Math.pow(f, .55);
+    const a = w.drall * (.35 + f) * (1.1 - p.r2 * .4), c = Math.cos(a), si = Math.sin(a), k = 1 - .9 * s;
+    const rx = (dx * c - dy * si) * k, ry = (dx * si + dy * c) * k, sink = s * 16 * w.lade, vorn = clamp(ry / (R * .6), -1, 1);
+    return [lerp(x, w.x + rx, wg), lerp(y, w.y + ry * fl + sink, wg), 1 + .55 * vorn * s * wg];
+  }
+  function planetZeichnen(W, T, e, bahnA) {
+    const S = W.S, ctx = S.ctx, w = W.wir;
+    // Strudel: sich drehende Scheibe in der Bahnebene, Kern sinkt ein
+    if (w && w.lade > .01 && !w.sperre) {
+      const c = F.art[w.k] || F.mintR, l = w.lade, R = 75 + 70 * l, cy = w.y + 12 * l * l;
+      glow(ctx, w.x, cy, 10 + 34 * l, c, .5 * l);
+      ctx.save(); ctx.lineCap = 'round';
+      [.85, .6, .38].forEach((q, i) => {
+        const rr = R * q * (1 - .45 * l * (1 - q)); ctx.strokeStyle = rgba(c, (.12 + .25 * l) * (1 - i * .15)); ctx.lineWidth = 1 + l * (1.5 - i * .3);
+        ctx.setLineDash([rr * .5, rr * .35]); ctx.lineDashOffset = -w.drall * rr * (.4 + i * .3);
+        ctx.beginPath(); ctx.ellipse(w.x, lerp(w.y, cy, 1 - q), rr, rr * .4, 0, 0, TAU); ctx.stroke();
+      });
+      ctx.restore();
+      if (l > .45) { glow(ctx, w.x, cy, 4 + 10 * l, [255, 255, 255], (l - .45) * 1.6); }
+    }
+    // selbst geformte Planeten
+    (W.planeten || []).forEach(pl => {
+      if (pl.weg) return;
+      const k = pl.k, [rx, , al] = W.geo[k], a = al * (1 - e) * bahnA; if (a < .02) return;
+      const skal = Math.sqrt(clamp(rx / basis(S, k), .5, 2.6)), t = clamp((T - pl.t) / .7), sc = t < 1 ? easeBack(t) : 1, r0 = pl.r * skal * sc;
+      const [x, y, pk] = planetPos(W, pl), typ = pl.typ, r = r0 * pk;
+      if (r < .6) return;
+      // Leuchtspur beim Fallen ins Loch
+      pl.spur = pl.spur || []; if ((pl.fall || 0) > .02) { pl.spur.push([x, y]); if (pl.spur.length > 14) pl.spur.shift(); } else pl.spur = [];
+      pl.spur.forEach(([sx, sy], i) => glow(ctx, sx, sy, r * (.6 + i / 14 * 1.4), pl.c1, .05 + .25 * i / 14));
+      // Licht kommt vom Loch
+      let lx = S.c.x - x, ly = S.c.y - y; const ll = Math.hypot(lx, ly) || 1; lx /= ll; ly /= ll;
+      ctx.save(); ctx.globalAlpha = a;
+      glow(ctx, x, y, r * 2.8, pl.c1, .22);
+      if (typ.glut) glow(ctx, x, y, r * 2, [255, 120, 60], .35 + .1 * Math.sin(T * 3));
+      const mw = T * .9 + pl.mondP, monde = typ.mond || 0;
+      const mond = (i, vorn) => { const m = mw + i * Math.PI * .8, mx = x + Math.cos(m) * r * (2.3 + i * .7), my = y + Math.sin(m) * r * .7; if ((Math.sin(m) >= 0) !== vorn) return; const g = ctx.createRadialGradient(mx + lx * 2, my + ly * 2, .3, mx, my, r * .32); g.addColorStop(0, '#f2f2f2'); g.addColorStop(1, '#55585c'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, r * .3, 0, TAU); ctx.fill(); };
+      const ring = vorn => { ctx.save(); ctx.translate(x, y); ctx.rotate(pl.neig); ctx.strokeStyle = rgba(mischen(pl.c1, [255, 255, 255], .3), .55); ctx.lineWidth = Math.max(1, r * .16); ctx.beginPath(); ctx.ellipse(0, 0, r * 2.05, r * .5, 0, vorn ? 0 : Math.PI, vorn ? Math.PI : TAU); ctx.stroke(); ctx.lineWidth = Math.max(.6, r * .07); ctx.strokeStyle = rgba(pl.c1, .35); ctx.beginPath(); ctx.ellipse(0, 0, r * 2.45, r * .6, 0, vorn ? 0 : Math.PI, vorn ? Math.PI : TAU); ctx.stroke(); ctx.restore(); };
+      for (let i = 0; i < monde; i++) mond(i, false);
+      if (typ.ring) ring(false);
+      // Kugel mit Oberfläche und Schatten
+      ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.clip();
+      ctx.fillStyle = rgba(pl.c1, 1); ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      if (typ.baender) { ctx.save(); ctx.translate(x, y); ctx.rotate(pl.neig); for (let i = 0; i < typ.baender; i++) { const by = (-1 + (2 * i + 1) / typ.baender) * r, h = r * (.12 + .1 * ((i * 37 + pl.seed) % 3) / 3); ctx.fillStyle = rgba(pl.c2, .28 + .1 * (i % 2)); ctx.fillRect(-r, by - h / 2 + Math.sin(T * .6 + i) * .6, r * 2, h); } ctx.restore(); }
+      if (typ.krater) for (let i = 0; i < typ.krater; i++) { const q = Math.sin(pl.seed + i * 12.9898) * 43758.5453, u = q - Math.floor(q), v = (q * 7.3) - Math.floor(q * 7.3), kx = x + (u - .5) * r * 1.5, ky = y + (v - .5) * r * 1.5; ctx.fillStyle = rgba(pl.c2, .45); ctx.beginPath(); ctx.arc(kx, ky, r * (.12 + .1 * u), 0, TAU); ctx.fill(); }
+      if (typ.wolken) { ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = Math.max(1, r * .12); for (let i = 0; i < 3; i++) { const wy = y + (i - 1) * r * .5, off = (T * 3 + i * 7 + pl.seed) % (r * 4) - r * 2; ctx.beginPath(); ctx.moveTo(x - r + off, wy); ctx.quadraticCurveTo(x + off * .3, wy - r * .2, x + r * .6 + off, wy + r * .05); ctx.stroke(); } }
+      const sh = ctx.createRadialGradient(x + lx * r * .45, y + ly * r * .45, r * .05, x, y, r * 1.15);
+      sh.addColorStop(0, 'rgba(255,255,255,.4)'); sh.addColorStop(.45, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.72)');
+      ctx.fillStyle = sh; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      ctx.restore(); ctx.save(); ctx.globalAlpha = a;
+      if (typ.ring) ring(true);
+      for (let i = 0; i < monde; i++) mond(i, true);
+      ctx.restore();
+    });
+    // kleine Explosion bei der Entstehung
+    W.minis = (W.minis || []).filter(m => T - m.t < .8);
+    W.minis.forEach(m => {
+      const q = (T - m.t) / .8, g = m.g;
+      glow(ctx, m.x, m.y, (16 + q * 130) * g, [255, 255, 255], .95 * (1 - q) * (1 - q)); glow(ctx, m.x, m.y, (12 + q * 80) * g, m.c, .7 * (1 - q));
+      [0, .2].forEach(v => { const s = clamp((q - v) / (1 - v)); if (s <= 0) return; ctx.strokeStyle = rgba(m.c, .9 * (1 - s)); ctx.lineWidth = 2 * (1 - s) + .5; ctx.beginPath(); ctx.ellipse(m.x, m.y, (8 + s * 110) * g, (8 + s * 110) * g * .4, 0, 0, TAU); ctx.stroke(); });
+    });
+  }
+
+  /* ---------- Gimmick: 10 Sekunden auf das Loch zeigen ---------- */
+  const LADEZEIT = 10, EXPLO = 1.4, NEU = 3.4;
+  const easeBack = t => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
+  function urknallTick(W, T, dt) {
+    const B = W.boom, S = W.S;
+    if (B.ph === 'ruhe') {
+      const nah = W.mx != null && Math.hypot(W.mx - S.c.x, W.my - S.c.y) < 36;
+      if (!nah) B.gesperrt = false;
+      const darf = !leise && nah && !B.gesperrt && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.files.every(f => f.st === 'drin');
+      B.lade = darf ? Math.min(1, B.lade + dt / LADEZEIT) : Math.max(0, B.lade - dt * .6);
+      B.drall = B.lade > 0 ? (B.drall || 0) + dt * (.4 + 9 * Math.pow(B.lade, 2.2)) : 0;
+      planetTick(W, T, dt); planetenSog(W, T, dt, darf);
+      W.welt.classList.toggle('laedt', B.lade > .02);
+      const st = Math.pow(B.lade, 1.6) * 16 + (B.stoss ? Math.max(0, 1 - (T - B.stoss) / .45) * 14 : 0); W.zittern = [(Math.random() - .5) * st, (Math.random() - .5) * st];
+      W.welt.style.transform = B.lade > .55 ? `translate(${(Math.random() - .5) * (B.lade - .55) * 8}px, ${(Math.random() - .5) * (B.lade - .55) * 6}px)` : '';
+      if (B.lade >= 1) {
+        B.ph = 'explo'; B.t0 = T; B.lade = 0; B.gesperrt = true; W.planeten = []; W.wir = null; W.P = W.P.filter(p => p.pl == null); W.welt.classList.remove('laedt'); W.welt.style.transform = ''; W.zittern = [0, 0];
+        W.welt.classList.remove('bebt'); void W.welt.offsetWidth; W.welt.classList.add('bebt');
+      }
+    } else if (B.ph === 'explo' && T - B.t0 >= EXPLO) { B.ph = 'neu'; B.t0 = T; }
+    else if (B.ph === 'neu' && T - B.t0 >= NEU) { B.ph = 'ruhe'; }
+  }
+  // Lage eines Teilchens beim Aufladen, bei der Explosion und beim Neuentstehen
+  function urknallPos(W, p, x, y, T) {
+    const B = W.boom, c = W.S.c, fl = .5, dx = x - c.x, dy = (y - c.y) / fl, r = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    const weit = (.35 + p.r2 * 1.15) * Math.max(W.S.w, W.S.h) * .7, richt = p.r1 * TAU * 5 + p.r3 * 2;
+    if (B.ph === 'ruhe') {
+      const l = B.lade * B.lade, wg = glatt(Math.min(1, B.lade * 4)), w = a + (B.drall || 0) * (1.25 - p.r2), rr = r * (1 - .72 * l) + (Math.random() - .5) * 7 * l, z = W.zittern || [0, 0];
+      // weich zwischen normaler Bahn und Sog überblenden, damit beim Weggehen nichts springt
+      return [lerp(x, c.x + Math.cos(w) * rr + z[0] * .6, wg), lerp(y, c.y + Math.sin(w) * rr * fl + z[1] * .6, wg), 1];
+    }
+    if (B.ph === 'explo') {
+      const u = easeOut(clamp((T - B.t0) / (EXPLO * (.6 + .4 * p.r3)))), rr = lerp(4 + p.r2 * 10, weit, u);
+      return [c.x + Math.cos(richt) * rr, c.y + Math.sin(richt) * rr * .62, 1 - .75 * u];
+    }
+    // neu: Spirale von außen auf die eigene Bahn
+    const t = clamp((T - B.t0 - .5 - p.r2 * 1.1) / 1.6), k = ease(t);
+    if (t <= 0) return [c.x + Math.cos(richt) * weit, c.y + Math.sin(richt) * weit * .62, .12];
+    const sx = Math.cos(richt) * weit, sy = Math.sin(richt) * weit * .62 / fl, r0 = Math.hypot(sx, sy), a0 = Math.atan2(sy, sx);
+    const d = Math.atan2(Math.sin(a0 - a), Math.cos(a0 - a)) + 2.2, w = a + d * (1 - k), rr = lerp(r0, r, k);
+    return [c.x + Math.cos(w) * rr, c.y + Math.sin(w) * rr * fl, lerp(.12, 1, k)];
+  }
+  function urknallLoch(W, T, lr) {
+    const B = W.boom, S = W.S, ctx = S.ctx, c = S.c;
+    if (B.ph === 'ruhe') {
+      const l = B.lade;
+      if (l <= .005) { loch(ctx, c.x, c.y, lr); return; }
+      // Zittern wächst stetig: am Anfang kaum spürbar, am Ende heftig
+      const zit = W.zittern, x = c.x + zit[0], y = c.y + zit[1], R = lr * (1 + .9 * l) * (1 + .06 * l * l * Math.sin(T * (8 + 40 * l)));
+      glow(ctx, x, y, 60 + 200 * l, F.violetR, .3 * l); glow(ctx, x, y, 30 + 90 * l, F.mintR, .35 * l * (.75 + .25 * Math.sin(T * (6 + 20 * l))));
+      loch(ctx, x, y, R);
+      return;
+    }
+    if (B.ph === 'explo') {
+      const q = clamp((T - B.t0) / EXPLO);
+      glow(ctx, c.x, c.y, 60 + q * 700, [255, 255, 255], .95 * (1 - q) * (1 - q));
+      glow(ctx, c.x, c.y, 40 + q * 420, F.mintR, .6 * (1 - q));
+      [0, .18, .36].forEach((v, i) => { const s = clamp((q - v) / (1 - v)); if (s <= 0) return; ctx.strokeStyle = rgba(i === 1 ? F.violetR : F.mintR, (1 - s) * .8); ctx.lineWidth = 3 * (1 - s) + .5; ctx.beginPath(); ctx.ellipse(c.x, c.y, 10 + s * 900, (10 + s * 900) * .42, 0, 0, TAU); ctx.stroke(); });
+      return;
+    }
+    const q = T - B.t0;
+    if (q < .5) { const s = q / .5; glow(ctx, c.x, c.y, 6 + 26 * s, [255, 255, 255], .9 * s); return; }
+    const t = clamp((q - .5) / 1.2);
+    glow(ctx, c.x, c.y, 30 + 40 * (1 - t), [255, 255, 255], .5 * (1 - t));
+    loch(ctx, c.x, c.y, lr * Math.max(.05, easeBack(t)));
+    if (q > 1.2 && q < 2.4) { ctx.font = `600 10.5px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = rgba(F.mintR, Math.sin(Math.PI * (q - 1.2) / 1.2) * .9); ctx.fillText('ein neues Universum', c.x, c.y + lr + 26); ctx.textAlign = 'left'; }
+  }
+
+  function zeichnen(W, T, dt) {
+    const S = W.S, ctx = S.ctx, v = W.V;
+    kamera(W, T);
+    if (W.ziel !== W.gerendert && W.ziel !== null) zielGeaendert(W, W.ziel);
+    v.tick?.(W, T);
+    if (W.camBewegt && !leise) { ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(0, 0, S.w, S.h); ctx.globalCompositeOperation = 'source-over'; }
+    else ctx.clearRect(0, 0, S.w, S.h);
+    const roh = W.modus === 'wirbel' ? clamp((T - W.tUeb) / 1.8) : 1 - clamp((T - W.tUeb) / 1.2);
+    const e = leise ? (W.modus === 'wirbel' ? 1 : 0) : ease(roh);
+    const m = W.modus === 'wirbel' ? clamp((T - W.tUeb - 1.8) / 6) : 0;
+    const R3 = Math.min(S.w, S.h) * .3;
+    W.zw += ((W.zieht ? 1 : 0) - W.zw) * (1 - Math.exp(-dt * 8));
+    const gm = W.gm;
+    if (W.mx != null) { if (gm.a < .02) { gm.x = W.mx; gm.y = W.my; } const q = 1 - Math.exp(-dt * 14); gm.x += (W.mx - gm.x) * q; gm.y += (W.my - gm.y) * q; gm.a += (1 - gm.a) * (1 - Math.exp(-dt * 5)); }
+    else gm.a *= Math.exp(-dt * 3.5);
+    urknallTick(W, T, dt); uiSog(W, T);
+    const B = W.boom, bahnA = B.ph === 'ruhe' ? 1 - .6 * B.lade : B.ph === 'explo' ? 0 : clamp((T - B.t0 - 1) / 1.6);
+    const soll = W.ziel != null && W.ziel >= 0 && W.camP > .6 ? 1 : 0;
+    W.sicht += (soll - W.sicht) * (leise ? 1 : 1 - Math.exp(-dt * 6));
+    const pan = W.el.querySelector('.panel');
+    if (pan.classList.contains('sichtbar') !== (soll === 1)) { pan.classList.toggle('sichtbar', soll === 1); W.el.querySelector('.titel').classList.toggle('sichtbar', soll === 1); }
+    const uebersicht = W.ziel === -1;
+    W.el.querySelector('.js-ein').classList.toggle('weg', !uebersicht && !W.zieht);
+    W.el.querySelector('.hin-ueber').classList.toggle('weg', !uebersicht || W.files.some(f => f.st !== 'drin'));
+    W.el.querySelector('.js-abweis').classList.toggle('weg', !uebersicht);
+    // Maus
+    W.hov = null;
+    if (W.mx != null && e < .5) {
+      let best = 40;
+      ARTEN.forEach((a, i) => {
+        const [rx, fl, al] = W.geo[i]; if (al < .5) return;
+        const ry = rx * fl, dx = (W.mx - S.c.x) / rx, dy = (W.my - S.c.y) / ry, th = Math.atan2(dy, dx), r = Math.hypot(dx, dy);
+        W.hA[i] = th; const d = Math.abs(r - 1) * Math.hypot(rx * Math.cos(th), ry * Math.sin(th));
+        if (d < best) { best = d; W.hov = i; }
+      });
+    }
+    W.welt.classList.toggle('zeigt', W.hov != null && uebersicht);
+    if (W.hovAlt !== W.hov) { W.hovAlt = W.hov; W.el.querySelectorAll('.fach').forEach(fa => fa.classList.toggle('hell', +fa.dataset.art === W.hov)); }
+    const rh = leise ? 1 : 1 - Math.exp(-dt * 6);
+    ARTEN.forEach((a, i) => { W.hw[i] += ((W.hov === i || W.fachHov === i ? 1 : 0) - W.hw[i]) * rh; W.ph[i] += dt * (.2 - BAHN[i] * .026) * (1 + .5 * (W.ziel === i ? 1 : 0) + .6 * W.hw[i]) * (leise ? 0 : 1); });
+    W.files.forEach(f => { f.pk += ((v.parken && W.ziel === f.k && W.camP > .5 ? 1 : 0) - f.pk) * (1 - Math.exp(-dt * 3)); });
+    // Bahnen
+    ARTEN.forEach((a, i) => {
+      const [rx, fl, al] = W.geo[i], h = W.hw[i], z = W.ziel === i ? W.camP : 0, alpha = (.16 + .3 * z + .3 * h + .15 * W.zw) * al * (1 - e) * bahnA;
+      if (alpha < .01 || rx > S.w * 2) return;
+      ctx.strokeStyle = rgba(F.art[i], alpha); ctx.lineWidth = 1 + .8 * z + .8 * h;
+      if (z > .3 || h > .1) { ctx.shadowColor = F[a.tok]; ctx.shadowBlur = 10 * Math.max(z, h); }
+      ctx.beginPath(); for (let j = 0; j <= 110; j++) { const [x, y] = punkt(S, i, j / 110 * TAU); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); ctx.shadowBlur = 0;
+    });
+    if (e > 0) glow(ctx, S.c.x, S.c.y, R3 + 60, F.violetR.map((q, i) => lerp(q, F.mintR[i], m)), .22 * e);
+    // Teilchen
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (const p of W.P) {
+      let f = null;
+      if (p.d >= 0) { f = W.files[p.d]; if (!f || f.st !== 'drin') continue; }
+      const kk = p.k, [rx, fl, al] = W.geo[kk];
+      if (al < .01 && e < .01) continue;
+      const skal = Math.sqrt(clamp(rx / basis(S, kk), .5, 2.6));
+      let x, y, plA = 1, tief = 1;
+      if (f) { const A = planetA(W, f), [cx, cy] = punkt(S, kk, A), a2 = p.r1 * TAU + T * 2, pr = (3 + p.r2 * 7) * skal * f.gr; x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .6; }
+      else if (p.pl != null) {
+        const pl = W.planeten[p.pl]; if (pl.weg) continue; const [cx, cy, pk] = planetPos(W, pl), a2 = p.r1 * TAU + T * (1.2 + p.r3), pr = pl.r * skal * (1.4 + p.r2 * 1.4) * pk;
+        x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .35;
+        const t = clamp((T - pl.t) / .8); if (t < 1) { const w = p.r1 * TAU * 3, u = easeOut(t), weit = (1 - u) * (30 + p.r2 * 60); x += Math.cos(w) * weit; y += Math.sin(w) * weit * .45; }
+        plA = lerp(1, .3, clamp((T - pl.t - .8) / 1.5));
+      }
+      else [x, y] = punkt(S, kk, p.r1 * TAU + W.ph[kk], (p.r2 - .5) * 14 * skal);
+      if (f && T - f.tAn < .8 && f.ax != null) { const t = ease(clamp((T - f.tAn) / .8)), sp = (1 - t) * 30 * (p.r1 - .5); x = lerp(f.ax, x, t) + sp; y = lerp(f.ay, y, t) + sp * .5; }
+      if (W.zw > .01) { x = lerp(x, S.c.x, .1 * W.zw * (1 - p.r2 * .5)); y = lerp(y, S.c.y, .1 * W.zw * (1 - p.r2 * .5)); }
+      if (e > 0) { const w = p.r1 * TAU + T * (.5 + 1.6 * (1 - p.r2)), rad = 12 + p.r2 * R3; x = lerp(x, S.c.x + Math.cos(w) * rad, e); y = lerp(y, S.c.y + Math.sin(w) * rad * .42 + (p.r3 - .5) * 10, e); }
+      if (W.gm.a > .01 && e < 1 && p.pl == null) { const hK = W.hw[kk], dx = W.gm.x - x, dy = W.gm.y - y, d = Math.hypot(dx, dy), rr = lerp(115, 185, hK); if (d < rr) { const g = lerp(.1, .4, hK) * (1 - d / rr) ** 2 * (1 - e) * W.gm.a; x += dx * g; y += dy * g; } }
+      if (W.wir && W.wir.lade > .005 && p.pl == null) { const q = wirbelPos(W, p, x, y); x = q[0]; y = q[1]; tief = q[2]; }
+      let bA = plA; if (B.ph !== 'ruhe' || (B.lade > 0 && p.pl == null)) { const q = urknallPos(W, p, x, y, T); x = q[0]; y = q[1]; bA *= q[2]; }
+      const base = F.art[kk], mm = m * (.35 + .65 * p.r3), c = mm > 0 ? base.map((q, i) => lerp(q, F.mintR[i], mm)) : base;
+      const hell = !!f || p.pl != null, s = (f ? 2.4 : p.pl != null ? 1.3 : 1.6) * skal * (W.ziel === kk ? 1.15 : 1) * tief;
+      ctx.fillStyle = rgba(c, (hell ? .95 : .55) * lerp(al, 1, e) * bA); ctx.fillRect(x - s / 2, y - s / 2, s, s);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    // Einwurf-Choreografie
+    for (const f of W.files) {
+      if (f.st === 'wartet' && T >= f.t0) f.st = 'anflug';
+      if (f.st !== 'anflug') continue;
+      if (v.flug(W, f, T, ctx)) { f.st = 'drin'; f.tAn = T; f.spur = []; zaehlen(W, f.k); }
+    }
+    if (!W.gemeldet && W.files.length && W.files.every(f => f.st === 'drin')) { W.gemeldet = true; melden(W); }
+    // Ankunftsschild
+    if (v.etikett) W.files.forEach(f => {
+      if (f.k < 0 || f.st !== 'drin' || T - f.tAn > 2.8 || W.geo[f.k][2] < .3) return;
+      const a = clamp((T - f.tAn) / .3) * clamp((2.8 - (T - f.tAn)) / .5) * (1 - e) * bahnA, [x, y] = zielPunkt(W, f);
+      chip(ctx, x, y - 20, f.f, artFarbe(f), false, a, 1, true, f.n);
+    });
+    WEGE.deko(S, T, e);
+    v.zeichneNach?.(W, T, e);
+    // Loch mit Blitz und Sog
+    let lr = lerp(W.lochR, 12 + 4 * m, e) * (1 + .7 * W.zw);
+    if (W.blitz && T - W.blitz.t < .6) { const q = (T - W.blitz.t) / .6; glow(ctx, S.c.x, S.c.y, 40 + q * 90, W.blitz.c, .7 * (1 - q)); lr *= 1 + .25 * Math.sin(Math.PI * q); }
+    if (W.zw > .01) glow(ctx, S.c.x, S.c.y, 160 * W.zw, F.mintR, .12 * W.zw);
+    planetZeichnen(W, T, e, bahnA);
+    urknallLoch(W, T, lr);
+  }
+
+  /* ---------- Start ---------- */
+  farbenLesen();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', farbenLesen);
+  new MutationObserver(farbenLesen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const ALLE = [];
+  const HOST = document.getElementById('gal-host'), SH = HOST.attachShadow({ mode: 'open' });
+  SH.append(document.getElementById('gal-stil').content.cloneNode(true));
+  { const b = document.createElement('div'); b.className = 'buehne'; b.dataset.konzept = 'fach'; SH.append(b); }
+  SH.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const v = V[host.dataset.konzept];
+    const W = { k: WEGE, V: v, modus: 'regal', tUeb: -99, mx: null, my: null, jetzt: 0, sichtbar: true, hov: null, sicht: 0, zw: 0, zieht: false,
+      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false }, gm: { x: 0, y: 0, a: 0 }, planetNr: Math.floor(Math.random() * 6), zittern: [0, 0] };
+    W.files = [];
+    teilchen(W);
+    W.el = fenster(W); host.append(W.el);
+    W.welt = W.el.querySelector('.welt');
+    const cv = W.welt.querySelector('canvas');
+    W.S = { cv, ctx: cv.getContext('2d'), w: 0, h: 0, W };
+    const groesse = () => {
+      const r = cv.getBoundingClientRect(); if (!r.width) return;
+      const d = Math.min(2, devicePixelRatio || 1);
+      W.S.w = r.width; W.S.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+      W.S.ctx.setTransform(d, 0, 0, d, 0, 0);
+      Object.assign(W.S, { c: { x: r.width * .5, y: (r.height - 200) * .5 + 50 }, r0: 92, dr: 56, fl: .35, rZoom: Math.min((r.width - 2 * 300) / 2, 240), drop: { x: r.width / 2, y: 60 } });
+      const ein = W.el.querySelector('.js-ein'); ein.style.left = W.S.drop.x + 'px'; ein.style.top = '12px';
+    };
+    new ResizeObserver(groesse).observe(cv);
+    new IntersectionObserver(en => { W.sichtbar = en[0].isIntersecting; }).observe(cv);
+    W.welt.addEventListener('pointermove', e => { const r = cv.getBoundingClientRect(); W.mx = e.clientX - r.left; W.my = e.clientY - r.top; });
+    W.welt.addEventListener('pointerleave', () => { W.mx = W.my = null; W.hell = null; W.fachHov = null; });
+    cv.style.pointerEvents = 'auto';
+    W.welt.addEventListener('click', e => { if (e.target === cv && W.hov != null && W.modus === 'regal' && W.ziel === -1) fahren(W, W.hov); });
+    // echte Dateien ziehen
+    let tiefe = 0;
+    const zieht = an => { W.zieht = an; W.welt.classList.toggle('zieht', an); W.el.querySelector('.js-ein-t').textContent = an ? 'Loslassen' : 'Alles hier hineinwerfen'; W.el.querySelector('.js-ein-s').textContent = an ? 'Kvertis prüft jede Datei am Inhalt' : 'Bilder, Musik, Videos, Dokumente, 3D-Modelle'; };
+    W.welt.addEventListener('dragenter', e => { e.preventDefault(); tiefe++; zieht(true); });
+    W.welt.addEventListener('dragover', e => { e.preventDefault(); const r = cv.getBoundingClientRect(); W.mx = e.clientX - r.left; W.my = e.clientY - r.top; });
+    W.welt.addEventListener('dragleave', () => { if (--tiefe <= 0) { tiefe = 0; zieht(false); } });
+    // Die Dateien nimmt der Mischentwurf entgegen; hier nur den Zustand zurücksetzen
+    W.welt.addEventListener('drop', () => { tiefe = 0; zieht(false); });
+    W.el.addEventListener('click', e => {
+      if (e.target.closest('.js-einwerfen')) { API.waehlen?.(); return; }
+      const weg = e.target.closest('.fz-weg'); if (weg) { API.weg?.(+weg.dataset.weg); return; }
+      const sb = e.target.closest('.fach'); if (sb) { const s = +sb.dataset.s; fahren(W, W.ziel === s && !e.target.closest('.fz') ? -1 : s); }
+      if (e.target.closest('.js-zurueck')) fahren(W, -1);
+      const bi = e.target.closest('[data-in]'); if (bi) { W.wahlIn = bi.dataset.in; W.wahlGesperrt = W.jetzt + 8; WEGE.wahl(W); }
+    });
+    W.el.addEventListener('pointerover', e => {
+      const bi = e.target.closest?.('[data-in]'); if (bi && bi.dataset.in !== W.wahlIn) { W.wahlIn = bi.dataset.in; W.wahlGesperrt = W.jetzt + 6; WEGE.wahl(W); }
+      const rz = e.target.closest?.('.fz'); W.hell = rz ? +rz.dataset.i : null;
+      const fa = e.target.closest?.('.fach'); W.fachHov = fa ? +fa.dataset.art : null;
+    });
+    W.el.addEventListener('keydown', e => { if (e.key === 'Escape') { v.abbrechen?.(W); fahren(W, -1); } });
+    faecherLeeren(W); knoten(W); zaehlen(W);
+    ALLE.push(W);
+  });
+  /* ---------- Schnittstelle zum Mischentwurf ---------- */
+  const KATS = ['bild', 'audio', 'video', 'dok', 'model'], ZU = new WeakMap();
+  const API = window.KvertisGalaxie = {
+    aktiv: true, waehlen: null, weg: null,
+    // Dateiliste des Mischentwurfs übernehmen; neue Dateien fliegen ein, wenn animiert
+    sync(liste, animiert) {
+      const W = ALLE[0]; if (!W) return;
+      const T = W.jetzt || performance.now() / 1000; let j = 0;
+      W.files = liste.map((d, i) => {
+        let f = ZU.get(d);
+        if (!f) {
+          f = { n: d.name, k: d.kat ? KATS.indexOf(d.kat) : -1, f: d.fmt, mb: d.mb, hin: d.hinweis || null, grund: String(d.grund || '').replace(/\.$/, ''),
+            bild: d.bild || (d.vorschau ? probeBild(...d.vorschau) : null), spur: [], tAn: -99, pk: 0, gr: clamp(.6 + .45 * Math.sqrt(d.mb / 20), .6, 1.8) };
+          if (animiert && !leise) { f.st = 'wartet'; f.t0 = T + .1 + j++ * .16; } else f.st = 'drin';
+          ZU.set(d, f);
+        }
+        f.i = i; f.imFach = false; return f;
+      });
+      teilchen(W); faecherLeeren(W);
+      if (animiert && W.ziel !== -1 && W.ziel != null) fahren(W, -1);
+      W.gemeldet = !animiert || leise; zaehlen(W);
+    },
+  };
+
+  let zuletzt = performance.now();
+  const loop = t => {
+    const T = t / 1000, dt = Math.min(.05, (t - zuletzt) / 1000); zuletzt = t;
+    for (const W of ALLE) { W.jetzt = T; if (W.sichtbar && W.S.w && API.aktiv) { try { zeichnen(W, leise ? 0 : T, dt); } catch (err) { console.error(err); } } }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+})();
+</script>
 
 <script>
 (() => {
@@ -863,31 +2048,36 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   };
   const KATS = ['bild', 'audio', 'video', 'dok', 'model'];
   const KOMPRIMIERT = new Set(['JPG','HEIC','WEBP','GIF','MP3','M4A','OGG','OPUS','WMA','MP4','MOV','MKV','WEBM','PDF','DOCX','XLSX','PPTX']);
-  const ZWECK = { video: ['Für E-Mail','Für Website','Für Messenger','Original'], bild: ['Für E-Mail','Für Website','Für Messenger','Zum Archivieren','Original'], audio: ['Für E-Mail','Für Website','Zum Archivieren','Original'], dok: ['Nur Text','Mit Gliederung'] };
-  const ZWECK_F = { 'Für E-Mail': .6, 'Für Website': .75, 'Für Messenger': .55, 'Zum Archivieren': 1.8, 'Original': 1.2, 'Nur Text': 1, 'Mit Gliederung': 1.15 };
 
-  function ziele(k) {
+  // Zielformate für eine Eingabe: [Format, wofür, Größenfaktor]; das erste ist der Vorschlag
+  function zieleFuer(k, fmt) {
     if (k === 'bild') return [['JPG','überall lesbar',.13],['PNG','verlustfrei',.6],['WEBP','klein, fürs Web',.09],['TIFF','zum Drucken',1.1],['PDF','als Dokument',.2],['GIF','einfach',.3]];
     if (k === 'audio') return [['MP3','überall abspielbar',.13],['M4A','klein, gut',.11],['FLAC','verlustfrei',.55],['WAV','unkomprimiert',1],['OGG','offen',.12],['OPUS','sehr klein',.07]];
-    if (k === 'video') return [['MP4','überall abspielbar',.35],['MKV','flexibel',.4],['WEBM','fürs Web',.3],['TON','nur Tonspur',.03]];
+    if (k === 'video') return [['MP4','überall abspielbar',.2],['MKV','flexibel',.22],['WEBM','fürs Web',.17],['TON','nur Tonspur',.01]];
     if (k === 'model') {
-      const m = (dateien.find(d => d.kat === 'model') || {}).fmt;
-      const alle = [['STL','für den 3D-Druck',.5],['3MF','3D-Druck mit Maßeinheit',.3],['OBJ','für 3D-Programme',1.4],['PLY','kompakt',.5],['GLB','fürs Web, eine Datei',.45]];
-      return m === 'STL' ? [...alle.filter(z => z[0] !== 'STL'), ['STL','binär, kleiner',.25]] : alle.filter(z => z[0] !== m);
+      const alle = [['3MF','3D-Druck mit Maßeinheit',.3],['STL','für den 3D-Druck',.5],['GLB','fürs Web, eine Datei',.45],['OBJ','für 3D-Programme',1.4],['PLY','kompakt',.5]];
+      return fmt === 'STL' ? alle.map(z => z[0] === 'STL' ? ['STL','binär, kleiner',.25] : z) : alle.filter(z => z[0] !== fmt);
     }
-    const f = (dateien.find(d => d.kat === 'dok') || {}).fmt;
-    if (f === 'PDF') return [['TXT','nur Text',.05]];
-    if (f === 'XLSX') return [['CSV','je Blatt',.2],['TXT','nur Text',.2]];
-    if (f === 'PPTX') return [['TXT','Folientexte',.03],['MD','mit Gliederung',.04]];
-    if (f === 'TXT' || f === 'MD') return [['PDF','zum Drucken',3],['HTML','für den Browser',1.3],['TXT','Zeichensatz',1]];
-    if (f === 'HTML') return [['TXT','nur Text',.4],['MD','mit Gliederung',.5]];
+    if (fmt === 'PDF') return [['TXT','nur Text',.05]];
+    if (fmt === 'XLSX') return [['CSV','je Blatt',.2],['TXT','nur Text',.2]];
+    if (fmt === 'PPTX') return [['TXT','Folientexte',.03],['MD','mit Gliederung',.04]];
+    if (fmt === 'TXT' || fmt === 'MD') return [['PDF','zum Drucken',3],['HTML','für den Browser',1.3],['TXT','Zeichensatz',1]];
+    if (fmt === 'HTML') return [['TXT','nur Text',.4],['MD','mit Gliederung',.5]];
     return [['TXT','nur Text',.05],['MD','mit Gliederung',.06],['HTML','für den Browser',.1]];
+  }
+  const zieleDatei = d => zieleFuer(d.kat, d.fmt);
+  // Für die ganze Dateiart: nur Formate, die für alle Dateien dieser Art gehen
+  function ziele(k) {
+    const listen = [...new Set(dateien.filter(d => d.kat === k).map(d => d.fmt))].map(f => zieleFuer(k, f));
+    if (!listen.length) return zieleFuer(k);
+    const gemeinsam = listen[0].filter(z => listen.every(l => l.some(x => x[0] === z[0])));
+    return gemeinsam.length ? gemeinsam : listen[0];
   }
 
   const BEISPIEL = [
-    { name: 'IMG_2041.heic', mb: 8.4, ordner: 'Bilder\\Urlaub 2026', kat: 'bild', fmt: 'HEIC', meta: '4032 × 3024' },
+    { name: 'IMG_2041.heic', mb: 8.4, ordner: 'Bilder\\Urlaub 2026', kat: 'bild', fmt: 'HEIC', meta: '4032 × 3024', vorschau: [28, 330] },
     { name: 'Probe_03.wav', mb: 19.7, ordner: 'Musik\\Proben', kat: 'audio', fmt: 'WAV', meta: '1:52 min' },
-    { name: 'Scan.jpg', mb: 2.2, ordner: 'Downloads', kat: 'bild', fmt: 'PNG', meta: '2480 × 3508', hinweis: 'Endung .jpg, Inhalt ist PNG' },
+    { name: 'Scan.jpg', mb: 2.2, ordner: 'Downloads', kat: 'bild', fmt: 'PNG', meta: '2480 × 3508', hinweis: 'Endung .jpg, Inhalt ist PNG', vorschau: [200, 230] },
     { name: 'Urlaub_Clip.mov', mb: 148, ordner: 'Videos', kat: 'video', fmt: 'MOV', meta: '0:48 min' },
     { name: 'Protokoll.docx', mb: 0.4, ordner: 'Dokumente\\Verein', kat: 'dok', fmt: 'DOCX', meta: '6 Seiten' },
     { name: 'Fotos.zip', mb: 54, ordner: 'Downloads', kat: null, fmt: 'ZIP', grund: 'Archive werden nicht entpackt.' },
@@ -899,165 +2089,128 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   let schritt = 0;
   let aktiv = 'bild';
   let fertig = null;
-  const wahl = {}, zweck = {}, qual = {}, meta = {};
-  KATS.forEach(k => { wahl[k] = 0; zweck[k] = (ZWECK[k] || [''])[0]; qual[k] = 72; meta[k] = true; });
+  const wahl = {}, qual = {}, meta = {};
+  KATS.forEach(k => { wahl[k] = 0; qual[k] = 72; meta[k] = true; });
 
   const gruppen = () => KATS.filter(k => dateien.some(d => d.kat === k));
   const umwandelbar = () => dateien.filter(d => d.kat);
-  function schaetze(k) {
-    const z = ziele(k)[wahl[k]] || ziele(k)[0];
-    const q = KAT[k].nurForm ? 1 : .35 + .65 * Math.pow(qual[k] / 100, 1.8);
-    return dateien.filter(d => d.kat === k).reduce((s, d) => s + d.mb * Math.min(1.3, z[2] * (KOMPRIMIERT.has(d.fmt) ? 4 : 1)) * q * (ZWECK_F[zweck[k]] || 1), 0);
+  // Ziel je Datei: Ausnahme (d.nach) oder das Format der Dateiart
+  const zielDef = k => (ziele(k)[wahl[k]] || ziele(k)[0])[0];
+  const zielVon = d => d.nach || zielDef(d.kat);
+  const faktorVon = (d, f) => (zieleDatei(d).find(z => z[0] === f) || zieleDatei(d)[0])[2];
+  function schaetzeDatei(d) {
+    const q = KAT[d.kat].nurForm ? 1 : .35 + .65 * Math.pow(qual[d.kat] / 100, 1.8);
+    return d.mb * Math.min(1.3, faktorVon(d, zielVon(d)) * (KOMPRIMIERT.has(d.fmt) ? 4 : 1)) * q;
   }
+  const schaetze = k => dateien.filter(d => d.kat === k).reduce((s, d) => s + schaetzeDatei(d), 0);
   const summeVorher = () => umwandelbar().reduce((s, d) => s + d.mb, 0);
   const summeNachher = () => gruppen().reduce((s, k) => s + schaetze(k), 0);
 
-  // ===== Regal
-  const faecher = $('faecher');
-  faecher.innerHTML = KATS.map(k => `
-    <div class="fach k-${k}" id="fach-${k}" data-k="${k}">
-      <button class="fach-knopf" id="fk-${k}" aria-expanded="false" aria-controls="inh-${k}" disabled>
-      <div class="szene"><span class="zaehler" id="z-${k}">0</span>
-        <div class="kiste"><span class="f bk"></span><span class="f lf"></span><span class="f bt"></span><span class="blaetter" id="b-${k}"></span><span class="f rt"></span><span class="f fr" data-t="${KAT[k].kiste}"></span></div>
-      </div>
-      <h5>${KAT[k].name}</h5>
-      <span class="ansehen" id="an-${k}">ansehen</span>
-      </button>
-      <div class="inhalt" id="inh-${k}" hidden></div>
-      <div class="uhr-platz" id="uhr-${k}" aria-label="${KAT[k].name}: liest ${KAT[k].formate.join(', ')}; wird zu ${KAT[k].raus.join(', ')}"></div>
-    </div>`).join('') + `
-    <div class="abweis" id="abweis"><span class="label">Nicht umwandelbar</span><div class="leer" id="abweis-leer">Hier landet, was Kvertis nicht umwandeln kann, immer mit Grund.</div><ul id="abweis-liste"></ul></div>`;
-  let offen = null, damals = null;
-  function oeffne(k) {
-    offen = offen === k ? null : k;
-    KATS.forEach(x => {
-      const auf = x === offen;
-      $('fach-' + x).classList.toggle('offen', auf);
-      $('fk-' + x).setAttribute('aria-expanded', auf);
-      $('inh-' + x).hidden = !auf;
-    });
-    KATS.forEach(x => { $('an-' + x).textContent = x === offen ? 'zuklappen' : 'ansehen'; });
-    if (offen) renderInhalt(offen);
+  // ===== Schritt 1: Fächer-Galaxie (eigenes Skript oben, im Shadow DOM)
+  const GAL = window.KvertisGalaxie;
+  let damals = null;
+  function nachZaehlen() { renderFaden(); renderLeiste(); }
+  function renderRegal(animiert) { if (GAL) GAL.sync(dateien, !!animiert); }
+  if (GAL) {
+    GAL.weg = i => { const d = dateien[i]; if (!d || laeuft) return; dateien = dateien.filter(x => x !== d); renderRegal(); nachZaehlen(); };
+    GAL.waehlen = () => $('datei-wahl').click();
   }
-  function renderInhalt(k) {
-    const liste = dateien.filter(d => d.kat === k);
-    if (!liste.length) { if (offen === k) oeffne(k); return; }
-    $('inh-' + k).innerHTML = `<div class="inh-kopf"><b>${liste.length} ${liste.length === 1 ? 'Datei' : 'Dateien'}</b><span>${mb(liste.reduce((s, d) => s + d.mb, 0))} MB</span></div>` +
-      liste.map(d => `<div class="datei" data-f="${esc(d.fmt)}"><span style="min-width:0"><b title="${esc(d.name)}">${esc(d.name)}</b><small>${mb(d.mb)} MB${d.ordner ? ' · ' + esc(d.ordner) : ''}</small>${d.hinweis ? `<em>${esc(d.hinweis)}</em>` : ''}</span><button class="weg" data-i="${dateien.indexOf(d)}" aria-label="${esc(d.name)} herausnehmen" title="Herausnehmen">✕</button></div>`).join('');
-  }
-  faecher.addEventListener('click', e => {
-    const weg = e.target.closest('.weg');
-    if (weg) {
-      const d = dateien[+weg.dataset.i];
-      dateien = dateien.filter(x => x !== d);
-      renderFach(d.kat); renderInhalt(d.kat); nachZaehlen();
-      return;
-    }
-    const knopf = e.target.closest('.fach-knopf');
-    if (knopf && !knopf.disabled) oeffne(knopf.closest('.fach').dataset.k);
+  $('datei-wahl').addEventListener('change', async e => {
+    const files = [...e.target.files]; e.target.value = '';
+    if (!files.length || laeuft) return;
+    const erkannt = await Promise.all(files.map(erkenne));
+    einlegen(erkannt, erkannt.length <= 24);
   });
-  function nachZaehlen() {
-    const n = dateien.filter(d => d.kat).length;
-    $('log').innerHTML = dateien.length ? `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · Kiste anklicken, um hineinzuschauen` : '<span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span>';
-    renderFaden(); renderLeiste();
-  }
 
-  function blattHtml(d, i, fmt) {
-    return `<span class="blatt k-${d.kat}" data-f="${esc(fmt || d.fmt)}" style="--z:${-34 + (i % 5) * 16}px;--tab:${8 + (i % 3) * 40}px"></span>`;
+  // ===== Ziel: eine Zeile je Dateiart, einzelne Dateien bei Bedarf
+  const offenEinzeln = new Set(), offenEinst = new Set();
+  const zeigF = f => f === 'TON' ? 'nur Ton' : f;
+  const zweckVon = (k, f) => (ziele(k).find(z => z[0] === f) || [])[1] || '';
+  const SCHIEF = [-1.2, .8, -.6, 1, -.9, .5];
+  function setzeArt(k, i) { wahl[k] = i; const f = ziele(k)[i][0]; dateien.forEach(d => { if (d.kat === k && d.nach === f) delete d.nach; }); }
+  function setzeDatei(d, f) { if (f === zielDef(d.kat)) delete d.nach; else d.nach = f; }
+  function chipsVon(k) {
+    const m = {}; dateien.filter(d => d.kat === k).forEach(d => m[d.fmt] = (m[d.fmt] || 0) + 1);
+    return Object.entries(m).map(([f, n]) => `<span class="zchip">${esc(f)}${n > 1 ? `<small>×${n}</small>` : ''}</span>`).join('');
   }
-  function renderFach(k, hupf) {
-    const liste = dateien.filter(d => d.kat === k);
-    $('z-' + k).textContent = liste.length;
-    $('fach-' + k).classList.toggle('voll', liste.length > 0);
-    $('fk-' + k).disabled = !liste.length;
-    $('an-' + k).textContent = offen === k ? 'zuklappen' : 'ansehen';
-    if (offen === k) renderInhalt(k);
-    $('b-' + k).innerHTML = liste.slice(0, 5).map((d, i) => blattHtml(d, i)).join('');
-    if (hupf) { const z = $('z-' + k); z.classList.remove('hupf'); void z.offsetWidth; z.classList.add('hupf'); }
+  function zeileHtml(k) {
+    const l = dateien.filter(d => d.kat === k), n = l.length, zs = ziele(k), dm = damals && damals.nach[k];
+    const aus = l.filter(d => d.nach), vor = l.reduce((s, d) => s + d.mb, 0);
+    const einzeln = offenEinzeln.has(k), einst = offenEinst.has(k);
+    return `<div class="zrow k-${k}">
+      <div class="zr-art"><b><i></i>${n} ${katNamen[k][n === 1 ? 0 : 1]}</b><span class="zr-chips">${chipsVon(k)}</span></div>
+      <span class="zr-wird">${n === 1 ? 'wird zu' : 'werden zu'}</span>
+      <div class="zr-wahlen" role="radiogroup" aria-label="Ziel für ${KAT[k].mehrzahl}">${zs.map((z, i) => `<button class="zwahl" role="radio" aria-checked="${i === wahl[k]}" tabindex="${i === wahl[k] ? 0 : -1}" data-k="${k}" data-i="${i}" style="--r:${SCHIEF[i % 6]}deg">${i === 0 ? '<span class="vs">Vorschlag</span>' : ''}<b>${zeigF(z[0])}</b><small>${z[1]}</small>${dm === z[0] ? '<em class="damals-tag">damals</em>' : ''}</button>`).join('')}</div>
+      <span class="zr-gr" id="gr-${k}"><b>≈ ${mb(schaetze(k))} MB</b>statt ${mb(vor)} MB</span>
+      <div class="zr-unten">${n > 1 || aus.length || !KAT[k].nurForm ? `<div class="zr-ausn">
+        ${aus.length ? `<span>Ausnahmen:</span>${aus.map(d => `<span>${esc(d.name)} → <span class="zeti anders">${zeigF(d.nach)}</span></span>`).join('')}` : ''}
+        ${n > 1 ? `<button class="link" data-einzeln="${k}" aria-expanded="${einzeln}">${einzeln ? 'Einzeln anpassen schließen' : `Einzeln anpassen (${n})`}</button>` : ''}
+        ${KAT[k].nurForm ? '<span>Form verlustfrei, Farben und Materialien fallen weg.</span>' : `<button class="link" data-einst="${k}" aria-expanded="${einst}">${einst ? 'Einstellungen schließen' : `Einstellungen: Qualität ${qual[k]} · ${meta[k] ? KAT[k].meta : 'Metadaten bleiben'}`}</button>`}
+      </div>` : ''}
+      ${einzeln ? `<div class="zr-einzeln">${l.map(d => { const j = dateien.indexOf(d); return `<div class="ez-zeile"><span class="zchip">${esc(d.fmt)}</span><span class="nm" title="${esc(d.name)}">${esc(d.name)}<small>${mb(d.mb)} → ≈ ${mb(schaetzeDatei(d))} MB</small></span><span class="pfeil">→</span>
+        <div class="zr-wahlen klein" role="radiogroup" aria-label="Ziel für ${esc(d.name)}">${zieleDatei(d).map(z => `<button class="zwahl ${d.nach ? 'anders' : ''}" role="radio" aria-checked="${zielVon(d) === z[0]}" tabindex="${zielVon(d) === z[0] ? 0 : -1}" data-datei="${j}" data-f="${z[0]}"><b>${zeigF(z[0])}</b></button>`).join('')}</div>
+        ${d.nach ? `<button class="link" data-reset="${j}">wie alle (${zeigF(zielDef(k))})</button>` : '<span></span>'}</div>`; }).join('')}</div>` : ''}
+      ${einst && !KAT[k].nurForm ? `<div class="zr-einst">
+        <div class="feld"><label for="q-${k}">Qualität ↔ Größe <b id="qw-${k}">${qual[k]}</b></label><div class="regler"><input id="q-${k}" data-q="${k}" type="range" min="10" max="100" value="${qual[k]}">${damals ? `<span class="alt-marke" style="left:calc(8px + (100% - 16px) * ${(damals.qual - 10) / 90})">damals ${damals.qual}</span>` : ''}</div></div>
+        <div class="feld"><label for="zg-${k}">Zielgröße (optional)</label><input id="zg-${k}" class="eingabe" placeholder="z. B. 1 MB"></div>
+        <div class="schalter"><div>${KAT[k].meta}<span>${KAT[k].metaText}</span></div><button class="toggle" data-meta="${k}" aria-pressed="${meta[k]}" aria-label="${KAT[k].meta}"></button></div>
+      </div>` : ''}</div>
+    </div>`;
   }
-  function renderAbweis() {
-    const nein = dateien.filter(d => !d.kat);
-    $('abweis-leer').hidden = nein.length > 0;
-    $('abweis-liste').innerHTML = nein.map(d => `<li><b>${esc(d.name)}</b><span>${esc(d.grund)}</span></li>`).join('');
-  }
-  function renderRegal() { KATS.forEach(k => renderFach(k)); renderAbweis(); }
-
-  // ===== Ziel
   function renderZiel() {
     const gs = gruppen();
     if (!gs.includes(aktiv)) aktiv = gs[0] || 'bild';
-    $('gruppen').innerHTML = `<span class="label" style="padding:0 4px 4px">Erkannt</span>` + gs.map(k => {
-      const n = dateien.filter(d => d.kat === k).length;
-      const z = ziele(k)[wahl[k]];
-      return `<button class="grp k-${k} ${k === aktiv ? 'an' : ''}" data-k="${k}"><span class="mk"></span><span><b>${KAT[k].name}</b><small>${n} ${n === 1 ? 'Datei' : 'Dateien'}</small></span><span class="etikett">→ ${z[0]}</span></button>`;
-    }).join('') +
-      `<div class="dateien-kopf"><span class="label" style="padding:0 4px">Dateien · ${KAT[aktiv].name}</span></div>` +
-      dateien.filter(d => d.kat === aktiv).map(d => `<div class="mkarte k-${d.kat}" data-f="${esc(d.fmt)}"><b>${esc(d.name)}</b><small>${mb(d.mb)} MB${d.meta ? ' · ' + esc(d.meta) : ''}</small>${d.hinweis ? `<span class="hinw"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 4.8v.2"/></svg>${esc(d.hinweis)}</span>` : ''}</div>`).join('');
-
-    const w = $('wandler');
-    const zs = ziele(aktiv);
-    const dm = damals && damals.nach[aktiv];
-    w.innerHTML = `<div class="band"></div>
-      ${damals ? `<div class="damals-hinweis"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v2.8h2.8"/><path d="M8 5v3l2 1.3"/></svg><b>Aus dem Verlauf · ${esc(damals.wann)}</b><button class="btn" id="damals-zurueck">Alte Werte übernehmen</button><small>Damals: <em>${dm ? '→ ' + esc(dm) : '–'}</em> · <em>${esc(damals.zweck)}</em> · Qualität <em>${damals.qual}</em> · <em>${esc(damals.wohin)}</em></small></div>` : ''}
-      <span class="label" style="position:relative;z-index:1">${KAT[aktiv].name} umwandeln in</span>
-      <div class="karussell"><div class="teller"></div><div class="ring" id="ring" role="radiogroup" aria-label="Zielformat" style="--rot:${-wahl[aktiv] * 48}deg">
-        ${zs.map((z, i) => `<button role="radio" aria-checked="${i === wahl[aktiv]}" class="${i === wahl[aktiv] ? 'an' : ''} ${Math.abs(i - wahl[aktiv]) > 1 ? 'weit' : ''}" style="--i:${i}" data-i="${i}">${z[0]}<small>${z[1]}</small>${dm === z[0] ? '<em class="damals-tag">damals</em>' : ''}</button>`).join('')}
-      </div></div>
-      ${ZWECK[aktiv] ? `<span class="zweck-frage">Wozu brauchen Sie die ${KAT[aktiv].mehrzahl}?</span><div class="zweck" id="zweck">${ZWECK[aktiv].map(z => `<button class="${z === zweck[aktiv] ? 'an' : ''} ${damals && damals.zweck === z ? 'damals' : ''}">${z}${damals && damals.zweck === z ? '<em class="damals-tag">damals</em>' : ''}</button>`).join('')}</div>` : ''}
-      <span class="schaetzung" id="sch"></span>`;
+    $('ziel-haupt').innerHTML = `${damals ? `<div class="damals-hinweis"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 8a5.5 5.5 0 1 0 1.6-3.9"/><path d="M2.5 2.5v2.8h2.8"/><path d="M8 5v3l2 1.3"/></svg><b>Aus dem Verlauf · ${esc(damals.wann)}</b><button class="btn" id="damals-zurueck">Alte Werte übernehmen</button><small>Damals: <em>${Object.values(damals.nach).map(esc).join(', ')}</em> · Qualität <em>${damals.qual}</em> · <em>${esc(damals.wohin)}</em></small></div>` : ''}
+      <div class="z-frage"><h3>Worin sollen Ihre Dateien umgewandelt werden?</h3><p>Kvertis hat für jede Art ein Format vorgewählt. Sie können es ändern und einzelne Dateien anders einstellen.</p></div>
+      ${gs.map(zeileHtml).join('')}`;
     renderMehr();
   }
+  function renderMehr() {
+    const u = umwandelbar(), gs = gruppen();
+    $('mehr').innerHTML = `<div style="display:grid;gap:4px"><span class="label">Zusammen</span><h4>${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${gs.length} ${gs.length === 1 ? 'Art' : 'Arten'}</h4></div>
+      <div class="glas-rahmen">${GLAS_SVG}<p class="g-satz" id="g-satz" aria-live="polite"></p></div>
+      <div class="z-sum">${gs.map(k => { const a = dateien.filter(d => d.kat === k && d.nach).length; return `<div class="k-${k}"><i></i><span>${KAT[k].name}</span><span class="zeti">${zeigF(zielDef(k))}</span><b>${mb(schaetze(k))} MB</b>${a ? `<em>${a} ${a === 1 ? 'Datei' : 'Dateien'} anders</em>` : ''}</div>`; }).join('')}</div>
+      <span class="muted" style="font-size:11.5px">Passt alles? Dann unten „Weiter: Umwandeln“.</span>`;
+    renderSchaetzung();
+  }
   function renderSchaetzung() {
-    const vor = dateien.filter(d => d.kat === aktiv).reduce((s, d) => s + d.mb, 0);
-    const nach = schaetze(aktiv);
-    const p = Math.round((1 - nach / vor) * 100);
-    const s = $('sch');
-    if (s) s.innerHTML = `≈ ${mb(nach)} MB statt ${mb(vor)} MB · <b>${p >= 0 ? '−' + p : '+' + -p} %</b>`;
-    if ($('glas')) glasZiel(vor, nach);
+    if ($('glas')) glasZiel(summeVorher(), summeNachher());
     renderFaden();
   }
-  function renderMehr() {
-    const n = dateien.filter(d => d.kat === aktiv).length;
-    $('mehr').innerHTML = `
-      <div style="display:grid;gap:4px"><span class="label">Einstellungen</span><h4>${KAT[aktiv].name} · ${n} ${n === 1 ? 'Datei' : 'Dateien'}</h4></div>
-      <div class="glas-rahmen">${GLAS_SVG}<p class="g-satz" id="g-satz" aria-live="polite"></p></div>
-      ${KAT[aktiv].nurForm ? `<p class="muted" style="margin:0;font-size:12.5px">Die Form wird verlustfrei übernommen, eine Qualitätsstufe gibt es nicht. Farben, Materialien und Texturen fallen weg.</p>` : `<div class="feld"><label for="q">Qualität ↔ Größe <b id="q-wert">${qual[aktiv]}</b></label><div class="regler"><input id="q" type="range" min="10" max="100" value="${qual[aktiv]}">${damals ? `<span class="alt-marke" style="left:calc(8px + (100% - 16px) * ${(damals.qual - 10) / 90})">damals ${damals.qual}</span>` : ''}</div></div>
-      <div class="feld"><label for="zielgroesse">Zielgröße (optional)</label><input id="zielgroesse" class="eingabe" placeholder="z. B. 1 MB"></div>
-      <div class="schalter"><div>${KAT[aktiv].meta}<span>${KAT[aktiv].metaText}</span></div><button class="toggle" id="meta" aria-pressed="${meta[aktiv]}" aria-label="${KAT[aktiv].meta}"></button></div>`}
-      <span class="muted" style="font-size:11.5px">Gilt für alle ${KAT[aktiv].mehrzahl} dieser Runde. Einzelne Dateien lassen sich links abweichend einstellen.</span>`;
-    renderSchaetzung();
-  }
-  $('gruppen').addEventListener('click', e => { const g = e.target.closest('.grp'); if (g) { aktiv = g.dataset.k; renderZiel(); } });
-  $('wandler').addEventListener('click', e => {
-    const r = e.target.closest('.ring button');
-    if (r) { waehleFormat(+r.dataset.i); return; }
-    const z = e.target.closest('#zweck button');
-    if (z) { zweck[aktiv] = z.firstChild.textContent; [...z.parentElement.children].forEach(b => b.classList.toggle('an', b === z)); renderSchaetzung(); }
+  const zh = $('ziel-haupt');
+  zh.addEventListener('click', e => {
+    const t = e.target, w = t.closest('.zwahl');
+    if (w) {
+      let sel;
+      if (w.dataset.datei) { setzeDatei(dateien[+w.dataset.datei], w.dataset.f); sel = `.zwahl[data-datei="${w.dataset.datei}"][data-f="${w.dataset.f}"]`; }
+      else { setzeArt(w.dataset.k, +w.dataset.i); aktiv = w.dataset.k; sel = `.zwahl[data-k="${w.dataset.k}"][data-i="${w.dataset.i}"]`; }
+      renderZiel(); const n = zh.querySelector(sel); if (n) n.focus(); return;
+    }
+    const auf = t.closest('[data-einzeln], [data-einst]');
+    if (auf) {
+      const [menge, k, attr] = auf.dataset.einzeln ? [offenEinzeln, auf.dataset.einzeln, 'einzeln'] : [offenEinst, auf.dataset.einst, 'einst'];
+      menge.has(k) ? menge.delete(k) : menge.add(k); renderZiel(); zh.querySelector(`[data-${attr}="${k}"]`).focus(); return;
+    }
+    const rs = t.closest('[data-reset]'); if (rs) { delete dateien[+rs.dataset.reset].nach; renderZiel(); return; }
+    const m = t.closest('[data-meta]'); if (m) { const k = m.dataset.meta; meta[k] = !meta[k]; m.setAttribute('aria-pressed', meta[k]); return; }
+    if (t.id === 'damals-zurueck' && damals) {
+      KATS.forEach(k => { const i = damals.nach[k] ? ziele(k).findIndex(z => z[0] === damals.nach[k]) : -1; if (i >= 0) setzeArt(k, i); qual[k] = damals.qual; });
+      wohin = damals.wohinKey; if (damals.wohinKey === 'eigen') eigener = damals.wohin;
+      renderZiel();
+    }
   });
-  $('wandler').addEventListener('click', e => {
-    if (e.target.id !== 'damals-zurueck' || !damals) return;
-    KATS.forEach(k => { const i = damals.nach[k] ? ziele(k).findIndex(z => z[0] === damals.nach[k]) : -1; if (i >= 0) wahl[k] = i; if (ZWECK[k] && ZWECK[k].includes(damals.zweck)) zweck[k] = damals.zweck; qual[k] = damals.qual; });
-    wohin = damals.wohinKey; if (damals.wohinKey === 'eigen') eigener = damals.wohin;
-    renderZiel();
-  });
-  $('wandler').addEventListener('keydown', e => {
-    if (!e.target.closest('.ring') || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+  zh.addEventListener('keydown', e => {
+    const b = e.target.closest('.zwahl'); if (!b || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
     e.preventDefault();
-    const n = ziele(aktiv).length;
-    waehleFormat((wahl[aktiv] + (e.key === 'ArrowRight' ? 1 : n - 1)) % n);
-    $('ring').querySelector('.an').focus();
+    const alle = [...b.parentElement.querySelectorAll('.zwahl')], i = alle.indexOf(b);
+    alle[(i + (e.key === 'ArrowRight' ? 1 : alle.length - 1)) % alle.length].click();
   });
-  function waehleFormat(i) {
-    wahl[aktiv] = i;
-    const ring = $('ring');
-    ring.style.setProperty('--rot', (-i * 48) + 'deg');
-    [...ring.children].forEach((b, j) => { b.classList.toggle('an', i === j); b.classList.toggle('weit', Math.abs(i - j) > 1); b.setAttribute('aria-checked', i === j); });
-    const g = document.querySelector(`.grp[data-k="${aktiv}"] .etikett`);
-    if (g) g.textContent = '→ ' + ziele(aktiv)[i][0];
-    renderSchaetzung();
-  }
-  $('mehr').addEventListener('input', e => { if (e.target.id === 'q') { qual[aktiv] = +e.target.value; $('q-wert').textContent = e.target.value; renderSchaetzung(); } });
-  $('mehr').addEventListener('click', e => { if (e.target.id === 'meta') { meta[aktiv] = !meta[aktiv]; e.target.setAttribute('aria-pressed', meta[aktiv]); } });
+  zh.addEventListener('input', e => {
+    const k = e.target.dataset.q; if (!k) return;
+    qual[k] = +e.target.value; $('qw-' + k).textContent = e.target.value;
+    $('gr-' + k).innerHTML = `<b>≈ ${mb(schaetze(k))} MB</b>statt ${mb(dateien.filter(d => d.kat === k).reduce((s, d) => s + d.mb, 0))} MB`;
+    renderMehr();
+  });
 
   // ===== Glasbehälter (Isometrie: x nach rechts unten, z nach links unten, y nach oben)
   const ISO = { W: 84, D: 64, H: 128, ox: 74, oy: 160 };
@@ -1122,7 +2275,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   const ZULETZT = ['Desktop', 'Downloads\\Umgewandelt'];
   const HOME = 'C:\\Users\\Anna';
   function wohinKurz() { return wohin === 'neben' ? 'Neben den Originalen' : wohin === 'unter' ? 'Unterordner „Kvertis“' : eigener; }
-  const zielFmt = d => { const z = ziele(d.kat)[wahl[d.kat]][0]; return z === 'TON' ? 'MP3' : z; };
+  const zielFmt = d => { const z = zielVon(d); return z === 'TON' ? 'MP3' : z; };
   const zielName = d => d.name.replace(/\.[^.]+$/, '') + '.' + zielFmt(d).toLowerCase();
   const regelVon = d => ausnahmen[d.name] || { w: wohin, pfad: eigener };
   function zielOrdner(d) { const r = regelVon(d), o = d.ordner || 'Dokumente'; return r.w === 'neben' ? o : r.w === 'unter' ? o + '\\Kvertis' : (r.pfad || '?'); }
@@ -1251,10 +2404,9 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   const FARBE = { bild: 'var(--blue)', audio: 'var(--violet)', video: 'var(--amber)', dok: 'var(--cyan)', model: 'var(--model)' };
   document.querySelectorAll('#kipp .flaeche').forEach(f => { f.innerHTML = glasSvg(); sandZeichnen(f.querySelector('svg'), 1, false); });
   const uhr = { L: 1, seite: 0, winkel: 0 };
-  const schaetzeDatei = d => { const l = dateien.filter(x => x.kat === d.kat), s = l.reduce((a, x) => a + x.mb, 0); return s ? d.mb * schaetze(d.kat) / s : d.mb; };
   const skalD = d => Math.max(.5, Math.min(1, Math.sqrt(schaetzeDatei(d) / d.mb)));
   function sandLauf(svg, von, bis, ms) {
-    return new Promise(res => { const t0 = performance.now(), dd = leise ? 1 : ms; const st = t => { const p = Math.min(1, (t - t0) / dd); sandZeichnen(svg, von + (bis - von) * p, p < 1); p < 1 ? requestAnimationFrame(st) : res(); }; requestAnimationFrame(st); });
+    return new Promise(res => { const t0 = performance.now(), dd = leise ? 1 : ms; const st = t => { const p = Math.max(0, Math.min(1, (t - t0) / dd)); sandZeichnen(svg, von + (bis - von) * p, p < 1); p < 1 ? requestAnimationFrame(st) : res(); }; requestAnimationFrame(st); });
   }
   function partikel(bahn, von, nach, farbe, n, ms, bogen) {
     return Promise.all(Array.from({ length: n }, (_, i) => {
@@ -1453,7 +2605,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     return `<div class="w5-zeile k-${d.kat}" role="listitem" data-i="${it.i}" data-st="${it.st}" style="--p:${it.p.toFixed(3)}">
       <span class="w5-punkt" aria-hidden="true"></span>
       <span class="w5-nm"><b>${esc(d.name)}</b><small>${mb(d.mb)} → ${it.st === 'fertig' ? '' : '≈ '}${mb(n)} MB</small></span>
-      <button type="button" class="w5-fa" data-a="format" data-k="${d.kat}" title="Format für ${KAT[d.kat].name} ändern" aria-label="${esc(d.fmt)} zu ${zielFmt(d)}, Format ändern"${laeuft ? ' disabled' : ''}><span class="w5-chip alt">${esc(d.fmt)}</span><span class="w5-pfeil"></span><span class="w5-chip neu">${zielFmt(d)}</span></button>
+      <button type="button" class="w5-fa" data-a="format" data-k="${d.kat}" title="Format für ${esc(d.name)} ändern" aria-label="${esc(d.fmt)} zu ${zielFmt(d)}, Format ändern"${laeuft ? ' disabled' : ''}><span class="w5-chip alt">${esc(d.fmt)}</span><span class="w5-pfeil"></span><span class="w5-chip neu">${zielFmt(d)}</span></button>
       <button type="button" class="w5-ziel" data-a="aendern" data-i="${it.i}" aria-haspopup="dialog" title="${esc(voll(rel) + '\\' + zielName(d))}" aria-label="Wird gespeichert als ${esc(voll(rel) + '\\' + zielName(d))}, ${a ? 'eigenes Ziel' : 'wie alle'}"${frei ? '' : ' disabled'}>
         <span class="w5-tag${a ? ' eigen' : ''}">${a ? 'eigenes Ziel' : 'wie alle'}</span><span class="w5-pfad"><span class="dir">${esc(kurzPfad(rel, 42))}</span><b>${esc(zielName(d))}</b></span></button>
       <span class="w5-aktion">${aktion}</span>
@@ -1488,7 +2640,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   $('auftrag').addEventListener('click', e => {
     const b = e.target.closest('[data-a]'); if (!b || b.disabled) return;
     const it = W5.items[+b.dataset.i];
-    if (b.dataset.a === 'format') { if (!laeuft) { aktiv = b.dataset.k; geheZu(1); } return; }
+    if (b.dataset.a === 'format') { if (!laeuft) { aktiv = b.dataset.k; offenEinzeln.add(b.dataset.k); geheZu(1); } return; }
     if (b.dataset.a === 'aendern') { if (!laeuft && it) { pop && popAnker === b ? popZu() : dateiMenue(b, it.d); } return; }
     if (b.dataset.a === 'oeffnen') w5Toast(`Öffnet ${zielName(it.d)} im Standardprogramm`);
     if (b.dataset.a === 'ordner') w5Toast(`Öffnet den Explorer: ${voll(zielOrdner(it.d))}, Datei markiert`);
@@ -1556,24 +2708,14 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     return a.finished.then(() => f.remove());
   }
 
-  // ===== Einlegen (mit Flug ins richtige Fach)
+  // ===== Einlegen: die Galaxie lässt neue Dateien auf ihre Bahn und in ihr Fach fliegen
   async function einlegen(liste, animiert) {
     damals = null;
     if (schritt !== 0) geheZu(0);
     fertig = null;
-    for (const d of liste) {
-      dateien.push(d);
-      const log = $('log');
-      log.style.setProperty('--k', d.kat ? `var(--${{ bild: 'blue', audio: 'violet', video: 'amber', dok: 'cyan', model: 'model' }[d.kat]})` : 'var(--coral)');
-      log.innerHTML = `<span class="punkt"></span>${esc(d.name)} → ${d.kat ? KAT[d.kat].name + (d.hinweis ? ` <span class="muted">(${esc(d.hinweis)})</span>` : '') : `<span style="color:var(--coral)">nicht umwandelbar</span>`}`;
-      if (animiert) {
-        const ziel = d.kat ? $('fach-' + d.kat).querySelector('.szene') : $('abweis');
-        await flug(d, $('einwurf'), ziel);
-      }
-      d.kat ? renderFach(d.kat, true) : renderAbweis();
-    }
-    const n = dateien.filter(d => d.kat).length;
-    $('log').innerHTML = `<span class="punkt" style="--k:var(--mint)"></span>${n} von ${dateien.length} erkannt · Kiste anklicken, um hineinzuschauen`;
+    dateien.push(...liste);
+    renderRegal(animiert);
+    if (animiert) await warte(liste.length * 160 + 900);
     aktiv = gruppen()[0] || 'bild';
     renderFaden(); renderLeiste();
   }
@@ -1627,10 +2769,11 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const d = { name: file.name, mb: Math.max(file.size / 1e6, .01), kat, fmt, grund };
     const gleich = { JPG: ['jpg', 'jpeg', 'jfif'], TIFF: ['tif', 'tiff'], MP4: ['mp4', 'm4v'], HEIC: ['heic', 'heif'], MD: ['md', 'markdown'] }[fmt] || [fmt.toLowerCase()];
     if (kat && ext && !gleich.includes(ext)) d.hinweis = `Endung .${ext}, Inhalt ist ${fmt}`;
+    if (kat === 'bild' && ['JPG', 'PNG', 'GIF', 'BMP', 'WEBP', 'SVG'].includes(fmt)) d.bild = URL.createObjectURL(file);
     return d;
   }
   let tiefe = 0;
-  win.addEventListener('dragenter', e => { e.preventDefault(); tiefe++; win.classList.add('drag'); });
+  win.addEventListener('dragenter', e => { e.preventDefault(); tiefe++; if (schritt !== 0) win.classList.add('drag'); });
   win.addEventListener('dragleave', () => { if (--tiefe <= 0) { tiefe = 0; win.classList.remove('drag'); } });
   win.addEventListener('dragover', e => { e.preventDefault(); if (schritt !== 2 || !e.target.closest('#aus-spalte')) { win.classList.remove('drag-ordner'); ausSp.classList.remove('drop'); } });
   win.addEventListener('drop', async e => {
@@ -1655,7 +2798,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     $('seg-1').classList.toggle('voll', schritt >= 2);
     const n = dateien.filter(d => d.kat).length;
     $('f-0').textContent = dateien.length ? `${n} erkannt${dateien.length > n ? ` · ${dateien.length - n} nicht` : ''}` : 'hineinwerfen';
-    $('f-1').textContent = hat ? gruppen().map(k => ziele(k)[wahl[k]][0]).join(' · ') || 'Format und Zweck' : 'Format und Zweck';
+    $('f-1').textContent = hat ? gruppen().map(k => zeigF(zielDef(k))).join(' · ') || 'Format wählen' : 'Format wählen';
     $('f-2').textContent = fertig ? `fertig · −${fertig.p} %` : hat ? `≈ ${mb(summeNachher())} MB · ${wohin === 'eigen' ? (eigener || '?').split('\\').pop() : wohin === 'unter' ? 'Unterordner' : 'neben Original'}` : 'los geht’s';
   }
   function renderLeiste() {
@@ -1670,6 +2813,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   }
   function geheZu(s) {
     schritt = s;
+    if (GAL) GAL.aktiv = s === 0;
     document.querySelectorAll('.ebene').forEach(e => { const d = +e.dataset.s - s; e.dataset.pos = d > 0 ? 1 : d < 0 ? -1 : 0; e.inert = d !== 0; });
     if (s === 1) renderZiel();
     if (s === 2) renderLauf();
@@ -1684,10 +2828,8 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
   function leeren() {
     damals = null;
     if (laeuft) return;
-    dateien = []; fertig = null; ausnahmen = {};
-    if (offen) oeffne(offen);
+    dateien = []; fertig = null; ausnahmen = {}; offenEinzeln.clear(); offenEinst.clear();
     renderRegal();
-    $('log').innerHTML = '<span class="muted">Erkannt wird am Inhalt der Datei, nicht an der Endung.</span>';
     geheZu(0);
   }
   $('leeren').addEventListener('click', leeren);
@@ -1698,9 +2840,10 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     leeren(); await warte(400);
     await einlegen(BEISPIEL.map(d => ({ ...d })), true);
     await warte(1000); geheZu(1);
-    await warte(1400); waehleFormat(2);
-    await warte(1100); waehleFormat(0);
-    await warte(900); aktiv = 'audio'; renderZiel();
+    await warte(1400); setzeArt('bild', 2); renderZiel();
+    await warte(1100); setzeArt('bild', 0); renderZiel();
+    await warte(900); offenEinzeln.add('bild'); renderZiel();
+    await warte(1200); { const sc = dateien.find(d => d.name === 'Scan.jpg'); if (sc) { setzeDatei(sc, 'PNG'); renderZiel(); } }
     await warte(1400); geheZu(2);
     await warte(900); await los();
     demoLaeuft = false;
@@ -1721,7 +2864,7 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
       V('Podcast_Folge12.wav', 214, 'audio', 'WAV', 'MP3', 28, 'Musik\\Podcast') ] },
     { tag: 'Gestern', zeit: '14:03', zweck: 'Nur Text', wohin: 'Unterordner „Kvertis“', dateien: [
       V('Angebot_Garten.docx', 0.6, 'dok', 'DOCX', 'TXT', 0.02, 'Dokumente\\Angebote'), V('Preise_2026.xlsx', 0.3, 'dok', 'XLSX', 'CSV', 0.05, 'Dokumente\\Angebote', true, false) ] },
-    { tag: 'Gestern', zeit: '10:37', wohin: 'Neben dem Original', dateien: [
+    { tag: 'Gestern', zeit: '10:37', zweck: 'Für den 3D-Druck', wohin: 'Neben dem Original', dateien: [
       V('Vase_Scan.obj', 38.2, 'model', 'OBJ', '3MF', 6.9, 'Dokumente\\3D-Druck') ] },
     { tag: 'Sonntag, 20. September', zeit: '11:20', qual: 55, zweck: 'Für Messenger', wohin: 'Desktop', dateien: [
       V('Hochzeit_Clip.mov', 1240, 'video', 'MOV', 'MP4', 182, 'Videos\\Hochzeit') ] },
@@ -1781,14 +2924,18 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     if (laeuft) return;
     const neu = dateienListe.filter(d => d.original).map(d => ({ name: d.name, mb: d.mb, kat: d.kat, fmt: d.fmt, ordner: d.ordner, meta: 'aus dem Verlauf' }));
     if (!neu.length) return;
-    if (offen) oeffne(offen);
     dateien = neu; fertig = null;
-    neu.forEach(d => {
-      const i = ziele(d.kat).findIndex(z => z[0] === (dateienListe.find(x => x.name === d.name).nach));
-      if (i >= 0) wahl[d.kat] = i;
-      if (ZWECK[d.kat] && ZWECK[d.kat].includes(r.zweck)) zweck[d.kat] = r.zweck;
-      qual[d.kat] = r.qual || 72;
+    // Format für alle einer Art = das Ziel, das die meisten Dateien dieser Art damals hatten
+    const damalsVon = d => dateienListe.find(x => x.name === d.name).nach;
+    [...new Set(neu.map(d => d.kat))].forEach(k => {
+      const zaehl = {}; neu.filter(d => d.kat === k).forEach(d => zaehl[damalsVon(d)] = (zaehl[damalsVon(d)] || 0) + 1);
+      const haeufig = Object.entries(zaehl).sort((a, b) => b[1] - a[1])[0][0];
+      const i = ziele(k).findIndex(z => z[0] === haeufig);
+      if (i >= 0) wahl[k] = i;
+      qual[k] = r.qual || 72;
     });
+    // Abweichende Ziele einzelner Dateien als Ausnahme übernehmen
+    neu.forEach(d => { const n = damalsVon(d); if (n !== zielDef(d.kat) && zieleDatei(d).some(z => z[0] === n)) d.nach = n; });
     wohin = wohinKey; if (wohinKey === 'eigen') eigener = r.wohin;
     aktiv = neu[0].kat;
     renderRegal(); nachZaehlen();
@@ -1825,54 +2972,14 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
     const u = umwandelbar();
     const jetzt = new Date(), zeit = String(jetzt.getHours()).padStart(2, '0') + ':' + String(jetzt.getMinutes()).padStart(2, '0');
     verlauf.forEach(r => r.neu = false);
-    verlauf.unshift({ tag: 'Heute', zeit, neu: true, qual: qual[u[0].kat], zweck: zweck[u[0].kat] || 'Original', wohin: wohinKurz() || 'Eigener Ordner', dateien: u.map(d => {
-      const z = ziele(d.kat)[wahl[d.kat]][0];
-      const faktor = schaetze(d.kat) / dateien.filter(x => x.kat === d.kat).reduce((s, x) => s + x.mb, 0);
-      return V(d.name, d.mb, d.kat, d.fmt, z === 'TON' ? 'MP3' : z, d.mb * faktor, d.ordner || 'Ursprungsordner');
+    verlauf.unshift({ tag: 'Heute', zeit, neu: true, qual: qual[u[0].kat], zweck: zweckVon(u[0].kat, zielDef(u[0].kat)) || 'Original', wohin: wohinKurz() || 'Eigener Ordner', dateien: u.map(d => {
+      const z = zielVon(d);
+      return V(d.name, d.mb, d.kat, d.fmt, z === 'TON' ? 'MP3' : z, schaetzeDatei(d), d.ordner || 'Ursprungsordner');
     }) });
     vOffen = new Set([...vOffen].map(i => i + 1)); vOffen.add(0);
   }
 
-  // ===== Sanduhren im Sortierregal (kippen nach vorn, Takt 25/35/45/55/65 s)
-  const zeilenR = (liste, caps) => { const out = []; let i = 0, c = 0; while (i < liste.length) { const n = caps[Math.min(c, caps.length - 1)]; out.push(liste.slice(i, i + n)); i += n; c++; } return out; };
-  const regalInnen = k => {
-    const o = zeilenR(KAT[k].formate, [4, 4, 3, 2, 2]);
-    const u = zeilenR([...KAT[k].raus].reverse(), [4, 3, 2, 2]).map(z => z.reverse()).reverse();
-    return `<div class="sand-o">${o.map(z => `<div class="zeile">${z.map(f => `<span class="chip">${f}</span>`).join('')}</div>`).join('')}</div>
-      <div class="hals-m"><span class="logo-r" aria-hidden="true"></span></div>
-      <div class="sand-u">${u.map(z => `<div class="zeile">${z.map(f => `<span class="eti">${f}</span>`).join('')}</div>`).join('')}</div>`;
-  };
-  const REGAL = KATS.map((k, i) => {
-    const platz = $('uhr-' + k);
-    platz.innerHTML = `<div class="uhr3d k-${k}"><div class="kipp"><div class="flaeche a">${glasSvg()}${regalInnen(k)}</div><div class="flaeche b">${glasSvg()}${regalInnen(k)}</div></div></div><span class="takt"></span>`;
-    const u = { k, platz, L: 1, dauer: 25 + i * 10, seite: 0, winkel: 0, dreht: false };
-    platz.querySelectorAll('.flaeche svg').forEach(sv => sandZeichnen(sv, 1, false));
-    return u;
-  });
-  async function regalKippen(u) {
-    u.dreht = true;
-    const kipp = u.platz.querySelector('.kipp'), svgs = u.platz.querySelectorAll('.flaeche svg');
-    sandZeichnen(svgs[1 - u.seite], 1, false);
-    u.winkel -= 180; kipp.classList.add('an'); kipp.style.transform = `rotateX(${u.winkel}deg)`;
-    await warte(1300); kipp.classList.remove('an');
-    u.seite = 1 - u.seite; u.L = 1; u.dreht = false;
-  }
-  let regalZeit = performance.now();
-  function regalSchleife(t) {
-    const dt = Math.max(0, Math.min(.1, (t - regalZeit) / 1000)); regalZeit = t;
-    if (schritt === 0 && !document.hidden && !leise) REGAL.forEach(u => {
-      if (u.dreht || !u.platz.offsetParent) return;
-      u.L -= dt / u.dauer;
-      if (u.L <= 0) { u.L = 0; regalKippen(u); }
-      sandZeichnen(u.platz.querySelectorAll('.flaeche svg')[u.seite], Math.max(0, u.L), true);
-      u.platz.querySelector('.takt').textContent = `kippt in ${Math.ceil(u.L * u.dauer)} s`;
-    });
-    requestAnimationFrame(regalSchleife);
-  }
-  requestAnimationFrame(regalSchleife);
-
-  // Ruhezustand: Beispieldateien liegen schon im Regal
-  renderRegal();
+  // Ruhezustand: Beispieldateien kreisen schon auf ihren Bahnen
   einlegen(BEISPIEL.map(d => ({ ...d })), false);
 })();
 </script>
