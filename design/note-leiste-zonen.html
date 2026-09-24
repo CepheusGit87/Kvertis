@@ -830,10 +830,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   </header>
 
   <section class="idee" id="d5" aria-labelledby="h-d5">
-    <div class="idee-kopf"><h2 id="h-d5">Gewählt · D1 mit farbigem Griff aus D2 <small>die Kombination</small></h2></div>
-    <p>Aufbau wie D1: oben der Ring mit Note, Wort, Größe und Säulen je Merkmal, darunter die Leiste, unten die Zonen „Alle Einstellungen“ und „Was sich ändert“, beide zu. Aus D2 kommt nur die Farbe: Der Griff der Leiste ist ein kleiner Ring ohne Zahl, der sich beim Ziehen von Grün über Gelb nach Rot färbt, gleichzeitig mit der Note oben.</p>
+    <div class="idee-kopf"><h2 id="h-d5">Gewählt · D1 <small>Note oben, Leiste mit normalem Griff, zwei Zonen</small></h2></div>
+    <p>Aufbau wie D1: oben der Ring mit Note, Wort, Größe und Säulen je Merkmal, darunter die Leiste, unten die Zonen „Alle Einstellungen“ und „Was sich ändert“, beide zu. Der Griff der Leiste ist ein ganz normaler Regler. Beim Ziehen ändert sich nur oben die Note mit Ring, Wort, Größe und Säulen.</p>
     <div class="buehne" data-konzept="A3|D5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Die Note steht groß oben, der Griff zeigt nur die Farbe</span><span class="plus"><b>+</b>Alle Einzelheiten zugeklappt in zwei Zonen</span><span class="minus"><b>−</b>Am Griff sieht man die Qualität nur als Farbe</span></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die Note steht an einer Stelle, oben</span><span class="plus"><b>+</b>Alle Einzelheiten zugeklappt in zwei Zonen</span><span class="minus"><b>−</b>Beim Ziehen wandert der Blick nach oben</span></div>
   </section>
 
   <section class="idee" id="d1" aria-labelledby="h-d1">
@@ -1440,9 +1440,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
         ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
     },
-    D5: { // Kombination: D1 mit der Note im Griff aus D2
+    D5: { // gewählt: D1, Griff ist ein normaler Regler
       html: (W, g) => `<div class="ein-k"><div class="e5-note" data-live="note">${LIVE.note(W, g)}</div>
-        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · Griff ziehen</span>' : ''}${leisteHTML(W, g, true).replace('class="griff e5-rgriff"', 'class="griff e5-rgriff ohne-zahl"')}${zweiZonen(W, g)}</div>`,
+        ${KAND[g.k] ? '<span class="folgen-kopf">Größe je Datei · Griff ziehen</span>' : ''}${leisteHTML(W, g)}${zweiZonen(W, g)}</div>`,
     },
     D2: { // die Note sitzt im Griff der Leiste
       html: (W, g) => `<div class="ein-k"><div class="e5-kopfz" data-live="kopf">${LIVE.kopf(W, g)}</div>
