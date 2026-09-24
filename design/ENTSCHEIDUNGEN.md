@@ -18,7 +18,7 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
-- Schritt 2 im Stil „schwarzes Loch“: fünf Konzepte in `ziel-konzepte.html` (Weichen, Zoom-Wege, Monde, Trichter, Wahlrad). Vorschlag: Weichen als Grundgerüst, dazu die Größen-Kugeln aus Trichter und der Zoom je Art aus Zoom-Wege. Bis zur Wahl bleibt Schritt 2 im Mischentwurf wie er ist.
+- Schritt 2 im Stil „schwarzes Loch“: aus `ziel-konzepte.html` gewinnt „2 · Zoom-Wege“. Fünf Ausbauten in `zoom-einstellungen.html` (Verdichter, Zielgröße am Ring, Linse, Zwecke, Umlauf-Regler) mit genauen Kompressions-Einstellungen je Art, Übersicht aller Dateien und eigener Spielerei. Vorschlag: Verdichter als Grundlage, dazu Zwecke, Linse beim Überfahren und die Marke „E-Mail 25 MB“. Bis zur Wahl bleibt Schritt 2 im Mischentwurf wie er ist.
 - Win2D (MIT) für den Pixelwirbel und die Galaxie: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
@@ -26,4 +26,4 @@ Stand: 24.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Weitere Entwurfsseiten (Zwischenstände)
 
-`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-foerderband.html`, `schritt3-konzepte.html`, `foerderband-effekte.html`, `pixel-konzepte.html`, `wirbel-varianten.html`, `sanduhr-wende.html`, `ereignishorizont-konzepte.html`, `umlaufbahn-varianten.html`, `fokus-varianten.html`, `zoom-varianten.html`, `einwurf-varianten.html`, `einwurf-uebersicht.html`, `ziel-konzepte.html`.
+`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-foerderband.html`, `schritt3-konzepte.html`, `foerderband-effekte.html`, `pixel-konzepte.html`, `wirbel-varianten.html`, `sanduhr-wende.html`, `ereignishorizont-konzepte.html`, `umlaufbahn-varianten.html`, `fokus-varianten.html`, `zoom-varianten.html`, `einwurf-varianten.html`, `einwurf-uebersicht.html`, `ziel-konzepte.html`, `zoom-einstellungen.html`.

@@ -1,0 +1,1118 @@
+<title>Kvertis Zoom-Einstellungen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf (ShoeBox-Tokens). Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b; --hover: #ffffff08;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --amber-rahmen: #5e4722;
+  --paper: #f2f0ea; --paper-ink: #23272a; --paper-leise: #5b646a; --paper-linie: #cfcbc1;
+  --karton-tief: #0c0f11; --boden-schein: #0009; --schatten: #000000a0;
+  /* Fallblatt-Tafel: bleibt in beiden Themen dunkel, sie ist ein Gegenstand */
+  --tafel: #0d1012; --tafel-z: #1c2125; --tafel-z2: #161a1d; --tafel-ink: #efe9d8; --tafel-leise: #8c949a; --tafel-mint: #6fe0bf; --tafel-gelb: #f2c46a;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  --feder: cubic-bezier(0.3, 1.2, 0.5, 1);
+  --sanft: cubic-bezier(0.2, 0.9, 0.25, 1);
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --amber-rahmen: #e0c692;
+    --paper: #ffffff; --paper-linie: #d8d5cd;
+    --boden-schein: #0000001c; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4; --hover: #0000000a;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --amber-rahmen: #e0c692;
+  --paper: #ffffff; --paper-linie: #d8d5cd;
+  --boden-schein: #0000001c; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.k-bild { --k: var(--blue); } .k-audio { --k: var(--violet); } .k-video { --k: var(--amber); } .k-dok { --k: var(--cyan); }
+
+/* ===== Seite ===== */
+.seite { max-width: 1200px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 90px; display: grid; gap: 56px; }
+.kopf { display: grid; gap: 16px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+h2 small { font: 500 12.5px var(--mono); color: var(--leise); letter-spacing: .02em; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.gemeinsam { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.gemeinsam > div { background: var(--panel); padding: 16px 18px; display: grid; gap: 4px; align-content: start; }
+.gemeinsam small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.gemeinsam p { margin: 0; font-size: 14px; color: var(--muted); }
+.sprung { display: flex; flex-wrap: wrap; gap: 8px; }
+.sprung a { text-decoration: none; color: var(--ink); font-size: 13.5px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line-stark); background: var(--panel); }
+.sprung a:hover { border-color: var(--mint); color: var(--mint); }
+.sprung a b { font: 600 12px var(--mono); color: var(--mint); margin-right: 6px; }
+
+.idee { display: grid; gap: 14px; padding-top: 28px; border-top: 1px solid var(--line); scroll-margin-top: 16px; }
+.idee > p { margin: 0; color: var(--muted); max-width: 76ch; }
+.idee-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; justify-content: space-between; align-items: end; }
+.steuer { display: flex; flex-wrap: wrap; gap: 8px; }
+.demo { border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px; display: inline-flex; gap: 8px; align-items: center; }
+.demo:hover { border-color: var(--mint); }
+.buehne { overflow-x: auto; padding: 6px 2px 18px; }
+.urteil { display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13.5px; color: var(--muted); }
+.urteil b { font-family: var(--mono); margin-right: 4px; }
+.urteil .plus b { color: var(--mint); } .urteil .minus b { color: var(--coral); }
+.winui { font-size: 13px !important; }
+.winui b { color: var(--ink); font-weight: 600; }
+.empf { display: grid; gap: 10px; padding: 22px 24px; border-radius: 16px; border: 1px solid var(--mint-rahmen); background: var(--mint-flaeche); }
+.empf p { margin: 0; max-width: 80ch; }
+.empf .muted { color: var(--muted); font-size: 14px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+
+/* ===== Gemeinsames Fenster ===== */
+.btn { border: 1px solid var(--line); background: var(--panel2); border-radius: 9px; padding: 7px 12px; font-weight: 500; font-size: 12.5px; }
+.btn:hover { border-color: var(--line-stark); }
+.label { font: 500 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.platz { flex: 1; }
+.win { position: relative; width: 100%; min-width: 1000px; height: 640px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden; display: grid; grid-template-rows: 40px 58px minmax(0, 1fr) auto; font-size: 13px;
+  background: radial-gradient(1100px 460px at 15% -10%, color-mix(in srgb, var(--mint) 8%, transparent), transparent 60%), radial-gradient(800px 380px at 110% 110%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 40px 80px -40px var(--schatten); }
+.tb { display: flex; align-items: center; gap: 10px; padding-left: 14px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 55%, transparent); }
+.logo { width: 20px; height: 20px; position: relative; flex: none; }
+.logo::before, .logo::after { content: ''; position: absolute; width: 13px; height: 13px; border-radius: 4px; }
+.logo::before { left: 0; top: 0; background: var(--mint); }
+.logo::after { right: 0; bottom: 0; border-radius: 50%; background: color-mix(in srgb, var(--mint) 45%, var(--bg)); box-shadow: -2px -2px 0 1px var(--bg); }
+.tb b { font-size: 13px; font-weight: 600; }
+.wk { display: flex; height: 100%; } .wk span { width: 44px; display: grid; place-items: center; color: var(--leise); font-size: 12px; }
+
+/* Roter Faden: drei Schritte, danach läuft die Gesamtspur weiter */
+.faden { display: flex; align-items: center; gap: 0; padding: 0 20px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 35%, transparent); }
+.knoten { display: grid; grid-template-columns: 28px auto; gap: 0 10px; align-items: center; padding: 6px 10px 6px 6px; border-radius: 10px; }
+.knoten i { grid-row: span 2; width: 28px; height: 28px; border-radius: 9px; display: grid; place-items: center; font: 600 12px var(--mono); font-style: normal; border: 1px solid var(--mint-rahmen); color: var(--mint); }
+.knoten b { font-size: 13px; font-weight: 600; }
+.knoten small { font: 500 11px var(--mono); color: var(--mint); white-space: nowrap; }
+.knoten.an i { background: var(--mint); border-color: var(--mint); color: var(--auf-mint); box-shadow: 0 3px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.knoten.an small { color: var(--muted); }
+.seg { width: 44px; height: 2px; margin: 0 4px; border-radius: 1px; background: var(--mint); flex: none; }
+.bahn { flex: 1; height: 4px; margin: 0 14px 0 8px; border-radius: 2px; background: var(--line); position: relative; overflow: hidden; }
+.bahn::after { content: ''; position: absolute; inset: 0; background: var(--mint); box-shadow: 0 0 10px var(--mint); transform-origin: left; transform: scaleX(var(--gp, 0)); }
+.faden-zahl { font: 600 13px var(--mono); color: var(--muted); min-width: 118px; text-align: right; font-variant-numeric: tabular-nums; }
+.faden-zahl b { color: var(--mint); }
+
+.koerper { position: relative; min-height: 0; }
+.leiste { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 70%, transparent); }
+.vertrauen { display: inline-flex; gap: 7px; align-items: center; color: var(--muted); font-size: 12px; }
+.vertrauen svg { width: 14px; height: 14px; color: var(--mint); }
+.ziel-knopf { display: inline-flex; align-items: center; gap: 9px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 11px; padding: 5px 10px 5px 9px; text-align: left; }
+.ziel-knopf:hover { border-color: var(--mint); }
+.ziel-knopf > svg { width: 18px; height: 18px; color: var(--mint); flex: none; }
+.ziel-knopf span { display: grid; line-height: 1.25; }
+.ziel-knopf small { font: 500 10px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.ziel-knopf b { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+.ziel-knopf em { font: 600 10.5px var(--mono); font-style: normal; color: var(--mint); padding: 1px 6px; border-radius: 999px; background: var(--mint-flaeche); border: 1px solid var(--mint-rahmen); white-space: nowrap; }
+.ziel-knopf em:empty { display: none; }
+.taste { border: 0; border-radius: 12px; padding: 10px 18px; font-weight: 600; font-size: 13.5px; background: var(--mint); color: var(--auf-mint); box-shadow: 0 4px 0 color-mix(in srgb, var(--mint) 40%, #000); transition: transform .15s, box-shadow .15s; min-width: 190px; }
+.taste:hover { transform: translateY(-2px); }
+.taste:active { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--mint) 40%, #000); }
+.taste.halt { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--line-stark); }
+.win:not([data-st="bereit"]) .zk, .win:not([data-st="bereit"]) .js-global { cursor: default; }
+.win:not([data-st="bereit"]) .ziel-knopf:hover { border-color: var(--line-stark); }
+.eigen-punkt { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px var(--mint-flaeche); flex: none; }
+.ordner-ikon { width: 14px; height: 14px; flex: none; }
+
+/* Zielmenü, gemeinsam für alle Konzepte */
+.menue { position: absolute; z-index: 60; width: 300px; padding: 8px; border-radius: 13px; border: 1px solid var(--line-stark); background: var(--panel); box-shadow: 0 26px 50px -18px var(--schatten); display: grid; gap: 2px; animation: menue-auf .18s var(--sanft); }
+@keyframes menue-auf { from { opacity: 0; transform: translateY(-4px) scale(.98); } }
+.menue h6 { margin: 0; padding: 4px 8px 8px; font-size: 12.5px; font-weight: 600; display: grid; gap: 1px; }
+.menue h6 small { font: 500 10.5px var(--mono); color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 0 10px; align-items: start; padding: 7px 8px; border: 0; border-radius: 9px; background: transparent; text-align: left; }
+.opt:hover { background: var(--hover); }
+.opt.an { background: var(--mint-flaeche); }
+.opt i { width: 16px; height: 16px; margin-top: 1px; border-radius: 50%; border: 1.5px solid var(--line-stark); position: relative; grid-row: span 2; }
+.opt.an i { border-color: var(--mint); }
+.opt.an i::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--mint); }
+.opt.wahl i { border-style: dashed; border-radius: 4px; }
+.opt b { font-size: 12.5px; font-weight: 600; }
+.opt small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menue hr { border: 0; border-top: 1px solid var(--line); margin: 4px 2px; width: auto; }
+.menue .fuss { display: grid; gap: 6px; padding: 4px 8px 2px; font-size: 11.5px; color: var(--muted); }
+.menue .fuss button { justify-self: start; }
+
+
+.k-model { --k: var(--model); }
+/* ===== Fenster im Weltraum-Motiv ===== */
+.win { height: 700px; grid-template-rows: 40px 58px minmax(0, 1fr) auto; background: radial-gradient(900px 500px at 50% 60%, color-mix(in srgb, var(--violet) 6%, transparent), transparent 70%), var(--bg); }
+/* Logo als kleines schwarzes Loch */
+.logo { width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle, #000 0 34%, var(--mint) 38%, color-mix(in srgb, var(--mint) 30%, transparent) 55%, transparent 72%); }
+.logo::before, .logo::after { display: none; }
+/* Roter Faden als Umlaufbahn: der aktuelle Schritt dreht sich */
+.faden { position: relative; }
+.faden .seg { height: 1px; background: repeating-linear-gradient(90deg, var(--mint) 0 4px, transparent 4px 8px); width: 60px; }
+.knoten i { border-radius: 50%; }
+.knoten.an i { background: conic-gradient(from var(--dreh, 0deg), var(--mint), color-mix(in srgb, var(--mint) 20%, var(--bg)), var(--mint)); color: var(--auf-mint); box-shadow: 0 0 14px color-mix(in srgb, var(--mint) 60%, transparent); animation: knotendreh 3s linear infinite; }
+@property --dreh { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+@keyframes knotendreh { to { --dreh: 360deg; } }
+.knoten.an i span { background: var(--mint); width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font: 700 11px var(--mono); }
+.knoten.aus i { border-color: var(--line-stark); color: var(--muted); }
+.knoten.aus small { color: var(--leise); }
+
+.welt { position: relative; overflow: hidden; }
+.welt canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.ov > * { pointer-events: auto; }
+.einwurf { position: absolute; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; padding: 9px 12px 9px 14px; border-radius: 14px; border: 1.5px dashed var(--line-stark); background: color-mix(in srgb, var(--bg) 70%, transparent); backdrop-filter: blur(4px); transition: opacity .4s; white-space: nowrap; }
+.einwurf b { font-size: 13px; display: block; }
+.einwurf small { font-size: 11.5px; color: var(--muted); }
+.einwurf.klar { border: 0; background: transparent; backdrop-filter: none; text-align: center; flex-direction: column; gap: 2px; padding: 0; }
+.art { position: absolute; display: grid; gap: 1px; width: 170px; transition: opacity .5s, transform .5s var(--sanft); pointer-events: none; }
+.art.mitte { transform: translateX(-50%); text-align: center; justify-items: center; }
+.art.rechts { transform: translateX(-100%); text-align: right; justify-items: end; }
+.art b { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.art b em { font: 700 11px var(--mono); font-style: normal; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; display: inline-grid; place-items: center; background: var(--k); color: #0b0f12; }
+.art b em.null { background: transparent; color: var(--leise); border: 1px dashed var(--line-stark); }
+.art small { font: 10.5px var(--mono); color: var(--muted); line-height: 1.45; }
+.art small i { font-style: normal; color: var(--mint); }
+.abweis { position: absolute; right: 16px; bottom: 12px; max-width: 250px; display: grid; gap: 2px; padding: 8px 12px; border-radius: 12px; border: 1px dashed color-mix(in srgb, var(--coral) 45%, var(--line)); background: color-mix(in srgb, var(--bg) 75%, transparent); font-size: 11.5px; color: var(--muted); transition: opacity .4s; }
+.abweis b { color: var(--coral); font-weight: 600; font-size: 12px; }
+.mitte3 { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); text-align: center; display: grid; gap: 2px; opacity: 0; transition: opacity .5s; pointer-events: none; }
+.mitte3 b { font-size: 14px; } .mitte3 small { font: 11px var(--mono); color: var(--muted); }
+.welt[data-modus="wirbel"] .art, .welt[data-modus="wirbel"] .einwurf, .welt[data-modus="wirbel"] .abweis { opacity: 0; pointer-events: none; }
+.welt[data-modus="wirbel"] .mitte3 { opacity: 1; }
+.leiste .tipp { font-size: 12px; color: var(--muted); }
+
+.ideen { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+.idee-k { border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.idee-k small { font: 600 10.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+.idee-k b { font-size: 14.5px; }
+.idee-k p { margin: 0; font-size: 13.5px; color: var(--muted); }
+.idee-k .da { color: var(--mint); font: 600 11px var(--mono); }
+
+
+.win { height: 820px; }
+.welt.zeigt { cursor: zoom-in; }
+.welt[data-modus="wirbel"] .panel { opacity: 0 !important; pointer-events: none; }
+.panel { transition: opacity .45s; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.fc { display: inline-grid; place-items: center; font: 700 10.5px var(--mono); padding: 2px 7px; border-radius: 6px; color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); border: 1px solid color-mix(in srgb, var(--k) 42%, transparent); white-space: nowrap; transition: background .3s, color .3s, box-shadow .3s; }
+.fc.m { color: var(--mint); background: var(--mint-flaeche); border-color: var(--mint-rahmen); }
+.fc.da { background: var(--k); color: #0b0f12; box-shadow: 0 0 12px var(--k); }
+.fc.m.da, .fc.m.an { background: var(--mint); color: var(--auf-mint); box-shadow: 0 0 12px color-mix(in srgb, var(--mint) 60%, transparent); }
+
+/* Auswahl unten, Titel oben */
+.wahl { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; gap: 3px; padding: 4px; border-radius: 999px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(8px); z-index: 3; }
+.wahl button { display: inline-flex; align-items: center; gap: 7px; border: 0; background: transparent; padding: 6px 12px; border-radius: 999px; font-size: 12.5px; color: var(--muted); transition: background .35s, color .35s, box-shadow .35s; white-space: nowrap; }
+.wahl button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.wahl button em { font: 700 10px var(--mono); font-style: normal; color: var(--leise); }
+.wahl button:hover { color: var(--ink); }
+.wahl button.an { background: color-mix(in srgb, var(--k, var(--mint)) 16%, var(--panel)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k, var(--mint)) 55%, transparent); }
+.wahl .ueber { --k: var(--mint); }
+.titel { position: absolute; left: 50%; top: 14px; transform: translateX(-50%) translateY(-6px); text-align: center; display: grid; gap: 1px; opacity: 0; transition: opacity .45s, transform .45s var(--sanft); pointer-events: none; z-index: 2; }
+.titel b { font-size: 17px; } .titel small { font-size: 12.5px; color: var(--muted); }
+.titel.sichtbar { opacity: 1; transform: translateX(-50%); }
+.js-ein { transition: opacity .4s; }
+.js-ein.weg { opacity: 0; pointer-events: none; }
+.hin-ueber { position: absolute; left: 50%; bottom: 64px; transform: translateX(-50%); font-size: 12px; color: var(--muted); transition: opacity .4s; white-space: nowrap; }
+.hin-ueber.weg { opacity: 0; }
+
+/* Seitenspalten: gleiten herein, wenn die Kamera ankommt */
+.seite-l, .seite-r { position: absolute; top: 74px; width: 250px; display: grid; gap: 8px; align-content: start; z-index: 2; }
+.seite-l { left: 16px; } .seite-r { right: 16px; }
+.seite-l > *, .seite-r > * { opacity: 0; transform: translateX(var(--vx, -14px)); transition: opacity .4s, transform .5s var(--sanft); transition-delay: calc(var(--i, 0) * 35ms); }
+.seite-r > * { --vx: 14px; }
+.panel.sichtbar .seite-l > *, .panel.sichtbar .seite-r > * { opacity: 1; transform: none; }
+.kopf-s { display: grid; gap: 1px; padding-bottom: 2px; }
+.kopf-s b { font-size: 13.5px; } .kopf-s small { font-size: 11.5px; color: var(--muted); }
+.kopf-s.m b { color: var(--mint); }
+.zeile-d { display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; font-size: 12.5px; color: var(--muted); }
+.seite-r .zeile-d { grid-template-columns: 1fr 56px; text-align: right; }
+.seite-r .zeile-d .fc { justify-self: end; }
+.zeile-d .fc { justify-self: start; }
+.gruppe { display: grid; gap: 5px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); }
+.gruppe > span { font-size: 12px; font-weight: 600; }
+.seite-r .gruppe { justify-items: end; text-align: right; }
+.seite-r .gruppe .chips { justify-content: flex-end; }
+.kachel { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); text-align: left; font-size: 12.5px; cursor: pointer; transition: border-color .25s, background .25s; }
+.kachel b { font-weight: 600; }
+.kachel:hover, .kachel.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.seite-r .kachel:hover, .seite-r .kachel.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.seite-r .kachel.an b { color: var(--mint); }
+.empf-tag { font: 600 9.5px var(--mono); padding: 1px 6px; border-radius: 999px; background: var(--mint); color: var(--auf-mint); margin-left: 6px; }
+.knopf-l { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 56px 1fr; gap: 8px; align-items: center; text-align: left; font-size: 12px; color: var(--muted); cursor: pointer; transition: border-color .25s, background .25s; }
+.knopf-l:hover, .knopf-l.an { border-color: color-mix(in srgb, var(--k) 60%, transparent); background: color-mix(in srgb, var(--k) 10%, var(--panel)); color: var(--ink); }
+.knopf-r { border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 75%, transparent); border-radius: 9px; padding: 5px 8px; display: grid; grid-template-columns: 1fr 56px; gap: 8px; align-items: center; text-align: right; font-size: 12px; color: var(--muted); transition: border-color .25s, background .25s, opacity .25s; }
+.knopf-r .fc { justify-self: end; }
+.knopf-r.aus { opacity: .3; }
+.knopf-r.an { border-color: var(--mint); background: var(--mint-flaeche); color: var(--ink); }
+.zusammen { font-size: 12px; color: var(--muted); } .zusammen b { color: var(--ink); }
+
+/* 6 · Tiefenregler */
+.tiefe { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); display: grid; grid-template-columns: 22px auto; gap: 0 10px; z-index: 3; }
+.tiefe .spur { grid-row: 1 / span 6; position: relative; width: 4px; justify-self: center; border-radius: 2px; background: var(--line); }
+.tiefe .spur i { position: absolute; left: -6px; width: 16px; height: 16px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 12px var(--mint); transform: translateY(-50%); top: calc(var(--u) * 20% + 10px); }
+.tiefe button { grid-column: 2; height: 40px; display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; font-size: 12.5px; color: var(--muted); padding: 0 8px; border-radius: 8px; text-align: left; }
+.tiefe button i { width: 9px; height: 9px; border-radius: 50%; background: var(--k, var(--mint)); }
+.tiefe button.an { color: var(--ink); font-weight: 600; background: color-mix(in srgb, var(--k, var(--mint)) 12%, transparent); }
+.tiefe-hin { position: absolute; left: 16px; bottom: 16px; font-size: 11.5px; color: var(--leise); }
+.welt.k6 .seite-l { left: 180px; width: 220px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; transition-delay: 0ms !important; }
+}
+
+/* ===== Schritt 2 · Zoom-Wege mit genauen Einstellungen ===== */
+.win { height: 820px; }
+.innen { position: relative; min-height: 0; overflow: hidden; }
+.innen > canvas.lage { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.knoten.fertig i { border-color: var(--mint-rahmen); color: var(--mint); }
+.knoten.fertig small { color: var(--mint); }
+.leiste .summe { font: 500 12px var(--mono); color: var(--muted); display: inline-flex; gap: 6px; align-items: baseline; }
+.leiste .summe b { color: var(--ink); font-size: 13px; }
+.leiste .summe em { font-style: normal; color: var(--mint); font-weight: 600; font-size: 13px; }
+.punkt { width: 9px; height: 9px; border-radius: 50%; background: var(--k); box-shadow: 0 0 8px var(--k); flex: none; display: inline-block; }
+.fc.gelb { color: var(--amber); background: color-mix(in srgb, var(--amber) 12%, var(--panel)); border-color: color-mix(in srgb, var(--amber) 55%, transparent); }
+.link { border: 0; background: none; color: var(--mint); font-size: 12px; font-weight: 500; padding: 3px 6px; border-radius: 7px; }
+.link:hover, .link[aria-expanded="true"] { background: var(--mint-flaeche); }
+.gr { font: 500 11px var(--mono); color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gr em { font-style: normal; color: var(--mint); font-weight: 600; }
+
+/* Zoom-Grundgerüst */
+.z-titel { position: absolute; left: 50%; top: 10px; transform: translateX(-50%); text-align: center; display: grid; gap: 1px; z-index: 2; pointer-events: none; }
+.z-titel b { font-size: 17px; } .z-titel small { font: 11.5px var(--mono); color: var(--muted); }
+.z-titel .abgel { font: 500 11px var(--mono); color: var(--mint); }
+.z-l, .z-r { position: absolute; top: 14px; display: grid; gap: 6px; align-content: start; z-index: 2; }
+.z-l { left: 16px; width: 236px; } .z-r { right: 16px; width: 286px; bottom: 14px; overflow: auto; scrollbar-width: thin; padding-right: 2px; }
+.z-kopf { display: grid; gap: 0; padding: 0 2px 2px; }
+.z-kopf b { font-size: 13px; } .z-kopf small { font-size: 11px; color: var(--muted); }
+.z-kopf.m b { color: var(--mint); }
+.z-datei { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; align-items: center; padding: 6px 9px; border-radius: 10px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); text-align: left; font-size: 12px; transition: border-color .2s, background .2s; }
+.z-datei b { font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.z-datei small { font: 10px var(--mono); color: var(--muted); }
+.z-datei.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--panel)); }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.tile { position: relative; display: grid; grid-template-columns: auto 1fr; gap: 0 8px; align-items: center; padding: 5px 8px; border-radius: 9px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; transition: border-color .2s, background .2s; }
+.tile b { font: 700 11.5px var(--mono); }
+.tile small { font-size: 10px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tile:hover { border-color: var(--mint-rahmen); }
+.tile.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.tile.an b { color: var(--mint); }
+.tile.gelb { border-color: color-mix(in srgb, var(--amber) 60%, transparent); }
+.tile .vs2 { position: absolute; top: -7px; right: 6px; font: 600 8px var(--mono); letter-spacing: .06em; text-transform: uppercase; padding: 0 4px; border-radius: 4px; background: var(--panel2); color: var(--mint); border: 1px solid var(--mint-rahmen); }
+.karte-e { display: grid; gap: 9px; padding: 10px; border-radius: 13px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(6px); }
+.karte-e h5 { margin: 0; font-size: 12.5px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.karte-e h5 .gr { font-size: 11px; }
+.gross-gr { font: 600 17px var(--mono); font-variant-numeric: tabular-nums; }
+.gross-gr span { color: var(--muted); font-size: 12px; font-weight: 500; }
+.gross-gr em { font-style: normal; color: var(--mint); }
+.stufen { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; padding: 2px; border-radius: 9px; background: var(--tief); border: 1px solid var(--line); }
+.stufen button { border: 0; background: transparent; border-radius: 7px; padding: 4px 4px; font-size: 11px; color: var(--muted); white-space: nowrap; transition: background .2s, color .2s; }
+.stufen button:hover:not(:disabled) { color: var(--ink); }
+.stufen button[aria-pressed="true"] { background: var(--panel2); color: var(--ink); box-shadow: 0 0 0 1px var(--mint-rahmen) inset; }
+.stufen button:disabled { opacity: .4; cursor: default; }
+.stufen.eigen button[aria-pressed="true"] { box-shadow: 0 0 0 1px var(--line-stark) inset; }
+.preihe { display: grid; gap: 4px; }
+.preihe > span { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--muted); }
+.preihe > span b { color: var(--ink); font: 600 11px var(--mono); }
+.preihe.aus { opacity: .45; }
+.preihe.aus > span b { color: var(--muted); font-weight: 500; }
+.preihe input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
+.schalter { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11.5px; color: var(--muted); border: 0; background: none; padding: 2px 0; text-align: left; width: 100%; }
+.schalter i { width: 30px; height: 17px; border-radius: 9px; background: var(--line-stark); position: relative; flex: none; transition: background .2s; }
+.schalter i::after { content: ''; position: absolute; top: 2px; left: 2px; width: 13px; height: 13px; border-radius: 50%; background: var(--panel); transition: left .2s var(--feder); }
+.schalter[aria-pressed="true"] i { background: var(--mint); }
+.schalter[aria-pressed="true"] i::after { left: 15px; background: var(--auf-mint); }
+.fest { font-size: 11.5px; color: var(--muted); }
+.chips-z { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* A · Fächer mit Größenbalken */
+.fa-leiste { position: absolute; left: 16px; right: 318px; bottom: 12px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; z-index: 2; }
+.fa { display: grid; gap: 4px; padding: 7px 9px 8px; border-radius: 12px; border: 1px solid var(--line); border-top: 3px solid color-mix(in srgb, var(--k) 70%, transparent); background: color-mix(in srgb, var(--bg) 82%, transparent); text-align: left; transition: border-color .25s, background .25s; min-width: 0; }
+.fa.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 12%, var(--bg)); }
+.fa-kopf { display: flex; align-items: center; gap: 6px; font-size: 12px; }
+.fa-kopf b { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fa-kopf em { font: 700 14px var(--mono); font-style: normal; color: var(--k); }
+.fa-weg { font: 500 10px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fa-weg i { font-style: normal; color: var(--mint); }
+.balk { position: relative; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--k) 22%, var(--tief)); overflow: hidden; }
+.balk i { position: absolute; inset: 0 auto 0 0; border-radius: 3px; background: var(--mint); box-shadow: 0 0 8px var(--mint); transition: width .5s var(--sanft); }
+
+/* B · Waage */
+.waage { display: grid; gap: 3px; }
+.waage h6 { margin: 6px 2px 0; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--k); display: flex; justify-content: space-between; cursor: pointer; }
+.wz { display: grid; gap: 3px; padding: 5px 8px; border-radius: 9px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); text-align: left; font-size: 11.5px; transition: border-color .2s, opacity .2s; }
+.wz .n { display: flex; justify-content: space-between; gap: 6px; }
+.wz .n b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wz.an { border-color: var(--k); background: color-mix(in srgb, var(--k) 10%, var(--panel)); }
+.wz.fern { opacity: .55; }
+.wz .zwei { display: grid; gap: 2px; }
+.wz .zwei i { display: block; height: 4px; border-radius: 2px; min-width: 2px; transition: width .5s var(--sanft); }
+.wz .zwei .v { background: color-mix(in srgb, var(--k) 55%, var(--tief)); }
+.wz .zwei .n2 { background: var(--mint); box-shadow: 0 0 6px var(--mint); }
+.wz.nein { border-style: dashed; opacity: .7; }
+.ring-griff { position: absolute; z-index: 3; width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; border: 2px solid var(--mint); background: var(--bg); box-shadow: 0 0 14px var(--mint); cursor: grab; touch-action: none; }
+.ring-griff:active { cursor: grabbing; }
+.ring-griff:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.abgeleitet { position: absolute; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; max-width: 380px; pointer-events: none; }
+.abgeleitet span { font: 600 10.5px var(--mono); padding: 2px 7px; border-radius: 6px; border: 1px solid var(--mint-rahmen); background: color-mix(in srgb, var(--bg) 80%, transparent); color: var(--mint); }
+
+/* C · Mini-Galaxie und Linse */
+.mini-gal { position: absolute; left: 16px; bottom: 12px; width: 236px; display: grid; gap: 4px; z-index: 2; padding: 8px; border-radius: 12px; border: 1px solid var(--line); background: transparent; }
+.mini-gal .platz-c { height: 104px; }
+.mini-gal .knoepfe { display: flex; flex-wrap: wrap; gap: 3px; }
+.mini-gal .knoepfe button { border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 1px 7px; font-size: 10.5px; color: var(--muted); display: inline-flex; gap: 4px; align-items: center; }
+.mini-gal .knoepfe button.an { border-color: var(--k); color: var(--ink); }
+.mini-gal .knoepfe button i { width: 7px; height: 7px; border-radius: 50%; background: var(--k); }
+.linse-txt { position: absolute; z-index: 2; font: 600 9.5px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); pointer-events: none; }
+
+/* D · Zwecke und Frachtliste */
+.zwecke { display: grid; gap: 5px; }
+.zweck { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 0 9px; align-items: center; padding: 7px 9px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; transition: border-color .2s, background .2s, transform .25s var(--feder); }
+.zweck svg { width: 20px; height: 20px; color: var(--muted); grid-row: span 2; }
+.zweck b { font-size: 12.5px; }
+.zweck small { font: 10px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zweck .gr { grid-row: span 2; }
+.zweck:hover { border-color: var(--mint-rahmen); transform: translateX(-2px); }
+.zweck.an { border-color: var(--mint); background: var(--mint-flaeche); }
+.zweck.an svg { color: var(--mint); }
+.fuer-alle { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--muted); }
+.fuer-alle input { accent-color: var(--mint); }
+.fracht { position: absolute; left: 16px; right: 318px; bottom: 12px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; z-index: 2; }
+.fr { display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; gap: 2px 7px; align-items: center; padding: 5px 8px; border-radius: 9px; border: 1px solid var(--line); background: color-mix(in srgb, var(--bg) 82%, transparent); text-align: left; font-size: 11px; transition: border-color .2s; }
+.fr .punkt { width: 7px; height: 7px; }
+.fr b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fr .w { font: 600 10px var(--mono); color: var(--muted); white-space: nowrap; }
+.fr .w i { font-style: normal; color: var(--mint); }
+.fr .balk { grid-column: 2 / -1; height: 3px; }
+.fr.an { border-color: var(--k); }
+.fr.nein { border-style: dashed; color: var(--muted); }
+.fr.nein .w { color: var(--coral); }
+
+/* E · Umlauf-Regler und Masse-Ring */
+.mond-k { position: absolute; z-index: 3; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 0; border: 1.5px solid var(--mint); background: var(--bg); border-radius: 999px; padding: 2px 8px; box-shadow: 0 0 12px -2px var(--mint); cursor: grab; touch-action: none; white-space: nowrap; }
+.mond-k b { font: 700 11px var(--mono); color: var(--mint); }
+.mond-k small { font-size: 9px; color: var(--muted); }
+.mond-k:active { cursor: grabbing; }
+.mond-k.aus { border-color: var(--line-stark); box-shadow: none; cursor: default; }
+.mond-k.aus b { color: var(--muted); }
+.masse { position: absolute; left: 16px; bottom: 12px; width: 236px; z-index: 2; display: grid; grid-template-columns: 96px 1fr; gap: 10px; align-items: center; padding: 9px; border-radius: 12px; border: 1px solid var(--line); background: transparent; }
+.masse .platz-c { height: 96px; }
+.masse ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; font-size: 11px; }
+.masse li { display: flex; gap: 5px; align-items: center; justify-content: space-between; cursor: pointer; border-radius: 5px; padding: 0 3px; }
+.masse li span { display: inline-flex; gap: 5px; align-items: center; }
+.masse li.an { background: var(--hover); }
+.masse li .gr { font-size: 10px; }
+.hinweis-z { position: absolute; left: 50%; transform: translateX(-50%); bottom: 12px; font-size: 11.5px; color: var(--muted); z-index: 2; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) { .zweck, .tile { transition: none; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Kvertis · Schritt 2 · Entwürfe vom 24.09.2026</span>
+    <h1>Zoom-Wege, genauer eingestellt</h1>
+    <p class="lead">Grundlage ist „2 · Zoom-Wege“: Zoom auf eine Dateiart, links Ihre Dateien, rechts die Ziele, dazwischen die Wege durch das Loch. Jedes Konzept verbindet drei Dinge anders: genauere Einstellungen zum Komprimieren je Art, die man nur öffnet, wenn man will; eine Übersicht aller eingeworfenen Dateien auf einen Blick; und eine eigene Spielerei für Schritt 2.</p>
+    <div class="gemeinsam">
+      <div><small>Einstellungen je Art</small><p>Bilder: Qualität, Größe in Pixeln, Aufnahmeort. Audio: Bitrate, Kanäle, Abtastrate. Video: Auflösung, Qualität, Bilder pro Sekunde, Ton. Dokumente und 3D-Modelle sind verlustfrei und haben nur Textoptionen.</p></div>
+      <div><small>Nur wenn man will</small><p>Voreinstellungen wie „Ausgewogen“ oder „Klein“ reichen den meisten. Die einzelnen Regler liegen dahinter. Was für das gewählte Ziel nicht gilt, ist ausgegraut, zum Beispiel Qualität bei PNG.</p></div>
+      <div><small>Größe</small><p>Die Schätzung folgt jeder Änderung sofort. Wird eine Datei größer als vorher, steht sie in Gelb, zum Beispiel das Interview als MP3 mit 192 kbit/s.</p></div>
+      <div><small>Ausprobieren</small><p>Alles ist klickbar. Die Wahl bleibt je Fenster erhalten. Eine Datei links wählen und rechts ein Ziel setzen ergibt eine Ausnahme.</p></div>
+    </div>
+    <nav class="sprung" aria-label="Konzepte">
+      <a href="#k-a"><b>1</b>Verdichter</a><a href="#k-b"><b>2</b>Zielgröße am Ring</a><a href="#k-c"><b>3</b>Linse</a><a href="#k-d"><b>4</b>Zwecke</a><a href="#k-e"><b>5</b>Umlauf-Regler</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+    </nav>
+  </header>
+
+  <section class="idee" id="k-a" aria-labelledby="h-a">
+    <div class="idee-kopf"><h2 id="h-a">1 · Verdichter <small>Voreinstellung wählen, bei Bedarf genau einstellen</small></h2></div>
+    <p><b>Einstellungen:</b> Rechts unter den Zielen vier Stufen von „Bestmöglich“ bis „Winzig“. „Genau einstellen …“ öffnet die Regler dieser Art. <b>Übersicht:</b> Unten die fünf Fächer aus Schritt 1, jedes mit Formaten, Ziel und einem Balken für die Größe nachher. <b>Spielerei:</b> Je stärker komprimiert wird, desto enger zieht sich die Bahn zusammen und desto heißer glühen die Planeten. Jede Änderung schickt eine Druckwelle durch die Bahn.</p>
+    <div class="buehne" data-konzept="a"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Einfach für alle, genau für Geübte</span><span class="plus"><b>+</b>Fächer wie in Schritt 1, jede Art mit Größe</span><span class="minus"><b>−</b>Viele Regler in der rechten Spalte, wenn alles offen ist</span></div>
+  </section>
+
+  <section class="idee" id="k-b" aria-labelledby="h-b">
+    <div class="idee-kopf"><h2 id="h-b">2 · Zielgröße am Ring <small>die gewünschte Größe ziehen, Kvertis stellt den Rest ein</small></h2></div>
+    <p><b>Einstellungen:</b> Um das Loch liegt ein Ring. Voll ist die Größe vorher. Den Griff zurückziehen, bis die Größe passt; Kvertis wählt Qualität, Auflösung oder Bitrate dazu und zeigt sie unter dem Loch. Beim Video steht die Marke „E-Mail 25 MB“ am Ring. „Selbst einstellen …“ öffnet die Regler. <b>Übersicht:</b> Links die Waage mit allen Dateien aller Arten, je Datei ein Balken vorher und nachher. <b>Spielerei:</b> Beim Ziehen sprühen die abgegebenen Bytes als Funken vom Ring weg, und das Loch wird mit jedem Megabyte größer.</p>
+    <div class="buehne" data-konzept="b"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Man denkt in Megabyte, nicht in Bitraten</span><span class="plus"><b>+</b>Alle Dateien und ihre Größen links auf einen Blick</span><span class="minus"><b>−</b>Welche Einstellung dabei herauskommt, sieht man erst unter dem Loch</span></div>
+  </section>
+
+  <section class="idee" id="k-c" aria-labelledby="h-c">
+    <div class="idee-kopf"><h2 id="h-c">3 · Linse <small>vorher und nachher als Vorschau</small></h2></div>
+    <p><b>Einstellungen:</b> Voreinstellungen und Regler stehen rechts offen. Unter der Bahn zeigt eine runde Linse die gewählte Datei: links vorher, rechts nachher. Bilder und Videos werden gröber, wenn Auflösung oder Qualität sinken, Audio verliert Feinheiten in der Welle, bei Mono bleibt eine Spur. <b>Übersicht:</b> Unten links eine kleine Galaxie mit allen Arten und Dateien, darunter Knöpfe zum Wechseln. <b>Spielerei:</b> Die Linse biegt die Bahn um sich herum wie eine Gravitationslinse, und eine gestrichelte Brennlinie führt vom Planeten der Datei in die Linse.</p>
+    <div class="buehne" data-konzept="c"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Man sieht, was Komprimieren kostet</span><span class="plus"><b>+</b>Mini-Galaxie verbindet Schritt 1 und 2</span><span class="minus"><b>−</b>Die Vorschau ist eine Annäherung, keine echte Umwandlung</span></div>
+  </section>
+
+  <section class="idee" id="k-d" aria-labelledby="h-d">
+    <div class="idee-kopf"><h2 id="h-d">4 · Zwecke <small>sagen, wofür; Kvertis stellt Format und Größe ein</small></h2></div>
+    <p><b>Einstellungen:</b> Rechts Karten wie „Verschicken“, „Fürs Web“, „Archivieren“. Jede Karte zeigt, was dabei herauskommt, und die Größe. Ein Haken übernimmt den Zweck für alle Arten. „Eigene Einstellung“ öffnet Voreinstellungen und Regler. <b>Übersicht:</b> Unten die Frachtliste mit jeder Datei, ihrem Weg von Format zu Format und einem Größenbalken, auch die, die nicht geht. <b>Spielerei:</b> Eine gewählte Karte schießt einen Kometen ins Loch. Beim Einschlag leuchten die Wege nacheinander auf.</p>
+    <div class="buehne" data-konzept="d"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Am leichtesten für alle, die keine Formate kennen</span><span class="plus"><b>+</b>Ein Klick für alle Arten zusammen</span><span class="minus"><b>−</b>Zwecke passen nicht zu jedem Fall, dann doch „Eigene“</span></div>
+  </section>
+
+  <section class="idee" id="k-e" aria-labelledby="h-e">
+    <div class="idee-kopf"><h2 id="h-e">5 · Umlauf-Regler <small>die Einstellungen sind Monde um das Loch</small></h2></div>
+    <p><b>Einstellungen:</b> Über dem Loch liegen Halbkreise, einer je Einstellung, innen die Qualität, außen die Größe. Auf jedem sitzt ein Mond; man zieht ihn an die gewünschte Stelle, auch mit den Pfeiltasten. Voreinstellungen schieben die Monde weich an ihren Platz, die übrigen Schalter stehen rechts. <b>Übersicht:</b> Unten links ein Masse-Ring: außen die Größe vorher je Art, innen nachher, in der Mitte der Anteil. <b>Spielerei:</b> Beim Ziehen folgen die Planeten dem Mond wie bei Ebbe und Flut und federn beim Loslassen zurück. Stehen alle Monde auf einer Voreinstellung, verbindet sie ein leuchtender Faden.</p>
+    <div class="buehne" data-konzept="e"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Am stärksten im Stil des schwarzen Lochs</span><span class="plus"><b>+</b>Mehrere Einstellungen gleichzeitig im Blick</span><span class="minus"><b>−</b>Ungewohnt; die Schalter rechts bleiben nötig</span></div>
+  </section>
+
+  <section class="idee" id="vorschlag" aria-labelledby="h-v">
+    <h2 id="h-v">Mein Vorschlag</h2>
+    <div class="empf">
+      <p><b>1 · Verdichter als Grundlage:</b> Voreinstellungen für alle, „Genau einstellen …“ für Geübte, unten die Fächer mit Größenbalken wie in Schritt 1.</p>
+      <p><b>Aus 4 die Zwecke</b> als erste Frage über den Voreinstellungen, weil sie ohne Fachwissen funktionieren. <b>Aus 3 die Linse</b> nur beim Überfahren einer Datei, damit man sieht, was „Klein“ kostet. <b>Aus 2 die Marke „E-Mail 25 MB“</b> als Zielgröße bei Video.</p>
+      <p class="muted">Größen sind Schätzungen aus Auflösung, Qualität, Bitrate und Dauer. Video in H.264 und HEVC kodiert die App über Windows (Media Foundation), wie in docs/02-rechtssicherheit.md festgelegt. Bei „Animationen reduzieren“ entfallen Druckwellen, Funken, Kometen und Gezeiten.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const clamp = (t, a = 0, b = 1) => Math.max(a, Math.min(b, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const easeOut = t => 1 - Math.pow(1 - t, 3);
+  const TAU = Math.PI * 2;
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  /* ---------- Dateien aus Schritt 1 ---------- */
+  const GR = [
+    { k: 'bild', name: 'Bilder', eins: 'Bild', kurz: 'Bilder', tok: 'blue',
+      files: [{ n: 'IMG_2041.heic', f: 'HEIC', mb: 8.4, px: 4032, mp: 12.2, foto: true }, { n: 'Scan.jpg', f: 'PNG', mb: 2.2, px: 3508, mp: 8.7, foto: false }],
+      ziele: [['JPG', 'überall lesbar'], ['PNG', 'verlustfrei'], ['WEBP', 'klein, fürs Web'], ['TIFF', 'zum Drucken'], ['PDF', 'als Dokument'], ['GIF', 'einfach']] },
+    { k: 'audio', name: 'Audiodateien', eins: 'Audiodatei', kurz: 'Audio', tok: 'violet',
+      files: [{ n: 'Probe_03.wav', f: 'WAV', mb: 19.7, dauer: 112 }, { n: 'Interview.m4a', f: 'M4A', mb: 6.1, dauer: 760 }],
+      ziele: [['MP3', 'überall abspielbar'], ['M4A', 'klein, gut'], ['FLAC', 'verlustfrei'], ['WAV', 'unkomprimiert'], ['OGG', 'offen'], ['OPUS', 'sehr klein']] },
+    { k: 'video', name: 'Videos', eins: 'Video', kurz: 'Video', tok: 'amber',
+      files: [{ n: 'Urlaub_Clip.mov', f: 'MOV', mb: 148, dauer: 48 }],
+      ziele: [['MP4', 'überall abspielbar'], ['MKV', 'flexibel'], ['WEBM', 'fürs Web'], ['nur Ton', 'Tonspur als MP3']] },
+    { k: 'dok', name: 'Dokumente', eins: 'Dokument', kurz: 'Dokumente', tok: 'cyan',
+      files: [{ n: 'Protokoll.docx', f: 'DOCX', mb: .4 }],
+      ziele: [['TXT', 'nur Text'], ['MD', 'mit Gliederung'], ['HTML', 'für den Browser']] },
+    { k: 'model', name: '3D-Modelle', eins: '3D-Modell', kurz: '3D', tok: 'model',
+      files: [{ n: 'Halterung_v3.stl', f: 'STL', mb: 12.6 }],
+      ziele: [['STL', 'binär, kleiner'], ['3MF', 'Druck mit Maßen'], ['GLB', 'fürs Web'], ['OBJ', '3D-Programme'], ['PLY', 'kompakt']] },
+  ];
+  const NEIN = { n: 'Fotos.zip', grund: 'Archive werden nicht entpackt' };
+  const G = k => GR.find(g => g.k === k);
+  const VERLUST = { bild: ['JPG', 'WEBP', 'PDF'], audio: ['MP3', 'M4A', 'OGG', 'OPUS'] };
+
+  // Einstellungen je Art; „gilt“ sagt, ob sie für das gewählte Ziel Sinn ergibt
+  const P = {
+    bild: [
+      { id: 'q', name: 'Qualität', typ: 'regler', min: 30, max: 100, gilt: z => VERLUST.bild.includes(z), aus: 'verlustfrei' },
+      { id: 'px', name: 'Größe (längste Seite)', typ: 'wahl', werte: ['Original', '3840', '2560', '1920', '1280', '800'], txt: v => v === 'Original' ? 'wie Original' : v + ' px' },
+      { id: 'meta', name: 'Aufnahmeort und Kameradaten entfernen', typ: 'schalter' },
+    ],
+    audio: [
+      { id: 'kbps', name: 'Bitrate', typ: 'wahl', werte: ['96', '128', '160', '192', '256', '320'], txt: v => v + ' kbit/s', gilt: z => VERLUST.audio.includes(z), aus: 'verlustfrei' },
+      { id: 'kan', name: 'Kanäle', typ: 'wahl', werte: ['Stereo', 'Mono'] },
+      { id: 'hz', name: 'Abtastrate', typ: 'wahl', werte: ['Original', '48 kHz', '44,1 kHz'] },
+      { id: 'meta', name: 'Titel-Infos entfernen', typ: 'schalter' },
+    ],
+    video: [
+      { id: 'aufl', name: 'Auflösung', typ: 'wahl', werte: ['Original', '1080p', '720p', '480p'], gilt: z => z !== 'nur Ton', aus: 'nur Ton' },
+      { id: 'q', name: 'Qualität', typ: 'regler', min: 30, max: 100, gilt: z => z !== 'nur Ton', aus: 'nur Ton' },
+      { id: 'fps', name: 'Bilder pro Sekunde', typ: 'wahl', werte: ['Original', '30', '24'], gilt: z => z !== 'nur Ton', aus: 'nur Ton' },
+      { id: 'ton', name: 'Ton', typ: 'wahl', werte: ['behalten', 'entfernen'], gilt: z => z !== 'nur Ton', aus: 'nur Ton' },
+      { id: 'meta', name: 'Aufnahmeort entfernen', typ: 'schalter' },
+    ],
+    dok: [
+      { id: 'zs', name: 'Zeichensatz', typ: 'wahl', werte: ['UTF-8', 'Windows-1252'] },
+      { id: 'ze', name: 'Zeilenende', typ: 'wahl', werte: ['Windows', 'Unix'] },
+      { id: 'meta', name: 'Autor und Änderungen entfernen', typ: 'schalter' },
+    ],
+    model: [
+      { id: 'einheit', name: 'Maßeinheit', typ: 'wahl', werte: ['mm', 'cm', 'Zoll'], gilt: z => z === '3MF', aus: 'nur bei 3MF' },
+      { id: 'achse', name: 'Oben ist', typ: 'wahl', werte: ['Z', 'Y'], txt: v => v + '-Achse' },
+    ],
+  };
+  const START = { bild: { q: 82, px: 'Original', meta: true }, audio: { kbps: '192', kan: 'Stereo', hz: 'Original', meta: false }, video: { aufl: '1080p', q: 70, fps: 'Original', ton: 'behalten', meta: true }, dok: { zs: 'UTF-8', ze: 'Windows', meta: true }, model: { einheit: 'mm', achse: 'Z' } };
+  const PRESETS = {
+    bild: [['Bestmöglich', { q: 95, px: 'Original' }], ['Ausgewogen', { q: 82, px: 'Original' }], ['Klein', { q: 72, px: '1920' }], ['Winzig', { q: 60, px: '1280' }]],
+    audio: [['Bestmöglich', { kbps: '320', kan: 'Stereo' }], ['Ausgewogen', { kbps: '192', kan: 'Stereo' }], ['Klein', { kbps: '128', kan: 'Stereo' }], ['Sprache', { kbps: '96', kan: 'Mono' }]],
+    video: [['Bestmöglich', { aufl: 'Original', q: 88, fps: 'Original' }], ['Ausgewogen', { aufl: '1080p', q: 70, fps: 'Original' }], ['Klein', { aufl: '720p', q: 60, fps: '30' }], ['E-Mail', { aufl: '480p', q: 50, fps: '24' }]],
+    dok: [], model: [],
+  };
+
+  function zustand() {
+    const Z = { wahl: {}, ausn: {}, p: {}, preset: {} };
+    GR.forEach(g => { Z.wahl[g.k] = 0; Z.p[g.k] = { ...START[g.k] }; Z.preset[g.k] = PRESETS[g.k].length ? 'Ausgewogen' : null; });
+    return Z;
+  }
+  const zielDef = (Z, g) => g.ziele[Z.wahl[g.k]][0];
+  const zielVon = (Z, g, f) => Z.ausn[f.n] || zielDef(Z, g);
+  function groesse(Z, g, f) {
+    const t = zielVon(Z, g, f), p = Z.p[g.k];
+    if (g.k === 'bild') {
+      const s = p.px === 'Original' ? 1 : Math.min(1, +p.px / f.px), mp = f.mp * s * s, jpg = mp * (.06 + .45 * Math.pow((p.q - 30) / 70, 2.2));
+      return { JPG: jpg, WEBP: jpg * .7, PDF: jpg * 1.05, PNG: mp * (f.foto ? 1.3 : .35), TIFF: mp * 3, GIF: mp * .6 }[t];
+    }
+    if (g.k === 'audio') {
+      const mono = p.kan === 'Mono', hz = p.hz === '48 kHz' ? 1.088 : 1, wav = f.dauer * .1764 * (mono ? .5 : 1) * hz;
+      if (t === 'WAV') return wav; if (t === 'FLAC') return wav * .55;
+      return f.dauer * (+p.kbps) * (mono ? .6 : 1) / 8 / 1000 * (t === 'OPUS' ? .9 : 1);
+    }
+    if (g.k === 'video') {
+      if (t === 'nur Ton') return f.dauer * .16 / 8;
+      const m = { Original: 20, '1080p': 8, '720p': 4, '480p': 1.8 }[p.aufl], qf = .35 + .9 * Math.pow((p.q - 30) / 70, 1.5), fps = { Original: 1, '30': .95, '24': .82 }[p.fps];
+      return f.dauer * m * qf * fps / 8 * (t === 'WEBM' ? .8 : 1) + (p.ton === 'behalten' ? f.dauer * .128 / 8 : 0);
+    }
+    if (g.k === 'dok') return { TXT: .02, MD: .025, HTML: .05 }[t];
+    return f.mb * { STL: .25, '3MF': .3, GLB: .45, OBJ: 1.4, PLY: .5 }[t];
+  }
+  const nachG = (Z, g) => g.files.reduce((s, f) => s + groesse(Z, g, f), 0);
+  const vorG = g => g.files.reduce((s, f) => s + f.mb, 0);
+  const VOR = GR.reduce((s, g) => s + vorG(g), 0);
+  const nachAlle = Z => GR.reduce((s, g) => s + nachG(Z, g), 0);
+  const mbT = n => n >= 100 ? Math.round(n).toLocaleString('de-DE') : n >= .1 ? n.toLocaleString('de-DE', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : n.toLocaleString('de-DE', { maximumFractionDigits: 2 });
+  const anzahl = g => `${g.files.length} ${g.files.length === 1 ? g.eins : g.name}`;
+  const grHTML = (Z, g) => { const v = vorG(g), n = nachG(Z, g); return `${mbT(v)} MB → <em style="${n > v ? 'color:var(--amber)' : ''}">≈ ${mbT(n)} MB</em>`; };
+  function presetVon(Z, g) { const l = PRESETS[g.k]; if (!l.length) return null; const t = l.find(([, p]) => Object.entries(p).every(([k, v]) => Z.p[g.k][k] === v)); return t ? t[0] : 'Eigene'; }
+  function setzeArt(Z, g, i) { Z.wahl[g.k] = i; const t = g.ziele[i][0]; g.files.forEach(f => { if (Z.ausn[f.n] === t) delete Z.ausn[f.n]; }); }
+  function setzeDatei(Z, g, f, t) { if (t === zielDef(Z, g)) delete Z.ausn[f.n]; else Z.ausn[f.n] = t; }
+  const pWert = (p, v) => p.txt ? p.txt(v) : v;
+  // kurze Beschreibung der wirksamen Einstellungen, z. B. „1920 px · Qualität 72“
+  function kurzP(Z, g, nurAnders) {
+    const z = zielDef(Z, g), p = Z.p[g.k];
+    return P[g.k].filter(d => d.typ !== 'schalter' && (!d.gilt || d.gilt(z)) && (!nurAnders || p[d.id] !== d.werte?.[0])).map(d => d.typ === 'regler' ? `${d.name} ${p[d.id]}` : pWert(d, p[d.id])).filter(t => t !== 'wie Original' && t !== 'Original');
+  }
+
+  /* ---------- Farben und Zeichnen ---------- */
+  const F = {};
+  const hexRgb = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function farbenLesen() {
+    const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'coral', 'bg', 'ink', 'muted', 'line-stark', 'panel'].forEach(k => { F[k] = hexRgb(norm(cs.getPropertyValue('--' + k))); });
+    F.dunkel = (F.bg[0] * .3 + F.bg[1] * .59 + F.bg[2] * .11) < 128;
+    LCACHE.clear();
+  }
+  const rgba = (c, a) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+  const mix = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
+  const farbe = g => F[g.tok];
+  function glow(ctx, x, y, r, c, a) { if (a <= 0 || r <= 0) return; const q = ctx.createRadialGradient(x, y, 0, x, y, r); q.addColorStop(0, rgba(c, a)); q.addColorStop(1, rgba(c, 0)); ctx.fillStyle = q; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  function loch(ctx, x, y, r, e = 1) {
+    glow(ctx, x, y, r * 3.4, F.violet, .22 * e); glow(ctx, x, y, r * 2, F.mint, .25 * e);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, TAU); ctx.stroke();
+  }
+  const bez = (a, b, c, d, t) => { const u = 1 - t; return [u * u * u * a[0] + 3 * u * u * t * b[0] + 3 * u * t * t * c[0] + t * t * t * d[0], u * u * u * a[1] + 3 * u * u * t * b[1] + 3 * u * t * t * c[1] + t * t * t * d[1]]; };
+  function weg(ctx, a, b, c, d, col, alpha, breite, T, teilchen, strich, puls) {
+    ctx.strokeStyle = rgba(col, alpha); ctx.lineWidth = breite; if (strich) ctx.setLineDash(strich);
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.bezierCurveTo(b[0], b[1], c[0], c[1], d[0], d[1]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    if (puls != null && puls >= 0 && puls <= 1) { const [x, y] = bez(a, b, c, d, puls); glow(ctx, x, y, 16, col, .9); }
+    if (teilchen && !leise) for (let i = 0; i < teilchen; i++) { const t = (T * .55 + i / teilchen) % 1, [x, y] = bez(a, b, c, d, t); ctx.fillStyle = rgba(col, .9 * Math.sin(Math.PI * t)); ctx.beginPath(); ctx.arc(x, y, breite > 1.5 ? 2.3 : 1.7, 0, TAU); ctx.fill(); }
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  function kugel(ctx, x, y, r, c, a = 1) {
+    if (r < .5) return; ctx.globalAlpha = a;
+    const q = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+    q.addColorStop(0, rgba(c.map(v => Math.min(255, v + 70)), 1)); q.addColorStop(.55, rgba(c, 1)); q.addColorStop(1, rgba(c.map(v => v * .35), 1));
+    ctx.fillStyle = q; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+  }
+  function rel(W, el) { const a = el.getBoundingClientRect(), b = W.innen.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; }
+
+  /* ---------- gemeinsame Bausteine ---------- */
+  function reihenHTML(W, g) {
+    const Z = W.Z, z = zielDef(Z, g), p = Z.p[g.k];
+    return P[g.k].map(d => {
+      const aus = d.gilt && !d.gilt(z), key = `${g.k}|${d.id}`;
+      if (d.typ === 'schalter') return `<button type="button" class="schalter" data-meta="${key}" aria-pressed="${!!p[d.id]}">${d.name}<i></i></button>`;
+      if (d.typ === 'regler') return `<label class="preihe${aus ? ' aus' : ''}" for="${W.id}-${g.k}-${d.id}"><span>${d.name}<b data-pw="${key}">${aus ? d.aus : p[d.id]}</b></span><input type="range" id="${W.id}-${g.k}-${d.id}" min="${d.min}" max="${d.max}" value="${p[d.id]}" data-pr="${key}"${aus ? ' disabled' : ''}></label>`;
+      return `<div class="preihe${aus ? ' aus' : ''}"><span>${d.name}<b>${aus ? d.aus : pWert(d, p[d.id])}</b></span><div class="stufen" role="group" aria-label="${d.name}">${d.werte.map(v => `<button type="button" data-p="${key}|${v}" aria-pressed="${p[d.id] === v}"${aus ? ' disabled' : ''}>${v}</button>`).join('')}</div></div>`;
+    }).join('');
+  }
+  function presetHTML(W, g) {
+    const l = PRESETS[g.k]; if (!l.length) return '<span class="fest">Verlustfrei, hier gibt es nichts zu komprimieren. Die Größe steht fest.</span>';
+    const akt = W.Z.preset[g.k];
+    return `<div class="stufen${akt === 'Eigene' ? ' eigen' : ''}" role="group" aria-label="Kompression für ${g.name}" data-presets="${g.k}">${l.map(([n]) => `<button type="button" data-preset="${g.k}|${n}" aria-pressed="${akt === n}">${n}</button>`).join('')}</div>${akt === 'Eigene' ? '<span class="fest">Eigene Einstellung</span>' : ''}`;
+  }
+  const grossHTML = (Z, g) => { const v = vorG(g), n = nachG(Z, g); return `<span class="gross-gr" data-gross="${g.k}">${mbT(v)} <span>MB →</span> <em style="${n > v ? 'color:var(--amber)' : ''}">≈ ${mbT(n)} MB</em></span>`; };
+  function tilesHTML(W, g) {
+    const Z = W.Z, sel = W.sel ? g.files.find(f => f.n === W.sel) : null, aus = new Set(g.files.filter(f => Z.ausn[f.n]).map(f => Z.ausn[f.n]));
+    return `<div class="z-kopf m"><b>wird zu</b><small>${sel ? 'nur für ' + esc(sel.n) : 'für alle ' + g.name}</small></div><div class="tiles" role="radiogroup" aria-label="Zielformat">${g.ziele.map((z, i) => {
+      const an = sel ? zielVon(Z, g, sel) === z[0] : zielDef(Z, g) === z[0], gelb = sel ? an && Z.ausn[sel.n] : aus.has(z[0]);
+      const daten = sel ? `data-datei="${esc(sel.n)}" data-k="${g.k}" data-t="${z[0]}"` : `data-art="${g.k}" data-i="${i}"`;
+      return `<button type="button" class="tile${an && !gelb ? ' an' : ''}${gelb ? ' gelb' : ''}" role="radio" aria-checked="${an}" data-wt="${z[0]}" ${daten}>${i === 0 ? '<span class="vs2">Vorschlag</span>' : ''}<b>${z[0]}</b><small>${z[1]}</small></button>`;
+    }).join('')}</div>`;
+  }
+  function dateienHTML(W, g) {
+    const Z = W.Z, sel = W.sel;
+    return `<div class="z-kopf"><b>Ihre Dateien</b><small>eine wählen für ein eigenes Ziel</small></div>` +
+      (g.files.length > 1 ? `<button type="button" class="z-datei${sel ? '' : ' an'}" data-w2f="">Alle ${g.files.length} gemeinsam<span class="fc m">${zielDef(Z, g)}</span></button>` : '') +
+      g.files.map(f => `<button type="button" class="z-datei${sel === f.n || g.files.length === 1 ? ' an' : ''}" data-w2f="${esc(f.n)}" data-wf="${esc(f.n)}"><span style="min-width:0"><b>${esc(f.n)}</b><small>${f.f} · ${mbT(f.mb)} → ≈ ${mbT(groesse(Z, g, f))} MB</small></span><span class="fc ${Z.ausn[f.n] ? 'gelb' : 'm'}">${zielVon(Z, g, f)}</span></button>`).join('');
+  }
+  const ICON = {
+    senden: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10l14-6-5 14-2.5-5.5z"/><path d="M9.5 12.5L17 4"/></svg>',
+    web: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7"/><path d="M3 10h14M10 3c2.5 2.5 2.5 11.5 0 14M10 3c-2.5 2.5-2.5 11.5 0 14"/></svg>',
+    archiv: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="14" height="4" rx="1"/><path d="M4.5 8v8h11V8M8 11h4"/></svg>',
+    druck: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8V3h8v5M6 14H3.5V8.5h13V14H14"/><rect x="6" y="12" width="8" height="5"/></svg>',
+    eigen: '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h8M15 6h1M4 14h2M9 14h7"/><circle cx="13.5" cy="6" r="1.8"/><circle cx="7.5" cy="14" r="1.8"/></svg>',
+  };
+  const ZWECKE = {
+    bild: [['senden', 'Verschicken', 'JPG', { q: 72, px: '1920' }], ['web', 'Fürs Web', 'WEBP', { q: 75, px: '1920' }], ['archiv', 'Archivieren', 'PNG', { px: 'Original' }], ['druck', 'Drucken', 'TIFF', { px: 'Original' }]],
+    audio: [['senden', 'Verschicken', 'MP3', { kbps: '128', kan: 'Stereo' }], ['web', 'Fürs Web', 'OPUS', { kbps: '96', kan: 'Stereo' }], ['archiv', 'Archivieren', 'FLAC', {}], ['druck', 'Bearbeiten', 'WAV', {}]],
+    video: [['senden', 'Verschicken', 'MP4', { aufl: '480p', q: 50, fps: '24' }], ['web', 'Fürs Web', 'WEBM', { aufl: '720p', q: 60, fps: '30' }], ['archiv', 'Archivieren', 'MKV', { aufl: 'Original', q: 88, fps: 'Original' }], ['druck', 'Nur den Ton', 'nur Ton', {}]],
+    dok: [['senden', 'Verschicken', 'TXT', {}], ['web', 'Fürs Web', 'HTML', {}], ['archiv', 'Archivieren', 'MD', {}]],
+    model: [['senden', 'Verschicken', '3MF', {}], ['web', 'Fürs Web', 'GLB', {}], ['druck', 'Drucken', 'STL', {}], ['archiv', '3D-Programme', 'OBJ', {}]],
+  };
+  function zweckAnwenden(Z, g, z) { const i = g.ziele.findIndex(x => x[0] === z[2]); if (i >= 0) setzeArt(Z, g, i); Object.assign(Z.p[g.k], z[3]); Z.preset[g.k] = presetVon(Z, g); }
+  function zweckAktiv(Z, g) { return (ZWECKE[g.k].find(z => zielDef(Z, g) === z[2] && Object.entries(z[3]).every(([k, v]) => Z.p[g.k][k] === v)) || [])[0] || 'eigen'; }
+
+  /* ---------- Zoom-Bühne ---------- */
+  function geo(W) {
+    const links = 252, rechts = W.w - 302, cx = (links + rechts) / 2, cy = W.h * (W.k.cyF || .42), rx = Math.min((rechts - links) / 2 - 36, 200);
+    return { cx, cy, rx, ry: rx * .42 };
+  }
+  // zeichnet Bahn, Planeten, Wege; opts: skal (Bahn), planet(f, j) → {r, c}, zieh(x,y,j) → [x,y]
+  function zoomZeichnen(W, T, o = {}) {
+    const ctx = W.ctx, Z = W.Z, g = GR[W.art], c = farbe(g), gg = geo(W);
+    const z = leise ? 1 : ease(clamp((T - W.tZoom) / .9));
+    const rx = gg.rx * lerp(.25, 1, z) * (o.skal || 1), ry = rx * .42, cx = gg.cx, cy = gg.cy, drehe = leise ? 0 : 1;
+    ctx.strokeStyle = rgba(c, .4 * z); ctx.lineWidth = 1.3; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.stroke();
+    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+    for (let i = 0; i < 110; i++) {
+      const a = i / 110 * TAU + T * .12 * drehe, d = ((i * 37) % 11 - 5) * 1.4; let x = cx + Math.cos(a) * (rx + d), y = cy + Math.sin(a) * (ry + d * .5);
+      if (o.teil) [x, y] = o.teil(x, y, i);
+      ctx.fillStyle = rgba(c, .5 * z); ctx.fillRect(x - 1, y - 1, 2, 2);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    const planeten = [];
+    g.files.forEach((f, j) => {
+      const A = Math.PI * .72 + j * 1.35 + T * .12 * drehe; let x = cx + Math.cos(A) * rx, y = cy + Math.sin(A) * ry;
+      if (o.zieh) [x, y] = o.zieh(x, y, j);
+      planeten.push({ f, x, y });
+    });
+    // Wege: Datei → Loch → Ziel
+    const sel = W.sel;
+    g.files.forEach((f, j) => {
+      const b = W.innen.querySelector(`.z-l [data-wf="${CSS.escape(f.n)}"]`), t = zielVon(Z, g, f), e2 = W.innen.querySelector(`.z-r [data-wt="${CSS.escape(t)}"]`);
+      if (!b || !e2) return;
+      const a = rel(W, b), e = rel(W, e2), p0 = [a.x + a.w + 3, a.y + a.h / 2], p3 = [e.x - 3, e.y + e.h / 2], gelb = !!Z.ausn[f.n];
+      const hell = !sel || sel === f.n, al = z * (hell ? 1 : .35), puls = o.puls ? o.puls(j) : null;
+      weg(ctx, p0, [p0[0] + 60, p0[1]], [cx - 60, cy], [cx, cy], c, .55 * al, 1.4, T + j * .2, hell ? 5 : 0);
+      weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, gelb ? F.amber : F.mint, .8 * al, 2, T + j * .2, hell ? 6 : 0, gelb ? [5, 4] : null, puls);
+    });
+    W.innen.querySelectorAll('.z-r .tile').forEach(b => { if (b.classList.contains('an') || b.classList.contains('gelb')) return; const e = rel(W, b), p3 = [e.x - 3, e.y + e.h / 2]; weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, F['line-stark'], .22 * z, 1); });
+    planeten.forEach(({ f, x, y }, j) => { const pl = o.planet ? o.planet(f, j) : { r: 5 + Math.sqrt(f.mb) * .6, c }; kugel(ctx, x, y, pl.r, pl.c, z); if (pl.glut) glow(ctx, x, y, pl.r * 3, pl.c, pl.glut); });
+    return { cx, cy, rx, ry, z, planeten };
+  }
+
+  /* ---------- Vorschau-Bilder für die Linse ---------- */
+  const LCACHE = new Map();
+  function szene(x, s, k, f, zielT) {
+    if (k === 'bild' && f.foto) {
+      const q = x.createLinearGradient(0, 0, 0, s); q.addColorStop(0, '#8fbbe9'); q.addColorStop(.6, '#e6eef6'); q.addColorStop(.6, '#d9c9a4'); q.addColorStop(1, '#b8a47a'); x.fillStyle = q; x.fillRect(0, 0, s, s);
+      x.fillStyle = '#5f7c9c'; x.beginPath(); x.moveTo(0, s * .62); x.lineTo(s * .28, s * .2); x.lineTo(s * .45, s * .4); x.lineTo(s * .62, s * .24); x.lineTo(s, s * .62); x.fill();
+      x.fillStyle = '#f7f9fb'; x.beginPath(); x.moveTo(s * .23, s * .28); x.lineTo(s * .28, s * .2); x.lineTo(s * .33, s * .27); x.fill();
+      x.fillStyle = '#f2c46a'; x.beginPath(); x.arc(s * .8, s * .16, s * .07, 0, TAU); x.fill();
+      x.fillStyle = '#4d6b3c'; for (let i = 0; i < 9; i++) { x.beginPath(); x.moveTo(s * (.05 + i * .11), s * .78); x.lineTo(s * (.09 + i * .11), s * .62); x.lineTo(s * (.13 + i * .11), s * .78); x.fill(); }
+    } else if (k === 'bild') {
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, s, s); x.fillStyle = '#1a53a8'; x.fillRect(s * .1, s * .1, s * .5, s * .07);
+      x.fillStyle = '#9aa4ab'; for (let i = 0; i < 9; i++) x.fillRect(s * .1, s * (.24 + i * .07), s * (.8 - (i % 3) * .15), s * .025);
+      x.strokeStyle = '#9e3123'; x.lineWidth = s * .02; x.beginPath(); x.arc(s * .74, s * .76, s * .1, 0, TAU); x.stroke();
+    } else if (k === 'video') {
+      x.fillStyle = '#1d2226'; x.fillRect(0, 0, s, s); const q = x.createLinearGradient(0, s * .2, 0, s * .8); q.addColorStop(0, '#f0a35a'); q.addColorStop(1, '#6a3c7d'); x.fillStyle = q; x.fillRect(0, s * .14, s, s * .72);
+      x.fillStyle = '#2a1f33'; x.beginPath(); x.moveTo(0, s * .7); x.quadraticCurveTo(s * .3, s * .55, s * .6, s * .68); x.quadraticCurveTo(s * .8, s * .74, s, s * .64); x.lineTo(s, s * .86); x.lineTo(0, s * .86); x.fill();
+      x.fillStyle = '#ffd98a'; x.beginPath(); x.arc(s * .5, s * .5, s * .09, 0, TAU); x.fill();
+    } else if (k === 'dok') {
+      x.fillStyle = '#ffffff'; x.fillRect(0, 0, s, s); const txt = zielT && zielT !== 'HTML';
+      x.fillStyle = txt ? '#5b646a' : '#095c78'; x.fillRect(s * .1, s * .1, s * .55, s * (txt ? .04 : .07));
+      x.fillStyle = '#9aa4ab'; for (let i = 0; i < 10; i++) x.fillRect(s * .1, s * (.24 + i * .065), s * (.8 - (i % 4) * .12), s * .025);
+      if (!txt) { x.fillStyle = '#e6eef6'; x.fillRect(s * .55, s * .5, s * .3, s * .22); }
+    } else {
+      x.fillStyle = '#f7eef4'; x.fillRect(0, 0, s, s); const cx = s / 2, cy = s / 2, r = s * .3, P2 = [[0, -r], [r * .9, -r / 2], [r * .9, r / 2], [0, r], [-r * .9, r / 2], [-r * .9, -r / 2]];
+      x.strokeStyle = '#9a2f7d'; x.lineWidth = 2; x.beginPath(); P2.forEach(([a, b], i) => i ? x.lineTo(cx + a, cy + b) : x.moveTo(cx + a, cy + b)); x.closePath(); x.moveTo(cx, cy); x.lineTo(cx, cy + r); x.moveTo(cx, cy); x.lineTo(cx - r * .9, cy - r / 2); x.moveTo(cx, cy); x.lineTo(cx + r * .9, cy - r / 2); x.stroke();
+    }
+  }
+  function welle(x, s, detail, mono, farbeL, farbeR) {
+    x.fillStyle = '#12161a'; x.fillRect(0, 0, s, s);
+    const kanal = (off, c) => { x.strokeStyle = c; x.lineWidth = 1.4; x.beginPath(); const roh = []; for (let i = 0; i < s; i++) { const t = i / s; roh.push(Math.sin(t * 22 + off) * .5 + Math.sin(t * 71 + off * 2) * .3 + Math.sin(t * 193) * .25 + Math.sin(t * 431 + off) * .15); }
+      const w = Math.max(1, Math.round(detail)); for (let i = 0; i < s; i++) { let v = 0, n = 0; for (let j = -w; j <= w; j++) { const q = roh[i + j]; if (q != null) { v += q; n++; } } const y = s * (off ? .7 : .32) + v / n * s * .14; i ? x.lineTo(i, y) : x.moveTo(i, y); } x.stroke(); };
+    kanal(0, farbeL); if (!mono) kanal(1.3, farbeR); else { x.fillStyle = '#8b959c'; x.font = `600 ${s * .07}px ${MONO}`; x.fillText('MONO', s * .06, s * .9); }
+  }
+  function vorschau(W, g, f, nachher) {
+    const Z = W.Z, t = zielVon(Z, g, f), p = Z.p[g.k], s = 180;
+    const key = [g.k, f.n, nachher, t, JSON.stringify(p), F.dunkel].join('|');
+    if (LCACHE.has(key)) return LCACHE.get(key);
+    const c = document.createElement('canvas'); c.width = c.height = s; const x = c.getContext('2d');
+    if (g.k === 'audio' || (g.k === 'video' && t === 'nur Ton' && nachher)) {
+      const verl = VERLUST.audio.includes(t) || t === 'nur Ton', kb = t === 'nur Ton' ? 160 : +p.kbps;
+      welle(x, s, nachher && verl ? lerp(9, 0, (kb - 96) / 224) : 0, nachher && p.kan === 'Mono', '#b28cff', '#6fe0bf');
+    } else {
+      szene(x, s, g.k, f, nachher ? t : null);
+      if (nachher && (g.k === 'bild' || g.k === 'video')) {
+        let aufl = 1, q = 100;
+        if (g.k === 'bild') { aufl = p.px === 'Original' ? 1 : Math.min(1, +p.px / f.px); q = VERLUST.bild.includes(t) ? p.q : t === 'GIF' ? 70 : 100; }
+        else { aufl = { Original: 1, '1080p': .5, '720p': .33, '480p': .22 }[p.aufl]; q = p.q; }
+        const r = Math.max(6, Math.round(s * aufl * .45)), tmp = document.createElement('canvas'); tmp.width = tmp.height = r;
+        const tx = tmp.getContext('2d'); tx.imageSmoothingEnabled = true; tx.drawImage(c, 0, 0, r, r);
+        if (q < 100) { const d = tx.getImageData(0, 0, r, r), stufe = Math.round(lerp(3, 26, Math.pow((q - 30) / 70, 1.4))), st = 255 / stufe; for (let i = 0; i < d.data.length; i += 4) for (let j = 0; j < 3; j++) d.data[i + j] = Math.round(d.data[i + j] / st) * st; tx.putImageData(d, 0, 0); }
+        x.imageSmoothingEnabled = false; x.clearRect(0, 0, s, s); x.drawImage(tmp, 0, 0, s, s);
+      }
+    }
+    LCACHE.set(key, c); return c;
+  }
+
+  /* ---------- die fünf Konzepte ---------- */
+  const K = {};
+
+  // A · Verdichter: Regler mit Voreinstellungen, Fächer mit Größenbalken, Verdichten
+  K.a = {
+    aufbau(W) { W.wellen = []; W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel" aria-live="polite"></div><div class="z-l"></div><div class="z-r"></div><div class="fa-leiste" role="group" aria-label="Dateiarten"></div>'); },
+    rechts(W, g) {
+      const offen = W.offen.has('genau') || !PRESETS[g.k].length;
+      return `<div class="karte-e"><h5>Kompression<span class="gr">${g.name}</span></h5>${grossHTML(W.Z, g)}${presetHTML(W, g)}
+        ${PRESETS[g.k].length ? `<button type="button" class="link" style="justify-self:start" data-auf="genau" aria-expanded="${offen}">${offen ? 'Genaue Einstellungen ausblenden' : 'Genau einstellen …'}</button>` : ''}${offen ? reihenHTML(W, g) : ''}</div>`;
+    },
+    uebersicht(W) {
+      W.innen.querySelector('.fa-leiste').innerHTML = GR.map((g, i) => {
+        const v = vorG(g), n = nachG(W.Z, g), fm = [...new Set(g.files.map(f => f.f))].join(' ');
+        return `<button type="button" class="fa k-${g.k}${i === W.art ? ' an' : ''}" data-w2k="${i}" aria-pressed="${i === W.art}"><span class="fa-kopf"><span class="punkt"></span><b>${g.kurz}</b><em>${g.files.length}</em></span><span class="fa-weg">${fm} → <i>${zielDef(W.Z, g)}</i></span><span class="balk"><i style="width:${Math.min(100, n / v * 100)}%;${n > v ? 'background:var(--amber);box-shadow:0 0 8px var(--amber)' : ''}"></i></span><span class="gr">${mbT(v)} → <em>${mbT(n)}</em> MB</span></button>`;
+      }).join('');
+    },
+    geaendert(W) { W.wellen.push(W.jetzt); },
+    zeichnen(W, T) {
+      const g = GR[W.art], v = vorG(g), n = nachG(W.Z, g), rr = clamp(n / v, .03, 1.2), dicht = 1 - Math.min(1, rr), c = farbe(g);
+      W.dicht = W.dicht == null ? dicht : lerp(W.dicht, dicht, .08);
+      const d = W.dicht, heiss = mix(c, [255, 255, 255], d * .65);
+      W.wellen = W.wellen.filter(t => T - t < .9);
+      const gg = geo(W);
+      const zz = zoomZeichnen(W, T, {
+        skal: lerp(1, .82, d),
+        teil: (x, y, i) => { let k = 0; W.wellen.forEach(t => { const q = (T - t) / .9; k += Math.sin(q * Math.PI) * .08; }); return [lerp(x, gg.cx, k), lerp(y, gg.cy, k)]; },
+        planet: (f, j) => ({ r: Math.max(2.5, (4 + Math.sqrt(groesse(W.Z, g, f)) * .9)), c: heiss, glut: .15 + d * .45 + (leise ? 0 : .08 * Math.sin(T * (3 + d * 6) + j)) }),
+      });
+      W.wellen.forEach(t => { const q = (T - t) / .9; W.ctx.strokeStyle = rgba(F.mint, (1 - q) * .7); W.ctx.lineWidth = 1.5; W.ctx.beginPath(); W.ctx.ellipse(zz.cx, zz.cy, zz.rx * (1.25 - q * .9), zz.ry * (1.25 - q * .9), 0, 0, TAU); W.ctx.stroke(); });
+      loch(W.ctx, zz.cx, zz.cy, lerp(18, 12, zz.z) * (1 + d * .25));
+    },
+  };
+
+  // B · Zielgröße am Horizont: Ring ums Loch, Waage aller Dateien, Funken
+  const KANDIDATEN = {
+    bild: () => { const l = []; P.bild[1].werte.forEach((px, i) => { for (let q = 30; q <= 98; q += 2) l.push([{ px, q }, (6 - i) * 1000 + q]); }); return l; },
+    audio: () => { const l = []; P.audio[0].werte.forEach(kbps => ['Stereo', 'Mono'].forEach(kan => l.push([{ kbps, kan }, +kbps * (kan === 'Stereo' ? 2 : 1)]))); return l; },
+    video: () => { const l = []; P.video[0].werte.forEach((aufl, i) => ['Original', '30', '24'].forEach((fps, j) => { for (let q = 30; q <= 98; q += 4) l.push([{ aufl, fps, q }, (4 - i) * 10000 + q * 10 + (3 - j)]); })); return l; },
+  };
+  function loese(Z, g, ziel) {
+    const liste = KANDIDATEN[g.k] && KANDIDATEN[g.k](); if (!liste) return;
+    const alt = { ...Z.p[g.k] }; let best = null, bs = -1, klein = null, ks = Infinity;
+    for (const [p, s] of liste) { Object.assign(Z.p[g.k], alt, p); const n = nachG(Z, g); if (n <= ziel && s > bs) { best = p; bs = s; } if (n < ks) { ks = n; klein = p; } }
+    Object.assign(Z.p[g.k], alt, best || klein); Z.preset[g.k] = presetVon(Z, g);
+  }
+  K.b = {
+    aufbau(W) {
+      W.funken = []; W.wellen = [];
+      W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel" aria-live="polite"></div><div class="z-l"></div><div class="z-r"></div><div class="abgeleitet" aria-live="polite"></div><button type="button" class="ring-griff" aria-label="Zielgröße ziehen" role="slider"></button><span class="hinweis-z">Den Griff am Ring ziehen: kleiner bis zur gewünschten Größe</span>');
+      const griff = W.innen.querySelector('.ring-griff');
+      const setze = (ev) => {
+        const g = GR[W.art]; if (!KANDIDATEN[g.k]) return; const gg = geo(W), r = W.innen.getBoundingClientRect(), x = ev.clientX - r.left - gg.cx, y = ev.clientY - r.top - gg.cy;
+        let a = Math.atan2(y, x) + Math.PI / 2; if (a < 0) a += TAU; const fr = clamp(a / TAU, .02, 1);
+        const vor = nachG(W.Z, g); loese(W.Z, g, fr * vorG(g)); const nach = nachG(W.Z, g);
+        if (nach < vor - .01) for (let i = 0; i < 6; i++) W.funken.push({ t: W.jetzt, a: fr * TAU - Math.PI / 2 + (Math.random() - .5) * .4, v: 40 + Math.random() * 70, c: farbe(g) });
+        zahlen(W); K.b.abgel(W);
+      };
+      griff.addEventListener('pointerdown', e => { griff.setPointerCapture(e.pointerId); W.zieht = true; const mv = ev => setze(ev), up = () => { W.zieht = false; W.wellen.push(W.jetzt); griff.removeEventListener('pointermove', mv); griff.removeEventListener('pointerup', up); neu(W); }; griff.addEventListener('pointermove', mv); griff.addEventListener('pointerup', up); });
+      griff.addEventListener('keydown', e => {
+        const g = GR[W.art]; if (!KANDIDATEN[g.k] || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault();
+        const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1; loese(W.Z, g, Math.max(.01, nachG(W.Z, g) + dir * vorG(g) * .05)); W.wellen.push(W.jetzt); neu(W); W.innen.querySelector('.ring-griff').focus();
+      });
+    },
+    abgel(W) { const g = GR[W.art], a = W.innen.querySelector('.abgeleitet'), gg = geo(W); a.style.top = (gg.cy + 86) + 'px'; a.innerHTML = KANDIDATEN[g.k] ? kurzP(W.Z, g).map(t => `<span>${esc(t)}</span>`).join('') : '<span>verlustfrei</span>'; },
+    links(W) {
+      const Z = W.Z;
+      return `<div class="z-kopf"><b>Alles, was Sie eingeworfen haben</b><small>Balken: Größe vorher, Mint: nachher</small></div><div class="waage">` + GR.map((g, i) => {
+        const max = Math.max(...GR.flatMap(x => x.files.map(f => f.mb)));
+        const sk = v => Math.max(2, Math.sqrt(v / max) * 100);
+        return `<h6 class="k-${g.k}" data-w2k="${i}"><span>${g.kurz} · ${g.files.length}</span><span>→ ${zielDef(Z, g)}</span></h6>` + g.files.map(f => {
+          const n = groesse(Z, g, f), akt = i === W.art;
+          return `<button type="button" class="wz k-${g.k}${akt && (W.sel === f.n || g.files.length === 1) ? ' an' : ''}${akt ? '' : ' fern'}" data-wf2="${g.k}|${esc(f.n)}"${akt ? ` data-wf="${esc(f.n)}"` : ''}><span class="n"><b>${esc(f.n)}</b><span class="gr">${mbT(f.mb)} → <em>${mbT(n)}</em></span></span><span class="zwei"><i class="v" style="width:${sk(f.mb)}%"></i><i class="n2" style="width:${sk(n)}%;${n > f.mb ? 'background:var(--amber)' : ''}"></i></span></button>`;
+        }).join('');
+      }).join('') + `<h6 style="--k:var(--coral)"><span>Nicht umwandelbar</span></h6><div class="wz nein"><span class="n"><b>${NEIN.n}</b></span><span class="gr" style="color:var(--coral)">${NEIN.grund}</span></div></div>`;
+    },
+    rechts(W, g) {
+      const offen = W.offen.has('genau') || !PRESETS[g.k].length;
+      return `<div class="karte-e"><h5>Zielgröße<span class="gr">${g.name}</span></h5>${grossHTML(W.Z, g)}<span class="fest">${KANDIDATEN[g.k] ? 'Ring am Loch kleiner ziehen. Kvertis wählt Qualität und Auflösung passend dazu.' : 'Verlustfrei, die Größe steht fest.'}</span>
+        ${PRESETS[g.k].length ? `<button type="button" class="link" style="justify-self:start" data-auf="genau" aria-expanded="${offen}">${offen ? 'Selbst einstellen ausblenden' : 'Selbst einstellen …'}</button>` : ''}${offen ? reihenHTML(W, g) : ''}</div>`;
+    },
+    nachRender(W) { K.b.abgel(W); },
+    zeichnen(W, T) {
+      const ctx = W.ctx, g = GR[W.art], v = vorG(g), n = nachG(W.Z, g), fr = clamp(n / v), c = farbe(g);
+      const zz = zoomZeichnen(W, T, {});
+      const R = 62, cx = zz.cx, cy = zz.cy, a0 = -Math.PI / 2;
+      W.fr = W.fr == null ? fr : lerp(W.fr, fr, W.zieht ? 1 : .15);
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = rgba(c, .28); ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.stroke();
+      if (KANDIDATEN[g.k]) { ctx.strokeStyle = rgba(F.mint, .95); ctx.shadowColor = rgba(F.mint, 1); ctx.shadowBlur = 12; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy, R, a0, a0 + W.fr * TAU); ctx.stroke(); ctx.shadowBlur = 0; }
+      ctx.lineCap = 'butt';
+      // Marke für E-Mail (25 MB), wenn sinnvoll
+      if (KANDIDATEN[g.k] && v > 25) { const a = a0 + 25 / v * TAU; ctx.strokeStyle = rgba(F.amber, .9); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * (R - 8), cy + Math.sin(a) * (R - 8)); ctx.lineTo(cx + Math.cos(a) * (R + 10), cy + Math.sin(a) * (R + 10)); ctx.stroke(); ctx.font = `600 9.5px ${MONO}`; ctx.fillStyle = rgba(F.amber, 1); ctx.fillText('E-Mail 25 MB', cx + Math.cos(a) * (R + 14), cy + Math.sin(a) * (R + 14)); }
+      // Funken: abgestoßene Bytes
+      W.funken = W.funken.filter(p => T - p.t < 1.1);
+      ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+      W.funken.forEach(p => { const q = (T - p.t) / 1.1, d = R + p.v * easeOut(q); ctx.fillStyle = rgba(mix(p.c, [255, 255, 255], .5), 1 - q); ctx.beginPath(); ctx.arc(cx + Math.cos(p.a) * d, cy + Math.sin(p.a) * d, 2.2 * (1 - q) + .6, 0, TAU); ctx.fill(); });
+      ctx.globalCompositeOperation = 'source-over';
+      W.wellen = W.wellen.filter(t => T - t < .8); W.wellen.forEach(t => { const q = (T - t) / .8; ctx.strokeStyle = rgba(F.mint, (1 - q) * .8); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R + q * 50, 0, TAU); ctx.stroke(); });
+      loch(ctx, cx, cy, 14 + (1 - W.fr) * 12);
+      const griff = W.innen.querySelector('.ring-griff'), ae = a0 + W.fr * TAU;
+      griff.hidden = !KANDIDATEN[g.k]; griff.style.left = (cx + Math.cos(ae) * R) + 'px'; griff.style.top = (cy + Math.sin(ae) * R) + 'px';
+      griff.setAttribute('aria-valuetext', `≈ ${mbT(n)} MB von ${mbT(v)} MB`);
+    },
+  };
+
+  // C · Linse: Vorschau vorher/nachher, Mini-Galaxie als Übersicht, Gravitationslinse
+  K.c = {
+    cyF: .34,
+    aufbau(W) { W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel" aria-live="polite"></div><div class="z-l"></div><div class="z-r"></div><div class="mini-gal"><span class="z-kopf"><b>Alle Dateien</b><small>7 umwandelbar · 1 nicht</small></span><div class="platz-c" aria-hidden="true"></div><div class="knoepfe" role="group" aria-label="Dateiart"></div></div><span class="linse-txt js-lv">vorher</span><span class="linse-txt js-ln">nachher</span>'); },
+    rechts(W, g) { return `<div class="karte-e"><h5>Kompression<span class="gr">${g.name}</span></h5>${grossHTML(W.Z, g)}${presetHTML(W, g)}${reihenHTML(W, g)}</div>`; },
+    uebersicht(W) { W.innen.querySelector('.mini-gal .knoepfe').innerHTML = GR.map((g, i) => `<button type="button" class="k-${g.k}${i === W.art ? ' an' : ''}" data-w2k="${i}" aria-pressed="${i === W.art}"><i></i>${g.kurz} ${g.files.length}</button>`).join(''); },
+    zeichnen(W, T) {
+      const ctx = W.ctx, g = GR[W.art], Z = W.Z;
+      const f = (W.sel && g.files.find(x => x.n === W.sel)) || g.files[0], gg = geo(W);
+      const L = { x: gg.cx, y: gg.cy + gg.ry + 104, r: 84 };
+      const zz = zoomZeichnen(W, T, { teil: (x, y) => { const dx = x - L.x, dy = y - L.y, d = Math.hypot(dx, dy); if (d < L.r + 50 && d > 1) { const k = (L.r + 50 - d) / 50; return [x + dx / d * k * 22, y + dy / d * k * 22]; } return [x, y]; } });
+      loch(ctx, zz.cx, zz.cy, lerp(18, 12, zz.z));
+      // Brennlinie vom Planeten der Datei zur Linse
+      const pl = zz.planeten.find(p => p.f === f);
+      if (pl) { ctx.strokeStyle = rgba(farbe(g), .5); ctx.setLineDash([3, 4]); ctx.beginPath(); ctx.moveTo(pl.x, pl.y); ctx.lineTo(L.x, L.y - L.r); ctx.stroke(); ctx.setLineDash([]); }
+      // Linse: links vorher, rechts nachher
+      ctx.save(); ctx.beginPath(); ctx.arc(L.x, L.y, L.r, 0, TAU); ctx.clip();
+      const a = vorschau(W, g, f, false), b = vorschau(W, g, f, true), s = L.r * 2;
+      ctx.drawImage(a, 0, 0, 90, 180, L.x - L.r, L.y - L.r, L.r, s);
+      ctx.drawImage(b, 90, 0, 90, 180, L.x, L.y - L.r, L.r, s);
+      ctx.restore();
+      ctx.strokeStyle = rgba(F.mint, .9); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(L.x, L.y - L.r); ctx.lineTo(L.x, L.y + L.r); ctx.stroke();
+      glow(ctx, L.x, L.y, L.r + 26, F.violet, .12);
+      ctx.strokeStyle = rgba(mix(F.mint, [255, 255, 255], .4), .9); ctx.lineWidth = 2.2; ctx.beginPath(); ctx.arc(L.x, L.y, L.r, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = rgba(F.mint, .25 + (leise ? 0 : .15 * Math.sin(T * 2))); ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(L.x, L.y, L.r + 6, 0, TAU); ctx.stroke();
+      const lv = W.innen.querySelector('.js-lv'), ln = W.innen.querySelector('.js-ln');
+      lv.style.left = (L.x - L.r - 4) + 'px'; lv.style.top = (L.y - L.r - 16) + 'px'; ln.style.left = (L.x + L.r - 50) + 'px'; ln.style.top = (L.y - L.r - 16) + 'px';
+      ln.textContent = 'nachher · ' + zielVon(Z, g, f);
+      ctx.font = `500 10px ${MONO}`; ctx.fillStyle = rgba(F.muted, 1); ctx.textAlign = 'center'; ctx.fillText(`${f.n} · ${mbT(f.mb)} → ≈ ${mbT(groesse(Z, g, f))} MB`, L.x, L.y + L.r + 18); ctx.textAlign = 'left';
+      // Mini-Galaxie
+      const mg = W.innen.querySelector('.mini-gal .platz-c'); if (!mg) return; const r = rel(W, mg), mx = r.x + r.w / 2, my = r.y + r.h / 2;
+      GR.forEach((x, i) => { const rx = 22 + i * 19, c = farbe(x), an = i === W.art; ctx.strokeStyle = rgba(c, an ? .9 : .35); ctx.lineWidth = an ? 1.6 : 1; ctx.beginPath(); ctx.ellipse(mx, my, rx, rx * .42, 0, 0, TAU); ctx.stroke(); x.files.forEach((ff, j) => { const A = j * 2.1 + i + T * (.3 - i * .04) * (leise ? 0 : 1); kugel(ctx, mx + Math.cos(A) * rx, my + Math.sin(A) * rx * .42, 2.5 + Math.sqrt(ff.mb) * .25, c); }); });
+      loch(ctx, mx, my, 6);
+    },
+  };
+
+  // D · Zwecke: Karten mit Ergebnis, Frachtliste aller Dateien, Komet
+  K.d = {
+    aufbau(W) { W.kometen = []; W.pulsT = -9; W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel" aria-live="polite"></div><div class="z-l"></div><div class="z-r"></div><div class="fracht" role="group" aria-label="Alle Dateien"></div>'); },
+    rechts(W, g) {
+      const Z = W.Z, akt = zweckAktiv(Z, g), offen = akt === 'eigen' || W.offen.has('genau');
+      const karten = ZWECKE[g.k].map(z => {
+        const Zt = JSON.parse(JSON.stringify(Z)); zweckAnwenden(Zt, g, z); const n = nachG(Zt, g), was = [z[2], ...kurzP(Zt, g, true)].slice(0, 3).join(' · ');
+        return `<button type="button" class="zweck${akt === z[0] ? ' an' : ''}" data-zweck="${g.k}|${z[0]}" aria-pressed="${akt === z[0]}">${ICON[z[0]]}<b>${z[1]}</b><span class="gr"><em>≈ ${mbT(n)} MB</em></span><small>${esc(was)}</small></button>`;
+      }).join('') + `<button type="button" class="zweck${akt === 'eigen' ? ' an' : ''}" data-auf="genau" aria-expanded="${offen}">${ICON.eigen}<b>Eigene Einstellung</b><span class="gr"></span><small>${esc([zielDef(Z, g), ...kurzP(Z, g, true)].slice(0, 3).join(' · '))}</small></button>`;
+      return `<div class="z-kopf m"><b>Wofür brauchen Sie die ${g.name}?</b><small>Kvertis stellt Format, Größe und Qualität passend ein</small></div><div class="zwecke" role="group" aria-label="Zweck">${karten}</div>
+        <label class="fuer-alle" for="${W.id}-alle"><input type="checkbox" id="${W.id}-alle" data-alle${W.alle ? ' checked' : ''}>Zweck für alle Arten übernehmen</label>
+        <div class="z-kopf"><small>oder Format direkt</small></div><div class="chips-z">${g.ziele.map((z, i) => `<button type="button" class="fc m${zielDef(Z, g) === z[0] ? ' an' : ''}" data-art="${g.k}" data-i="${i}" data-wt="${z[0]}">${z[0]}</button>`).join('')}</div>
+        ${offen ? `<div class="karte-e">${grossHTML(Z, g)}${presetHTML(W, g)}${reihenHTML(W, g)}</div>` : ''}`;
+    },
+    uebersicht(W) {
+      const Z = W.Z;
+      W.innen.querySelector('.fracht').innerHTML = GR.flatMap((g, i) => g.files.map(f => { const n = groesse(Z, g, f); return `<button type="button" class="fr k-${g.k}${i === W.art ? ' an' : ''}" data-wf2="${g.k}|${esc(f.n)}"><span class="punkt"></span><b>${esc(f.n)}</b><span class="w">${f.f} → <i>${zielVon(Z, g, f)}</i></span><span class="balk"><i style="width:${Math.min(100, n / f.mb * 100)}%;${n > f.mb ? 'background:var(--amber)' : ''}"></i></span></button>`; })).join('') + `<div class="fr nein"><span class="punkt" style="--k:var(--coral)"></span><b>${NEIN.n}</b><span class="w">geht nicht</span></div>`;
+    },
+    zweck(W, g, id, von) {
+      const Z = W.Z, ziele = W.alle ? GR : [g];
+      ziele.forEach(x => { const z = ZWECKE[x.k].find(q => q[0] === id); if (z) zweckAnwenden(Z, x, z); });
+      if (von) { const r = rel(W, von), gg = geo(W); W.kometen.push({ t: W.jetzt, a: [r.x + 10, r.y + r.h / 2], b: [gg.cx, gg.cy], spur: [] }); W.pulsT = W.jetzt + .8; }
+      W.offen.delete('genau');
+    },
+    zeichnen(W, T) {
+      const ctx = W.ctx, pu = T - W.pulsT;
+      const zz = zoomZeichnen(W, T, { puls: j => { const q = (pu - j * .18) / .9; return q >= 0 && q <= 1 ? q : null; } });
+      W.kometen = W.kometen.filter(k => T - k.t < 1.4);
+      W.kometen.forEach(k => {
+        const q = clamp((T - k.t) / .8), m = [(k.a[0] + k.b[0]) / 2, Math.min(k.a[1], k.b[1]) - 120], u = easeOut(q) * easeOut(q);
+        const x = (1 - u) * (1 - u) * k.a[0] + 2 * (1 - u) * u * m[0] + u * u * k.b[0], y = (1 - u) * (1 - u) * k.a[1] + 2 * (1 - u) * u * m[1] + u * u * k.b[1];
+        if (q < 1) { k.spur.push([x, y]); if (k.spur.length > 26) k.spur.shift(); }
+        ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+        k.spur.forEach(([sx, sy], i) => { ctx.fillStyle = rgba(mix(F.mint, [255, 255, 255], i / k.spur.length * .6), (i / k.spur.length) * .7 * (q < 1 ? 1 : 1 - (T - k.t - .8) / .6)); ctx.beginPath(); ctx.arc(sx, sy, 1 + i / k.spur.length * 4, 0, TAU); ctx.fill(); });
+        ctx.globalCompositeOperation = 'source-over';
+        if (q < 1) glow(ctx, x, y, 18, [255, 255, 255], .9);
+        else { const f = (T - k.t - .8) / .6; glow(ctx, k.b[0], k.b[1], 30 + f * 120, F.mint, .7 * (1 - f)); }
+      });
+      loch(ctx, zz.cx, zz.cy, lerp(18, 12, zz.z) * (1 + (pu > -.8 && pu < 0 ? .3 : 0)));
+    },
+  };
+
+  // E · Umlauf-Regler: Einstellungen als Monde auf Bahnen, Masse-Ring, Gezeiten
+  const RING = { bild: ['q', 'px'], audio: ['kbps'], video: ['q', 'aufl', 'fps'], dok: [], model: [] };
+  K.e = {
+    cyF: .47,
+    aufbau(W) { W.kpos = {}; W.zug = null; W.innen.insertAdjacentHTML('beforeend', '<div class="z-titel" aria-live="polite"></div><div class="z-l"></div><div class="z-r"></div><div class="knoepfe-e"></div><div class="masse"><div class="platz-c" aria-hidden="true"></div><ul></ul></div>'); },
+    rechts(W, g) {
+      const Z = W.Z, rest = P[g.k].filter(d => !RING[g.k].includes(d.id));
+      const sich = { ...W, id: W.id }; // Zeilen für Einstellungen ohne Ring
+      const nur = P[g.k]; P[g.k] = rest; const html = reihenHTML(sich, g); P[g.k] = nur;
+      return `<div class="karte-e"><h5>Kompression<span class="gr">${g.name}</span></h5>${grossHTML(Z, g)}${presetHTML(W, g)}<span class="fest">${RING[g.k].length ? 'Die Monde um das Loch ziehen: innen Qualität, außen Größe.' : 'Verlustfrei, hier gibt es nichts zu komprimieren.'}</span>${html}</div>`;
+    },
+    uebersicht(W) {
+      const Z = W.Z;
+      W.innen.querySelector('.masse ul').innerHTML = GR.map((g, i) => `<li class="k-${g.k}${i === W.art ? ' an' : ''}" data-w2k="${i}"><span><span class="punkt" style="width:7px;height:7px"></span>${g.kurz}</span><span class="gr">${mbT(vorG(g))} → <em>${mbT(nachG(Z, g))}</em></span></li>`).join('') + `<li style="cursor:default"><span><b>Zusammen</b></span><span class="gr">${mbT(VOR)} → <em>${mbT(nachAlle(Z))}</em></span></li>`;
+    },
+    nachRender(W) {
+      const Z = W.Z, g = GR[W.art], box = W.innen.querySelector('.knoepfe-e');
+      box.innerHTML = RING[g.k].map((id, r) => { const d = P[g.k].find(x => x.id === id), aus = d.gilt && !d.gilt(zielDef(Z, g)); return `<button type="button" class="mond-k${aus ? ' aus' : ''}" role="slider" aria-label="${d.name}" data-mk="${g.k}|${id}|${r}"${aus ? ' aria-disabled="true"' : ''}><b>${aus ? d.aus : esc(pWert(d, Z.p[g.k][id]))}</b><small>${d.name}</small></button>`; }).join('');
+      box.querySelectorAll('.mond-k').forEach(m => {
+        const [k, id] = m.dataset.mk.split('|'), d = P[k].find(x => x.id === id);
+        if (m.classList.contains('aus')) return;
+        const setzeT = t => { const w = d.typ === 'regler' ? Math.round(lerp(d.min, d.max, t)) : d.werte[Math.round(t * (d.werte.length - 1))]; if (W.Z.p[k][id] !== w) { W.Z.p[k][id] = w; W.Z.preset[k] = presetVon(W.Z, G(k)); m.querySelector('b').textContent = pWert(d, w); zahlen(W); } };
+        m.addEventListener('pointerdown', e => {
+          m.setPointerCapture(e.pointerId); W.zug = { id, x: 0, y: 0 };
+          const mv = ev => { const gg = geo(W), r = W.innen.getBoundingClientRect(); let a = Math.atan2(ev.clientY - r.top - gg.cy, ev.clientX - r.left - gg.cx); if (a > 0) a = a > Math.PI / 2 ? -Math.PI : 0; const t = clamp((a + Math.PI) / Math.PI); W.zug.x = ev.clientX - r.left; W.zug.y = ev.clientY - r.top; setzeT(t); };
+          const up = () => { W.zug = null; W.los = W.jetzt; m.removeEventListener('pointermove', mv); m.removeEventListener('pointerup', up); neu(W); };
+          m.addEventListener('pointermove', mv); m.addEventListener('pointerup', up);
+        });
+        m.addEventListener('keydown', e => {
+          if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return; e.preventDefault(); const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : -1;
+          if (d.typ === 'regler') W.Z.p[k][id] = clamp(W.Z.p[k][id] + dir * 2, d.min, d.max); else { const i = d.werte.indexOf(W.Z.p[k][id]); W.Z.p[k][id] = d.werte[clamp(i - dir, 0, d.werte.length - 1)]; }
+          W.Z.preset[k] = presetVon(W.Z, G(k)); neu(W); W.innen.querySelector(`[data-mk="${m.dataset.mk}"]`)?.focus();
+        });
+      });
+    },
+    tWert(g, d, v) { return d.typ === 'regler' ? (v - d.min) / (d.max - d.min) : 1 - d.werte.indexOf(v) / (d.werte.length - 1); },
+    zeichnen(W, T, dt) {
+      const ctx = W.ctx, g = GR[W.art], Z = W.Z, gg = geo(W), zug = W.zug;
+      const zz = zoomZeichnen(W, T, {
+        zieh: (x, y) => { if (zug) return [lerp(x, zug.x, .35), lerp(y, zug.y, .35)]; if (W.los != null && T - W.los < 1) { const q = T - W.los, s = Math.exp(-q * 4) * Math.cos(q * 14) * .2; return [x + (x - gg.cx) * s, y + (y - gg.cy) * s]; } return [x, y]; },
+        teil: (x, y) => zug && Math.hypot(x - zug.x, y - zug.y) < 120 ? [lerp(x, zug.x, .25), lerp(y, zug.y, .25)] : [x, y],
+      });
+      // Regler-Bahnen (obere Halbkreise) mit Stufen
+      const pts = [];
+      RING[g.k].forEach((id, r) => {
+        const d = P[g.k].find(x => x.id === id), R = 64 + r * 44, aus = d.gilt && !d.gilt(zielDef(Z, g));
+        ctx.strokeStyle = rgba(aus ? F['line-stark'] : F.mint, aus ? .3 : .45); ctx.lineWidth = 1.2; ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.arc(zz.cx, zz.cy, R, Math.PI, TAU); ctx.stroke(); ctx.setLineDash([]);
+        const stufen = d.typ === 'regler' ? 8 : d.werte.length - 1;
+        for (let s = 0; s <= stufen; s++) { const a = Math.PI + s / stufen * Math.PI; ctx.fillStyle = rgba(F.mint, aus ? .2 : .6); ctx.beginPath(); ctx.arc(zz.cx + Math.cos(a) * R, zz.cy + Math.sin(a) * R, 1.8, 0, TAU); ctx.fill(); }
+        const ziel = Math.PI + K.e.tWert(g, d, Z.p[g.k][id]) * Math.PI, key = g.k + id;
+        W.kpos[key] = W.kpos[key] == null ? ziel : lerp(W.kpos[key], ziel, zug && zug.id === id ? 1 : leise ? 1 : 1 - Math.exp(-dt * 8));
+        const a = W.kpos[key], x = zz.cx + Math.cos(a) * R, y = zz.cy + Math.sin(a) * R; pts.push([x, y]);
+        if (!aus) { ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.arc(zz.cx, zz.cy, R, Math.PI, a); ctx.stroke(); ctx.lineCap = 'butt'; }
+        const m = W.innen.querySelector(`[data-mk="${g.k}|${id}|${r}"]`); if (m) { m.style.left = x + 'px'; m.style.top = y + 'px'; m.setAttribute('aria-valuetext', pWert(d, Z.p[g.k][id])); }
+      });
+      // Resonanz: alle Monde auf einer Voreinstellung
+      const pre = Z.preset[g.k];
+      if (pts.length > 1 && pre && pre !== 'Eigene') { ctx.strokeStyle = rgba(F.mint, .35 + (leise ? 0 : .25 * Math.sin(T * 4))); ctx.lineWidth = 1.5; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.font = `600 10px ${MONO}`; ctx.fillStyle = rgba(F.mint, .9); ctx.textAlign = 'center'; ctx.fillText(pre.toUpperCase(), zz.cx, zz.cy - 64 - (pts.length - 1) * 44 - 22); ctx.textAlign = 'left'; }
+      loch(ctx, zz.cx, zz.cy, lerp(18, 12, zz.z));
+      // Masse-Ring: außen vorher, innen nachher
+      const mg = W.innen.querySelector('.masse .platz-c'); if (!mg) return; const r = rel(W, mg), mx = r.x + r.w / 2, my = r.y + r.h / 2, na = nachAlle(Z);
+      let a0 = -Math.PI / 2, a1 = -Math.PI / 2;
+      GR.forEach((x, i) => { const c = farbe(x), sv = vorG(x) / VOR * TAU, sn = nachG(Z, x) / VOR * TAU, an = i === W.art;
+        ctx.strokeStyle = rgba(c, an ? 1 : .6); ctx.lineWidth = an ? 9 : 7; ctx.beginPath(); ctx.arc(mx, my, 40, a0, a0 + sv - .03); ctx.stroke(); a0 += sv;
+        ctx.strokeStyle = rgba(mix(c, F.mint, .5), an ? 1 : .7); ctx.lineWidth = an ? 7 : 5; ctx.beginPath(); ctx.arc(mx, my, 28, a1, a1 + Math.max(.01, sn - .03)); ctx.stroke(); a1 += sn; });
+      ctx.font = `600 11px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = rgba(F.mint, 1); ctx.fillText(Math.round(na / VOR * 100) + ' %', mx, my + 4); ctx.textAlign = 'left';
+    },
+  };
+
+  /* ---------- Fenster ---------- */
+  function fenster() {
+    const el = document.createElement('div'); el.className = 'win';
+    el.innerHTML = `
+      <div class="tb"><span class="logo" aria-hidden="true"></span><b>Kvertis</b><span class="platz"></span><span class="wk" aria-hidden="true"><span>─</span><span>▢</span><span>✕</span></span></div>
+      <nav class="faden" aria-label="Schritte">
+        <span class="knoten fertig"><i><span>✓</span></i><b>Dateien</b><small>7 erkannt · 1 nicht</small></span><span class="seg"></span>
+        <span class="knoten an"><i><span>2</span></i><b>Ziel</b><small class="js-f1"></small></span><span class="seg"></span>
+        <span class="knoten aus"><i><span>3</span></i><b>Umwandeln</b><small class="js-f2"></small></span>
+      </nav>
+      <div class="innen"><canvas class="lage" aria-hidden="true"></canvas></div>
+      <div class="leiste">
+        <span class="vertrauen"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>Ihre Dateien verlassen nie diesen PC.</span>
+        <span class="platz"></span><span class="summe js-summe" aria-live="polite"></span>
+        <button type="button" class="btn">Zurück</button>
+        <button type="button" class="taste">Weiter: Umwandeln</button>
+      </div>`;
+    return el;
+  }
+  function render(W) {
+    const Z = W.Z, g = GR[W.art];
+    W.innen.className = 'innen k-' + g.k;
+    W.innen.querySelector('.z-titel').innerHTML = `<b>${anzahl(g)}</b><small data-gr="${g.k}">${grHTML(Z, g)}</small>`;
+    W.innen.querySelector('.z-l').innerHTML = W.k.links ? W.k.links(W, g) : dateienHTML(W, g);
+    W.innen.querySelector('.z-r').innerHTML = (W.k.ohneTiles ? '' : W.id === 'd' ? '' : tilesHTML(W, g)) + W.k.rechts(W, g);
+    W.innen.querySelectorAll('.z-l, .z-r').forEach(el => el.style.setProperty('--k', `var(--${g.tok})`));
+    W.k.uebersicht?.(W); W.k.nachRender?.(W);
+  }
+  function zahlen(W) {
+    const Z = W.Z, n = nachAlle(Z);
+    GR.forEach(g => {
+      W.el.querySelectorAll(`[data-gr="${g.k}"]`).forEach(e => e.innerHTML = grHTML(Z, g));
+      W.el.querySelectorAll(`[data-gross="${g.k}"]`).forEach(e => e.outerHTML = grossHTML(Z, g));
+      P[g.k].forEach(d => W.el.querySelectorAll(`[data-pw="${g.k}|${d.id}"]`).forEach(e => { if (!e.closest('.aus')) e.textContent = Z.p[g.k][d.id]; }));
+      const pr = W.el.querySelector(`[data-presets="${g.k}"]`); if (pr) { const akt = Z.preset[g.k]; pr.classList.toggle('eigen', akt === 'Eigene'); pr.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', b.dataset.preset.split('|')[1] === akt)); }
+    });
+    W.el.querySelector('.js-summe').innerHTML = `7 Dateien <b>${mbT(VOR)} MB</b> → <em>≈ ${mbT(n)} MB</em>`;
+    W.el.querySelector('.js-f1').textContent = GR.map(g => zielDef(Z, g)).join(' · ');
+    W.el.querySelector('.js-f2').textContent = `≈ ${mbT(n)} MB`;
+    W.k.uebersicht?.(W);
+  }
+  function neu(W) { render(W); zahlen(W); }
+
+  farbenLesen();
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', farbenLesen);
+  new MutationObserver(farbenLesen).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  const ALLE = [];
+  document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
+    const W = { id: host.dataset.konzept, k: K[host.dataset.konzept], Z: zustand(), art: 0, sel: null, tZoom: -9, offen: new Set(), sichtbar: true, w: 0, h: 0, jetzt: 0 };
+    W.el = fenster(); host.append(W.el); W.innen = W.el.querySelector('.innen');
+    const cv = W.innen.querySelector('canvas'); W.ctx = cv.getContext('2d');
+    new ResizeObserver(() => { const r = W.innen.getBoundingClientRect(); if (!r.width) return; const d = Math.min(2, devicePixelRatio || 1); W.w = r.width; W.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); W.ctx.setTransform(d, 0, 0, d, 0, 0); W.k.nachRender?.(W); }).observe(W.innen);
+    new IntersectionObserver(en => { W.sichtbar = en[0].isIntersecting; }).observe(W.el);
+    W.k.aufbau(W);
+    const geaendert = () => { W.k.geaendert?.(W); };
+    W.el.addEventListener('click', e => {
+      const t = e.target, Z = W.Z;
+      const a = t.closest('[data-art][data-i]'); if (a) { setzeArt(Z, G(a.dataset.art), +a.dataset.i); geaendert(); neu(W); return; }
+      const d = t.closest('[data-datei]'); if (d) { const g = G(d.dataset.k); setzeDatei(Z, g, g.files.find(f => f.n === d.dataset.datei), d.dataset.t); geaendert(); neu(W); return; }
+      const pr = t.closest('[data-preset]'); if (pr) { const [k, n] = pr.dataset.preset.split('|'); Object.assign(Z.p[k], PRESETS[k].find(x => x[0] === n)[1]); Z.preset[k] = n; geaendert(); neu(W); return; }
+      const p = t.closest('[data-p]'); if (p) { const [k, id, v] = p.dataset.p.split('|'); Z.p[k][id] = v; Z.preset[k] = presetVon(Z, G(k)); geaendert(); neu(W); return; }
+      const m = t.closest('[data-meta]'); if (m) { const [k, id] = m.dataset.meta.split('|'); Z.p[k][id] = !Z.p[k][id]; m.setAttribute('aria-pressed', Z.p[k][id]); return; }
+      const zw = t.closest('[data-zweck]'); if (zw) { const [k, id] = zw.dataset.zweck.split('|'); K.d.zweck(W, G(k), id, zw); neu(W); return; }
+      const o = t.closest('[data-auf]'); if (o) { const k = o.dataset.auf; W.offen.has(k) ? W.offen.delete(k) : W.offen.add(k); neu(W); W.el.querySelector(`[data-auf="${k}"]`)?.focus(); return; }
+      const s = t.closest('[data-w2k]'); if (s) { if (+s.dataset.w2k !== W.art) { W.art = +s.dataset.w2k; W.sel = null; W.tZoom = W.jetzt; } neu(W); return; }
+      const f2 = t.closest('[data-wf2]'); if (f2) { const [k, n] = f2.dataset.wf2.split('|'), i = GR.findIndex(g => g.k === k); if (i !== W.art) { W.art = i; W.tZoom = W.jetzt; } W.sel = GR[i].files.length > 1 ? n : null; neu(W); return; }
+      const f = t.closest('[data-w2f]'); if (f) { W.sel = f.dataset.w2f || null; if (GR[W.art].files.length === 1) W.sel = null; neu(W); return; }
+    });
+    W.el.addEventListener('change', e => { if (e.target.matches('[data-alle]')) W.alle = e.target.checked; });
+    W.el.addEventListener('input', e => { const k = e.target.dataset.pr; if (!k) return; const [art, id] = k.split('|'); W.Z.p[art][id] = +e.target.value; W.Z.preset[art] = presetVon(W.Z, G(art)); zahlen(W); });
+    W.el.addEventListener('change', e => { if (e.target.dataset.pr) { geaendert(); neu(W); W.el.querySelector(`[data-pr="${e.target.dataset.pr}"]`)?.focus(); } });
+    W.el.addEventListener('keydown', e => {
+      const b = e.target.closest('[role="radio"]'); if (!b || !['ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+      e.preventDefault(); const alle = [...b.parentElement.querySelectorAll('[role="radio"]')], i = alle.indexOf(b), n = alle[(i + (e.key === 'ArrowRight' ? 1 : alle.length - 1)) % alle.length];
+      n.click(); W.el.querySelector(`[role="radio"][data-wt="${n.dataset.wt}"]`)?.focus();
+    });
+    neu(W); ALLE.push(W);
+  });
+  let zuletzt = performance.now();
+  const loop = t => {
+    const T = t / 1000, dt = Math.min(.05, (t - zuletzt) / 1000); zuletzt = t;
+    for (const W of ALLE) { W.jetzt = T; if (!W.sichtbar || !W.w) continue; W.ctx.clearRect(0, 0, W.w, W.h); try { W.k.zeichnen(W, T, dt); } catch (err) { console.error(err); } }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+})();
+</script>
