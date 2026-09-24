@@ -395,7 +395,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     <h2 id="h-v">Was sich gegenüber Konzept 1 ändert</h2>
     <div class="empf">
       <p><b>Die Galaxie ist wieder die Bühne.</b> Die Bahnen sind ohne Beschriftung, die Farben erklären die Fächer darunter. Die Bahnen reagieren schon aus größerem Abstand auf die Maus, beulen sich stärker aus und ziehen ihre Teilchen deutlicher an.</p>
-      <p><b>Kleines Geheimnis:</b> Zehn Sekunden mit der Maus auf dem schwarzen Loch lassen es aufladen. Es wächst, zittert und saugt die Bahnen an, dann explodiert es. Danach entsteht das Universum neu: ein heller Punkt, das Loch, und die Teilchen kehren in einer Spirale auf ihre Bahnen zurück. Bei „Animationen reduzieren“ ist das abgeschaltet.</p>
+      <p><b>Kleines Geheimnis:</b> Zehn Sekunden mit der Maus auf dem schwarzen Loch lassen es aufladen. Es wächst und saugt die Bahnen an, und es zittert immer stärker, bis zuletzt das ganze Bild bebt. Dann explodiert es. Danach entsteht das Universum neu: ein heller Punkt, das Loch, und die Teilchen kehren in einer Spirale auf ihre Bahnen zurück. Bei „Animationen reduzieren“ ist das abgeschaltet.</p>
       <p><b>Leere Fächer bleiben stehen</b> und zeigen, was man hineinwerfen kann. So sieht man immer alle Datentypen, wie früher bei den Sanduhren.</p>
       <p><b>Die Leiste „Übersicht · Bilder · Audio …“ entfällt.</b> Die Fächer übernehmen sie: Ein Klick zoomt, und im Zoom werden sie zur schmalen Leiste.</p>
       <p class="muted">Die echte App prüft den Inhalt (docs/05-formate.md). Im Entwurf werden die Endung und die ersten Bytes geprüft. Bei „Animationen reduzieren“ entfällt der Flug, und die Dateien stehen sofort im Fach.</p>
@@ -823,8 +823,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const darf = !leise && nah && !B.gesperrt && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.files.every(f => f.st === 'drin');
       B.lade = darf ? Math.min(1, B.lade + dt / LADEZEIT) : Math.max(0, B.lade - dt * .5);
       W.welt.classList.toggle('laedt', B.lade > .02);
+      const st = Math.pow(B.lade, 1.6) * 16; W.zittern = [(Math.random() - .5) * st, (Math.random() - .5) * st];
+      W.welt.style.transform = B.lade > .55 ? `translate(${(Math.random() - .5) * (B.lade - .55) * 8}px, ${(Math.random() - .5) * (B.lade - .55) * 6}px)` : '';
       if (B.lade >= 1) {
-        B.ph = 'explo'; B.t0 = T; B.lade = 0; B.gesperrt = true; W.welt.classList.remove('laedt');
+        B.ph = 'explo'; B.t0 = T; B.lade = 0; B.gesperrt = true; W.welt.classList.remove('laedt'); W.welt.style.transform = ''; W.zittern = [0, 0];
         W.welt.classList.remove('bebt'); void W.welt.offsetWidth; W.welt.classList.add('bebt');
       }
     } else if (B.ph === 'explo' && T - B.t0 >= EXPLO) { B.ph = 'neu'; B.t0 = T; }
@@ -835,8 +837,8 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const B = W.boom, c = W.S.c, fl = .5, dx = x - c.x, dy = (y - c.y) / fl, r = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
     const weit = (.35 + p.r2 * 1.15) * Math.max(W.S.w, W.S.h) * .7, richt = p.r1 * TAU * 5 + p.r3 * 2;
     if (B.ph === 'ruhe') {
-      const l = B.lade * B.lade, w = a + l * 2.6 * (1.2 - p.r2), rr = r * (1 - .72 * l) + (l > .5 ? (Math.random() - .5) * 5 * l : 0);
-      return [c.x + Math.cos(w) * rr, c.y + Math.sin(w) * rr * fl, 1];
+      const l = B.lade * B.lade, w = a + l * 2.6 * (1.2 - p.r2), rr = r * (1 - .72 * l) + (Math.random() - .5) * 7 * l, z = W.zittern || [0, 0];
+      return [c.x + Math.cos(w) * rr + z[0] * .6, c.y + Math.sin(w) * rr * fl + z[1] * .6, 1];
     }
     if (B.ph === 'explo') {
       const u = easeOut(clamp((T - B.t0) / (EXPLO * (.6 + .4 * p.r3)))), rr = lerp(4 + p.r2 * 10, weit, u);
@@ -854,13 +856,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     if (B.ph === 'ruhe') {
       const l = B.lade;
       if (l <= .005) { loch(ctx, c.x, c.y, lr); return; }
-      const zit = l > .6 ? (l - .6) * 6 : 0, x = c.x + (Math.random() - .5) * zit, y = c.y + (Math.random() - .5) * zit, R = lr * (1 + .9 * l);
+      // Zittern wächst stetig: am Anfang kaum spürbar, am Ende heftig
+      const zit = W.zittern, x = c.x + zit[0], y = c.y + zit[1], R = lr * (1 + .9 * l) * (1 + .06 * l * l * Math.sin(T * (8 + 40 * l)));
       glow(ctx, x, y, 60 + 200 * l, F.violetR, .3 * l); glow(ctx, x, y, 30 + 90 * l, F.mintR, .35 * l * (.75 + .25 * Math.sin(T * (6 + 20 * l))));
       loch(ctx, x, y, R);
-      ctx.strokeStyle = rgba(F.mintR, .9); ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.arc(x, y, R + 9, -Math.PI / 2, -Math.PI / 2 + l * TAU); ctx.stroke(); ctx.lineCap = 'butt';
-      ctx.font = `600 10.5px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = rgba(F.mintR, clamp(l * 6) * .9);
-      ctx.fillText(l < .9 ? `lädt ${Math.floor(l * 100)} %` : 'gleich …', x, y + R + 26); ctx.textAlign = 'left';
       return;
     }
     if (B.ph === 'explo') {
@@ -976,7 +975,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
     const v = V[host.dataset.konzept];
     const W = { k: WEGE, V: v, modus: 'regal', tUeb: -99, mx: null, my: null, jetzt: 0, sichtbar: true, hov: null, sicht: 0, zw: 0, zieht: false,
-      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false } };
+      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false }, zittern: [0, 0] };
     W.files = PROBE.map((d, i) => ({ ...d, i, st: 'drin', tAn: -99, spur: [], pk: 0, gr: clamp(.6 + .45 * Math.sqrt(d.mb / 20), .6, 1.8) }));
     teilchen(W);
     W.el = fenster(W); host.append(W.el);
