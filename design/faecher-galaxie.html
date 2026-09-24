@@ -394,9 +394,10 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   <section class="idee" aria-labelledby="h-v">
     <h2 id="h-v">Was sich gegenüber Konzept 1 ändert</h2>
     <div class="empf">
-      <p><b>Die Galaxie ist wieder die Bühne.</b> Die Bahnen sind ohne Beschriftung, die Farben erklären die Fächer darunter. Die Bahnen reagieren schon aus größerem Abstand auf die Maus, beulen sich stärker aus und ziehen ihre Teilchen deutlicher an.</p>
+      <p><b>Die Galaxie ist wieder die Bühne.</b> Die Bahnen sind ohne Beschriftung, die Farben erklären die Fächer darunter. Die Bahnen reagieren sanft auf die Maus.</p>
       <p><b>Kleines Geheimnis:</b> Zehn Sekunden mit der Maus auf dem schwarzen Loch lassen es aufladen. Es wächst und saugt die Bahnen an, und es zittert immer stärker, bis zuletzt das ganze Bild bebt. Dann explodiert es. Danach entsteht das Universum neu: ein heller Punkt, das Loch, und die Teilchen kehren in einer Spirale auf ihre Bahnen zurück. Dabei dreht sich der Sog zum Ende hin immer schneller.</p>
-      <p><b>Noch ein Geheimnis:</b> Bleibt die Maus etwa sechs Sekunden still auf einer Bahn, entsteht dort ein Strudel. Die Teilchen in der Nähe werden eingesogen und drehen sich immer schneller, bis es kurz aufblitzt. Dann kreist dort ein neuer kleiner Planet mit der Bahn. Der Urknall räumt diese Planeten wieder ab. Bei „Animationen reduzieren“ sind beide Spielereien abgeschaltet.</p>
+      <p><b>Noch ein Geheimnis:</b> Bleibt die Maus etwa vier Sekunden still auf einer Bahn, bildet sich dort ein Strudel. Er liegt flach in der Ebene der Bahnen und sinkt in der Mitte wie ein Trichter ein. Die Teilchen drehen sich immer schneller, bis es kurz blitzt. Dann kreist dort ein neuer Planet. Jedes Mal entsteht eine andere Art: mit Ring, glühend, vereist mit Mond, ein Gasriese mit Bändern, ein Steinplanet mit Kratern und zwei Monden, ein Ozeanplanet mit Wolken. Das Licht auf den Planeten kommt vom Loch. Der Urknall räumt sie wieder ab. Bei „Animationen reduzieren“ sind beide Spielereien abgeschaltet.</p>
+      <p><b>Weiche Übergänge:</b> Der Einfluss der Maus blendet ein und aus. Wer von der Mitte auf eine Bahn wechselt, sieht den Sog langsam auslaufen und die Teilchen zurückgleiten. Die Bahnen reagieren sanfter als vorher.</p>
       <p><b>Leere Fächer bleiben stehen</b> und zeigen, was man hineinwerfen kann. So sieht man immer alle Datentypen, wie früher bei den Sanduhren.</p>
       <p><b>Die Leiste „Übersicht · Bilder · Audio …“ entfällt.</b> Die Fächer übernehmen sie: Ein Klick zoomt, und im Zoom werden sie zur schmalen Leiste.</p>
       <p class="muted">Die echte App prüft den Inhalt (docs/05-formate.md). Im Entwurf werden die Endung und die ersten Bytes geprüft. Bei „Animationen reduzieren“ entfällt der Flug, und die Dateien stehen sofort im Fach.</p>
@@ -524,7 +525,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   function punkt(S, k, A, d = 0) {
     const W = S.W, [rx, fl] = W.geo[k], ry = rx * fl;
     let bul = 0;
-    if (W.hw[k] > .01) { const da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 30 * Math.exp(-da * da / .36); }
+    if (W.hw[k] > .01) { const da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 19 * Math.exp(-da * da / .34); }
     const s = 1 + (bul + d) / rx;
     return [S.c.x + Math.cos(A) * rx * s, S.c.y + Math.sin(A) * ry * s];
   }
@@ -815,52 +816,101 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   }
 
   /* ---------- Gimmick: still auf einer Bahn, dort formt sich ein Planet ---------- */
-  const PLANETZEIT = 6;
-  function planetTeilchen(W, pl, j) { for (let q = 0; q < 72; q++) W.P.push({ k: pl.k, d: -1, pl: j, r1: Math.random(), r2: Math.random(), r3: Math.random() }); }
+  const PLANETZEIT = 4;
+  // jede Entstehung bringt eine andere Art Planet
+  const PTYPEN = [
+    { ring: true, baender: 3, c1: null, c2: null },
+    { glut: true, c1: [240, 128, 84], c2: [120, 34, 24], krater: 3 },
+    { mond: 1, c1: [214, 238, 246], c2: [80, 128, 158], wolken: true },
+    { baender: 6, gross: 1.3, c1: [232, 196, 138], c2: [150, 96, 56] },
+    { krater: 6, mond: 2, c1: [178, 168, 158], c2: [74, 64, 58] },
+    { wolken: true, ring: true, c1: [86, 156, 232], c2: [22, 52, 112] },
+  ];
+  const mischen = (a, b, t) => a.map((v, i) => lerp(v, b[i], t));
+  function planetTeilchen(W, pl, j) { for (let q = 0; q < 44; q++) W.P.push({ k: pl.k, d: -1, pl: j, r1: Math.random(), r2: Math.random(), r3: Math.random() }); }
   function planetTick(W, T, dt) {
     const B = W.boom, darf = !leise && B.ph === 'ruhe' && B.lade === 0 && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.mx != null && W.hov != null && W.files.every(f => f.st === 'drin');
-    if (!darf) { if (W.wir) { W.wir.lade = Math.max(0, W.wir.lade - dt * 1.5); if (W.wir.lade <= 0) W.wir = null; } return; }
     const w = W.wir;
-    if (!w || Math.hypot(W.mx - w.x, W.my - w.y) > 14) {
-      // Maus bewegt: neuer Ankerpunkt, bereits Gesammeltes zerfällt schnell
-      if (w && w.lade > .05) { w.lade = Math.max(0, w.lade - dt * 3); w.x = lerp(w.x, W.mx, .3); w.y = lerp(w.y, W.my, .3); return; }
-      W.wir = { x: W.mx, y: W.my, k: W.hov, A: W.hA[W.hov], lade: 0, drall: 0, sperre: false };
-      return;
-    }
+    if (w) w.drall += dt * (.5 + 16 * Math.pow(w.lade, 2.2));
+    if (!darf) { if (w) { w.lade = Math.max(0, w.lade - dt * 1.1); if (w.lade <= 0) W.wir = null; } return; }
+    const weg = w && Math.hypot(W.mx - w.x, W.my - w.y) > 12;
+    if (!w || (weg && w.lade <= .02)) { W.wir = { x: W.mx, y: W.my, k: W.hov, A: W.hA[W.hov], lade: 0, drall: 0, sperre: false }; return; }
     if (w.sperre) return;
+    if (weg) {
+      // Maus bewegt: der Strudel folgt kurz und fällt weich in sich zusammen
+      w.lade = Math.max(0, w.lade - dt * 1.4); const q = 1 - Math.exp(-dt * 4); w.x += (W.mx - w.x) * q; w.y += (W.my - w.y) * q; return;
+    }
     w.k = W.hov; w.A = W.hA[W.hov];
     w.lade = Math.min(1, w.lade + dt / PLANETZEIT);
-    w.drall += dt * (.3 + 14 * Math.pow(w.lade, 2.4));
     if (w.lade >= 1) {
-      // kleine Explosion, Planet entsteht auf der Bahn und kreist mit
-      W.planeten = W.planeten || [];
-      const pl = { k: w.k, A: w.A - W.ph[w.k], t: T, gr: 1.1 + Math.random() * .4, neig: (Math.random() - .5) * .6 };
-      W.planeten.push(pl); planetTeilchen(W, pl, W.planeten.length - 1);
-      W.mini = { x: w.x, y: w.y, t: T, c: F.art[w.k] };
-      W.wir = { x: w.x, y: w.y, k: w.k, A: w.A, lade: 0, drall: 0, sperre: true };
+      const typ = PTYPEN[W.planetNr++ % PTYPEN.length], art = F.art[w.k];
+      const c1 = typ.c1 ? mischen(typ.c1, art, .25) : mischen(art, [255, 255, 255], .15), c2 = typ.c2 ? mischen(typ.c2, art, .2) : mischen(art, [0, 0, 0], .55);
+      const pl = { k: w.k, A: w.A - W.ph[w.k], t: T, typ, c1, c2, r: (9 + Math.random() * 3) * (typ.gross || 1), neig: (Math.random() - .5) * .7,
+        mondP: Math.random() * TAU, seed: Math.random() * 1000 };
+      W.planeten = W.planeten || []; W.planeten.push(pl); planetTeilchen(W, pl, W.planeten.length - 1);
+      W.mini = { x: w.x, y: w.y + 8, t: T, c: art };
+      W.wir = { x: w.x, y: w.y, k: w.k, A: w.A, lade: 0, drall: w.drall, sperre: true };
     }
   }
-  // Teilchen in der Nähe der Maus werden eingesogen und drehen sich immer schneller
+  // Strudel in der Ebene der Bahnen: flach wie die Galaxie, mit Trichter nach unten
   function wirbelPos(W, p, x, y) {
-    const w = W.wir, R = 60 + 90 * w.lade, dx = x - w.x, dy = y - w.y, d = Math.hypot(dx, dy);
-    if (d >= R) return [x, y];
-    const f = 1 - d / R, s = Math.pow(w.lade, 1.3) * Math.pow(f, .5), a = w.drall * (.4 + f) * (1.1 - p.r2 * .4), c = Math.cos(a), si = Math.sin(a), k = 1 - .88 * s;
-    return [w.x + (dx * c - dy * si) * k, w.y + (dx * si + dy * c) * k];
+    const w = W.wir, fl = .4, R = 75 + 70 * w.lade, dx = x - w.x, dy = (y - w.y) / fl, d = Math.hypot(dx, dy);
+    if (d >= R) return [x, y, 1];
+    const f = 1 - d / R, wg = glatt(Math.min(1, w.lade * 2.5)), s = Math.pow(w.lade, 1.2) * Math.pow(f, .55);
+    const a = w.drall * (.35 + f) * (1.1 - p.r2 * .4), c = Math.cos(a), si = Math.sin(a), k = 1 - .9 * s;
+    const rx = (dx * c - dy * si) * k, ry = (dx * si + dy * c) * k, sink = s * 16 * w.lade, vorn = clamp(ry / (R * .6), -1, 1);
+    return [lerp(x, w.x + rx, wg), lerp(y, w.y + ry * fl + sink, wg), 1 + .55 * vorn * s * wg];
   }
-  function planetLicht(W, T) {
-    const ctx = W.S.ctx, w = W.wir;
-    if (w && w.lade > .02 && !w.sperre) { const c = F.art[w.k] || F.mintR; glow(ctx, w.x, w.y, 12 + 40 * w.lade, c, .45 * w.lade); if (w.lade > .5) glow(ctx, w.x, w.y, 6 + 8 * w.lade, [255, 255, 255], (w.lade - .5) * 1.2); }
-    // selbst geformte Planeten: Leuchthof und dünner Ring
+  function planetZeichnen(W, T, e, bahnA) {
+    const S = W.S, ctx = S.ctx, w = W.wir;
+    // Strudel: sich drehende Scheibe in der Bahnebene, Kern sinkt ein
+    if (w && w.lade > .01 && !w.sperre) {
+      const c = F.art[w.k] || F.mintR, l = w.lade, R = 75 + 70 * l, cy = w.y + 12 * l * l;
+      glow(ctx, w.x, cy, 10 + 34 * l, c, .5 * l);
+      ctx.save(); ctx.lineCap = 'round';
+      [.85, .6, .38].forEach((q, i) => {
+        const rr = R * q * (1 - .45 * l * (1 - q)); ctx.strokeStyle = rgba(c, (.12 + .25 * l) * (1 - i * .15)); ctx.lineWidth = 1 + l * (1.5 - i * .3);
+        ctx.setLineDash([rr * .5, rr * .35]); ctx.lineDashOffset = -w.drall * rr * (.4 + i * .3);
+        ctx.beginPath(); ctx.ellipse(w.x, lerp(w.y, cy, 1 - q), rr, rr * .4, 0, 0, TAU); ctx.stroke();
+      });
+      ctx.restore();
+      if (l > .45) { glow(ctx, w.x, cy, 4 + 10 * l, [255, 255, 255], (l - .45) * 1.6); }
+    }
+    // selbst geformte Planeten
     (W.planeten || []).forEach(pl => {
-      const [x, y] = punkt(W.S, pl.k, pl.A + W.ph[pl.k]), a = clamp((T - pl.t) / .9), c = F.art[pl.k];
-      glow(ctx, x, y, 22 * pl.gr, c, .35 * a);
-      ctx.save(); ctx.translate(x, y); ctx.rotate(pl.neig); ctx.strokeStyle = rgba(c, .7 * a); ctx.lineWidth = 1.2;
-      ctx.beginPath(); ctx.ellipse(0, 0, 15 * pl.gr * (1.6 - .6 * a), 4 * pl.gr, 0, 0, TAU); ctx.stroke(); ctx.restore();
+      const k = pl.k, [rx, , al] = W.geo[k], a = al * (1 - e) * bahnA; if (a < .02) return;
+      const skal = Math.sqrt(clamp(rx / basis(S, k), .5, 2.6)), t = clamp((T - pl.t) / .7), sc = t < 1 ? easeBack(t) : 1, r = pl.r * skal * sc;
+      if (r < .6) return;
+      const [x, y] = punkt(S, k, pl.A + W.ph[k]), typ = pl.typ;
+      // Licht kommt vom Loch
+      let lx = S.c.x - x, ly = S.c.y - y; const ll = Math.hypot(lx, ly) || 1; lx /= ll; ly /= ll;
+      ctx.save(); ctx.globalAlpha = a;
+      glow(ctx, x, y, r * 2.8, pl.c1, .22);
+      if (typ.glut) glow(ctx, x, y, r * 2, [255, 120, 60], .35 + .1 * Math.sin(T * 3));
+      const mw = T * .9 + pl.mondP, monde = typ.mond || 0;
+      const mond = (i, vorn) => { const m = mw + i * Math.PI * .8, mx = x + Math.cos(m) * r * (2.3 + i * .7), my = y + Math.sin(m) * r * .7; if ((Math.sin(m) >= 0) !== vorn) return; const g = ctx.createRadialGradient(mx + lx * 2, my + ly * 2, .3, mx, my, r * .32); g.addColorStop(0, '#f2f2f2'); g.addColorStop(1, '#55585c'); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(mx, my, r * .3, 0, TAU); ctx.fill(); };
+      const ring = vorn => { ctx.save(); ctx.translate(x, y); ctx.rotate(pl.neig); ctx.strokeStyle = rgba(mischen(pl.c1, [255, 255, 255], .3), .55); ctx.lineWidth = Math.max(1, r * .16); ctx.beginPath(); ctx.ellipse(0, 0, r * 2.05, r * .5, 0, vorn ? 0 : Math.PI, vorn ? Math.PI : TAU); ctx.stroke(); ctx.lineWidth = Math.max(.6, r * .07); ctx.strokeStyle = rgba(pl.c1, .35); ctx.beginPath(); ctx.ellipse(0, 0, r * 2.45, r * .6, 0, vorn ? 0 : Math.PI, vorn ? Math.PI : TAU); ctx.stroke(); ctx.restore(); };
+      for (let i = 0; i < monde; i++) mond(i, false);
+      if (typ.ring) ring(false);
+      // Kugel mit Oberfläche und Schatten
+      ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.clip();
+      ctx.fillStyle = rgba(pl.c1, 1); ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      if (typ.baender) { ctx.save(); ctx.translate(x, y); ctx.rotate(pl.neig); for (let i = 0; i < typ.baender; i++) { const by = (-1 + (2 * i + 1) / typ.baender) * r, h = r * (.12 + .1 * ((i * 37 + pl.seed) % 3) / 3); ctx.fillStyle = rgba(pl.c2, .28 + .1 * (i % 2)); ctx.fillRect(-r, by - h / 2 + Math.sin(T * .6 + i) * .6, r * 2, h); } ctx.restore(); }
+      if (typ.krater) for (let i = 0; i < typ.krater; i++) { const q = Math.sin(pl.seed + i * 12.9898) * 43758.5453, u = q - Math.floor(q), v = (q * 7.3) - Math.floor(q * 7.3), kx = x + (u - .5) * r * 1.5, ky = y + (v - .5) * r * 1.5; ctx.fillStyle = rgba(pl.c2, .45); ctx.beginPath(); ctx.arc(kx, ky, r * (.12 + .1 * u), 0, TAU); ctx.fill(); }
+      if (typ.wolken) { ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = Math.max(1, r * .12); for (let i = 0; i < 3; i++) { const wy = y + (i - 1) * r * .5, off = (T * 3 + i * 7 + pl.seed) % (r * 4) - r * 2; ctx.beginPath(); ctx.moveTo(x - r + off, wy); ctx.quadraticCurveTo(x + off * .3, wy - r * .2, x + r * .6 + off, wy + r * .05); ctx.stroke(); } }
+      const sh = ctx.createRadialGradient(x + lx * r * .45, y + ly * r * .45, r * .05, x, y, r * 1.15);
+      sh.addColorStop(0, 'rgba(255,255,255,.4)'); sh.addColorStop(.45, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.72)');
+      ctx.fillStyle = sh; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+      ctx.restore(); ctx.save(); ctx.globalAlpha = a;
+      if (typ.ring) ring(true);
+      for (let i = 0; i < monde; i++) mond(i, true);
+      ctx.restore();
     });
+    // kleine Explosion bei der Entstehung
     const m = W.mini; if (!m) return;
-    const q = (T - m.t) / .7; if (q >= 1) { W.mini = null; return; }
-    glow(ctx, m.x, m.y, 14 + q * 90, [255, 255, 255], .9 * (1 - q) * (1 - q)); glow(ctx, m.x, m.y, 10 + q * 60, m.c, .7 * (1 - q));
-    ctx.strokeStyle = rgba(m.c, .9 * (1 - q)); ctx.lineWidth = 2 * (1 - q) + .5; ctx.beginPath(); ctx.ellipse(m.x, m.y, 6 + q * 70, (6 + q * 70) * .55, 0, 0, TAU); ctx.stroke();
+    const q = (T - m.t) / .8; if (q >= 1) { W.mini = null; return; }
+    glow(ctx, m.x, m.y, 16 + q * 130, [255, 255, 255], .95 * (1 - q) * (1 - q)); glow(ctx, m.x, m.y, 12 + q * 80, m.c, .7 * (1 - q));
+    [0, .2].forEach(v => { const s = clamp((q - v) / (1 - v)); if (s <= 0) return; ctx.strokeStyle = rgba(m.c, .9 * (1 - s)); ctx.lineWidth = 2 * (1 - s) + .5; ctx.beginPath(); ctx.ellipse(m.x, m.y, 8 + s * 110, (8 + s * 110) * .4, 0, 0, TAU); ctx.stroke(); });
   }
 
   /* ---------- Gimmick: 10 Sekunden auf das Loch zeigen ---------- */
@@ -872,7 +922,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const nah = W.mx != null && Math.hypot(W.mx - S.c.x, W.my - S.c.y) < 36;
       if (!nah) B.gesperrt = false;
       const darf = !leise && nah && !B.gesperrt && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.files.every(f => f.st === 'drin');
-      B.lade = darf ? Math.min(1, B.lade + dt / LADEZEIT) : Math.max(0, B.lade - dt * .5);
+      B.lade = darf ? Math.min(1, B.lade + dt / LADEZEIT) : Math.max(0, B.lade - dt * .6);
       B.drall = B.lade > 0 ? (B.drall || 0) + dt * (.4 + 9 * Math.pow(B.lade, 2.2)) : 0;
       planetTick(W, T, dt);
       W.welt.classList.toggle('laedt', B.lade > .02);
@@ -890,8 +940,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const B = W.boom, c = W.S.c, fl = .5, dx = x - c.x, dy = (y - c.y) / fl, r = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
     const weit = (.35 + p.r2 * 1.15) * Math.max(W.S.w, W.S.h) * .7, richt = p.r1 * TAU * 5 + p.r3 * 2;
     if (B.ph === 'ruhe') {
-      const l = B.lade * B.lade, w = a + (B.drall || 0) * (1.25 - p.r2) * Math.min(1, B.lade * 4), rr = r * (1 - .72 * l) + (Math.random() - .5) * 7 * l, z = W.zittern || [0, 0];
-      return [c.x + Math.cos(w) * rr + z[0] * .6, c.y + Math.sin(w) * rr * fl + z[1] * .6, 1];
+      const l = B.lade * B.lade, wg = glatt(Math.min(1, B.lade * 4)), w = a + (B.drall || 0) * (1.25 - p.r2), rr = r * (1 - .72 * l) + (Math.random() - .5) * 7 * l, z = W.zittern || [0, 0];
+      // weich zwischen normaler Bahn und Sog überblenden, damit beim Weggehen nichts springt
+      return [lerp(x, c.x + Math.cos(w) * rr + z[0] * .6, wg), lerp(y, c.y + Math.sin(w) * rr * fl + z[1] * .6, wg), 1];
     }
     if (B.ph === 'explo') {
       const u = easeOut(clamp((T - B.t0) / (EXPLO * (.6 + .4 * p.r3)))), rr = lerp(4 + p.r2 * 10, weit, u);
@@ -942,6 +993,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const m = W.modus === 'wirbel' ? clamp((T - W.tUeb - 1.8) / 6) : 0;
     const R3 = Math.min(S.w, S.h) * .3;
     W.zw += ((W.zieht ? 1 : 0) - W.zw) * (1 - Math.exp(-dt * 8));
+    const gm = W.gm;
+    if (W.mx != null) { if (gm.a < .02) { gm.x = W.mx; gm.y = W.my; } const q = 1 - Math.exp(-dt * 14); gm.x += (W.mx - gm.x) * q; gm.y += (W.my - gm.y) * q; gm.a += (1 - gm.a) * (1 - Math.exp(-dt * 5)); }
+    else gm.a *= Math.exp(-dt * 3.5);
     urknallTick(W, T, dt);
     const B = W.boom, bahnA = B.ph === 'ruhe' ? 1 - .6 * B.lade : B.ph === 'explo' ? 0 : clamp((T - B.t0 - 1) / 1.6);
     const soll = W.ziel != null && W.ziel >= 0 && W.camP > .6 ? 1 : 0;
@@ -955,7 +1009,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     // Maus
     W.hov = null;
     if (W.mx != null && e < .5) {
-      let best = 46;
+      let best = 40;
       ARTEN.forEach((a, i) => {
         const [rx, fl, al] = W.geo[i]; if (al < .5) return;
         const ry = rx * fl, dx = (W.mx - S.c.x) / rx, dy = (W.my - S.c.y) / ry, th = Math.atan2(dy, dx), r = Math.hypot(dx, dy);
@@ -965,7 +1019,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     }
     W.welt.classList.toggle('zeigt', W.hov != null && uebersicht);
     if (W.hovAlt !== W.hov) { W.hovAlt = W.hov; W.el.querySelectorAll('.fach').forEach(fa => fa.classList.toggle('hell', +fa.dataset.art === W.hov)); }
-    const rh = leise ? 1 : 1 - Math.exp(-dt * 12);
+    const rh = leise ? 1 : 1 - Math.exp(-dt * 6);
     ARTEN.forEach((a, i) => { W.hw[i] += ((W.hov === i || W.fachHov === i ? 1 : 0) - W.hw[i]) * rh; W.ph[i] += dt * (.2 - BAHN[i] * .026) * (1 + .5 * (W.ziel === i ? 1 : 0) + .6 * W.hw[i]) * (leise ? 0 : 1); });
     W.files.forEach(f => { f.pk += ((v.parken && W.ziel === f.k && W.camP > .5 ? 1 : 0) - f.pk) * (1 - Math.exp(-dt * 3)); });
     // Bahnen
@@ -985,22 +1039,23 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const kk = p.k, [rx, fl, al] = W.geo[kk];
       if (al < .01 && e < .01) continue;
       const skal = Math.sqrt(clamp(rx / basis(S, kk), .5, 2.6));
-      let x, y;
+      let x, y, plA = 1, tief = 1;
       if (f) { const A = planetA(W, f), [cx, cy] = punkt(S, kk, A), a2 = p.r1 * TAU + T * 2, pr = (3 + p.r2 * 7) * skal * f.gr; x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .6; }
       else if (p.pl != null) {
-        const pl = W.planeten[p.pl], [cx, cy] = punkt(S, kk, pl.A + W.ph[kk]), a2 = p.r1 * TAU + T * (2.4 + p.r3), pr = (2 + p.r2 * 6.5) * skal * pl.gr;
-        x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .6;
-        const t = clamp((T - pl.t) / .9); if (t < 1) { const w = p.r1 * TAU * 3, u = easeOut(t), weit = (1 - u) * (26 + p.r2 * 50); x += Math.cos(w) * weit; y += Math.sin(w) * weit * .7; }
+        const pl = W.planeten[p.pl], [cx, cy] = punkt(S, kk, pl.A + W.ph[kk]), a2 = p.r1 * TAU + T * (1.2 + p.r3), pr = pl.r * skal * (1.4 + p.r2 * 1.4);
+        x = cx + Math.cos(a2) * pr; y = cy + Math.sin(a2) * pr * .35;
+        const t = clamp((T - pl.t) / .8); if (t < 1) { const w = p.r1 * TAU * 3, u = easeOut(t), weit = (1 - u) * (30 + p.r2 * 60); x += Math.cos(w) * weit; y += Math.sin(w) * weit * .45; }
+        plA = lerp(1, .3, clamp((T - pl.t - .8) / 1.5));
       }
       else [x, y] = punkt(S, kk, p.r1 * TAU + W.ph[kk], (p.r2 - .5) * 14 * skal);
       if (f && T - f.tAn < .8 && f.ax != null) { const t = ease(clamp((T - f.tAn) / .8)), sp = (1 - t) * 30 * (p.r1 - .5); x = lerp(f.ax, x, t) + sp; y = lerp(f.ay, y, t) + sp * .5; }
       if (W.zw > .01) { x = lerp(x, S.c.x, .1 * W.zw * (1 - p.r2 * .5)); y = lerp(y, S.c.y, .1 * W.zw * (1 - p.r2 * .5)); }
       if (e > 0) { const w = p.r1 * TAU + T * (.5 + 1.6 * (1 - p.r2)), rad = 12 + p.r2 * R3; x = lerp(x, S.c.x + Math.cos(w) * rad, e); y = lerp(y, S.c.y + Math.sin(w) * rad * .42 + (p.r3 - .5) * 10, e); }
-      if (W.mx != null && e < 1 && p.pl == null) { const dx = W.mx - x, dy = W.my - y, d = Math.hypot(dx, dy), rr = kk === W.hov ? 240 : 150; if (d < rr) { const g = (kk === W.hov ? .75 : .24) * (1 - d / rr) ** 2 * (1 - e); x += dx * g; y += dy * g; } }
-      if (W.wir && W.wir.lade > .02 && p.pl == null) { const q = wirbelPos(W, p, x, y); x = q[0]; y = q[1]; }
-      let bA = 1; if (B.ph !== 'ruhe' || B.lade > 0) { const q = urknallPos(W, p, x, y, T); x = q[0]; y = q[1]; bA = q[2]; }
+      if (W.gm.a > .01 && e < 1 && p.pl == null) { const hK = W.hw[kk], dx = W.gm.x - x, dy = W.gm.y - y, d = Math.hypot(dx, dy), rr = lerp(115, 185, hK); if (d < rr) { const g = lerp(.1, .4, hK) * (1 - d / rr) ** 2 * (1 - e) * W.gm.a; x += dx * g; y += dy * g; } }
+      if (W.wir && W.wir.lade > .005 && p.pl == null) { const q = wirbelPos(W, p, x, y); x = q[0]; y = q[1]; tief = q[2]; }
+      let bA = plA; if (B.ph !== 'ruhe' || B.lade > 0) { const q = urknallPos(W, p, x, y, T); x = q[0]; y = q[1]; bA *= q[2]; }
       const base = F.art[kk], mm = m * (.35 + .65 * p.r3), c = mm > 0 ? base.map((q, i) => lerp(q, F.mintR[i], mm)) : base;
-      const hell = !!f || p.pl != null, s = (hell ? (p.pl != null ? 2.1 : 2.4) : 1.6) * skal * (W.ziel === kk ? 1.15 : 1);
+      const hell = !!f || p.pl != null, s = (f ? 2.4 : p.pl != null ? 1.3 : 1.6) * skal * (W.ziel === kk ? 1.15 : 1) * tief;
       ctx.fillStyle = rgba(c, (hell ? .95 : .55) * lerp(al, 1, e) * bA); ctx.fillRect(x - s / 2, y - s / 2, s, s);
     }
     ctx.globalCompositeOperation = 'source-over';
@@ -1023,7 +1078,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     let lr = lerp(W.lochR, 12 + 4 * m, e) * (1 + .7 * W.zw);
     if (W.blitz && T - W.blitz.t < .6) { const q = (T - W.blitz.t) / .6; glow(ctx, S.c.x, S.c.y, 40 + q * 90, W.blitz.c, .7 * (1 - q)); lr *= 1 + .25 * Math.sin(Math.PI * q); }
     if (W.zw > .01) glow(ctx, S.c.x, S.c.y, 160 * W.zw, F.mintR, .12 * W.zw);
-    planetLicht(W, T);
+    planetZeichnen(W, T, e, bahnA);
     urknallLoch(W, T, lr);
   }
 
@@ -1035,7 +1090,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
     const v = V[host.dataset.konzept];
     const W = { k: WEGE, V: v, modus: 'regal', tUeb: -99, mx: null, my: null, jetzt: 0, sichtbar: true, hov: null, sicht: 0, zw: 0, zieht: false,
-      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false }, zittern: [0, 0] };
+      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false }, gm: { x: 0, y: 0, a: 0 }, planetNr: Math.floor(Math.random() * 6), zittern: [0, 0] };
     W.files = PROBE.map((d, i) => ({ ...d, i, st: 'drin', tAn: -99, spur: [], pk: 0, gr: clamp(.6 + .45 * Math.sqrt(d.mb / 20), .6, 1.8) }));
     teilchen(W);
     W.el = fenster(W); host.append(W.el);
