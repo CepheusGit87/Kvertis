@@ -16,6 +16,7 @@ Stand: 23.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Offen
 
+- Fünfte Kiste „3D-Modelle“ (ADR-016): Farbe A Rosa, B Limette oder C Stahlgrau (Vorschlag A), Takt 65 s, Breitenregel 5 groß ab 1 350 px, 5 verkleinert ab 1 000 px, darunter 3 + 2. Entwurf `sanduhr-fuenf-kisten.html`.
 - Speicherort: global und je Datei, fünf Konzepte in `speicherort-konzepte.html` (Vorschlag: 1 Global mit Ausnahmen, 2 als Erweiterung).
 - Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
@@ -23,4 +24,4 @@ Stand: 23.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 
 ## Weitere Entwurfsseiten (Zwischenstände)
 
-`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`.
+`oberflaeche-konzepte.html` (A Durchlauf, B Kartei, C Tiefenebenen), `wird-zu-ideen.html`, `sanduhr-varianten.html`, `sanduhr-glas-plattform.html`, `sanduhr-3d.html`, `umwandeln-konzepte.html`, `foerderband-kombis.html`, `sanduhr-fuenf-kisten.html`.
