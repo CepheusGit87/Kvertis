@@ -362,6 +362,11 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 .summe { position: absolute; left: 16px; top: 16px; display: grid; gap: 2px; font-size: 12.5px; color: var(--muted); transition: opacity .4s; z-index: 2; }
 .summe b { color: var(--ink); font-size: 15px; font-weight: 600; } .summe em { font-style: normal; color: var(--coral); }
 .welt[data-ziel="zoom"] .summe { opacity: 0; }
+.welt.laedt { cursor: none; }
+.welt.bebt { animation: beben .7s cubic-bezier(.36,.07,.19,.97); }
+@keyframes beben { 10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -2px); } 30%, 50%, 70% { transform: translate(-7px, 3px); } 40%, 60% { transform: translate(7px, -3px); } }
+.welt.bebt .faecher { animation: wackeln .9s var(--feder); }
+@keyframes wackeln { 30% { transform: translateY(8px); } }
 /* Ziele mit .aus dürfen im Ausblenden nicht stehen bleiben */
 .panel:not(.sichtbar) .knopf-r.aus { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .fz.neu, .fach-kopf em.hupf { animation: none; } }
@@ -375,7 +380,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     <div class="gemeinsam">
       <div><small>Ausprobieren</small><p>„Beispieldateien einwerfen“ oder echte Dateien auf das Fenster ziehen. Bilder zeigen eine kleine Vorschau. Es wird nichts hochgeladen.</p></div>
       <div><small>Einwerfen</small><p>Jede Datei fliegt kurz mit ihrem Formatschild auf ihre Bahn. Gleichzeitig erscheint sie im Fach, und die Zahl springt. Zehn Dateien brauchen etwa zwei Sekunden.</p></div>
-      <div><small>Zusammenspiel</small><p>Fährt man über ein Fach, leuchtet seine Bahn. Fährt man über eine Datei, leuchtet ihr Planet.</p></div>
+      <div><small>Zusammenspiel</small><p>Fährt man über ein Fach, leuchtet seine Bahn. Fährt man über eine Datei, leuchtet ihr Planet. Und zehn Sekunden auf dem Loch …</p></div>
       <div><small>Zoom</small><p>Ein Klick auf ein Fach oder eine Bahn öffnet „Wege durchs Loch“. Die Fächer werden dann zur schmalen Leiste zum Wechseln. Mit Esc oder „Übersicht“ geht es zurück.</p></div>
     </div>
   </header>
@@ -389,7 +394,8 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   <section class="idee" aria-labelledby="h-v">
     <h2 id="h-v">Was sich gegenüber Konzept 1 ändert</h2>
     <div class="empf">
-      <p><b>Die Galaxie ist wieder die Bühne.</b> Die Bahnen tragen Name und Zahl, zum Beispiel „BILDER · 3“. Die Fächer liegen halbtransparent darunter und verdecken keine Bahn.</p>
+      <p><b>Die Galaxie ist wieder die Bühne.</b> Die Bahnen sind ohne Beschriftung, die Farben erklären die Fächer darunter. Die Bahnen reagieren schon aus größerem Abstand auf die Maus, beulen sich stärker aus und ziehen ihre Teilchen deutlicher an.</p>
+      <p><b>Kleines Geheimnis:</b> Zehn Sekunden mit der Maus auf dem schwarzen Loch lassen es aufladen. Es wächst, zittert und saugt die Bahnen an, dann explodiert es. Danach entsteht das Universum neu: ein heller Punkt, das Loch, und die Teilchen kehren in einer Spirale auf ihre Bahnen zurück. Bei „Animationen reduzieren“ ist das abgeschaltet.</p>
       <p><b>Leere Fächer bleiben stehen</b> und zeigen, was man hineinwerfen kann. So sieht man immer alle Datentypen, wie früher bei den Sanduhren.</p>
       <p><b>Die Leiste „Übersicht · Bilder · Audio …“ entfällt.</b> Die Fächer übernehmen sie: Ein Klick zoomt, und im Zoom werden sie zur schmalen Leiste.</p>
       <p class="muted">Die echte App prüft den Inhalt (docs/05-formate.md). Im Entwurf werden die Endung und die ersten Bytes geprüft. Bei „Animationen reduzieren“ entfällt der Flug, und die Dateien stehen sofort im Fach.</p>
@@ -517,7 +523,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   function punkt(S, k, A, d = 0) {
     const W = S.W, [rx, fl] = W.geo[k], ry = rx * fl;
     let bul = 0;
-    if (W.hw[k] > .01) { const da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 18 * Math.exp(-da * da / .22); }
+    if (W.hw[k] > .01) { const da = Math.atan2(Math.sin(A - W.hA[k]), Math.cos(A - W.hA[k])); bul = W.hw[k] * 30 * Math.exp(-da * da / .36); }
     const s = 1 + (bul + d) / rx;
     return [S.c.x + Math.cos(A) * rx * s, S.c.y + Math.sin(A) * ry * s];
   }
@@ -806,6 +812,72 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     m.classList.add('sichtbar'); clearTimeout(W.mTimer); W.mTimer = setTimeout(() => m.classList.remove('sichtbar'), 4000);
   }
 
+  /* ---------- Gimmick: 10 Sekunden auf das Loch zeigen ---------- */
+  const LADEZEIT = 10, EXPLO = 1.4, NEU = 3.4;
+  const easeBack = t => 1 + 2.2 * Math.pow(t - 1, 3) + 1.2 * Math.pow(t - 1, 2);
+  function urknallTick(W, T, dt) {
+    const B = W.boom, S = W.S;
+    if (B.ph === 'ruhe') {
+      const nah = W.mx != null && Math.hypot(W.mx - S.c.x, W.my - S.c.y) < 36;
+      if (!nah) B.gesperrt = false;
+      const darf = !leise && nah && !B.gesperrt && W.ziel === -1 && W.modus === 'regal' && !W.zieht && W.files.every(f => f.st === 'drin');
+      B.lade = darf ? Math.min(1, B.lade + dt / LADEZEIT) : Math.max(0, B.lade - dt * .5);
+      W.welt.classList.toggle('laedt', B.lade > .02);
+      if (B.lade >= 1) {
+        B.ph = 'explo'; B.t0 = T; B.lade = 0; B.gesperrt = true; W.welt.classList.remove('laedt');
+        W.welt.classList.remove('bebt'); void W.welt.offsetWidth; W.welt.classList.add('bebt');
+      }
+    } else if (B.ph === 'explo' && T - B.t0 >= EXPLO) { B.ph = 'neu'; B.t0 = T; }
+    else if (B.ph === 'neu' && T - B.t0 >= NEU) { B.ph = 'ruhe'; }
+  }
+  // Lage eines Teilchens beim Aufladen, bei der Explosion und beim Neuentstehen
+  function urknallPos(W, p, x, y, T) {
+    const B = W.boom, c = W.S.c, fl = .5, dx = x - c.x, dy = (y - c.y) / fl, r = Math.hypot(dx, dy), a = Math.atan2(dy, dx);
+    const weit = (.35 + p.r2 * 1.15) * Math.max(W.S.w, W.S.h) * .7, richt = p.r1 * TAU * 5 + p.r3 * 2;
+    if (B.ph === 'ruhe') {
+      const l = B.lade * B.lade, w = a + l * 2.6 * (1.2 - p.r2), rr = r * (1 - .72 * l) + (l > .5 ? (Math.random() - .5) * 5 * l : 0);
+      return [c.x + Math.cos(w) * rr, c.y + Math.sin(w) * rr * fl, 1];
+    }
+    if (B.ph === 'explo') {
+      const u = easeOut(clamp((T - B.t0) / (EXPLO * (.6 + .4 * p.r3)))), rr = lerp(4 + p.r2 * 10, weit, u);
+      return [c.x + Math.cos(richt) * rr, c.y + Math.sin(richt) * rr * .62, 1 - .75 * u];
+    }
+    // neu: Spirale von außen auf die eigene Bahn
+    const t = clamp((T - B.t0 - .5 - p.r2 * 1.1) / 1.6), k = ease(t);
+    if (t <= 0) return [c.x + Math.cos(richt) * weit, c.y + Math.sin(richt) * weit * .62, .12];
+    const sx = Math.cos(richt) * weit, sy = Math.sin(richt) * weit * .62 / fl, r0 = Math.hypot(sx, sy), a0 = Math.atan2(sy, sx);
+    const d = Math.atan2(Math.sin(a0 - a), Math.cos(a0 - a)) + 2.2, w = a + d * (1 - k), rr = lerp(r0, r, k);
+    return [c.x + Math.cos(w) * rr, c.y + Math.sin(w) * rr * fl, lerp(.12, 1, k)];
+  }
+  function urknallLoch(W, T, lr) {
+    const B = W.boom, S = W.S, ctx = S.ctx, c = S.c;
+    if (B.ph === 'ruhe') {
+      const l = B.lade;
+      if (l <= .005) { loch(ctx, c.x, c.y, lr); return; }
+      const zit = l > .6 ? (l - .6) * 6 : 0, x = c.x + (Math.random() - .5) * zit, y = c.y + (Math.random() - .5) * zit, R = lr * (1 + .9 * l);
+      glow(ctx, x, y, 60 + 200 * l, F.violetR, .3 * l); glow(ctx, x, y, 30 + 90 * l, F.mintR, .35 * l * (.75 + .25 * Math.sin(T * (6 + 20 * l))));
+      loch(ctx, x, y, R);
+      ctx.strokeStyle = rgba(F.mintR, .9); ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(x, y, R + 9, -Math.PI / 2, -Math.PI / 2 + l * TAU); ctx.stroke(); ctx.lineCap = 'butt';
+      ctx.font = `600 10.5px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = rgba(F.mintR, clamp(l * 6) * .9);
+      ctx.fillText(l < .9 ? `lädt ${Math.floor(l * 100)} %` : 'gleich …', x, y + R + 26); ctx.textAlign = 'left';
+      return;
+    }
+    if (B.ph === 'explo') {
+      const q = clamp((T - B.t0) / EXPLO);
+      glow(ctx, c.x, c.y, 60 + q * 700, [255, 255, 255], .95 * (1 - q) * (1 - q));
+      glow(ctx, c.x, c.y, 40 + q * 420, F.mintR, .6 * (1 - q));
+      [0, .18, .36].forEach((v, i) => { const s = clamp((q - v) / (1 - v)); if (s <= 0) return; ctx.strokeStyle = rgba(i === 1 ? F.violetR : F.mintR, (1 - s) * .8); ctx.lineWidth = 3 * (1 - s) + .5; ctx.beginPath(); ctx.ellipse(c.x, c.y, 10 + s * 900, (10 + s * 900) * .42, 0, 0, TAU); ctx.stroke(); });
+      return;
+    }
+    const q = T - B.t0;
+    if (q < .5) { const s = q / .5; glow(ctx, c.x, c.y, 6 + 26 * s, [255, 255, 255], .9 * s); return; }
+    const t = clamp((q - .5) / 1.2);
+    glow(ctx, c.x, c.y, 30 + 40 * (1 - t), [255, 255, 255], .5 * (1 - t));
+    loch(ctx, c.x, c.y, lr * Math.max(.05, easeBack(t)));
+    if (q > 1.2 && q < 2.4) { ctx.font = `600 10.5px ${MONO}`; ctx.textAlign = 'center'; ctx.fillStyle = rgba(F.mintR, Math.sin(Math.PI * (q - 1.2) / 1.2) * .9); ctx.fillText('ein neues Universum', c.x, c.y + lr + 26); ctx.textAlign = 'left'; }
+  }
+
   function zeichnen(W, T, dt) {
     const S = W.S, ctx = S.ctx, v = W.V;
     kamera(W, T);
@@ -818,6 +890,8 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const m = W.modus === 'wirbel' ? clamp((T - W.tUeb - 1.8) / 6) : 0;
     const R3 = Math.min(S.w, S.h) * .3;
     W.zw += ((W.zieht ? 1 : 0) - W.zw) * (1 - Math.exp(-dt * 8));
+    urknallTick(W, T, dt);
+    const B = W.boom, bahnA = B.ph === 'ruhe' ? 1 - .6 * B.lade : B.ph === 'explo' ? 0 : clamp((T - B.t0 - 1) / 1.6);
     const soll = W.ziel != null && W.ziel >= 0 && W.camP > .6 ? 1 : 0;
     W.sicht += (soll - W.sicht) * (leise ? 1 : 1 - Math.exp(-dt * 6));
     const pan = W.el.querySelector('.panel');
@@ -829,7 +903,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     // Maus
     W.hov = null;
     if (W.mx != null && e < .5) {
-      let best = 26;
+      let best = 46;
       ARTEN.forEach((a, i) => {
         const [rx, fl, al] = W.geo[i]; if (al < .5) return;
         const ry = rx * fl, dx = (W.mx - S.c.x) / rx, dy = (W.my - S.c.y) / ry, th = Math.atan2(dy, dx), r = Math.hypot(dx, dy);
@@ -839,17 +913,16 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     }
     W.welt.classList.toggle('zeigt', W.hov != null && uebersicht);
     if (W.hovAlt !== W.hov) { W.hovAlt = W.hov; W.el.querySelectorAll('.fach').forEach(fa => fa.classList.toggle('hell', +fa.dataset.art === W.hov)); }
-    const rh = leise ? 1 : 1 - Math.exp(-dt * 9);
+    const rh = leise ? 1 : 1 - Math.exp(-dt * 12);
     ARTEN.forEach((a, i) => { W.hw[i] += ((W.hov === i || W.fachHov === i ? 1 : 0) - W.hw[i]) * rh; W.ph[i] += dt * (.2 - BAHN[i] * .026) * (1 + .5 * (W.ziel === i ? 1 : 0) + .6 * W.hw[i]) * (leise ? 0 : 1); });
     W.files.forEach(f => { f.pk += ((v.parken && W.ziel === f.k && W.camP > .5 ? 1 : 0) - f.pk) * (1 - Math.exp(-dt * 3)); });
     // Bahnen
     ARTEN.forEach((a, i) => {
-      const [rx, fl, al] = W.geo[i], h = W.hw[i], z = W.ziel === i ? W.camP : 0, alpha = (.16 + .3 * z + .3 * h + .15 * W.zw) * al * (1 - e);
+      const [rx, fl, al] = W.geo[i], h = W.hw[i], z = W.ziel === i ? W.camP : 0, alpha = (.16 + .3 * z + .3 * h + .15 * W.zw) * al * (1 - e) * bahnA;
       if (alpha < .01 || rx > S.w * 2) return;
       ctx.strokeStyle = rgba(F.art[i], alpha); ctx.lineWidth = 1 + .8 * z + .8 * h;
       if (z > .3 || h > .1) { ctx.shadowColor = F[a.tok]; ctx.shadowBlur = 10 * Math.max(z, h); }
       ctx.beginPath(); for (let j = 0; j <= 110; j++) { const [x, y] = punkt(S, i, j / 110 * TAU); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke(); ctx.shadowBlur = 0;
-      if (uebersicht && W.camP > .8 && e < 1) { const A = -.35 - BAHN[i] * .28, [x, y] = punkt(S, i, A); ctx.globalAlpha = (1 - e) * (.55 + .45 * h); ctx.font = `600 10.5px ${MONO}`; ctx.fillStyle = rgba(F.art[i], 1); const nB = W.files.filter(f => f.k === i && f.st === 'drin').length; ctx.fillText(a.name.toUpperCase() + (nB ? ' · ' + nB : ''), x + 8, y - 6); ctx.globalAlpha = 1; }
     });
     if (e > 0) glow(ctx, S.c.x, S.c.y, R3 + 60, F.violetR.map((q, i) => lerp(q, F.mintR[i], m)), .22 * e);
     // Teilchen
@@ -866,10 +939,11 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       if (f && T - f.tAn < .8 && f.ax != null) { const t = ease(clamp((T - f.tAn) / .8)), sp = (1 - t) * 30 * (p.r1 - .5); x = lerp(f.ax, x, t) + sp; y = lerp(f.ay, y, t) + sp * .5; }
       if (W.zw > .01) { x = lerp(x, S.c.x, .1 * W.zw * (1 - p.r2 * .5)); y = lerp(y, S.c.y, .1 * W.zw * (1 - p.r2 * .5)); }
       if (e > 0) { const w = p.r1 * TAU + T * (.5 + 1.6 * (1 - p.r2)), rad = 12 + p.r2 * R3; x = lerp(x, S.c.x + Math.cos(w) * rad, e); y = lerp(y, S.c.y + Math.sin(w) * rad * .42 + (p.r3 - .5) * 10, e); }
-      if (W.mx != null && e < 1) { const dx = W.mx - x, dy = W.my - y, d = Math.hypot(dx, dy), rr = kk === W.hov ? 170 : 110; if (d < rr) { const g = (kk === W.hov ? .5 : .14) * (1 - d / rr) ** 2 * (1 - e); x += dx * g; y += dy * g; } }
+      if (W.mx != null && e < 1) { const dx = W.mx - x, dy = W.my - y, d = Math.hypot(dx, dy), rr = kk === W.hov ? 240 : 150; if (d < rr) { const g = (kk === W.hov ? .75 : .24) * (1 - d / rr) ** 2 * (1 - e); x += dx * g; y += dy * g; } }
+      let bA = 1; if (B.ph !== 'ruhe' || B.lade > 0) { const q = urknallPos(W, p, x, y, T); x = q[0]; y = q[1]; bA = q[2]; }
       const base = F.art[kk], mm = m * (.35 + .65 * p.r3), c = mm > 0 ? base.map((q, i) => lerp(q, F.mintR[i], mm)) : base;
       const hell = !!f, s = (hell ? 2.4 : 1.6) * skal * (W.ziel === kk ? 1.15 : 1);
-      ctx.fillStyle = rgba(c, (hell ? .95 : .55) * lerp(al, 1, e)); ctx.fillRect(x - s / 2, y - s / 2, s, s);
+      ctx.fillStyle = rgba(c, (hell ? .95 : .55) * lerp(al, 1, e) * bA); ctx.fillRect(x - s / 2, y - s / 2, s, s);
     }
     ctx.globalCompositeOperation = 'source-over';
     // Einwurf-Choreografie
@@ -882,7 +956,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     // Ankunftsschild
     if (v.etikett) W.files.forEach(f => {
       if (f.k < 0 || f.st !== 'drin' || T - f.tAn > 2.8 || W.geo[f.k][2] < .3) return;
-      const a = clamp((T - f.tAn) / .3) * clamp((2.8 - (T - f.tAn)) / .5) * (1 - e), [x, y] = zielPunkt(W, f);
+      const a = clamp((T - f.tAn) / .3) * clamp((2.8 - (T - f.tAn)) / .5) * (1 - e) * bahnA, [x, y] = zielPunkt(W, f);
       chip(ctx, x, y - 20, f.f, artFarbe(f), false, a, 1, true, f.n);
     });
     WEGE.deko(S, T, e);
@@ -891,7 +965,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     let lr = lerp(W.lochR, 12 + 4 * m, e) * (1 + .7 * W.zw);
     if (W.blitz && T - W.blitz.t < .6) { const q = (T - W.blitz.t) / .6; glow(ctx, S.c.x, S.c.y, 40 + q * 90, W.blitz.c, .7 * (1 - q)); lr *= 1 + .25 * Math.sin(Math.PI * q); }
     if (W.zw > .01) glow(ctx, S.c.x, S.c.y, 160 * W.zw, F.mintR, .12 * W.zw);
-    loch(ctx, S.c.x, S.c.y, lr);
+    urknallLoch(W, T, lr);
   }
 
   /* ---------- Start ---------- */
@@ -902,7 +976,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   document.querySelectorAll('.buehne[data-konzept]').forEach(host => {
     const v = V[host.dataset.konzept];
     const W = { k: WEGE, V: v, modus: 'regal', tUeb: -99, mx: null, my: null, jetzt: 0, sichtbar: true, hov: null, sicht: 0, zw: 0, zieht: false,
-      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined };
+      cam: { a: -1, b: -1, t0: -99 }, hw: ARTEN.map(() => 0), hA: ARTEN.map(() => 0), ph: ARTEN.map(() => Math.random() * TAU), gerendert: undefined, boom: { ph: 'ruhe', lade: 0, t0: 0, gesperrt: false } };
     W.files = PROBE.map((d, i) => ({ ...d, i, st: 'drin', tAn: -99, spur: [], pk: 0, gr: clamp(.6 + .45 * Math.sqrt(d.mb / 20), .6, 1.8) }));
     teilchen(W);
     W.el = fenster(W); host.append(W.el);
