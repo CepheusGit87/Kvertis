@@ -1,4 +1,4 @@
-<title>Kvertis Artwahl Universen</title>
+<title>Kvertis Artwahl flach</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600;700&display=swap">
@@ -915,199 +915,107 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
 .g-b.an .g-bild { filter: drop-shadow(0 0 10px color-mix(in srgb, var(--k) 55%, transparent)); }
 .g-b:hover .g-kern { stroke-width: 2; }
 @media (prefers-reduced-motion: reduce) { .g-dreh, .g-scheibe i { animation: none; } }
-.h-drei { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; }
-.h-slot { display: block; flex: 0 0 auto; }
-/* H1 Liste */
-.h-liste { position: absolute; left: 14px; top: 14px; width: 180px; z-index: 3; display: grid; gap: 5px; }
-.h-z { position: relative; display: grid; grid-template-columns: 56px 1fr; gap: 10px; align-items: center; text-align: left; padding: 6px 10px 6px 6px; border-radius: 16px; border: 1px solid transparent; background: none; transition: background .3s, border-color .3s; }
-.h-z .h-slot { width: 56px; height: 56px; }
-.h-z .tx { display: grid; gap: 0; }
-.h-z .tx b { font-size: 14px; } .h-z .tx small { font: 500 10.5px var(--mono); color: var(--muted); }
-.h-z .zl { font: 600 10.5px var(--mono); color: var(--leise); }
-.h-z.fertig .zl, .h-z.an .zl { color: var(--mint); }
-.h-z:hover { background: color-mix(in srgb, var(--panel) 60%, transparent); }
-.h-z.an { background: linear-gradient(135deg, color-mix(in srgb, var(--k) 20%, var(--panel)), color-mix(in srgb, var(--panel) 70%, transparent)); border-color: color-mix(in srgb, var(--k) 55%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 10px 30px -12px var(--k); }
-.h-z.an::before { content: ''; position: absolute; left: -8px; top: 18px; bottom: 18px; width: 3px; border-radius: 2px; background: var(--k); box-shadow: 0 0 10px var(--k); }
-/* H2 Drehrad */
-.h-rad { position: absolute; left: 6px; top: 0; bottom: 0; width: 148px; z-index: 3; }
-.h-rad::before { content: ''; position: absolute; left: 10px; right: 10px; top: 50%; height: 150px; margin-top: -75px; border-radius: 24px; background: radial-gradient(closest-side, color-mix(in srgb, var(--k) 16%, transparent), transparent); pointer-events: none; }
-.h-rz { position: absolute; left: 50%; display: grid; justify-items: center; gap: 1px; border: 0; background: none; padding: 4px 8px; transform-origin: 50% 50%; will-change: transform, opacity, top; }
-.h-rz .h-slot { width: 84px; height: 84px; }
-.h-rz b { font-size: 14px; } .h-rz b em { font: 600 11px var(--mono); font-style: normal; color: var(--muted); }
-.h-rz small { font: 600 10.5px var(--mono); color: var(--leise); }
-.h-rz.fertig small, .h-rz.an small { color: var(--mint); }
-.h-pfeil { position: absolute; left: 50%; transform: translateX(-50%); z-index: 30; width: 30px; height: 22px; border-radius: 11px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 85%, transparent); color: var(--muted); font-size: 9px; }
-.h-pfeil.oben { top: 8px; } .h-pfeil.unten { bottom: 8px; }
-.h-pfeil:hover { color: var(--ink); border-color: var(--mint-rahmen); }
-/* H3 Sockel */
-.h-sockel { position: absolute; left: 8px; top: 0; bottom: 0; width: 130px; z-index: 3; display: grid; align-content: center; gap: 4px; }
-.h-so { position: relative; display: grid; justify-items: center; gap: 0; border: 0; background: none; padding: 2px 4px 6px; }
-.h-so .h-slot { width: 54px; height: 54px; position: relative; z-index: 1; transition: transform .5s var(--sanft), width .4s var(--sanft), height .4s var(--sanft); }
-.h-so.an .h-slot { width: 70px; height: 70px; transform: translateY(-8px); }
-.h-so .podest { width: 70px; height: 14px; margin-top: -10px; border-radius: 50%; background: radial-gradient(ellipse at 50% 40%, color-mix(in srgb, var(--k) 40%, #1a2230), #0a0e14 70%); box-shadow: 0 2px 0 color-mix(in srgb, var(--k) 30%, #000), 0 0 0 1px color-mix(in srgb, var(--k) 35%, transparent); transition: box-shadow .4s; }
-.h-so.an .podest { width: 86px; box-shadow: 0 2px 0 color-mix(in srgb, var(--k) 50%, #000), 0 0 0 1px var(--k), 0 0 24px var(--k); }
-.h-so .strahl { position: absolute; left: 50%; top: 0; width: 70px; height: 86px; margin-left: -35px; background: linear-gradient(to top, color-mix(in srgb, var(--k) 35%, transparent), transparent 85%); clip-path: polygon(8% 100%, 92% 100%, 70% 0, 30% 0); opacity: 0; transition: opacity .5s; filter: blur(2px); pointer-events: none; }
-.h-so.an .strahl { opacity: 1; }
-.h-so b { margin-top: 5px; font-size: 13px; } .h-so b em { font: 600 10.5px var(--mono); font-style: normal; color: var(--muted); }
-.h-so small { font: 600 10px var(--mono); color: var(--leise); }
-.h-so.fertig small, .h-so.an small { color: var(--mint); }
-/* H4 Glaskacheln */
-.h-glas { position: absolute; left: 14px; top: 0; bottom: 0; width: 136px; z-index: 3; display: grid; align-content: center; gap: 9px; perspective: 600px; }
-.h-k { position: relative; height: 92px; border-radius: 18px; border: 1px solid rgba(255,255,255,.1); background: radial-gradient(120px 80px at var(--gx, 50%) 0%, rgba(255,255,255,.1), transparent 70%), linear-gradient(160deg, color-mix(in srgb, var(--k) 10%, rgba(255,255,255,.05)), rgba(255,255,255,.015)); backdrop-filter: blur(12px); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 12px 24px -16px #000; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .25s ease-out, border-color .3s, box-shadow .3s; text-align: left; padding: 0; }
-.h-k .h-slot { position: absolute; left: 50%; top: 8px; width: 54px; height: 54px; margin-left: -27px; }
-.h-k .schatten { position: absolute; left: 50%; top: 58px; width: 44px; height: 8px; margin-left: -22px; border-radius: 50%; background: radial-gradient(closest-side, rgba(0,0,0,.55), transparent); }
-.h-k b { position: absolute; left: 12px; bottom: 8px; font-size: 12.5px; }
-.h-k em { position: absolute; right: 9px; top: 8px; min-width: 18px; height: 18px; border-radius: 9px; background: color-mix(in srgb, var(--k) 30%, transparent); font: 700 10px var(--mono); font-style: normal; display: grid; place-items: center; color: var(--ink); }
-.h-k small { position: absolute; right: 10px; bottom: 9px; font: 600 10px var(--mono); color: var(--leise); }
-.h-k.fertig small, .h-k.an small { color: var(--mint); }
-.h-k.an { border-color: color-mix(in srgb, var(--k) 70%, transparent); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 0 1px color-mix(in srgb, var(--k) 40%, transparent), 0 14px 36px -12px var(--k); background: radial-gradient(120px 80px at var(--gx, 50%) 0%, rgba(255,255,255,.14), transparent 70%), linear-gradient(160deg, color-mix(in srgb, var(--k) 26%, rgba(255,255,255,.05)), rgba(255,255,255,.02)); }
-:root[data-theme="light"] .h-k { border-color: rgba(0,0,0,.08); }
-@media (prefers-reduced-motion: reduce) { .h-k { transform: none; } }
-.h-rz b, .h-so b { white-space: nowrap; }
-.h-rz:focus:not(:focus-visible) { outline: none; }
-.u-bahnen { position: absolute; left: 8px; top: 0; bottom: 0; width: 132px; z-index: 3; display: grid; align-content: center; gap: 8px; }
-.u-b { position: relative; display: grid; justify-items: center; gap: 0; border: 0; background: none; padding: 2px 2px 8px; border-radius: 16px; color: var(--muted); transition: background .3s; }
-.u-b .h-slot { width: 124px; height: 70px; }
-.u-b b { font-size: 12.5px; color: var(--ink); font-weight: 600; white-space: nowrap; }
-.u-b b em { font: 600 10.5px var(--mono); font-style: normal; color: var(--muted); }
-.u-b small { font: 600 10px var(--mono); color: var(--leise); }
-.u-b.fertig small, .u-b.an small { color: var(--mint); }
-.u-b.an { background: radial-gradient(90px 60px at 50% 38%, color-mix(in srgb, var(--k) 14%, transparent), transparent); }
-.u-b:focus:not(:focus-visible) { outline: none; }
+.j-bahnen { position: absolute; left: 8px; top: 0; bottom: 0; width: 132px; z-index: 3; display: grid; align-content: center; gap: 6px; }
+.j-b { position: relative; display: grid; justify-items: center; gap: 0; border: 0; background: none; padding: 2px 2px 8px; border-radius: 16px; color: var(--muted); }
+.j-b:focus:not(:focus-visible) { outline: none; }
+.j-bild { position: relative; width: 124px; height: 73px; }
+.j-bild > svg { width: 124px; height: 73px; overflow: visible; }
+.j-b b { font-size: 12.5px; color: var(--ink); font-weight: 600; white-space: nowrap; }
+.j-b b em { font: 600 10.5px var(--mono); font-style: normal; color: var(--muted); }
+.j-b small { font: 600 10px var(--mono); color: var(--leise); }
+.j-b.fertig small, .j-b.an small { color: var(--mint); }
+.j-ik { color: var(--k); opacity: .75; transition: opacity .4s, filter .4s; }
+.j-b.an .j-ik { opacity: 1; filter: drop-shadow(0 0 4px var(--k)); }
+.j-b:hover .j-ik { opacity: 1; }
+.j-bahn { fill: none; stroke: var(--k); stroke-width: 1; stroke-opacity: .3; transition: stroke-opacity .4s; }
+.j-b.an .j-bahn { stroke-opacity: .7; stroke-width: 1.3; }
+.j-kern { fill: var(--bg); stroke: var(--k); stroke-opacity: .25; stroke-width: .8; }
+.j-b.an .j-kern { fill: color-mix(in srgb, var(--k) 12%, var(--bg)); stroke-opacity: .6; }
+/* J1 Lichtpunkt */
+.j-funke { fill: #fff; filter: drop-shadow(0 0 3px var(--k)) drop-shadow(0 0 6px var(--k)); opacity: .55; }
+.j-b.an .j-funke { opacity: 1; }
+/* J2 Lichtbogen auf der Bahn */
+.j-bogen { fill: none; stroke: var(--k); stroke-width: 1.8; stroke-linecap: round; stroke-dasharray: 16 84; animation: j-lauf 8s linear infinite; opacity: .5; }
+.j-bogen.breit { stroke-width: 5; opacity: .18; filter: blur(1.5px); }
+.j-b.an .j-bogen { animation-duration: 3s; opacity: 1; } .j-b.an .j-bogen.breit { opacity: .4; }
+@keyframes j-lauf { to { stroke-dashoffset: -100; } }
+/* J3 Schweben und Wellen */
+.j-schweb { animation: j-schweb 4s ease-in-out infinite; }
+.j-b.an .j-schweb { animation-duration: 2.6s; }
+@keyframes j-schweb { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(1px); } }
+.j-schatten { fill: var(--k); opacity: .18; filter: blur(1.5px); animation: j-schatten 4s ease-in-out infinite; transform-origin: 0 3px; }
+.j-b.an .j-schatten { animation-duration: 2.6s; opacity: .35; }
+@keyframes j-schatten { 0%, 100% { transform: scale(.8); } 50% { transform: scale(1.1); } }
+.j-bahn.atmen { animation: j-atmen 6s ease-in-out infinite; transform-origin: 0 0; }
+@keyframes j-atmen { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.25); } }
+.j-welle { fill: none; stroke: var(--k); stroke-width: 1; opacity: 0; animation: j-welle 3s ease-out infinite; transform-origin: 0 0; }
+.j-welle.w2 { animation-delay: 1.5s; }
+@keyframes j-welle { 0% { transform: scale(.7); opacity: .7; } 100% { transform: scale(1.35); opacity: 0; } }
+/* J4 Zeichnen und Glanz */
+.j4 .j-b.frisch .j-ik * { stroke-dasharray: 1; animation: j-zeichne 1.1s cubic-bezier(.5,0,.2,1) both; }
+.j4 .j-b.frisch .j-bahn.zieh { stroke-dasharray: 1; animation: j-zeichne 1.4s .2s cubic-bezier(.5,0,.2,1) both; }
+@keyframes j-zeichne { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.j-glanz { position: absolute; left: 50%; top: 50%; width: 34px; height: 34px; margin: -17px 0 0 -17px; color: #fff; opacity: 0; pointer-events: none; -webkit-mask: linear-gradient(105deg, transparent 35%, #000 50%, transparent 65%) 0 0 / 300% 100%; mask: linear-gradient(105deg, transparent 35%, #000 50%, transparent 65%) 0 0 / 300% 100%; }
+.j-glanz svg { width: 100%; height: 100%; }
+.j-b.an .j-glanz { opacity: .9; animation: j-glanz 3.5s ease-in-out infinite; }
+.j-b:not(.an):hover .j-glanz { opacity: .7; animation: j-glanz 1.2s ease-out 1; }
+@keyframes j-glanz { 0% { -webkit-mask-position: 100% 0; mask-position: 100% 0; } 60%, 100% { -webkit-mask-position: 0% 0; mask-position: 0% 0; } }
+.j4 .j-b:not(.an) .j-ik { opacity: .55; }
+@media (prefers-reduced-motion: reduce) { .j-bahnen * { animation: none !important; } }
+.j-glanz .j-ik { color: #fff; opacity: 1 !important; filter: none !important; }
 </style>
 
 <main class="seite">
   <header class="kopf">
     <span class="augenbraue">Kvertis · Schritt 2 · Entwürfe vom 24.09.2026</span>
-    <h1>Kleine Universen, Symbole in 3D</h1>
-    <p class="lead">Links bleibt das minimalistische kleine Universum je Dateiart mit dem Ring außen herum. Neu: Die schlichten Linien-Symbole vom Anfang sind jetzt echte 3D-Körper, wie aus Glasröhren gebogen. Der Ring liegt räumlich um das Symbol, er läuft hinten herum und vorn davor. So sitzt das Symbol im Universum und nicht darauf. Drei Oberflächen zur Auswahl.</p>
+    <h1>Kleine Universen, flach und lebendig</h1>
+    <p class="lead">Zurück zu den flachen, minimalistischen Symbolen im kleinen Universum mit Ring. Kein 3D, keine Planeten je Datei. Neu sind nur die Bewegungen. Die Bahn ist zweigeteilt: Die hintere Hälfte liegt hinter dem Symbol, die vordere davor. So sitzt das Symbol in seinem Universum, obwohl alles flach bleibt. Vier Arten, es zu bewegen.</p>
     <div class="gemeinsam">
-      <div><small>Ring</small><p>Ein leuchtender Ring und ein zarter zweiter, dazu ein einzelner Mond. Unabhängig von der Anzahl der Dateien, auch bei 200 Bildern aufgeräumt.</p></div>
-      <div><small>Symbol</small><p>Dieselben Linien wie in den flachen Symbolen, nur mit Tiefe, Glanz und runden Gelenken.</p></div>
-      <div><small>Aktiv</small><p>Die gewählte Art leuchtet heller, ist etwas größer, ihr Mond läuft schneller und das Symbol dreht sich langsam hin und her.</p></div>
+      <div><small>Symbol</small><p>Die schlichten Linien-Symbole in der Farbe der Art. Die aktive Art leuchtet leicht.</p></div>
+      <div><small>Ring</small><p>Eine feine Bahn um das Symbol. Bei der aktiven Art kräftiger.</p></div>
+      <div><small>Viele Dateien</small><p>Die Bewegung hängt nicht an der Anzahl. Die Zahl steht klein neben dem Namen.</p></div>
       <div><small>Ruhig</small><p>Bei „Animationen reduzieren“ steht alles still.</p></div>
     </div>
     <nav class="sprung" aria-label="Varianten">
-      <a href="#i1"><b>1</b>Leuchtglas</a><a href="#i2"><b>2</b>Farblack</a><a href="#i3"><b>3</b>Chrom</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
+      <a href="#j1"><b>1</b>Lichtpunkt</a><a href="#j2"><b>2</b>Lichtbogen</a><a href="#j3"><b>3</b>Schweben</a><a href="#j4"><b>4</b>Zeichnen und Glanz</a><a href="#vorschlag"><b>→</b>Mein Vorschlag</a>
     </nav>
   </header>
 
-  <section class="idee" id="i1" aria-labelledby="h-i1">
-    <div class="idee-kopf"><h2 id="h-i1">I1 · Leuchtglas <small>Symbole wie leuchtende Glasröhren</small></h2></div>
-    <p>Die Linien leuchten von innen in der Farbe der Art, mit Glanz obendrauf. Am nächsten am Neon-Look des schwarzen Lochs.</p>
-    <div class="buehne" data-konzept="I1|D5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Passt am besten zum Universum</span><span class="plus"><b>+</b>Aktive Art leuchtet deutlich auf</span><span class="minus"><b>−</b>Im hellen Design etwas weniger stark</span></div>
+  <section class="idee" id="j1" aria-labelledby="h-j1">
+    <div class="idee-kopf"><h2 id="h-j1">J1 · Lichtpunkt <small>ein Funke umrundet das Symbol</small></h2></div>
+    <p>Ein kleiner, heller Funke läuft auf der Bahn um das Symbol, hinten verschwindet er hinter dem Symbol, vorn zieht er davor vorbei. Bei der aktiven Art schneller und heller.</p>
+    <div class="buehne" data-konzept="J1|D5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Ruhig, aber lebendig</span><span class="plus"><b>+</b>Wirkt räumlich, obwohl flach</span><span class="minus"><b>−</b>Kleiner Effekt</span></div>
   </section>
 
-  <section class="idee" id="i2" aria-labelledby="h-i2">
-    <div class="idee-kopf"><h2 id="h-i2">I2 · Farblack <small>glänzend lackiert, ohne eigenes Leuchten</small></h2></div>
-    <p>Die Linien sind wie farbig lackiertes Metall, das Licht spiegelt sich darauf. Ruhiger als Leuchtglas, wirkt sehr wertig.</p>
-    <div class="buehne" data-konzept="I2|D5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Edel und ruhig</span><span class="plus"><b>+</b>Gut in Hell und Dunkel</span><span class="minus"><b>−</b>Weniger „Weltraum“</span></div>
+  <section class="idee" id="j2" aria-labelledby="h-j2">
+    <div class="idee-kopf"><h2 id="h-j2">J2 · Lichtbogen <small>ein leuchtender Bogen gleitet über die Bahn</small></h2></div>
+    <p>Statt eines Punkts gleitet ein leuchtender Bogen mit weichem Schein über die Bahn, wie Licht, das um ein schwarzes Loch kreist. Auch er läuft hinter und vor dem Symbol.</p>
+    <div class="buehne" data-konzept="J2|D5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Am nächsten am schwarzen Loch</span><span class="plus"><b>+</b>Gut sichtbar, auch klein</span><span class="minus"><b>−</b>Etwas mehr Bewegung</span></div>
   </section>
 
-  <section class="idee" id="i3" aria-labelledby="h-i3">
-    <div class="idee-kopf"><h2 id="h-i3">I3 · Chrom <small>spiegelndes Metall mit Farbstich</small></h2></div>
-    <p>Die Linien sind aus spiegelndem Chrom mit einem Hauch der Farbe. Die Umgebung spiegelt sich darin, beim Drehen wandern die Lichter.</p>
-    <div class="buehne" data-konzept="I3|D5"></div>
-    <div class="urteil"><span class="plus"><b>+</b>Am meisten „Schmuckstück“</span><span class="plus"><b>+</b>Starke Lichtreflexe beim Drehen</span><span class="minus"><b>−</b>Farbe der Art tritt zurück</span></div>
+  <section class="idee" id="j3" aria-labelledby="h-j3">
+    <div class="idee-kopf"><h2 id="h-j3">J3 · Schweben <small>das Symbol schwebt, die Bahn atmet</small></h2></div>
+    <p>Das Symbol schwebt sanft auf und ab und wirft einen weichen Schatten auf die Bahn. Die Bahn atmet langsam. Bei der aktiven Art laufen zusätzlich leise Wellen nach außen.</p>
+    <div class="buehne" data-konzept="J3|D5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Weich und freundlich</span><span class="plus"><b>+</b>Wellen zeigen klar die aktive Art</span><span class="minus"><b>−</b>Kein Kern um das Symbol</span></div>
+  </section>
+
+  <section class="idee" id="j4" aria-labelledby="h-j4">
+    <div class="idee-kopf"><h2 id="h-j4">J4 · Zeichnen und Glanz <small>beim Wählen zeichnet sich das Symbol neu</small></h2></div>
+    <p>Wird eine Art gewählt, zeichnen sich Symbol und Bahn mit einem Strich neu. Danach läuft ab und zu ein Glanz über das Symbol. Beim Überfahren mit der Maus glänzt auch eine nicht gewählte Art kurz auf.</p>
+    <div class="buehne" data-konzept="J4|D5"></div>
+    <div class="urteil"><span class="plus"><b>+</b>Die Wahl fühlt sich an wie ein Moment</span><span class="plus"><b>+</b>Sonst sehr ruhig</span><span class="minus"><b>−</b>Das Zeichnen sieht man nur beim Wechseln</span></div>
   </section>
 
   <section class="idee" id="vorschlag" aria-labelledby="h-v">
     <h2 id="h-v">Mein Vorschlag</h2>
     <div class="empf">
-      <p><b>I1 · Leuchtglas</b>: Es verbindet das minimalistische Symbol mit dem Leuchten des Universums am besten.</p>
-      <p class="muted">Die 3D-Darstellung lädt die Seite mit three.js (MIT) aus dem Netz, nur für den Entwurf. In der App würden die Symbole vorgerendert oder mit der Windows-Grafik gezeigt.</p>
+      <p><b>J2 · Lichtbogen</b> als Grundbewegung. Das Zeichnen aus <b>J4</b> passt als kurzer Moment beim Wechseln der Art gut dazu.</p>
     </div>
   </section>
 </main>
-<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
-<script type="module">
-// Entwurf: kleine Universen mit den Linien-Symbolen als 3D-Röhren (three.js, MIT, nur für diese Entwurfsseite)
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { SVGLoader } from 'three/addons/loaders/SVGLoader.js';
-
-const farbe = rgb => new THREE.Color().setRGB(rgb[0] / 255, rgb[1] / 255, rgb[2] / 255, THREE.SRGBColorSpace);
-const STIL = {
-  neon: c => new THREE.MeshPhysicalMaterial({ color: c, emissive: c, emissiveIntensity: .45, roughness: .12, metalness: 0, clearcoat: 1, clearcoatRoughness: .05, envMapIntensity: .9 }),
-  chrom: c => new THREE.MeshPhysicalMaterial({ color: c.clone().lerp(new THREE.Color(0xffffff), .35), roughness: .12, metalness: 1, envMapIntensity: 1.3 }),
-  lack: c => new THREE.MeshPhysicalMaterial({ color: c, roughness: .35, metalness: .05, clearcoat: 1, clearcoatRoughness: .1, envMapIntensity: .8 }),
-};
-let glowTex;
-function glowTextur() {
-  if (glowTex) return glowTex;
-  const cv = document.createElement('canvas'); cv.width = cv.height = 128; const x = cv.getContext('2d'), g = x.createRadialGradient(64, 64, 0, 64, 64, 64);
-  g.addColorStop(0, 'rgba(255,255,255,.9)'); g.addColorStop(.25, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128);
-  return (glowTex = new THREE.CanvasTexture(cv));
-}
-// Linien-Symbol (24×24, Strichstärke 1,6) als Röhren mit runden Gelenken
-function symbol(svg, mat) {
-  const grp = new THREE.Group(), R = 1.05, daten = new SVGLoader().parse(svg), kugel = new THREE.SphereGeometry(R, 16, 12);
-  for (const p of daten.paths) for (const sp of p.subPaths) {
-    let pts = sp.getPoints(24).map(v => new THREE.Vector3(v.x - 12, 12 - v.y, 0));
-    pts = pts.filter((v, i) => i === 0 || v.distanceTo(pts[i - 1]) > .01);
-    const zu = sp.autoClose || (pts.length > 2 && pts[0].distanceTo(pts[pts.length - 1]) < .05);
-    if (zu && pts[0].distanceTo(pts[pts.length - 1]) > .05) pts.push(pts[0].clone());
-    if (pts.length < 2) continue;
-    const kurve = new THREE.CurvePath(); for (let i = 1; i < pts.length; i++) kurve.add(new THREE.LineCurve3(pts[i - 1], pts[i]));
-    grp.add(new THREE.Mesh(new THREE.TubeGeometry(kurve, Math.max(8, (pts.length - 1) * 6), R, 12, false), mat));
-    const ecken = pts.length <= 12 ? pts : [pts[0], pts[pts.length - 1]];
-    for (const v of ecken) { const k = new THREE.Mesh(kugel, mat); k.position.copy(v); grp.add(k); }
-  }
-  return grp;
-}
-function universum(it) {
-  const c = farbe(it.rgb), mat = STIL[it.stil](c), hull = new THREE.Group();
-  const sym = symbol(it.svg, mat); hull.add(sym);
-  const bahn = new THREE.Group(); bahn.rotation.x = 1.12; hull.add(bahn);
-  const ringMat = new THREE.MeshPhysicalMaterial({ color: c, emissive: c, emissiveIntensity: .6, roughness: .2, transparent: true, opacity: .75 });
-  bahn.add(new THREE.Mesh(new THREE.TorusGeometry(21, .32, 10, 160), ringMat));
-  const hauch = new THREE.Mesh(new THREE.TorusGeometry(25, .14, 6, 160), ringMat.clone()); hauch.material.opacity = .25; bahn.add(hauch);
-  const mond = new THREE.Mesh(new THREE.SphereGeometry(1.5, 20, 14), new THREE.MeshPhysicalMaterial({ color: 0xffffff, emissive: c, emissiveIntensity: 1.2, roughness: .2 }));
-  bahn.add(mond);
-  const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTextur(), color: c, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending }));
-  glow.scale.set(46, 46, 1); glow.position.z = -12; hull.add(glow);
-  return { hull, sym, bahn, mond, mat, ringMat, glow, ry: 0, sc: 1, hell: .5, winkel: Math.random() * 6 };
-}
-function fenster(canvas) {
-  const r = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = .95;
-  const scene = new THREE.Scene(), pm = new THREE.PMREMGenerator(r);
-  scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture;
-  const l1 = new THREE.DirectionalLight(0xffffff, 1.4); l1.position.set(-300, 400, 600); scene.add(l1);
-  const l2 = new THREE.DirectionalLight(0xbfd8ff, .8); l2.position.set(500, -200, -300); scene.add(l2);
-  const cam = new THREE.OrthographicCamera(0, 1, 0, -1, -3000, 3000);
-  const obj = new Map(); let w0 = 0, h0 = 0, t0 = null;
-  return {
-    render(items, T, w, h, ruhig) {
-      if (w !== w0 || h !== h0) { r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); r.setSize(w, h, false); cam.right = w; cam.bottom = -h; cam.updateProjectionMatrix(); w0 = w; h0 = h; }
-      const dt = t0 == null ? 0 : Math.min(.1, T - t0); t0 = T;
-      const da = new Set();
-      for (const it of items) {
-        const key = it.i + it.k + it.stil; da.add(key);
-        let o = obj.get(key); if (!o) { o = universum(it); scene.add(o.hull); obj.set(key, o); }
-        const t = ruhig ? 0 : T, an = it.an;
-        const zielRy = it.hov ? .25 : an ? Math.sin(t * .8 + it.i) * .75 : -.6 + Math.sin(t * .45 + it.i * 1.7) * .18;
-        o.ry += (zielRy - o.ry) * .1; o.sym.rotation.set(-.3, o.ry, 0);
-        o.sc += ((an ? 1.12 : it.hov ? 1.05 : 1) - o.sc) * .12;
-        o.hell += ((an ? 1 : it.hov ? .8 : .5) - o.hell) * .1;
-        if (!ruhig) o.winkel += dt * (an ? 1.4 : .45);
-        o.mond.position.set(Math.cos(o.winkel) * 21, Math.sin(o.winkel) * 21, 0);
-        o.bahn.rotation.z = ruhig ? 0 : T * (an ? .25 : .08);
-        o.mat.emissiveIntensity = it.stil === 'neon' ? .2 + .45 * o.hell : 0;
-        o.ringMat.opacity = .35 + .5 * o.hell; o.ringMat.emissiveIntensity = .3 + .7 * o.hell;
-        o.glow.material.opacity = .12 + .38 * o.hell;
-        const s = it.s / 58 * o.sc;
-        o.hull.position.set(it.cx, -it.cy, 0); o.hull.scale.setScalar(s);
-      }
-      for (const [k, o] of obj) o.hull.visible = da.has(k);
-      r.render(scene, cam);
-    },
-  };
-}
-window.KvDrei = { fenster };
-</script>
 
 <script>
 (() => {
@@ -1598,67 +1506,31 @@ window.KvDrei = { fenster };
   });
   Object.assign(ART, { G1: gArt('g1'), G2: gArt('g2'), G3: gArt('g3'), G4: gArt('g4') });
 
-  /* ================= Artwahl mit echten 3D-Symbolen ================= */
-  const slot = i => `<span class="h-slot" data-slot="${i}" aria-hidden="true"></span>`;
   const hAttr = (W, x, i) => `${tabAttr(W, x, i)} aria-label="${x.kurz}, ${x.files.length} ${x.files.length === 1 ? 'Datei' : 'Dateien'}, Ziel ${artZiel(W, x)}"`;
-  const hZiel = (W, x, i) => W.besucht.has(x.k) ? `→ ${zielDef(W.Z, x)}${gesehen(W, x, i) ? ' ✓' : ''}` : 'offen';
-  function drei3d(W, T) {
-    const A = ART[W.a]; if (!A.drei || !window.KvDrei) return;
-    if (!W.drei) { const cv = document.createElement('canvas'); cv.className = 'h-drei'; W.innen.append(cv); W.drei = window.KvDrei.fenster(cv); }
-    A.vorDrei?.(W, T);
-    const items = [...W.innen.querySelectorAll('[data-slot]')].map(el => {
-      const i = +el.dataset.slot, r = rel(W, el), b = el.closest('button'), z = W.zeiger && W.zeiger.i === i ? W.zeiger : null;
-      return { i, k: GR[i].k, rgb: F[GR[i].tok], svg: IKON[GR[i].k], stil: A.stil, cx: r.x + r.w / 2, cy: r.y + r.h / 2, s: r.w, an: i === W.art, hov: b?.matches(':hover'), zeigerX: z?.x, zeigerY: z?.y, sichtbar: +(b?.style.opacity || 1) > .05 };
-    });
-    W.drei.render(items, T, W.w, W.h, leise);
-  }
-  Object.assign(ART, {
-    H1: { // Liste, jede Art mit 3D-Symbol
-      oben: 14, links: 206, untenR: 14, drei: true,
-      html: W => `<nav class="h-liste" aria-label="Dateiarten" role="tablist"><span class="f-kopf">Dateiarten <b>${fertigZahl(W)} von 5</b></span>${GR.map((x, i) => `<button type="button" class="h-z${i === W.art ? ' an' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)}>${slot(i)}<span class="tx"><b>${x.kurz}</b><small>${x.files.length} ${x.files.length === 1 ? 'Datei' : 'Dateien'}</small><span class="zl">${hZiel(W, x, i)}</span></span></button>`).join('')}</nav>`,
-      mitte: W => ({ oben: 14, unten: 14, links: 206 }),
-    },
-    H2: { // Drehrad: die aktive Art vorn, die anderen drehen nach hinten weg
-      oben: 14, links: 162, untenR: 14, drei: true,
-      html: W => `<nav class="h-rad" aria-label="Dateiarten" role="tablist"><button type="button" class="h-pfeil oben" data-w2k="${(W.art + 4) % 5}" aria-label="Vorherige Art">▲</button>${GR.map((x, i) => `<button type="button" class="h-rz${i === W.art ? ' an' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)}>${slot(i)}<b>${x.kurz} <em>${x.files.length}</em></b><small>${hZiel(W, x, i)}</small></button>`).join('')}<button type="button" class="h-pfeil unten" data-w2k="${(W.art + 1) % 5}" aria-label="Nächste Art">▼</button></nav>`,
-      mitte: W => ({ oben: 14, unten: 14, links: 162 }),
-      vorDrei(W, T) {
-        const nav = W.innen.querySelector('.h-rad'); if (!nav) return;
-        const wrap = d => ((d % 5) + 7.5) % 5 - 2.5;
-        if (W.rad == null) W.rad = W.art; else W.rad += wrap(W.art - W.rad) * (leise ? 1 : .1);
-        const H = nav.clientHeight, mid = H / 2;
-        nav.querySelectorAll('.h-rz').forEach((b, i) => {
-          const th = wrap(i - W.rad) * .6, z = Math.cos(th), y = mid + Math.sin(th) * Math.min(250, H * .42), s = .5 + .5 * Math.max(0, z);
-          b.style.top = y + 'px'; b.style.transform = `translate(-50%, -50%) scale(${s.toFixed(3)})`; b.style.opacity = Math.max(0, .15 + .85 * z * z).toFixed(3); b.style.zIndex = Math.round(z * 10) + 10;
-        });
-      },
-      nachRender(W) { const nav = W.innen.querySelector('.h-rad'); if (nav && !nav.dataset.rad) { nav.dataset.rad = 1; nav.addEventListener('wheel', e => { e.preventDefault(); const n = (W.art + (e.deltaY > 0 ? 1 : 4)) % 5; W.el.querySelector(`.h-rad [role="tab"][data-w2k="${n}"]`)?.click(); }, { passive: false }); } },
-    },
-    H3: { // Sockel: die Art steht auf einem leuchtenden Podest
-      oben: 14, links: 150, untenR: 14, drei: true,
-      html: W => `<nav class="h-sockel" aria-label="Dateiarten" role="tablist">${GR.map((x, i) => `<button type="button" class="h-so${i === W.art ? ' an' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)}><span class="strahl"></span>${slot(i)}<span class="podest"></span><b>${x.kurz} <em>${x.files.length}</em></b><small>${hZiel(W, x, i)}</small></button>`).join('')}</nav>`,
-      mitte: W => ({ oben: 14, unten: 14, links: 150 }),
-    },
-    H4: { // Glaskacheln, das Symbol folgt der Maus
-      oben: 14, links: 162, untenR: 14, drei: true,
-      html: W => `<nav class="h-glas" aria-label="Dateiarten" role="tablist">${GR.map((x, i) => `<button type="button" class="h-k${i === W.art ? ' an' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)} data-kachel="${i}">${slot(i)}<span class="schatten"></span><b>${x.kurz}</b><em>${x.files.length}</em><small>${hZiel(W, x, i)}</small></button>`).join('')}</nav>`,
-      mitte: W => ({ oben: 14, unten: 14, links: 162 }),
-      nachRender(W) {
-        W.innen.querySelectorAll('[data-kachel]').forEach(k => {
-          k.addEventListener('pointermove', e => { const r = k.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; k.style.setProperty('--rx', (-y * 14).toFixed(1) + 'deg'); k.style.setProperty('--ry', (x * 16).toFixed(1) + 'deg'); k.style.setProperty('--gx', ((x + .5) * 100).toFixed(0) + '%'); W.zeiger = { i: +k.dataset.kachel, x: x * 2, y: y * 2 }; });
-          k.addEventListener('pointerleave', () => { k.style.setProperty('--rx', '0deg'); k.style.setProperty('--ry', '0deg'); W.zeiger = null; });
-        });
-      },
-    },
-  });
-
-  /* ================= kleine Universen mit 3D-Linien-Symbolen ================= */
-  const uArt = stil => ({
-    oben: 14, links: 150, untenR: 14, drei: true, stil,
-    html: W => `<nav class="u-bahnen" aria-label="Dateiarten" role="tablist">${GR.map((x, i) => `<button type="button" class="u-b${i === W.art ? ' an' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)}><span class="h-slot" data-slot="${i}" aria-hidden="true"></span><b>${x.kurz} <em>${x.files.length}</em></b><small>${gesehen(W, x, i) ? '✓ ' : ''}${W.besucht.has(x.k) ? '→ ' + zielDef(W.Z, x) : 'offen'}</small></button>`).join('')}</nav>`,
+  /* ================= flache Symbole im kleinen Universum, vier Animationen ================= */
+  const RX = 34, RY = 12, OBEN = `M ${-RX} 0 A ${RX} ${RY} 0 0 1 ${RX} 0`, UNTEN = `M ${RX} 0 A ${RX} ${RY} 0 0 1 ${-RX} 0`, VOLL = `M ${-RX} 0 A ${RX} ${RY} 0 1 1 ${RX} 0 A ${RX} ${RY} 0 1 1 ${-RX} 0`;
+  const flachIk = (x, gr) => IKON[x.k].replace(/<(path|rect|circle) /g, '<$1 pathLength="1" ').replace('<svg ', `<svg x="${-gr / 2}" y="${-gr / 2}" width="${gr}" height="${gr}" class="j-ik" `);
+  // Bahn in zwei Hälften: die obere liegt hinter dem Symbol, die untere davor
+  const J_STIL = {
+    j1: (x, an, id) => `<defs><clipPath id="${id}o"><rect x="-50" y="-30" width="100" height="30"/></clipPath><clipPath id="${id}u"><rect x="-50" y="0" width="100" height="30"/></clipPath></defs>
+      <path d="${OBEN}" class="j-bahn"/><g clip-path="url(#${id}o)"><circle r="2.4" class="j-funke">${leise ? '' : `<animateMotion dur="${an ? 3.2 : 7}s" repeatCount="indefinite" path="${VOLL}"/>`}</circle></g>
+      <circle r="14.5" class="j-kern"/>${flachIk(x, 21)}
+      <path d="${UNTEN}" class="j-bahn vorn"/><g clip-path="url(#${id}u)"><circle r="2.4" class="j-funke">${leise ? '' : `<animateMotion dur="${an ? 3.2 : 7}s" repeatCount="indefinite" path="${VOLL}"/>`}</circle></g>`,
+    j2: (x, an, id) => `<defs><clipPath id="${id}o"><rect x="-50" y="-30" width="100" height="30"/></clipPath><clipPath id="${id}u"><rect x="-50" y="0" width="100" height="30"/></clipPath></defs>
+      <path d="${OBEN}" class="j-bahn"/><g clip-path="url(#${id}o)"><path d="${VOLL}" pathLength="100" class="j-bogen breit"/><path d="${VOLL}" pathLength="100" class="j-bogen"/></g>
+      <circle r="14.5" class="j-kern"/>${flachIk(x, 21)}
+      <path d="${UNTEN}" class="j-bahn vorn"/><g clip-path="url(#${id}u)"><path d="${VOLL}" pathLength="100" class="j-bogen breit"/><path d="${VOLL}" pathLength="100" class="j-bogen"/></g>`,
+    j3: (x, an) => `<ellipse rx="${RX}" ry="${RY}" class="j-bahn atmen"/>${an ? `<ellipse rx="${RX}" ry="${RY}" class="j-welle"/><ellipse rx="${RX}" ry="${RY}" class="j-welle w2"/>` : ''}
+      <ellipse cx="0" cy="3" rx="9" ry="2.6" class="j-schatten"/><g class="j-schweb">${flachIk(x, 24)}</g>`,
+    j4: (x, an) => `<ellipse rx="${RX}" ry="${RY}" pathLength="1" class="j-bahn zieh"/>${flachIk(x, 24)}`,
+  };
+  const jArt = stil => ({
+    oben: 14, links: 150, untenR: 14,
+    html: W => { const frisch = W._jArt !== W.art; W._jArt = W.art;
+      return `<nav class="j-bahnen ${stil}" aria-label="Dateiarten" role="tablist">${GR.map((x, i) => { const an = i === W.art; return `<button type="button" class="j-b${an ? ' an' : ''}${an && frisch ? ' frisch' : ''}${gesehen(W, x, i) ? ' fertig' : ''}" ${hAttr(W, x, i)}><span class="j-bild"><svg viewBox="-44 -26 88 52" aria-hidden="true">${J_STIL[stil](x, an, `${W.id}-${i}`)}</svg>${stil === 'j4' ? `<span class="j-glanz">${flachIk(x, 24).replace('<svg ', '<svg viewBox="0 0 24 24" ').replace(/ x="[^"]*" y="[^"]*" width="[^"]*" height="[^"]*"/, '')}</span>` : ''}</span><b>${x.kurz} <em>${x.files.length}</em></b><small>${gesehen(W, x, i) ? '✓ ' : ''}${W.besucht.has(x.k) ? '→ ' + zielDef(W.Z, x) : 'offen'}</small></button>`; }).join('')}</nav>`; },
     mitte: W => ({ oben: 14, unten: 14, links: 150 }),
   });
-  Object.assign(ART, { I1: uArt('neon'), I2: uArt('lack'), I3: uArt('chrom') });
+  Object.assign(ART, { J1: jArt('j1'), J2: jArt('j2'), J3: jArt('j3'), J4: jArt('j4') });
 
   /* ================= Einstellungen rechts: fünf finale Varianten ================= */
   // Zonen: Einstellungen, die zusammengehören, [id, Name, Parameter]
@@ -1880,7 +1752,7 @@ window.KvDrei = { fenster };
     if (fl) { const u = fl.getBoundingClientRect().bottom - vr.getBoundingClientRect().bottom; if (u > 0) vr.scrollTop += u + 44; }
     W.innen.querySelector('.v-wahl').innerHTML = A.html(W);
     W.innen.querySelectorAll('.v-l, .v-r').forEach(el => el.style.setProperty('--k', `var(--${g.tok})`));
-    zahlenLeicht(W); (B.nachRender || EIN.nachRender)(W); A.nachRender?.(W);
+    zahlenLeicht(W); (B.nachRender || EIN.nachRender)(W);
   }
   function zahlenLeicht(W) {
     const Z = W.Z, n = nachAlle(Z);
@@ -1907,7 +1779,6 @@ window.KvDrei = { fenster };
     });
     W.innen.querySelectorAll('.v-r [data-wt]').forEach(b => { if (an(W, b.dataset.wt) || gelb(W, b.dataset.wt)) return; const e = rel(W, b), p3 = [e.x - 3, e.y + e.h / 2]; weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, F['line-stark'], .22 * z, 1); });
     loch(ctx, cx, cy, lerp(18, 12, z));
-    drei3d(W, T);
     // A4: Arten als Planeten im Bogen über der Bahn
     if (W.a === 'A4') {
       const R = Math.min(W.w / 2 - 340, 250), bx = cx, by = m.oben + 40 + R * .5;
