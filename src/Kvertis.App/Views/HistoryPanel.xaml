@@ -6,70 +6,347 @@
   xmlns:helpers="using:Kvertis.App.Helpers"
   xmlns:vm="using:Kvertis.App.ViewModels">
 
-  <!-- History side panel (docs/06-design.md, section 5). Local only, can be cleared. -->
-  <Grid Padding="16" RowSpacing="12">
+  <!-- History side panel after the draft's .verlauf (worksheet 3.6): head (.v-kopf), day titles (.tag-titel),
+       timeline (.tag-block, .runde .zeit) and one card per conversion (.rk with one .vd row). Local only. -->
+  <UserControl.Resources>
+    <!-- Source is set in code-behind once the view model arrives (grouped by local day). -->
+    <CollectionViewSource x:Key="DayGroups" IsSourceGrouped="True" />
+    <!-- The card border shows the hover, not a list highlight behind the timeline. -->
+    <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+    <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
+  </UserControl.Resources>
+
+  <!-- The panel lies over the galaxy; a 1 px line on the left separates it (the draft covers the whole window). -->
+  <Grid
+    Background="{ThemeResource KvBackgroundBrush}"
+    BorderBrush="{ThemeResource KvLineBrush}"
+    BorderThickness="1,0,0,0">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <Grid Grid.Row="0" ColumnSpacing="8">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="Auto" />
-      </Grid.ColumnDefinitions>
-      <TextBlock x:Uid="History_Title" Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource SubtitleTextBlockStyle}" />
-      <Button x:Uid="History_Clear_Button" Grid.Column="1" Command="{x:Bind ViewModel.ClearCommand, Mode=OneWay}" />
-      <Button
-        x:Uid="History_Close_Button"
-        Grid.Column="2"
-        Width="{StaticResource IconButtonSize}"
-        Height="{StaticResource IconButtonSize}"
-        Padding="0"
-        Background="Transparent"
-        BorderThickness="0"
-        Click="OnCloseClick">
-        <FontIcon FontSize="12" Glyph="&#xE711;" />
-      </Button>
-    </Grid>
+    <!-- .v-kopf: 12,22, line below, panel 45 %; title 17, sub line 12 with the mint lock. -->
+    <Border
+      Grid.Row="0"
+      Padding="22,12"
+      Background="{ThemeResource KvPanel45Brush}"
+      BorderBrush="{ThemeResource KvLineBrush}"
+      BorderThickness="0,0,0,1">
+      <Grid ColumnSpacing="10">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+          <TextBlock
+            x:Uid="History_Title"
+            AutomationProperties.HeadingLevel="Level1"
+            Style="{StaticResource KvTitleTextStyle}" />
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <FontIcon
+              VerticalAlignment="Center"
+              AutomationProperties.AccessibilityView="Raw"
+              FontSize="13"
+              Foreground="{ThemeResource KvMintBrush}"
+              Glyph="&#xE72E;" />
+            <TextBlock
+              x:Uid="History_Local_Text"
+              VerticalAlignment="Center"
+              FontSize="12"
+              Style="{StaticResource KvSmallTextStyle}" />
+          </StackPanel>
+        </StackPanel>
+        <Button
+          x:Uid="History_Clear_Button"
+          Grid.Column="1"
+          Command="{x:Bind ViewModel.ClearCommand, Mode=OneWay}"
+          Style="{StaticResource KvSmallButtonStyle}" />
+        <Button
+          x:Uid="History_Close_Button"
+          Grid.Column="2"
+          Click="OnCloseClick"
+          Style="{StaticResource KvIconButtonStyle}">
+          <FontIcon FontSize="12" Glyph="&#xE711;" />
+        </Button>
+      </Grid>
+    </Border>
 
-    <TextBlock
-      x:Uid="History_Empty_Text"
+    <!-- .v-leer: centred, 70,20, gap 8; 15 ink plus one muted line. -->
+    <StackPanel
       Grid.Row="1"
-      Style="{StaticResource SecondaryCaptionTextStyle}"
-      Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
+      Padding="20,70"
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Top"
+      Spacing="8"
+      Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}">
+      <TextBlock
+        x:Uid="History_Empty_Title"
+        HorizontalAlignment="Center"
+        FontSize="15"
+        FontWeight="SemiBold"
+        Style="{StaticResource KvTextBaseStyle}"
+        TextAlignment="Center" />
+      <TextBlock
+        x:Uid="History_Empty_Text"
+        HorizontalAlignment="Center"
+        FontSize="12.5"
+        Style="{StaticResource KvSmallTextStyle}"
+        TextAlignment="Center"
+        TextTrimming="None"
+        TextWrapping="Wrap" />
+    </StackPanel>
 
+    <!-- .v-liste: 6,22,28. Day titles stick to the top while scrolling. -->
     <ListView
       x:Uid="History_List"
       Grid.Row="1"
-      ItemsSource="{x:Bind ViewModel.Items, Mode=OneWay}"
-      SelectionMode="None">
+      Padding="22,6,22,28"
+      IsItemClickEnabled="False"
+      ItemsSource="{Binding Source={StaticResource DayGroups}}"
+      SelectionMode="None"
+      Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasItems), Mode=OneWay}">
+      <ListView.GroupStyle>
+        <GroupStyle>
+          <GroupStyle.HeaderContainerStyle>
+            <Style TargetType="ListViewHeaderItem">
+              <Setter Property="Background" Value="{ThemeResource KvBackgroundBrush}" />
+              <Setter Property="Margin" Value="0" />
+              <Setter Property="Padding" Value="0" />
+              <Setter Property="MinHeight" Value="0" />
+              <Setter Property="IsTabStop" Value="False" />
+              <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="ListViewHeaderItem">
+                    <ContentPresenter
+                      Padding="{TemplateBinding Padding}"
+                      HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                      Background="{TemplateBinding Background}"
+                      Content="{TemplateBinding Content}"
+                      ContentTemplate="{TemplateBinding ContentTemplate}" />
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </GroupStyle.HeaderContainerStyle>
+          <GroupStyle.HeaderTemplate>
+            <!-- .tag-titel: 10.5 mono, spacing .1em, upper case, quiet; 18,0,8 and in line with the cards (76). -->
+            <DataTemplate x:DataType="vm:HistoryDayGroup">
+              <TextBlock
+                Margin="76,18,8,8"
+                AutomationProperties.HeadingLevel="Level2"
+                AutomationProperties.Name="{x:Bind Title}"
+                Style="{StaticResource KvLabelTextStyle}"
+                Text="{x:Bind Label}" />
+            </DataTemplate>
+          </GroupStyle.HeaderTemplate>
+        </GroupStyle>
+      </ListView.GroupStyle>
       <ListView.ItemContainerStyle>
         <Style TargetType="ListViewItem">
           <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-          <Setter Property="Padding" Value="0,6" />
+          <Setter Property="Padding" Value="0" />
+          <Setter Property="Margin" Value="0" />
+          <Setter Property="MinHeight" Value="0" />
         </Style>
       </ListView.ItemContainerStyle>
       <ListView.ItemTemplate>
+        <!-- .runde: time 50 | gap 26 | card. The 2 px line runs through the gap (left 60 of the block), the dot
+             (10, mint ring 2, background halo 3) sits on it at the height of the card title. -->
         <DataTemplate x:DataType="vm:HistoryItemViewModel">
-          <Grid AutomationProperties.Name="{x:Bind AutomationName}" ColumnSpacing="10">
+          <Grid AutomationProperties.Name="{x:Bind AutomationName}">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="50" />
+              <ColumnDefinition Width="26" />
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <FontIcon Grid.Column="0" VerticalAlignment="Top" FontSize="14" Glyph="{x:Bind StatusGlyph}" />
-            <StackPanel Grid.Column="1" Spacing="2">
-              <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind FileName}" TextTrimming="CharacterEllipsis" />
-              <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind FormatText}" />
-              <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind SettingsText}" />
-              <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind WhenText}" />
-              <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind ResultText}" />
-              <StackPanel Margin="0,4,0,0" Orientation="Horizontal" Spacing="8">
-                <Button x:Uid="History_Again_Button" Command="{x:Bind AgainCommand}" />
-                <Button x:Uid="History_OpenFolder_Button" Command="{x:Bind OpenFolderCommand}" Visibility="{x:Bind helpers:Ui.Show(HasOutput)}" />
-              </StackPanel>
-            </StackPanel>
+
+            <Rectangle
+              Grid.Column="1"
+              Width="2"
+              Margin="10,0,0,0"
+              HorizontalAlignment="Left"
+              Fill="{ThemeResource KvMintFrameBrush}"
+              RadiusX="1"
+              RadiusY="1" />
+            <Ellipse
+              Grid.Column="1"
+              Width="16"
+              Height="16"
+              Margin="3,19,0,0"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Fill="{ThemeResource KvBackgroundBrush}" />
+            <Ellipse
+              Grid.Column="1"
+              Width="10"
+              Height="10"
+              Margin="6,22,0,0"
+              HorizontalAlignment="Left"
+              VerticalAlignment="Top"
+              Fill="{ThemeResource KvBackgroundBrush}"
+              Stroke="{ThemeResource KvMintBrush}"
+              StrokeThickness="2" />
+            <TextBlock
+              Grid.Column="0"
+              Margin="0,18,0,0"
+              HorizontalAlignment="Right"
+              VerticalAlignment="Top"
+              FontSize="12"
+              FontWeight="SemiBold"
+              Foreground="{ThemeResource KvInkBrush}"
+              Style="{StaticResource KvMonoTextStyle}"
+              Text="{x:Bind TimeText}" />
+
+            <!-- .rk: radius 13, line, gradient, inner top edge, shadow 8 (not in high contrast), hover line-stark. -->
+            <Border
+              Grid.Column="2"
+              Margin="0,5"
+              Padding="0"
+              Loaded="OnCardLoaded"
+              PointerCanceled="OnCardPointerExited"
+              PointerEntered="OnCardPointerEntered"
+              PointerExited="OnCardPointerExited"
+              Style="{StaticResource KvCardStyle}">
+              <Border
+                BorderBrush="{ThemeResource KvEdgeBrush}"
+                BorderThickness="0,1,0,0"
+                CornerRadius="12">
+                <StackPanel>
+                  <!-- .rk-kopf: 10,12, gap 12; status symbol 16 in the kind colour, title 13.5, small line mono 11,
+                       savings pill; the two .vk buttons sit below the title (the panel is too narrow for one row). -->
+                  <Grid
+                    Padding="12,10"
+                    ColumnSpacing="12"
+                    RowSpacing="8">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="20" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="Auto" />
+                      <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <FontIcon
+                      Grid.Column="0"
+                      VerticalAlignment="Center"
+                      AutomationProperties.AccessibilityView="Raw"
+                      FontSize="16"
+                      Foreground="{x:Bind helpers:Ui.Brush(StatusBrushKey)}"
+                      Glyph="{x:Bind StatusGlyph}" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                      <TextBlock Style="{StaticResource KvHeadTextStyle}" Text="{x:Bind TitleText}" />
+                      <TextBlock
+                        FontSize="11"
+                        FontWeight="Normal"
+                        Style="{StaticResource KvMonoTextStyle}"
+                        Text="{x:Bind DetailText}" />
+                    </StackPanel>
+                    <Border
+                      Grid.Column="2"
+                      Style="{StaticResource KvPillStyle}"
+                      Visibility="{x:Bind helpers:Ui.Show(HasSaving)}">
+                      <TextBlock Style="{StaticResource KvPillTextStyle}" Text="{x:Bind SavingText}" />
+                    </Border>
+                    <StackPanel
+                      Grid.Row="1"
+                      Grid.Column="1"
+                      Grid.ColumnSpan="2"
+                      Orientation="Horizontal"
+                      Spacing="6">
+                      <Button
+                        x:Uid="History_Again_Button"
+                        Padding="10,6"
+                        Command="{x:Bind AgainCommand}"
+                        CornerRadius="9"
+                        FontSize="12"
+                        FontWeight="Medium"
+                        Style="{StaticResource KvOutlineMintButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <FontIcon
+                            AutomationProperties.AccessibilityView="Raw"
+                            FontSize="14"
+                            Glyph="&#xE72C;" />
+                          <TextBlock x:Uid="History_Again_Text" />
+                        </StackPanel>
+                      </Button>
+                      <Button
+                        x:Uid="History_OpenFolder_Button"
+                        Padding="10,6"
+                        Command="{x:Bind OpenFolderCommand}"
+                        CornerRadius="9"
+                        FontSize="12"
+                        Style="{StaticResource KvSmallButtonStyle}"
+                        Visibility="{x:Bind helpers:Ui.Show(HasOutput)}">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <FontIcon
+                            AutomationProperties.AccessibilityView="Raw"
+                            FontSize="14"
+                            Glyph="&#xE838;" />
+                          <TextBlock x:Uid="History_OpenFolder_Text" />
+                        </StackPanel>
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+
+                  <!-- .rk-dateien > .vd: radius 10, line, 12 from the card; row 7,10 on panel: format chip in the
+                       kind colour, mint arrow, paper label, sizes (or the error) right in mono 11. -->
+                  <Border
+                    Margin="12,0,12,12"
+                    Padding="10,7"
+                    Background="{ThemeResource KvPanelBrush}"
+                    BorderBrush="{ThemeResource KvLineBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10">
+                    <Grid ColumnSpacing="8">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="14" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <Border
+                        Grid.Column="0"
+                        Background="{x:Bind helpers:Ui.KindVariant(KindBrushKey, 'Tint12')}"
+                        BorderBrush="{x:Bind helpers:Ui.KindVariant(KindBrushKey, 'Frame40')}"
+                        Style="{StaticResource KvChipStyle}">
+                        <TextBlock
+                          Foreground="{x:Bind helpers:Ui.Brush(KindBrushKey)}"
+                          Style="{StaticResource KvChipTextStyle}"
+                          Text="{x:Bind InputFormatText}" />
+                      </Border>
+                      <FontIcon
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        AutomationProperties.AccessibilityView="Raw"
+                        FontSize="11"
+                        Foreground="{ThemeResource KvMintBrush}"
+                        Glyph="&#xE72A;" />
+                      <ContentControl
+                        Grid.Column="2"
+                        Padding="7,2"
+                        Style="{StaticResource KvPaperTagStyle}">
+                        <TextBlock
+                          FontSize="10.5"
+                          Style="{StaticResource KvPaperTagTextStyle}"
+                          Text="{x:Bind OutputFormatText}" />
+                      </ContentControl>
+                      <TextBlock
+                        Grid.Column="3"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        FontSize="11"
+                        Foreground="{x:Bind helpers:Ui.BrushIf(Success, 'KvMutedBrush', 'KvErrorBrush')}"
+                        Style="{StaticResource KvMonoTextStyle}"
+                        Text="{x:Bind ResultText}" />
+                    </Grid>
+                  </Border>
+                </StackPanel>
+              </Border>
+            </Border>
           </Grid>
         </DataTemplate>
       </ListView.ItemTemplate>

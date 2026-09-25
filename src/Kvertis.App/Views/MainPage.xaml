@@ -27,7 +27,8 @@
       x:Name="HistorySplitView"
       DisplayMode="Overlay"
       IsPaneOpen="{x:Bind History.IsOpen, Mode=TwoWay}"
-      OpenPaneLength="380"
+      OpenPaneLength="440"
+      PaneBackground="{ThemeResource KvBackgroundBrush}"
       PaneClosed="OnHistoryPaneChanged"
       PaneOpened="OnHistoryPaneChanged"
       PanePlacement="Right">

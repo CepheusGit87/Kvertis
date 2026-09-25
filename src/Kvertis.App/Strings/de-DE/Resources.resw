@@ -822,8 +822,8 @@
   <data name="History_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Nochmal mit denselben Einstellungen</value>
   </data>
-  <data name="History_Again_Button.Content" xml:space="preserve">
-    <value>Nochmal mit denselben Einstellungen</value>
+  <data name="History_Again_Text.Text" xml:space="preserve">
+    <value>Nochmal</value>
   </data>
   <data name="History_Clear_Body" xml:space="preserve">
     <value>Die Liste der letzten Umwandlungen wird gelöscht. Ihre Dateien bleiben erhalten.</value>
@@ -846,8 +846,20 @@
   <data name="History_Close_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Verlauf schließen</value>
   </data>
+  <data name="History_Day_Today" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="History_Day_Yesterday" xml:space="preserve">
+    <value>Gestern</value>
+  </data>
+  <data name="History_Detail_Text" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
   <data name="History_Empty_Text.Text" xml:space="preserve">
-    <value>Noch keine Umwandlungen. Der Verlauf bleibt auf diesem PC.</value>
+    <value>Hier erscheint jede Umwandlung mit Datum, Formaten und Einstellungen.</value>
+  </data>
+  <data name="History_Empty_Title.Text" xml:space="preserve">
+    <value>Noch nichts umgewandelt</value>
   </data>
   <data name="History_Format_Text" xml:space="preserve">
     <value>{0} → {1}</value>
@@ -855,10 +867,13 @@
   <data name="History_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Letzte Umwandlungen</value>
   </data>
+  <data name="History_Local_Text.Text" xml:space="preserve">
+    <value>Nur auf diesem PC gespeichert</value>
+  </data>
   <data name="History_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Ordner öffnen</value>
   </data>
-  <data name="History_OpenFolder_Button.Content" xml:space="preserve">
+  <data name="History_OpenFolder_Text.Text" xml:space="preserve">
     <value>Ordner öffnen</value>
   </data>
   <data name="History_Quality_Text" xml:space="preserve">
@@ -866,6 +881,9 @@
   </data>
   <data name="History_Result_Text" xml:space="preserve">
     <value>{0} → {1}</value>
+  </data>
+  <data name="History_Saving_Text" xml:space="preserve">
+    <value>−{0} %</value>
   </data>
   <data name="History_Title.Text" xml:space="preserve">
     <value>Verlauf</value>

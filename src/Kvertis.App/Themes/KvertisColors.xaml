@@ -110,6 +110,7 @@
       <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
       <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.30" />
       <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.35" />
+      <SolidColorBrush x:Key="KvPanel45Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.45" />
       <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.55" />
       <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.70" />
       <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.80" />
@@ -330,6 +331,7 @@
       <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
       <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.30" />
       <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.35" />
+      <SolidColorBrush x:Key="KvPanel45Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.45" />
       <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.55" />
       <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.70" />
       <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.80" />
@@ -551,6 +553,7 @@
       <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
       <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" />
       <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel45Brush" Color="{ThemeResource KvPanelColor}" />
       <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" />
       <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" />
       <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" />
