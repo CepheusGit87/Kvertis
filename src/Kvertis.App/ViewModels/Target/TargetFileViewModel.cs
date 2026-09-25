@@ -82,6 +82,11 @@ public sealed partial class TargetFileViewModel : ObservableObject
 
     public string TargetLabel => EffectiveFormat?.Label ?? string.Empty;
 
+    /// <summary>Compact line of the file card: "HEIC · 8,4 MB → 3,6 MB".</summary>
+    public string SizeFlowText => EstimatedBytes > 0
+        ? _loc.Format("Target_File_SizeFlow", SourceLabel, SizeText, Formatting.Bytes(_loc, EstimatedBytes))
+        : _loc.Format("Target_Group_Sources", SourceLabel, SizeText);
+
     public string AutomationName => _loc.Format("Target_File_AutomationName", FileName, SourceLabel, TargetLabel, EstimateText);
 
     /// <summary>Shows the estimate that the grade table produced for this file.</summary>
@@ -97,7 +102,11 @@ public sealed partial class TargetFileViewModel : ObservableObject
 
     partial void OnIsIndividualChanged(bool value) => RaiseOutput(notify: false);
 
-    partial void OnEstimateTextChanged(string value) => OnPropertyChanged(nameof(AutomationName));
+    partial void OnEstimateTextChanged(string value)
+    {
+        OnPropertyChanged(nameof(AutomationName));
+        OnPropertyChanged(nameof(SizeFlowText));
+    }
 
     private void RaiseOutput(bool notify)
     {

@@ -1353,8 +1353,20 @@
   <data name="Target_Continue_Button.Content" xml:space="preserve">
     <value>Next: Convert</value>
   </data>
+  <data name="Target_Effects_AllGood" xml:space="preserve">
+    <value>all good</value>
+  </data>
+  <data name="Target_Effects_Expander.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>What changes</value>
+  </data>
   <data name="Target_Effects_Header.Text" xml:space="preserve">
     <value>What changes</value>
+  </data>
+  <data name="Target_Effects_Notes_Many" xml:space="preserve">
+    <value>{0} notes</value>
+  </data>
+  <data name="Target_Effects_Notes_One" xml:space="preserve">
+    <value>1 note</value>
   </data>
   <data name="Target_Empty_Text.Text" xml:space="preserve">
     <value>No files yet. Go back to step 1.</value>
@@ -1368,35 +1380,83 @@
   <data name="Target_ExactSize_Hint.Text" xml:space="preserve">
     <value>This size is probably out of reach with the chosen formats.</value>
   </data>
+  <data name="Target_ExactSize_Label.Text" xml:space="preserve">
+    <value>Set a target size</value>
+  </data>
   <data name="Target_ExactSize_NumberBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Target size in megabytes</value>
   </data>
-  <data name="Target_ExactSize_NumberBox.Header" xml:space="preserve">
-    <value>Size</value>
+  <data name="Target_ExactSize_Off" xml:space="preserve">
+    <value>none</value>
   </data>
   <data name="Target_ExactSize_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Set a target size</value>
-  </data>
-  <data name="Target_ExactSize_Toggle.Header" xml:space="preserve">
     <value>Set a target size</value>
   </data>
   <data name="Target_ExactSize_Unit.Text" xml:space="preserve">
     <value>MB</value>
   </data>
+  <data name="Target_ExactSize_Value" xml:space="preserve">
+    <value>{0} MB</value>
+  </data>
   <data name="Target_File_AutomationName" xml:space="preserve">
     <value>{0}, {1} to {2}, {3}</value>
+  </data>
+  <data name="Target_File_SizeFlow" xml:space="preserve">
+    <value>{0} · {1} → {2}</value>
   </data>
   <data name="Target_Format_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Target format</value>
   </data>
   <data name="Target_Formats_Header.Text" xml:space="preserve">
-    <value>Target format</value>
+    <value>BECOMES</value>
   </data>
   <data name="Target_Grade_AutomationValue" xml:space="preserve">
     <value>{0} of 100, {1}, {2}</value>
   </data>
+  <data name="Target_Grade_Label.Text" xml:space="preserve">
+    <value>QUALITY</value>
+  </data>
+  <data name="Target_Grade_Of.Text" xml:space="preserve">
+    <value>of 100</value>
+  </data>
   <data name="Target_Grade_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Quality</value>
+  </data>
+  <data name="Target_Group_From" xml:space="preserve">
+    <value>{0} →</value>
+  </data>
+  <data name="Target_Group_Sources" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="Target_Heading_Audio_Many" xml:space="preserve">
+    <value>{0} audio files</value>
+  </data>
+  <data name="Target_Heading_Audio_One" xml:space="preserve">
+    <value>1 audio file</value>
+  </data>
+  <data name="Target_Heading_Document_Many" xml:space="preserve">
+    <value>{0} documents</value>
+  </data>
+  <data name="Target_Heading_Document_One" xml:space="preserve">
+    <value>1 document</value>
+  </data>
+  <data name="Target_Heading_Image_Many" xml:space="preserve">
+    <value>{0} images</value>
+  </data>
+  <data name="Target_Heading_Image_One" xml:space="preserve">
+    <value>1 image</value>
+  </data>
+  <data name="Target_Heading_Model3D_Many" xml:space="preserve">
+    <value>{0} 3D models</value>
+  </data>
+  <data name="Target_Heading_Model3D_One" xml:space="preserve">
+    <value>1 3D model</value>
+  </data>
+  <data name="Target_Heading_Video_Many" xml:space="preserve">
+    <value>{0} videos</value>
+  </data>
+  <data name="Target_Heading_Video_One" xml:space="preserve">
+    <value>1 video</value>
   </data>
   <data name="Target_Kind_Audio" xml:space="preserve">
     <value>Audio</value>
@@ -1422,19 +1482,19 @@
   <data name="Target_Kind_Video" xml:space="preserve">
     <value>Video</value>
   </data>
-  <data name="Target_Kinds_Header.Text" xml:space="preserve">
-    <value>File kinds</value>
-  </data>
   <data name="Target_Kinds_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>File kinds</value>
+  </data>
+  <data name="Target_Largest_Label.Text" xml:space="preserve">
+    <value>LARGEST FILE</value>
   </data>
   <data name="Target_Metadata_Hint.Text" xml:space="preserve">
     <value>Removes location and camera data from the output.</value>
   </data>
-  <data name="Target_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Target_Metadata_Label.Text" xml:space="preserve">
     <value>Remove metadata</value>
   </data>
-  <data name="Target_Metadata_Toggle.Header" xml:space="preserve">
+  <data name="Target_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Remove metadata</value>
   </data>
   <data name="Target_Mode_AllSame.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -1442,9 +1502,6 @@
   </data>
   <data name="Target_Mode_AllSame.Content" xml:space="preserve">
     <value>All the same</value>
-  </data>
-  <data name="Target_Mode_Header.Text" xml:space="preserve">
-    <value>Choose the target format</value>
   </data>
   <data name="Target_Mode_Individual.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Each on its own</value>
@@ -1467,9 +1524,6 @@
   <data name="Target_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
     <value>{name}</value>
   </data>
-  <data name="Target_Paths_Header.Text" xml:space="preserve">
-    <value>Paths</value>
-  </data>
   <data name="Target_Previous_Apply_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Use the old values</value>
   </data>
@@ -1491,6 +1545,15 @@
   <data name="Target_Previous_Title" xml:space="preserve">
     <value>From the history · {0}</value>
   </data>
+  <data name="Target_Saving_Larger" xml:space="preserve">
+    <value>{0} % larger than before</value>
+  </data>
+  <data name="Target_Saving_Same" xml:space="preserve">
+    <value>same size as before</value>
+  </data>
+  <data name="Target_Saving_Smaller" xml:space="preserve">
+    <value>{0} % smaller than before</value>
+  </data>
   <data name="Target_Size_Approx" xml:space="preserve">
     <value>≈ {0}</value>
   </data>
@@ -1498,16 +1561,13 @@
     <value>Size: {0}</value>
   </data>
   <data name="Target_SizeBar_Header.Text" xml:space="preserve">
-    <value>Size</value>
+    <value>SIZE PER FILE</value>
   </data>
   <data name="Target_SizeBar_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Size</value>
   </data>
   <data name="Target_Summary_Text" xml:space="preserve">
     <value>{0} files · ≈ {1}</value>
-  </data>
-  <data name="Target_Title.Text" xml:space="preserve">
-    <value>Target</value>
   </data>
   <data name="Target_Trust_Text.Text" xml:space="preserve">
     <value>Your files never leave this PC.</value>
@@ -1535,6 +1595,9 @@
   </data>
   <data name="Target_Zone_Fixed_Text.Text" xml:space="preserve">
     <value>Fixed by the format; it cannot be changed here.</value>
+  </data>
+  <data name="Target_Zones_Header.Text" xml:space="preserve">
+    <value>SETTINGS · TAP TO OPEN</value>
   </data>
   <data name="Transition_Overlay.AutomationProperties.Name" xml:space="preserve">
     <value>Transition animation between the steps</value>

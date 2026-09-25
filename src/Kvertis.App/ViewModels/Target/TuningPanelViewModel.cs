@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Kvertis.App.Helpers;
 using Kvertis.App.Services;
@@ -117,6 +118,30 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
 
     /// <summary>"Qualität: 80 von 100, gut" for the ring's screen reader value.</summary>
     public string GradeAutomationValue => _loc.Format("Target_Grade_AutomationValue", Grade, BandText, SizeText);
+
+    /// <summary>"42 % kleiner als vorher" under the size of the largest file.</summary>
+    [ObservableProperty]
+    private string savingText = string.Empty;
+
+    /// <summary>Value in the header of "Zielgröße genau": "keine" or "2 MB".</summary>
+    public string ExactTargetSummary => ExactTargetEnabled && ExactTargetMegabytes > 0
+        ? _loc.Format("Target_ExactSize_Value", ExactTargetMegabytes.ToString("0.#", CultureInfo.CurrentCulture))
+        : _loc.Get("Target_ExactSize_Off");
+
+    /// <summary>Value in the header of "Was sich ändert": "alles gut" or the number of notes.</summary>
+    public string EffectsSummaryText
+    {
+        get
+        {
+            var notes = Effects.Count(e => e.Severity != EffectSeverity.Fine);
+            return notes switch
+            {
+                0 => _loc.Get("Target_Effects_AllGood"),
+                1 => _loc.Get("Target_Effects_Notes_One"),
+                _ => _loc.Format("Target_Effects_Notes_Many", notes),
+            };
+        }
+    }
 
     /// <summary>Colour of the ring: mint from 65, amber from 45, coral below.</summary>
     public string GradeBrushKey => Grade >= 65 ? "KvMintBrush" : Grade >= 45 ? "KvVideoBrush" : "KvErrorBrush";
@@ -300,6 +325,7 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
         }
         BandText = _loc.Get("Grade_Band_" + current.Band.ToString());
         SizeText = _loc.Format("Target_Size_Approx", Formatting.Bytes(_loc, largestBytes));
+        SavingText = _largest is null ? string.Empty : Saving(_largest.Input.SizeBytes, _largest.EstimatedBytes);
         _largestBytes = largestBytes;
         if (SizeBar.HasScale)
         {
@@ -335,6 +361,7 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
                 _loc,
                 new ConversionEffect(EffectCode.TargetSizeMayBeUnreachable, EffectSeverity.Warning)));
         }
+        OnPropertyChanged(nameof(EffectsSummaryText));
         NamePreview = RenderPreview();
         if (SizeBar.HasScale)
         {
@@ -436,9 +463,32 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
 
     partial void OnNamePatternTextChanged(string value) => NamePreview = RenderPreview();
 
-    partial void OnExactTargetEnabledChanged(bool value) => _slow.Request();
+    partial void OnExactTargetEnabledChanged(bool value)
+    {
+        OnPropertyChanged(nameof(ExactTargetSummary));
+        _slow.Request();
+    }
 
-    partial void OnExactTargetMegabytesChanged(double value) => _slow.Request();
+    partial void OnExactTargetMegabytesChanged(double value)
+    {
+        OnPropertyChanged(nameof(ExactTargetSummary));
+        _slow.Request();
+    }
+
+    private string Saving(long sourceBytes, long estimatedBytes)
+    {
+        if (sourceBytes <= 0 || estimatedBytes <= 0)
+        {
+            return string.Empty;
+        }
+        var percent = (int)Math.Round((1 - (double)estimatedBytes / sourceBytes) * 100, MidpointRounding.AwayFromZero);
+        return percent switch
+        {
+            >= 1 => _loc.Format("Target_Saving_Smaller", percent),
+            <= -1 => _loc.Format("Target_Saving_Larger", -percent),
+            _ => _loc.Get("Target_Saving_Same"),
+        };
+    }
 
     partial void OnBandTextChanged(string value) => OnPropertyChanged(nameof(GradeAutomationValue));
 

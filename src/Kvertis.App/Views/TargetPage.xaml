@@ -1,152 +1,297 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Step 2 "Ziel" (docs/entwuerfe/schritt-2-ziel.md, stage C): kinds and files on the left, the paths in the
-     middle, the output settings on the right. Pure XAML; the drawn orbit and the universes follow with
-     Win2D (ADR-018). Colours only from Themes/KvertisColors.xaml. -->
+<!-- Step 2 "Ziel" after the mixed draft (design/oberflaeche-mischentwurf.html, step 2 "Zoom-Wege";
+     docs/entwuerfe/abgleich-mischentwurf.md 3.4): the kinds as small universes on the left edge, the kind with its
+     files, the paths "format -> target" in the middle (the drawn orbit follows with Win2D, ADR-018) and the output
+     settings on the right. Colours only from Themes/KvertisColors.xaml, styles from Themes/KvertisControls.xaml. -->
 <Page
   x:Class="Kvertis.App.Views.TargetPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:helpers="using:Kvertis.App.Helpers"
-  xmlns:primitives="using:Microsoft.UI.Xaml.Controls.Primitives"
   xmlns:target="using:Kvertis.App.ViewModels.Target"
   NavigationCacheMode="Required">
 
   <Page.Resources>
-    <!-- The ring is a Slider with its own template, so focus, keyboard (arrow keys +/- 5) and the narrator
-         work without extra code (docs/entwuerfe/schritt-2-ziel.md, stage C). -->
-    <Style x:Key="GradeRingSliderStyle" TargetType="Slider">
-      <Setter Property="IsThumbToolTipEnabled" Value="False" />
-      <Setter Property="UseSystemFocusVisuals" Value="True" />
-      <Setter Property="IsFocusEngagementEnabled" Value="False" />
-      <Setter Property="Width" Value="152" />
-      <Setter Property="Height" Value="152" />
-      <Setter Property="Template">
-        <Setter.Value>
-          <ControlTemplate TargetType="Slider">
-            <Grid x:Name="SliderContainer" Background="Transparent">
-              <Grid x:Name="HorizontalTemplate">
-                <Ellipse
-                  Width="140"
-                  Height="140"
-                  Stroke="{ThemeResource KvLineBrush}"
-                  StrokeThickness="10" />
-                <Ellipse
-                  Width="140"
-                  Height="140"
-                  Stroke="{TemplateBinding Foreground}"
-                  StrokeThickness="10" />
-                <!-- The named parts the Slider looks for; they carry no visuals here. -->
-                <Rectangle x:Name="HorizontalTrackRect" Height="0" />
-                <Rectangle x:Name="HorizontalDecreaseRect" Height="0" />
-                <primitives:Thumb
-                  x:Name="HorizontalThumb"
-                  Width="0"
-                  Height="0"
-                  Opacity="0" />
-              </Grid>
-            </Grid>
-          </ControlTemplate>
-        </Setter.Value>
-      </Setter>
-    </Style>
-
+    <!-- .k-b: one kind as a small universe. A flat line symbol in a core with an orbit around it; grey while not
+         chosen, in the kind colour when chosen. The grey and the coloured layers are both here, the code-behind only
+         switches their opacity and plays the opening of the orbit (no endless animation). -->
     <DataTemplate x:Key="KindItemTemplate" x:DataType="target:KindGroupViewModel">
-      <Grid
-        AutomationProperties.Name="{x:Bind AutomationName}"
-        ColumnSpacing="10"
-        Padding="0,6">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Ellipse
-          Width="12"
-          Height="12"
-          VerticalAlignment="Center"
-          Fill="{x:Bind helpers:Ui.Brush(ColorBrushKey)}" />
-        <TextBlock
-          Grid.Column="1"
-          VerticalAlignment="Center"
-          Style="{StaticResource BodyStrongTextBlockStyle}"
-          Text="{x:Bind KindName}" />
-        <TextBlock
-          Grid.Column="2"
-          VerticalAlignment="Center"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
-          Text="{x:Bind CountText, Mode=OneWay}" />
+      <Grid Width="124" AutomationProperties.Name="{x:Bind AutomationName}">
+        <Border
+          x:Name="KindCard"
+          Background="{ThemeResource KvPanel55Brush}"
+          BorderBrush="{ThemeResource KvLineBrush}"
+          BorderThickness="1"
+          CornerRadius="14"
+          Opacity="0" />
+        <StackPanel
+          Padding="4,6,4,9"
+          HorizontalAlignment="Center"
+          Spacing="1">
+          <Grid
+            x:Name="KindUniverse"
+            Width="112"
+            Height="56">
+            <Path
+              x:Name="OrbitBackGrey"
+              Width="112"
+              Height="56"
+              Data="M 12.7,28 A 43.3,15.3 0 0 1 99.3,28"
+              Opacity="0.3"
+              Stroke="{ThemeResource KvLineStrongBrush}"
+              StrokeThickness="1" />
+            <Path
+              x:Name="OrbitBackColor"
+              Width="112"
+              Height="56"
+              Data="M 12.7,28 A 43.3,15.3 0 0 1 99.3,28"
+              Opacity="0"
+              RenderTransformOrigin="0.5,0.5"
+              Stroke="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
+              StrokeThickness="1">
+              <Path.RenderTransform>
+                <ScaleTransform />
+              </Path.RenderTransform>
+            </Path>
+            <Ellipse
+              x:Name="KindHalo"
+              Width="56"
+              Height="41"
+              Fill="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
+              Opacity="0" />
+            <Ellipse
+              x:Name="KindCore"
+              Width="32"
+              Height="32"
+              Fill="{ThemeResource KvBackgroundBrush}" />
+            <FontIcon
+              x:Name="KindIconGrey"
+              FontSize="17"
+              Foreground="{ThemeResource KvMutedBrush}"
+              Glyph="{x:Bind helpers:TargetUi.KindGlyph(Kind)}"
+              Opacity="0.85" />
+            <FontIcon
+              x:Name="KindIconColor"
+              FontSize="17"
+              Foreground="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
+              Glyph="{x:Bind helpers:TargetUi.KindGlyph(Kind)}"
+              Opacity="0" />
+            <Path
+              x:Name="OrbitFrontGrey"
+              Width="112"
+              Height="56"
+              Data="M 99.3,28 A 43.3,15.3 0 0 1 12.7,28"
+              Opacity="0.55"
+              Stroke="{ThemeResource KvLineStrongBrush}"
+              StrokeThickness="1" />
+            <Path
+              x:Name="OrbitFrontColor"
+              Width="112"
+              Height="56"
+              Data="M 99.3,28 A 43.3,15.3 0 0 1 12.7,28"
+              Opacity="0"
+              RenderTransformOrigin="0.5,0.5"
+              Stroke="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
+              StrokeThickness="1">
+              <Path.RenderTransform>
+                <ScaleTransform />
+              </Path.RenderTransform>
+            </Path>
+          </Grid>
+          <StackPanel
+            HorizontalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="5">
+            <TextBlock
+              x:Name="KindNameText"
+              FontWeight="SemiBold"
+              Opacity="0.6"
+              Style="{StaticResource KvRowTextStyle}"
+              Text="{x:Bind KindName}" />
+            <TextBlock
+              VerticalAlignment="Bottom"
+              Margin="0,0,0,1"
+              Foreground="{ThemeResource KvQuietBrush}"
+              Style="{StaticResource KvMonoTextStyle}"
+              Text="{x:Bind FileCountText, Mode=OneWay}" />
+          </StackPanel>
+          <TextBlock
+            HorizontalAlignment="Center"
+            CharacterSpacing="40"
+            FontSize="10"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind TargetLabel, Mode=OneWay}" />
+        </StackPanel>
       </Grid>
     </DataTemplate>
 
+    <!-- .dk: file card with a small preview, name, "HEIC · 8,4 MB → 3,6 MB" and the target chip. -->
     <DataTemplate x:Key="TargetFileTemplate" x:DataType="target:TargetFileViewModel">
-      <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,0,8" Padding="12">
-        <StackPanel Spacing="4">
+      <Border
+        Padding="9,7"
+        Background="{ThemeResource KvPanel85Brush}"
+        BorderBrush="{ThemeResource KvLineBrush}"
+        BorderThickness="1"
+        CornerRadius="12">
+        <Grid ColumnSpacing="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid
+            Width="38"
+            Height="30"
+            VerticalAlignment="Center"
+            Background="{x:Bind helpers:TargetUi.KindBrushOf(Input.Kind, 'Tint12Brush')}"
+            CornerRadius="6">
+            <FontIcon
+              FontSize="15"
+              Foreground="{x:Bind helpers:TargetUi.KindBrushOf(Input.Kind, 'Brush')}"
+              Glyph="{x:Bind helpers:TargetUi.KindGlyph(Input.Kind)}" />
+            <Image
+              AutomationProperties.AccessibilityView="Raw"
+              Source="{x:Bind helpers:TargetUi.Thumbnail(ThumbnailPath, Input.Kind, 76)}"
+              Stretch="UniformToFill" />
+          </Grid>
+          <StackPanel
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Spacing="1">
+            <TextBlock
+              AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+              FontSize="12"
+              Style="{StaticResource KvRowTextStyle}"
+              Text="{x:Bind FileName}" />
+            <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind SizeFlowText, Mode=OneWay}" />
+          </StackPanel>
+          <Border
+            Grid.Column="2"
+            Style="{StaticResource KvChipStyle}"
+            Visibility="{x:Bind helpers:Ui.ShowText(TargetLabel), Mode=OneWay}">
+            <TextBlock Style="{StaticResource KvChipTextStyle}" Text="{x:Bind TargetLabel, Mode=OneWay}" />
+          </Border>
           <TextBlock
-            AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-            Style="{StaticResource BodyStrongTextBlockStyle}"
-            Text="{x:Bind FileName}"
-            TextTrimming="CharacterEllipsis" />
-          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind SizeText}" />
-          <TextBlock
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind DetailsText}"
-            Visibility="{x:Bind helpers:Ui.ShowText(DetailsText)}" />
-          <TextBlock
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            Margin="0,6,0,0"
             Foreground="{ThemeResource KvVideoBrush}"
-            Style="{StaticResource SecondaryCaptionTextStyle}"
+            Style="{StaticResource KvSmallTextStyle}"
             Text="{x:Bind WarningText}"
+            TextTrimming="None"
+            TextWrapping="Wrap"
             Visibility="{x:Bind helpers:Ui.ShowText(WarningText)}" />
           <ComboBox
+            Grid.Row="2"
+            Grid.ColumnSpan="3"
+            Margin="0,6,0,0"
+            HorizontalAlignment="Stretch"
             AutomationProperties.Name="{x:Bind FileName}"
             DisplayMemberPath="Label"
             ItemsSource="{x:Bind Formats}"
             SelectedItem="{x:Bind OwnFormat, Mode=TwoWay}"
             Visibility="{x:Bind helpers:Ui.Show(IsIndividual), Mode=OneWay}" />
-        </StackPanel>
+        </Grid>
       </Border>
     </DataTemplate>
 
+    <!-- One path of the middle list in the card look of the draft: name, source chip -> target chip, estimate. -->
     <DataTemplate x:Key="PathRowTemplate" x:DataType="target:PathRowViewModel">
-      <Grid
+      <Border
+        Padding="10,7"
         AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-        ColumnSpacing="8"
-        Padding="0,6">
+        Background="{ThemeResource KvPanel85Brush}"
+        BorderBrush="{ThemeResource KvLineBrush}"
+        BorderThickness="1"
+        CornerRadius="12">
+        <Grid ColumnSpacing="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" MinWidth="64" />
+          </Grid.ColumnDefinitions>
+          <TextBlock
+            VerticalAlignment="Center"
+            FontSize="12"
+            Style="{StaticResource KvRowTextStyle}"
+            Text="{x:Bind FileName}" />
+          <Border
+            Grid.Column="1"
+            Background="{x:Bind helpers:TargetUi.KindBrushOf(File.Input.Kind, 'Tint12Brush')}"
+            BorderBrush="{x:Bind helpers:TargetUi.KindBrushOf(File.Input.Kind, 'Frame40Brush')}"
+            Style="{StaticResource KvChipStyle}">
+            <TextBlock
+              Foreground="{x:Bind helpers:TargetUi.KindBrushOf(File.Input.Kind, 'Brush')}"
+              Style="{StaticResource KvChipTextStyle}"
+              Text="{x:Bind SourceLabel}" />
+          </Border>
+          <FontIcon
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            FontSize="10"
+            Foreground="{ThemeResource KvMutedBrush}"
+            Glyph="&#xE72A;" />
+          <Border Grid.Column="3" Style="{StaticResource KvChipStyle}">
+            <TextBlock Style="{StaticResource KvChipTextStyle}" Text="{x:Bind TargetLabel, Mode=OneWay}" />
+          </Border>
+          <TextBlock
+            Grid.Column="4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            FontSize="11"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind EstimateText, Mode=OneWay}" />
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <!-- .folgen li: symbol circle 18 (mint surface, neutral or amber) and the text. -->
+    <DataTemplate x:Key="EffectTemplate" x:DataType="target:EffectViewModel">
+      <Grid ColumnSpacing="7">
         <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="18" />
           <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock
-          Style="{StaticResource BodyTextBlockStyle}"
-          Text="{x:Bind FileName}"
-          TextTrimming="CharacterEllipsis" />
+        <Border
+          Width="18"
+          Height="18"
+          Margin="0,1,0,0"
+          VerticalAlignment="Top"
+          Background="{x:Bind helpers:TargetUi.EffectSurface(Severity)}"
+          BorderBrush="{x:Bind helpers:TargetUi.EffectFrame(Severity)}"
+          BorderThickness="1"
+          CornerRadius="9">
+          <FontIcon
+            FontSize="9"
+            Foreground="{x:Bind helpers:Ui.Brush(BrushKey)}"
+            Glyph="{x:Bind Glyph}" />
+        </Border>
         <TextBlock
           Grid.Column="1"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
-          Text="{x:Bind TargetLabel, Mode=OneWay}" />
-        <TextBlock
-          Grid.Column="2"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
-          Text="{x:Bind EstimateText, Mode=OneWay}" />
+          FontSize="12"
+          LineHeight="16"
+          Style="{StaticResource KvTextBaseStyle}"
+          Text="{x:Bind Text}"
+          TextTrimming="None"
+          TextWrapping="Wrap" />
       </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="EffectTemplate" x:DataType="target:EffectViewModel">
-      <Grid ColumnSpacing="8" Padding="0,4">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <FontIcon
-          FontSize="14"
-          Foreground="{x:Bind helpers:Ui.Brush(BrushKey)}"
-          Glyph="{x:Bind Glyph}" />
-        <TextBlock
-          Grid.Column="1"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
-          Text="{x:Bind Text}" />
-      </Grid>
-    </DataTemplate>
+    <Style x:Key="KindItemContainerStyle" TargetType="ListViewItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,2" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="CornerRadius" Value="14" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
   </Page.Resources>
 
   <Grid>
@@ -155,405 +300,693 @@
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <VisualStateManager.VisualStateGroups>
-      <VisualStateGroup>
-        <VisualState x:Name="WideLayout">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="640" />
-          </VisualState.StateTriggers>
-        </VisualState>
-        <VisualState x:Name="NarrowLayout">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="0" />
-          </VisualState.StateTriggers>
-          <VisualState.Setters>
-            <Setter Target="LeftColumn.Width" Value="*" />
-            <Setter Target="MiddleColumn.Width" Value="0" />
-            <Setter Target="RightColumn.Width" Value="0" />
-            <Setter Target="MiddlePanel.(Grid.Column)" Value="0" />
-            <Setter Target="MiddlePanel.(Grid.Row)" Value="1" />
-            <Setter Target="RightPanel.(Grid.Column)" Value="0" />
-            <Setter Target="RightPanel.(Grid.Row)" Value="2" />
-          </VisualState.Setters>
-        </VisualState>
-      </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
-
-    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
-      <Grid Padding="24" ColumnSpacing="20" RowSpacing="20">
+    <!-- Wide: the body fills the window and only the side columns scroll. Narrow (< 900): the columns stack and the
+         whole body scrolls; the code-behind switches this (docs/entwuerfe/abgleich-mischentwurf.md 1.1). -->
+    <ScrollViewer
+      x:Name="BodyScroller"
+      HorizontalScrollMode="Disabled"
+      VerticalScrollBarVisibility="Disabled"
+      VerticalScrollMode="Disabled">
+      <Grid x:Name="BodyGrid">
         <Grid.ColumnDefinitions>
-          <ColumnDefinition x:Name="LeftColumn" Width="320" />
+          <ColumnDefinition x:Name="RailGap" Width="10" />
+          <ColumnDefinition x:Name="RailColumn" Width="124" />
+          <ColumnDefinition x:Name="LeftGap" Width="12" />
+          <ColumnDefinition x:Name="LeftColumn" Width="250" />
           <ColumnDefinition x:Name="MiddleColumn" Width="*" />
-          <ColumnDefinition x:Name="RightColumn" Width="360" />
+          <ColumnDefinition x:Name="RightColumn" Width="300" />
+          <ColumnDefinition x:Name="RightGap" Width="16" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
+          <RowDefinition x:Name="Row0" Height="*" />
+          <RowDefinition x:Name="Row1" Height="Auto" />
+          <RowDefinition x:Name="Row2" Height="Auto" />
+          <RowDefinition x:Name="Row3" Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Left: kinds and their files -->
-        <StackPanel x:Name="LeftPanel" Spacing="12">
-          <TextBlock x:Uid="Target_Title" Style="{StaticResource TitleTextBlockStyle}" />
-          <TextBlock
-            x:Uid="Target_Empty_Text"
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
-          <TextBlock x:Uid="Target_Kinds_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <ListView
-            x:Name="KindsList"
-            x:Uid="Target_Kinds_List"
-            ItemTemplate="{StaticResource KindItemTemplate}"
-            ItemsSource="{x:Bind ViewModel.Kinds}"
-            SelectedItem="{x:Bind ViewModel.SelectedKind, Mode=TwoWay}"
-            SelectionMode="Single" />
+        <!-- Left edge: the kinds as small universes (.k-liste) -->
+        <ListView
+          x:Name="KindsList"
+          x:Uid="Target_Kinds_List"
+          Grid.Column="1"
+          Padding="0"
+          VerticalAlignment="Center"
+          ContainerContentChanging="OnKindContainerContentChanging"
+          ItemContainerStyle="{StaticResource KindItemContainerStyle}"
+          ItemTemplate="{StaticResource KindItemTemplate}"
+          ItemsSource="{x:Bind ViewModel.Kinds}"
+          ScrollViewer.VerticalScrollBarVisibility="Hidden"
+          SelectedItem="{x:Bind ViewModel.SelectedKind, Mode=TwoWay}"
+          SelectionChanged="OnKindsSelectionChanged"
+          SelectionMode="Single">
+          <ListView.Resources>
+            <!-- The chosen universe carries its own card; no selection fill, no indicator bar. -->
+            <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="Transparent" />
+            <x:Boolean x:Key="ListViewItemSelectionIndicatorVisualEnabled">False</x:Boolean>
+          </ListView.Resources>
+        </ListView>
 
-          <StackPanel DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}" Spacing="8">
+        <!-- The chosen kind: head, mode switch and its files (.v-l) -->
+        <ScrollViewer
+          x:Name="LeftPanel"
+          Grid.Column="3"
+          Padding="0,14,0,14"
+          HorizontalScrollMode="Disabled"
+          VerticalScrollBarVisibility="Auto">
+          <StackPanel DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}" Spacing="7">
+            <TextBlock
+              x:Uid="Target_Empty_Text"
+              Style="{StaticResource KvSmallTextStyle}"
+              TextTrimming="None"
+              TextWrapping="Wrap"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
+
             <Border
+              Padding="11,10"
               Background="{ThemeResource KvMintSurfaceBrush}"
               BorderBrush="{ThemeResource KvMintFrameBrush}"
               BorderThickness="1"
-              CornerRadius="8"
-              Padding="12"
+              CornerRadius="12"
               Visibility="{Binding IsLocked, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
-              <StackPanel Spacing="4">
-                <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{Binding LockTitle}" />
-                <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{Binding LockText}" />
+              <StackPanel Spacing="3">
+                <TextBlock Style="{StaticResource KvRowTextStyle}" Text="{Binding LockTitle}" />
+                <TextBlock
+                  Style="{StaticResource KvSmallTextStyle}"
+                  Text="{Binding LockText}"
+                  TextTrimming="None"
+                  TextWrapping="Wrap" />
               </StackPanel>
             </Border>
 
-            <TextBlock x:Uid="Target_Mode_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-            <StackPanel Orientation="Horizontal" Spacing="12">
-              <RadioButton
-                x:Uid="Target_Mode_AllSame"
-                GroupName="TargetMode"
-                IsChecked="{Binding IsAllSame, Mode=TwoWay}" />
-              <RadioButton
-                x:Uid="Target_Mode_Individual"
-                GroupName="TargetMode"
-                IsChecked="{Binding IsIndividual, Mode=TwoWay}" />
-            </StackPanel>
-
-            <ItemsControl
-              ItemTemplate="{StaticResource TargetFileTemplate}"
-              ItemsSource="{Binding Files}" />
-          </StackPanel>
-        </StackPanel>
-
-        <!-- Middle: one line per file, "source -> target, approximate size" -->
-        <StackPanel
-          x:Name="MiddlePanel"
-          Grid.Column="1"
-          DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}"
-          Spacing="8">
-          <TextBlock x:Uid="Target_Paths_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <Border Style="{StaticResource CardBorderStyle}">
-            <ItemsControl ItemTemplate="{StaticResource PathRowTemplate}" ItemsSource="{Binding Paths}" />
-          </Border>
-        </StackPanel>
-
-        <!-- Right: formats, ring, size bar, zones, exact size, more, what changes -->
-        <StackPanel
-          x:Name="RightPanel"
-          Grid.Column="2"
-          DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}"
-          Spacing="12">
-
-          <Border
-            x:Name="PreviousCard"
-            Background="{ThemeResource KvPanel2Brush}"
-            BorderBrush="{ThemeResource KvLineBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="12"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasPrevious), Mode=OneWay}">
-            <StackPanel Spacing="6">
-              <TextBlock
-                Style="{StaticResource BodyStrongTextBlockStyle}"
-                Text="{x:Bind ViewModel.Previous.TitleText, Mode=OneWay}" />
-              <TextBlock
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{x:Bind ViewModel.Previous.SummaryText, Mode=OneWay}" />
-              <Button
-                x:Uid="Target_Previous_Apply_Button"
-                Command="{x:Bind ViewModel.Previous.ApplyCommand, Mode=OneWay}" />
-            </StackPanel>
-          </Border>
-
-          <Border
-            Background="{ThemeResource KvMintSurfaceBrush}"
-            BorderBrush="{ThemeResource KvMintFrameBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="12"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowBatchCard), Mode=OneWay}">
-            <StackPanel Spacing="4">
-              <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="{x:Bind ViewModel.BatchCardTitle, Mode=OneWay}" />
-              <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind ViewModel.BatchCardText, Mode=OneWay}" />
-            </StackPanel>
-          </Border>
-
-          <TextBlock x:Uid="Target_Formats_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <ComboBox
-            x:Uid="Target_Format_ComboBox"
-            HorizontalAlignment="Stretch"
-            DisplayMemberPath="Label"
-            ItemsSource="{Binding SharedFormats}"
-            SelectedItem="{Binding SharedFormat, Mode=TwoWay}" />
-
-          <StackPanel DataContext="{Binding Tuning}" Spacing="12">
-            <!-- Ring: grade and word -->
-            <StackPanel
-              x:Name="GradeBlock"
-              HorizontalAlignment="Center"
-              Visibility="{Binding SupportsGrade, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
-              <Grid Width="152" Height="152">
-                <Slider
-                  x:Uid="Target_Grade_Slider"
-                  AutomationProperties.HelpText="{Binding GradeAutomationValue}"
-                  Foreground="{Binding GradeBrushKey, Converter={StaticResource BrushKeyConverter}}"
-                  LargeChange="10"
-                  Maximum="100"
-                  Minimum="0"
-                  SmallChange="5"
-                  Style="{StaticResource GradeRingSliderStyle}"
-                  Value="{Binding Grade, Mode=TwoWay}" />
-                <StackPanel
-                  HorizontalAlignment="Center"
-                  VerticalAlignment="Center"
-                  IsHitTestVisible="False">
-                  <TextBlock
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource TitleTextBlockStyle}"
-                    Text="{Binding Grade}" />
-                  <TextBlock
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource SecondaryCaptionTextStyle}"
-                    Text="{Binding BandText}" />
-                  <TextBlock
-                    HorizontalAlignment="Center"
-                    Style="{StaticResource SecondaryCaptionTextStyle}"
-                    Text="{Binding SizeText}" />
-                </StackPanel>
-              </Grid>
-              <TextBlock
-                HorizontalAlignment="Center"
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{Binding PreviousText}"
-                Visibility="{Binding HasPrevious, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}" />
-            </StackPanel>
-
-            <!-- Size bar -->
-            <StackPanel
-              x:Name="SizeBarBlock"
-              Spacing="4"
-              Visibility="{Binding SupportsGrade, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
-              <TextBlock x:Uid="Target_SizeBar_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-              <Grid Width="320" HorizontalAlignment="Left">
-                <ItemsControl
-                  x:Name="SizeSegments"
-                  Height="6"
-                  VerticalAlignment="Center"
-                  ItemsSource="{Binding SizeBar.Segments}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <StackPanel Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="target:SizeSegmentViewModel">
-                      <Rectangle
-                        Width="13.3"
-                        Height="6"
-                        Fill="{x:Bind helpers:Ui.Brush(BrushKey)}" />
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
-                <Slider
-                  x:Uid="Target_SizeBar_Slider"
-                  AutomationProperties.HelpText="{Binding SizeBar.AutomationName}"
-                  Background="Transparent"
-                  LargeChange="50"
-                  Maximum="{Binding SizeBar.Maximum}"
-                  Minimum="0"
-                  SmallChange="10"
-                  Value="{Binding SizeBar.Position, Mode=TwoWay}" />
-              </Grid>
-              <Canvas Width="320" Height="18" HorizontalAlignment="Left">
-                <ItemsControl ItemsSource="{Binding SizeBar.Marks}">
-                  <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                      <Canvas />
-                    </ItemsPanelTemplate>
-                  </ItemsControl.ItemsPanel>
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="target:SizeMarkViewModel">
-                      <TextBlock
-                        Canvas.Left="{x:Bind Left}"
-                        Style="{StaticResource SecondaryCaptionTextStyle}"
-                        Text="{x:Bind Label}" />
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
-                </ItemsControl>
+            <!-- .art-kopf -->
+            <Grid ColumnSpacing="10" Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Border
+                Width="40"
+                Height="40"
+                Background="{x:Bind helpers:TargetUi.KindBrushOf(ViewModel.SelectedKind.Kind, 'Tint12Brush'), Mode=OneWay}"
+                BorderBrush="{x:Bind helpers:TargetUi.KindBrushOf(ViewModel.SelectedKind.Kind, 'Frame40Brush'), Mode=OneWay}"
+                BorderThickness="1"
+                CornerRadius="12">
+                <FontIcon
+                  FontSize="20"
+                  Foreground="{x:Bind helpers:TargetUi.KindBrushOf(ViewModel.SelectedKind.Kind, 'Brush'), Mode=OneWay}"
+                  Glyph="{x:Bind helpers:TargetUi.KindGlyph(ViewModel.SelectedKind.Kind), Mode=OneWay}" />
+              </Border>
+              <StackPanel
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Spacing="1">
                 <TextBlock
-                  x:Uid="Target_Previous_Bar_Mark"
-                  Canvas.Left="{Binding PreviousBarLeft}"
-                  Canvas.Top="0"
-                  Foreground="{ThemeResource KvMutedBrush}"
-                  Style="{StaticResource SecondaryCaptionTextStyle}"
-                  Visibility="{Binding HasPrevious, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}" />
-              </Canvas>
-              <Grid>
+                  FontFamily="{StaticResource KvDisplayFontFamily}"
+                  FontSize="16"
+                  FontWeight="Bold"
+                  Style="{StaticResource KvTextBaseStyle}"
+                  Text="{x:Bind ViewModel.SelectedKind.TitleText, Mode=OneWay}" />
                 <TextBlock
-                  HorizontalAlignment="Left"
-                  Style="{StaticResource SecondaryCaptionTextStyle}"
-                  Text="{Binding SizeBar.MinText}" />
-                <TextBlock
-                  HorizontalAlignment="Right"
-                  Style="{StaticResource SecondaryCaptionTextStyle}"
-                  Text="{Binding SizeBar.MaxText}" />
-              </Grid>
-            </StackPanel>
+                  FontSize="11"
+                  FontWeight="Normal"
+                  Style="{StaticResource KvMonoTextStyle}"
+                  Text="{x:Bind ViewModel.SelectedKind.SourcesText, Mode=OneWay}" />
+              </StackPanel>
+            </Grid>
 
-            <!-- Zones -->
-            <ItemsControl ItemsSource="{Binding Zones}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate x:DataType="target:ZoneViewModel">
-                  <Expander
-                    HorizontalAlignment="Stretch"
-                    AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-                    Margin="0,0,0,6">
-                    <Expander.Header>
-                      <Grid ColumnSpacing="8">
-                        <Grid.ColumnDefinitions>
-                          <ColumnDefinition Width="Auto" />
-                          <ColumnDefinition Width="*" />
-                          <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock
-                          VerticalAlignment="Center"
-                          Style="{StaticResource BodyStrongTextBlockStyle}"
-                          Text="{x:Bind NameText}" />
-                        <ProgressBar
-                          Grid.Column="1"
-                          VerticalAlignment="Center"
-                          AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-                          Foreground="{x:Bind helpers:Ui.Brush(BrushKey), Mode=OneWay}"
-                          IsIndeterminate="False"
-                          Maximum="100"
-                          Minimum="0"
-                          Value="{x:Bind Value, Mode=OneWay}" />
-                        <TextBlock
-                          Grid.Column="2"
-                          VerticalAlignment="Center"
-                          Style="{StaticResource SecondaryCaptionTextStyle}"
-                          Text="{x:Bind DetailText, Mode=OneWay}" />
-                      </Grid>
-                    </Expander.Header>
-                    <StackPanel Spacing="4">
-                      <Slider
-                        AutomationProperties.Name="{x:Bind NameText}"
-                        AutomationProperties.HelpText="{x:Bind AutomationName, Mode=OneWay}"
-                        IsEnabled="{x:Bind Adjustable, Mode=OneWay}"
-                        LargeChange="10"
-                        Maximum="100"
-                        Minimum="0"
-                        SmallChange="5"
-                        Value="{x:Bind Value, Mode=TwoWay}" />
-                      <TextBlock
-                        x:Uid="Target_Zone_Fixed_Text"
-                        Style="{StaticResource SecondaryCaptionTextStyle}"
-                        Visibility="{x:Bind helpers:Ui.Hide(Adjustable), Mode=OneWay}" />
-                    </StackPanel>
-                  </Expander>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
+            <!-- .modus: Alle gleich / Jede einzeln -->
+            <Border Style="{StaticResource KvSegmentBarStyle}" Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
+              <Grid ColumnSpacing="2">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <RadioButton
+                  x:Uid="Target_Mode_AllSame"
+                  GroupName="TargetMode"
+                  IsChecked="{Binding IsAllSame, Mode=TwoWay}"
+                  Style="{StaticResource KvSegmentStyle}" />
+                <RadioButton
+                  x:Uid="Target_Mode_Individual"
+                  Grid.Column="1"
+                  GroupName="TargetMode"
+                  IsChecked="{Binding IsIndividual, Mode=TwoWay}"
+                  Style="{StaticResource KvSegmentStyle}" />
+              </Grid>
+            </Border>
+
+            <ItemsControl ItemTemplate="{StaticResource TargetFileTemplate}" ItemsSource="{Binding Files}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Spacing="7" />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
             </ItemsControl>
-
-            <!-- Exact target size -->
-            <Expander x:Uid="Target_ExactSize_Expander" HorizontalAlignment="Stretch">
-              <Expander.Header>
-                <TextBlock x:Uid="Target_ExactSize_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
-              </Expander.Header>
-              <StackPanel Spacing="8">
-                <ToggleSwitch x:Uid="Target_ExactSize_Toggle" IsOn="{Binding ExactTargetEnabled, Mode=TwoWay}" />
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <NumberBox
-                    x:Uid="Target_ExactSize_NumberBox"
-                    Width="140"
-                    IsEnabled="{Binding ExactTargetEnabled}"
-                    Minimum="0.1"
-                    SpinButtonPlacementMode="Compact"
-                    Value="{Binding ExactTargetMegabytes, Mode=TwoWay}" />
-                  <TextBlock
-                    x:Uid="Target_ExactSize_Unit"
-                    VerticalAlignment="Center"
-                    Style="{StaticResource SecondaryCaptionTextStyle}" />
-                </StackPanel>
-                <TextBlock
-                  x:Uid="Target_ExactSize_Hint"
-                  Foreground="{ThemeResource KvVideoBrush}"
-                  Style="{StaticResource SecondaryCaptionTextStyle}"
-                  Visibility="{Binding ExactTargetUnreachable, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}" />
-              </StackPanel>
-            </Expander>
-
-            <!-- More: metadata and file name -->
-            <Expander x:Uid="Target_More_Expander" HorizontalAlignment="Stretch">
-              <Expander.Header>
-                <TextBlock x:Uid="Target_More_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
-              </Expander.Header>
-              <StackPanel Spacing="8">
-                <ToggleSwitch x:Uid="Target_Metadata_Toggle" IsOn="{Binding StripMetadata, Mode=TwoWay}" />
-                <TextBlock x:Uid="Target_Metadata_Hint" Style="{StaticResource SecondaryCaptionTextStyle}" />
-                <TextBox x:Uid="Target_NamePattern_TextBox" Text="{Binding NamePatternText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{Binding NamePreview}" />
-              </StackPanel>
-            </Expander>
-
-            <!-- What changes -->
-            <StackPanel Spacing="4">
-              <TextBlock x:Uid="Target_Effects_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-              <ItemsRepeater ItemTemplate="{StaticResource EffectTemplate}" ItemsSource="{Binding Effects}" />
-            </StackPanel>
           </StackPanel>
-        </StackPanel>
+        </ScrollViewer>
+
+        <!-- Middle: title and one card per file, "source -> target, approximate size". The drawn orbit and the hole
+             follow with the drawing layer; until then this panel is the hole anchor of the transitions. -->
+        <Grid
+          x:Name="MiddlePanel"
+          Grid.Column="4"
+          DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <StackPanel
+            Margin="16,12,16,0"
+            HorizontalAlignment="Center"
+            Spacing="1"
+            Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
+            <TextBlock
+              HorizontalAlignment="Center"
+              FontFamily="{StaticResource KvDisplayFontFamily}"
+              FontSize="17"
+              FontWeight="Bold"
+              Style="{StaticResource KvTextBaseStyle}"
+              Text="{x:Bind ViewModel.SelectedKind.TitleText, Mode=OneWay}" />
+            <TextBlock
+              HorizontalAlignment="Center"
+              FontFamily="{StaticResource KvMonoFontFamily}"
+              FontSize="11.5"
+              Foreground="{ThemeResource KvMutedBrush}">
+              <Run Text="{x:Bind ViewModel.SelectedKind.FromText, Mode=OneWay}" />
+              <Run Foreground="{ThemeResource KvMintBrush}" Text="{x:Bind ViewModel.SelectedKind.ToText, Mode=OneWay}" />
+            </TextBlock>
+          </StackPanel>
+          <ScrollViewer
+            Grid.Row="1"
+            HorizontalScrollMode="Disabled"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
+            <Grid Padding="16,24,16,14">
+              <ItemsControl
+                MaxWidth="440"
+                ItemTemplate="{StaticResource PathRowTemplate}"
+                ItemsSource="{Binding Paths}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Spacing="6" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+              </ItemsControl>
+            </Grid>
+          </ScrollViewer>
+        </Grid>
+
+        <!-- Right: damals, target format, ring, size bar, zones, exact size, more, what changes (.v-r) -->
+        <ScrollViewer
+          x:Name="RightPanel"
+          Grid.Column="5"
+          Padding="2,16,4,14"
+          HorizontalScrollMode="Disabled"
+          VerticalScrollBarVisibility="Auto">
+          <StackPanel DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}" Spacing="7">
+
+            <!-- .damals-hinweis -->
+            <ContentControl
+              x:Name="PreviousCard"
+              HorizontalAlignment="Stretch"
+              Style="{StaticResource KvDashedBoxStyle}"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasPrevious), Mode=OneWay}">
+              <Grid ColumnSpacing="12" RowSpacing="4">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="Auto" />
+                  <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <FontIcon
+                  Grid.RowSpan="2"
+                  VerticalAlignment="Center"
+                  FontSize="18"
+                  Foreground="{ThemeResource KvMintBrush}"
+                  Glyph="&#xE81C;" />
+                <TextBlock
+                  Grid.Column="1"
+                  Style="{StaticResource KvRowTextStyle}"
+                  Text="{x:Bind ViewModel.Previous.TitleText, Mode=OneWay}" />
+                <TextBlock
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  FontSize="11"
+                  FontWeight="Normal"
+                  Style="{StaticResource KvMonoTextStyle}"
+                  Text="{x:Bind ViewModel.Previous.SummaryText, Mode=OneWay}"
+                  TextTrimming="None"
+                  TextWrapping="Wrap" />
+                <Button
+                  x:Uid="Target_Previous_Apply_Button"
+                  Grid.RowSpan="2"
+                  Grid.Column="2"
+                  Command="{x:Bind ViewModel.Previous.ApplyCommand, Mode=OneWay}"
+                  Style="{StaticResource KvSmallButtonStyle}" />
+              </Grid>
+            </ContentControl>
+
+            <Border
+              Padding="11,10"
+              Background="{ThemeResource KvMintSurfaceBrush}"
+              BorderBrush="{ThemeResource KvMintFrameBrush}"
+              BorderThickness="1"
+              CornerRadius="12"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowBatchCard), Mode=OneWay}">
+              <StackPanel Spacing="3">
+                <TextBlock Style="{StaticResource KvRowTextStyle}" Text="{x:Bind ViewModel.BatchCardTitle, Mode=OneWay}" />
+                <TextBlock
+                  Style="{StaticResource KvSmallTextStyle}"
+                  Text="{x:Bind ViewModel.BatchCardText, Mode=OneWay}"
+                  TextTrimming="None"
+                  TextWrapping="Wrap" />
+              </StackPanel>
+            </Border>
+
+            <!-- .ueber.m "wird zu"; the target format stays a ComboBox (3.4, accessibility) -->
+            <TextBlock
+              x:Uid="Target_Formats_Header"
+              Foreground="{ThemeResource KvMintBrush}"
+              Style="{StaticResource KvOverlineTextStyle}"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}" />
+            <ComboBox
+              x:Uid="Target_Format_ComboBox"
+              HorizontalAlignment="Stretch"
+              DisplayMemberPath="Label"
+              ItemsSource="{Binding SharedFormats}"
+              SelectedItem="{Binding SharedFormat, Mode=TwoWay}"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}" />
+
+            <!-- .ein-k: the settings card -->
+            <Border
+              Padding="11,10"
+              Background="{ThemeResource KvBg82Brush}"
+              BorderBrush="{ThemeResource KvLineBrush}"
+              BorderThickness="1"
+              CornerRadius="13"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
+              <StackPanel DataContext="{Binding Tuning}" Spacing="9">
+
+                <!-- .e5-gross: ring 92 with the grade, the word and the size of the largest file next to it -->
+                <Grid
+                  x:Name="GradeBlock"
+                  ColumnSpacing="14"
+                  Visibility="{Binding SupportsGrade, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid Width="92" Height="92">
+                    <Slider
+                      x:Uid="Target_Grade_Slider"
+                      AutomationProperties.HelpText="{Binding GradeAutomationValue}"
+                      Foreground="{Binding GradeBrushKey, Converter={StaticResource BrushKeyConverter}}"
+                      LargeChange="10"
+                      Maximum="100"
+                      Minimum="0"
+                      SmallChange="5"
+                      Style="{StaticResource KvGradeRingSliderStyle}"
+                      Value="{Binding Grade, Mode=TwoWay}" />
+                    <StackPanel
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      IsHitTestVisible="False">
+                      <TextBlock
+                        HorizontalAlignment="Center"
+                        LineHeight="26"
+                        LineStackingStrategy="BlockLineHeight"
+                        Style="{StaticResource KvBigNumberTextStyle}"
+                        Text="{Binding Grade}" />
+                      <TextBlock
+                        x:Uid="Target_Grade_Of"
+                        HorizontalAlignment="Center"
+                        FontSize="9.5"
+                        Style="{StaticResource KvMonoTextStyle}" />
+                    </StackPanel>
+                  </Grid>
+                  <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock
+                      x:Uid="Target_Grade_Label"
+                      CharacterSpacing="80"
+                      FontSize="10"
+                      Foreground="{ThemeResource KvMutedBrush}"
+                      Style="{StaticResource KvLabelTextStyle}" />
+                    <TextBlock
+                      Margin="0,0,0,3"
+                      FontFamily="{StaticResource KvDisplayFontFamily}"
+                      FontSize="17"
+                      FontWeight="Bold"
+                      Foreground="{Binding GradeBrushKey, Converter={StaticResource BrushKeyConverter}}"
+                      Style="{StaticResource KvTextBaseStyle}"
+                      Text="{Binding BandText}" />
+                    <TextBlock
+                      x:Uid="Target_Largest_Label"
+                      CharacterSpacing="80"
+                      FontSize="10"
+                      Foreground="{ThemeResource KvMutedBrush}"
+                      Style="{StaticResource KvLabelTextStyle}" />
+                    <TextBlock
+                      FontSize="14"
+                      FontWeight="Bold"
+                      Foreground="{ThemeResource KvMintBrush}"
+                      Style="{StaticResource KvMonoTextStyle}"
+                      Text="{Binding SizeText}" />
+                    <TextBlock
+                      FontWeight="Normal"
+                      Style="{StaticResource KvMonoTextStyle}"
+                      Text="{Binding SavingText}" />
+                    <Border
+                      Margin="0,4,0,0"
+                      HorizontalAlignment="Left"
+                      Style="{StaticResource KvPillStyle}"
+                      Visibility="{Binding HasPrevious, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
+                      <TextBlock
+                        FontSize="9.5"
+                        Style="{StaticResource KvPillTextStyle}"
+                        Text="{Binding PreviousText}" />
+                    </Border>
+                  </StackPanel>
+                </Grid>
+
+                <!-- .gleiste: marks above, 24 colour segments, the ring thumb, the scale below -->
+                <TextBlock
+                  x:Uid="Target_SizeBar_Header"
+                  Style="{StaticResource KvOverlineTextStyle}"
+                  Visibility="{Binding SupportsGrade, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}" />
+                <Grid
+                  x:Name="SizeBarHost"
+                  Height="54"
+                  Margin="6,16,6,0"
+                  SizeChanged="OnSizeBarSizeChanged"
+                  Visibility="{Binding SupportsGrade, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}">
+                  <Border
+                    x:Name="SizeTrack"
+                    Height="12"
+                    Margin="0,16,0,0"
+                    VerticalAlignment="Top"
+                    Background="{ThemeResource KvDeepBrush}"
+                    CornerRadius="6" />
+                  <Canvas x:Name="SizeMarks" IsHitTestVisible="False">
+                    <TextBlock
+                      x:Name="PreviousBarMark"
+                      x:Uid="Target_Previous_Bar_Mark"
+                      Canvas.Top="34"
+                      FontSize="9.5"
+                      Foreground="{ThemeResource KvMintBrush}"
+                      Style="{StaticResource KvMonoTextStyle}"
+                      Visibility="Collapsed" />
+                  </Canvas>
+                  <Slider
+                    x:Name="SizeSlider"
+                    x:Uid="Target_SizeBar_Slider"
+                    Margin="-14,8,-14,0"
+                    VerticalAlignment="Top"
+                    AutomationProperties.HelpText="{Binding SizeBar.AutomationName}"
+                    LargeChange="50"
+                    Maximum="{Binding SizeBar.Maximum}"
+                    Minimum="0"
+                    SmallChange="10"
+                    Style="{StaticResource KvSizeSliderStyle}"
+                    Value="{Binding SizeBar.Position, Mode=TwoWay}" />
+                  <TextBlock
+                    Margin="0,34,0,0"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    FontSize="10"
+                    Foreground="{ThemeResource KvQuietBrush}"
+                    Style="{StaticResource KvMonoTextStyle}"
+                    Text="{Binding SizeBar.MinText}" />
+                  <TextBlock
+                    Margin="0,34,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    FontSize="10"
+                    Foreground="{ThemeResource KvQuietBrush}"
+                    Style="{StaticResource KvMonoTextStyle}"
+                    Text="{Binding SizeBar.MaxText}" />
+                </Grid>
+
+                <!-- .e5-tuer: the zones, each an expander with its bar in the header -->
+                <TextBlock x:Uid="Target_Zones_Header" Style="{StaticResource KvOverlineTextStyle}" />
+                <ItemsControl ItemsSource="{Binding Zones}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="4" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="target:ZoneViewModel">
+                      <Expander
+                        Padding="10,5"
+                        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+                        IsExpanded="{x:Bind IsExpanded, Mode=TwoWay}"
+                        Style="{StaticResource KvExpanderStyle}">
+                        <Expander.Header>
+                          <Grid ColumnSpacing="10" RowSpacing="2">
+                            <Grid.ColumnDefinitions>
+                              <ColumnDefinition Width="82" />
+                              <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                              <RowDefinition Height="Auto" />
+                              <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                              Grid.RowSpan="2"
+                              VerticalAlignment="Center"
+                              FontSize="12"
+                              Style="{StaticResource KvTextBaseStyle}"
+                              Text="{x:Bind NameText}" />
+                            <TextBlock
+                              Grid.Column="1"
+                              FontSize="10.5"
+                              Style="{StaticResource KvSmallTextStyle}"
+                              Text="{x:Bind DetailText, Mode=OneWay}" />
+                            <ProgressBar
+                              Grid.Row="1"
+                              Grid.Column="1"
+                              VerticalAlignment="Center"
+                              AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+                              Foreground="{x:Bind helpers:Ui.Brush(BrushKey), Mode=OneWay}"
+                              IsIndeterminate="False"
+                              Maximum="100"
+                              Minimum="0"
+                              Value="{x:Bind Value, Mode=OneWay}" />
+                          </Grid>
+                        </Expander.Header>
+                        <StackPanel Spacing="4">
+                          <Slider
+                            AutomationProperties.HelpText="{x:Bind AutomationName, Mode=OneWay}"
+                            AutomationProperties.Name="{x:Bind NameText}"
+                            IsEnabled="{x:Bind Adjustable, Mode=OneWay}"
+                            LargeChange="10"
+                            Maximum="100"
+                            Minimum="0"
+                            SmallChange="5"
+                            Value="{x:Bind Value, Mode=TwoWay}" />
+                          <TextBlock
+                            x:Uid="Target_Zone_Fixed_Text"
+                            Style="{StaticResource KvSmallTextStyle}"
+                            TextTrimming="None"
+                            TextWrapping="Wrap"
+                            Visibility="{x:Bind helpers:Ui.Hide(Adjustable), Mode=OneWay}" />
+                        </StackPanel>
+                      </Expander>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!-- .e5-z "Zielgröße genau" with its value in the header -->
+                <Expander x:Uid="Target_ExactSize_Expander" Style="{StaticResource KvExpanderStyle}">
+                  <Expander.Header>
+                    <Grid ColumnSpacing="8">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <TextBlock x:Uid="Target_ExactSize_Header" Style="{StaticResource KvTextBaseStyle}" FontSize="12.5" />
+                      <TextBlock
+                        Grid.Column="1"
+                        FontSize="11.5"
+                        FontWeight="SemiBold"
+                        Foreground="{ThemeResource KvMintBrush}"
+                        Style="{StaticResource KvMonoTextStyle}"
+                        Text="{Binding ExactTargetSummary}" />
+                    </Grid>
+                  </Expander.Header>
+                  <StackPanel Spacing="8">
+                    <Grid ColumnSpacing="8">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <TextBlock
+                        x:Uid="Target_ExactSize_Label"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Foreground="{ThemeResource KvMutedBrush}"
+                        Style="{StaticResource KvTextBaseStyle}" />
+                      <ToggleSwitch
+                        x:Uid="Target_ExactSize_Toggle"
+                        Grid.Column="1"
+                        IsOn="{Binding ExactTargetEnabled, Mode=TwoWay}"
+                        Style="{StaticResource KvSwitchStyle}" />
+                    </Grid>
+                    <Grid ColumnSpacing="6">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <NumberBox
+                        x:Uid="Target_ExactSize_NumberBox"
+                        BorderBrush="{ThemeResource KvMintFrameBrush}"
+                        BorderThickness="1.5"
+                        CornerRadius="10"
+                        FontFamily="{StaticResource KvMonoFontFamily}"
+                        FontSize="17"
+                        FontWeight="Bold"
+                        IsEnabled="{Binding ExactTargetEnabled}"
+                        Minimum="0.1"
+                        SpinButtonPlacementMode="Compact"
+                        Value="{Binding ExactTargetMegabytes, Mode=TwoWay}" />
+                      <TextBlock
+                        x:Uid="Target_ExactSize_Unit"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Style="{StaticResource KvMonoTextStyle}" />
+                    </Grid>
+                    <TextBlock
+                      x:Uid="Target_ExactSize_Hint"
+                      Foreground="{ThemeResource KvVideoBrush}"
+                      Style="{StaticResource KvSmallTextStyle}"
+                      TextTrimming="None"
+                      TextWrapping="Wrap"
+                      Visibility="{Binding ExactTargetUnreachable, Converter={StaticResource ShowConverter}, FallbackValue=Collapsed}" />
+                  </StackPanel>
+                </Expander>
+
+                <!-- "Weiteres": metadata and file name -->
+                <Expander x:Uid="Target_More_Expander" Style="{StaticResource KvExpanderStyle}">
+                  <Expander.Header>
+                    <TextBlock x:Uid="Target_More_Header" Style="{StaticResource KvTextBaseStyle}" FontSize="12.5" />
+                  </Expander.Header>
+                  <StackPanel Spacing="8">
+                    <Grid ColumnSpacing="8">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <TextBlock
+                        x:Uid="Target_Metadata_Label"
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Foreground="{ThemeResource KvMutedBrush}"
+                        Style="{StaticResource KvTextBaseStyle}" />
+                      <ToggleSwitch
+                        x:Uid="Target_Metadata_Toggle"
+                        Grid.Column="1"
+                        IsOn="{Binding StripMetadata, Mode=TwoWay}"
+                        Style="{StaticResource KvSwitchStyle}" />
+                    </Grid>
+                    <TextBlock
+                      x:Uid="Target_Metadata_Hint"
+                      Style="{StaticResource KvSmallTextStyle}"
+                      TextTrimming="None"
+                      TextWrapping="Wrap" />
+                    <TextBox x:Uid="Target_NamePattern_TextBox" Text="{Binding NamePatternText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{Binding NamePreview}" />
+                  </StackPanel>
+                </Expander>
+
+                <!-- .e5-z "Was sich ändert" with the summary in the header, the list (.folgen) inside -->
+                <Expander
+                  x:Name="EffectsExpander"
+                  x:Uid="Target_Effects_Expander"
+                  Style="{StaticResource KvExpanderStyle}">
+                  <Expander.Header>
+                    <Grid ColumnSpacing="8">
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                      </Grid.ColumnDefinitions>
+                      <TextBlock x:Uid="Target_Effects_Header" Style="{StaticResource KvTextBaseStyle}" FontSize="12.5" />
+                      <TextBlock
+                        Grid.Column="1"
+                        FontSize="11.5"
+                        FontWeight="SemiBold"
+                        Foreground="{ThemeResource KvMintBrush}"
+                        Style="{StaticResource KvMonoTextStyle}"
+                        Text="{Binding EffectsSummaryText}" />
+                    </Grid>
+                  </Expander.Header>
+                  <ItemsRepeater ItemTemplate="{StaticResource EffectTemplate}" ItemsSource="{Binding Effects}">
+                    <ItemsRepeater.Layout>
+                      <StackLayout Spacing="5" />
+                    </ItemsRepeater.Layout>
+                  </ItemsRepeater>
+                </Expander>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
       </Grid>
     </ScrollViewer>
 
-    <!-- Bottom bar: trust line, summary, back and the only mint button of the page -->
+    <!-- Bottom bar (.leiste): trust line, summary, back and the only mint button of the page -->
     <Border
       Grid.Row="1"
-      Background="{ThemeResource KvPanelBrush}"
-      BorderBrush="{ThemeResource KvLineBrush}"
-      BorderThickness="0,1,0,0"
-      Padding="24,12">
-      <Grid ColumnSpacing="16">
+      Padding="18,12"
+      Style="{StaticResource KvBottomBarStyle}">
+      <Grid ColumnSpacing="12">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-          <FontIcon FontSize="14" Glyph="&#xE72E;" />
-          <TextBlock x:Uid="Target_Trust_Text" Style="{StaticResource CaptionTextBlockStyle}" VerticalAlignment="Center" />
+        <StackPanel
+          VerticalAlignment="Center"
+          Orientation="Horizontal"
+          Spacing="7">
+          <FontIcon
+            FontSize="14"
+            Foreground="{ThemeResource KvMintBrush}"
+            Glyph="&#xE72E;" />
+          <TextBlock
+            x:Uid="Target_Trust_Text"
+            VerticalAlignment="Center"
+            FontSize="12"
+            Foreground="{ThemeResource KvMutedBrush}"
+            Style="{StaticResource KvTextBaseStyle}" />
         </StackPanel>
         <TextBlock
           Grid.Column="1"
+          Margin="12,0,0,0"
           VerticalAlignment="Center"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
+          FontSize="12"
+          Style="{StaticResource KvMonoTextStyle}"
           Text="{x:Bind ViewModel.SummaryText, Mode=OneWay}" />
         <StackPanel
           Grid.Column="2"
           Orientation="Horizontal"
-          Spacing="8">
-          <Button x:Uid="Target_Back_Button" Command="{x:Bind ViewModel.BackCommand}" />
+          Spacing="12">
+          <Button
+            x:Uid="Target_Back_Button"
+            VerticalAlignment="Center"
+            Command="{x:Bind ViewModel.BackCommand}" />
           <Button
             x:Uid="Target_Continue_Button"
-            MinWidth="160"
-            MinHeight="40"
+            MinWidth="0"
             Command="{x:Bind ViewModel.ContinueCommand}"
-            Style="{StaticResource AccentButtonStyle}" />
+            Style="{StaticResource KvPrimaryButtonStyle}" />
         </StackPanel>
       </Grid>
     </Border>
