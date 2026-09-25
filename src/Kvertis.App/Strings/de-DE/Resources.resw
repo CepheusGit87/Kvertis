@@ -1509,10 +1509,10 @@
   <data name="Window_History_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
     <value>Verlauf</value>
   </data>
-  <data name="Window_Pro_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Kvertis Pro</value>
+  <data name="Window_Pro_Badge.Text" xml:space="preserve">
+    <value>PRO</value>
   </data>
-  <data name="Window_Pro_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+  <data name="Window_Pro_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Kvertis Pro</value>
   </data>
   <data name="Window_Settings_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">

@@ -1,8 +1,12 @@
+using System.Globalization;
+using System.Numerics;
 using Kvertis.App.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Hosting;
+using Microsoft.UI.Xaml.Shapes;
 
 namespace Kvertis.App.Views;
 
@@ -19,6 +23,9 @@ public sealed partial class StepHeader : UserControl
     private readonly ITransitionService _transitions;
     private readonly ILocalizer _loc;
 
+    // Fill state last applied to the two segments, so only a real change animates (.seg.voll, 0.7 s --sanft).
+    private readonly bool?[] _segmentFull = new bool?[2];
+
     public StepHeader()
     {
         _steps = App.Services.GetRequiredService<IStepNavigationService>();
@@ -28,6 +35,11 @@ public sealed partial class StepHeader : UserControl
         _coordinator = App.Services.GetRequiredService<IConversionCoordinator>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
         InitializeComponent();
+
+        // The marks carry the step number (1, 2, 3); formatted, not a text of its own.
+        DropNumber.Text = 1.ToString(CultureInfo.CurrentCulture);
+        TargetNumber.Text = 2.ToString(CultureInfo.CurrentCulture);
+        ConvertNumber.Text = 3.ToString(CultureInfo.CurrentCulture);
 
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
@@ -88,12 +100,16 @@ public sealed partial class StepHeader : UserControl
         // The state changes are colour and glyph only; with "reduce animations" they are applied without
         // transitions, which is what useTransitions: false does.
         var animate = !_motion.ReducedMotion;
-        Apply(WorkflowStep.Drop, current.Value, "Drop", DropButton, animate);
-        Apply(WorkflowStep.Target, current.Value, "Target", TargetButton, animate);
-        Apply(WorkflowStep.Convert, current.Value, "Convert", ConvertButton, animate);
+        Apply(WorkflowStep.Drop, current.Value, "Drop", DropButton, DropStatus, animate);
+        Apply(WorkflowStep.Target, current.Value, "Target", TargetButton, TargetStatus, animate);
+        Apply(WorkflowStep.Convert, current.Value, "Convert", ConvertButton, ConvertStatus, animate);
+
+        // A segment is full once the step after it is reached (the draft's seg-0 from step 2 on, seg-1 from step 3).
+        SetSegment(0, DropSegmentFill, current.Value > WorkflowStep.Drop, animate && IsLoaded);
+        SetSegment(1, TargetSegmentFill, current.Value > WorkflowStep.Target, animate && IsLoaded);
     }
 
-    private void Apply(WorkflowStep step, WorkflowStep current, string prefix, Button button, bool animate)
+    private void Apply(WorkflowStep step, WorkflowStep current, string prefix, Button button, TextBlock statusLine, bool animate)
     {
         string state;
         string status;
@@ -120,8 +136,39 @@ public sealed partial class StepHeader : UserControl
         }
         VisualStateManager.GoToState(this, prefix + state, animate);
         AutomationProperties.SetItemStatus(button, status);
+        // The same words are visible as the small line under the title (.knoten small).
+        statusLine.Text = status;
         // During a drawn transition the header takes no clicks and no keys (ADR-023); the state stays as it is.
         button.IsEnabled = !locked && !_transitions.IsTransitioning && (step <= current || IsReachable(step));
+    }
+
+    /// <summary>
+    /// Fills or empties a segment. The mint rectangle is scaled along x from its left edge on the composition
+    /// visual; with reduced motion (or before the first layout) the end value is set at once.
+    /// </summary>
+    private void SetSegment(int index, Rectangle fill, bool full, bool animate)
+    {
+        if (_segmentFull[index] == full)
+        {
+            return;
+        }
+        var first = _segmentFull[index] is null;
+        _segmentFull[index] = full;
+
+        var visual = ElementCompositionPreview.GetElementVisual(fill);
+        var target = new Vector3(full ? 1f : 0f, 1f, 1f);
+        visual.CenterPoint = Vector3.Zero;
+        visual.StopAnimation("Scale");
+        if (!animate || first)
+        {
+            visual.Scale = target;
+            return;
+        }
+        var compositor = visual.Compositor;
+        var grow = compositor.CreateVector3KeyFrameAnimation();
+        grow.InsertKeyFrame(1f, target, compositor.CreateCubicBezierEasingFunction(new Vector2(0.2f, 0.9f), new Vector2(0.25f, 1f)));
+        grow.Duration = TimeSpan.FromMilliseconds(700);
+        visual.StartAnimation("Scale", grow);
     }
 
     private bool IsLocked => _coordinator.State is RoundState.Running or RoundState.Paused;
