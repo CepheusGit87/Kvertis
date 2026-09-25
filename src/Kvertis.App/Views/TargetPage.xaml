@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Step 2 of the main path. Placeholder: the zoom paths, the kind universes and the output settings from
+     design/ENTSCHEIDUNGEN.md follow in a later stage. -->
+<Page
+  x:Class="Kvertis.App.Views.TargetPage"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  NavigationCacheMode="Required">
+
+  <ScrollViewer>
+    <StackPanel MaxWidth="720" Padding="24" Spacing="12">
+      <TextBlock x:Uid="Target_Title" Style="{StaticResource TitleTextBlockStyle}" />
+      <Border Style="{StaticResource CardBorderStyle}">
+        <TextBlock x:Uid="Target_Placeholder_Text" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</Page>

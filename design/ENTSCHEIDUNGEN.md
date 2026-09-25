@@ -22,7 +22,7 @@ Stand: 25.09.2026. HTML-Entwürfe in diesem Ordner, jeweils auch als private Art
 ## Offen
 
 - Win2D (MIT) für den Pixelwirbel und die Galaxie: Prüfung durch den Lizenz-Wächter, Eintrag in `docs/04-bibliotheken.md` erst bei Verwendung im Code.
-- Eigene Akzentfarbe statt Systemakzent: braucht eine ADR in `docs/03-architektur.md` und eine Änderung in `docs/06-design.md`.
+- Erledigt 2026-09-25: Eigene Akzentfarbe statt Systemakzent als ADR-017, Zeichenschicht Win2D als ADR-018 in `docs/03-architektur.md`; Token-Tabelle in `docs/06-design.md`.
 - Schrift Geist (SIL OFL): steht nicht auf der Lizenzliste in `CLAUDE.md`, Prüfung durch den Lizenz-Wächter; bis dahin Segoe UI Variable.
 - Barrierefreiheit: alle 3D-Effekte und Animationen entfallen bei „Animationen reduzieren“ und Hohem Kontrast.
 

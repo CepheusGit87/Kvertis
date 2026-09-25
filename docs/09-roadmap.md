@@ -10,6 +10,7 @@
 - [x] Lauffähiges Grundgerüst: Solution, `Directory.Build.props`, `Directory.Packages.props`, Projekte Engine / Queue / App / Tests
 - [x] CI: Linux-Job für Engine, Queue und Unit-Tests; Windows-Job für App-Build und Integrationstests
 - [x] Compliance-Skripte (`tools/compliance/`) und `LibraryRegistryTests`
+- [x] Umstellung von .NET 8 auf .NET 10 (LTS bis November 2028), alle Projekte und CI (2026-09-25, Nachtrag zu ADR-001)
 - [ ] FFmpeg-LGPL-Build: Bezugsquelle oder eigener Build, Prüfskript, Quellcode-Angebot
 
 ### Phase 1 – Kernfunktionen
@@ -19,7 +20,7 @@ Reihenfolge laut Briefing: Bilder → Audio → Video → Dokumente → Feinschl
 - [x] Queue: Enqueue, Parallelität, Pause/Abbruch, Gesamtfortschritt, Verlauf
 - [x] Engine: Formaterkennung (Magic Bytes), Eingabeprüfung, Fehlercodes
 - [x] Bilder: Konvertierung, Qualitätsregler, Zielgröße, Metadaten entfernen, Vorschau, HEIC über WIC
-- [x] Basis-UI (geschrieben, Windows-Build steht aus): Ablagefläche, Job-Karten, Formatvorschlag, Zielordner, Start, Fortschritt, Vertrauenszeile, DE/EN
+- [x] Basis-UI (baut und startet unter Windows seit 2026-09-25): Ablagefläche, Job-Karten, Formatvorschlag, Zielordner, Start, Fortschritt, Vertrauenszeile, DE/EN
 - [x] Audio: Konvertierung, Zielgröße über Bitrate, Vorschau (Wellenform, Ausschnitt)
 - [x] Video (Pro): Konvertierung über `*_mf`, VFR-Behandlung, HEVC-Erkennung, Nur-Ton
 - [x] Dokumente: PDF → Text, DOCX/XLSX/PPTX → Text/CSV, Text/Markdown → PDF, Bilder → PDF
@@ -83,7 +84,7 @@ Stand 2026-09-23. Alle Punkte nutzen offene Formate, eigenen Code oder bereits v
 | O-11 | **Pause per Prozess-Suspend** (`NtSuspendProcess`) ist umgesetzt, aber eine undokumentierte API. Vor der Store-Einreichung prüfen, ob die Zertifizierung das beanstandet; Alternative: Job-Objekte + `SuspendThread`. | `architekt`, `store-release` | Store-Einreichung |
 | O-12 | **Media-Foundation-Transcoder verifizieren** (nur unter Windows möglich): Bitrate bei Auto-Profil, Video-Eingabe mit Audio-Profil, stummes Video, HRESULT-Zuordnung, Zugriff auf beliebige Pfade im MSIX, Metadaten-Verhalten (MediaTranscoder hat keinen Strip-Schalter, Phase 2). | `tester` (Windows) | Video Phase 1 |
 | O-13 | **Monospace-Schrift für TXT → PDF:** Unter Windows wird ohne freie Mono-Schrift die Sans-Schrift genutzt. Vorschlag: eine OFL-lizenzierte Mono-Schrift mitliefern (Lizenz eintragen). | `lizenz-waechter` | Textqualität |
-| O-14 | **Windows-Build der App** ist noch nie gelaufen (nur C#-Teile gegen WinUI-Assemblies kompiliert). Erster Windows-CI-Lauf bzw. lokaler Build unter Windows nötig; XAML-Fehler sind wahrscheinlich und schnell behebbar. | Projektinhaber (Windows-Rechner) oder Windows-CI | Alles Sichtbare |
+| O-14 | **Erledigt 2026-09-25:** Erster Windows-Build und Start der App auf dem Entwicklungsrechner (.NET SDK 10, Windows App SDK 2.5.1), ohne XAML-Fehler. Unverpackter Start ohne Entwicklermodus über `PackageInfo`-Rückfall; MSIX-Registrierung braucht den Entwicklermodus. | — | — |
 | O-16 | **UI: Ausgabeliste** filtert jetzt über `IConverterResolver.CanConvert`; die MKV-Ausgabeliste hängt damit vom Codec ab. Verhalten unter Windows prüfen. | `ui-entwickler` | UI |
 | O-15 | **Platzhalter im Code:** Publisher `CN=Kvertis`, Store-Add-on-ID `9NXXXXXXXXXX`, Logos. | Projektinhaber | Store-Einreichung |
 | O-17 | **Pflichten als Verkäufer, ohne Anwalt abgearbeitet** (Checkliste in `02-rechtssicherheit.md`, Abschnitt 10): Rechtstexte (Impressum, AGB, Widerruf, Datenschutz) über ein Rechtstexte-Abo mit Aktualisierung; Update-Zusage für Sicherheits-Updates veröffentlichen (§ 327f BGB); Cyber Resilience Act: SBOM im Build, Sicherheitskontakt, Ablauf für Schwachstellen, Einordnung und CE-Selbstbewertung anhand der offiziellen EU-Leitfäden prüfen; Produkthaftung technisch absichern (Original wird nie überschrieben). Fristen und Einordnung vor dem Verkaufsstart anhand der amtlichen Quellen nachprüfen. | Projektinhaber, `store-release` | Verkaufsstart |

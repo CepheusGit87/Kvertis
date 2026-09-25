@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The red thread above the content: the three steps of the main path (design/ENTSCHEIDUNGEN.md, "Grundaufbau").
+     Only the colours mark the state; the check mark, the filled dot and AutomationProperties.ItemStatus say the
+     same thing without colour. -->
+<UserControl
+  x:Class="Kvertis.App.Views.StepHeader"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <Border
+    x:Name="HeaderRoot"
+    Padding="24,0,24,10"
+    BorderBrush="{ThemeResource KvLineBrush}"
+    BorderThickness="0,0,0,1">
+
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="DropStates">
+        <VisualState x:Name="DropUpcoming">
+          <VisualState.Setters>
+            <Setter Target="DropCircle.Background" Value="{ThemeResource KvPanel2Brush}" />
+            <Setter Target="DropCircle.BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+            <Setter Target="DropCheck.Visibility" Value="Collapsed" />
+            <Setter Target="DropDot.Visibility" Value="Collapsed" />
+            <Setter Target="DropLabel.Foreground" Value="{ThemeResource KvMutedBrush}" />
+            <Setter Target="DropLabel.FontWeight" Value="Normal" />
+            <Setter Target="DropButton.Opacity" Value="0.7" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="DropCurrent">
+          <VisualState.Setters>
+            <Setter Target="DropCircle.Background" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="DropCircle.BorderBrush" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="DropCheck.Visibility" Value="Collapsed" />
+            <Setter Target="DropDot.Visibility" Value="Visible" />
+            <Setter Target="DropDot.Fill" Value="{ThemeResource KvOnMintBrush}" />
+            <Setter Target="DropLabel.Foreground" Value="{ThemeResource KvInkBrush}" />
+            <Setter Target="DropLabel.FontWeight" Value="SemiBold" />
+            <Setter Target="DropButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="DropDone">
+          <VisualState.Setters>
+            <Setter Target="DropCircle.Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+            <Setter Target="DropCircle.BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+            <Setter Target="DropCheck.Visibility" Value="Visible" />
+            <Setter Target="DropCheck.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="DropDot.Visibility" Value="Collapsed" />
+            <Setter Target="DropLabel.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="DropLabel.FontWeight" Value="Normal" />
+            <Setter Target="DropButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+
+      <VisualStateGroup x:Name="TargetStates">
+        <VisualState x:Name="TargetUpcoming">
+          <VisualState.Setters>
+            <Setter Target="TargetCircle.Background" Value="{ThemeResource KvPanel2Brush}" />
+            <Setter Target="TargetCircle.BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+            <Setter Target="TargetCheck.Visibility" Value="Collapsed" />
+            <Setter Target="TargetDot.Visibility" Value="Collapsed" />
+            <Setter Target="TargetLabel.Foreground" Value="{ThemeResource KvMutedBrush}" />
+            <Setter Target="TargetLabel.FontWeight" Value="Normal" />
+            <Setter Target="TargetButton.Opacity" Value="0.7" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="TargetCurrent">
+          <VisualState.Setters>
+            <Setter Target="TargetCircle.Background" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="TargetCircle.BorderBrush" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="TargetCheck.Visibility" Value="Collapsed" />
+            <Setter Target="TargetDot.Visibility" Value="Visible" />
+            <Setter Target="TargetDot.Fill" Value="{ThemeResource KvOnMintBrush}" />
+            <Setter Target="TargetLabel.Foreground" Value="{ThemeResource KvInkBrush}" />
+            <Setter Target="TargetLabel.FontWeight" Value="SemiBold" />
+            <Setter Target="TargetButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="TargetDone">
+          <VisualState.Setters>
+            <Setter Target="TargetCircle.Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+            <Setter Target="TargetCircle.BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+            <Setter Target="TargetCheck.Visibility" Value="Visible" />
+            <Setter Target="TargetCheck.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="TargetDot.Visibility" Value="Collapsed" />
+            <Setter Target="TargetLabel.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="TargetLabel.FontWeight" Value="Normal" />
+            <Setter Target="TargetButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+
+      <VisualStateGroup x:Name="ConvertStates">
+        <VisualState x:Name="ConvertUpcoming">
+          <VisualState.Setters>
+            <Setter Target="ConvertCircle.Background" Value="{ThemeResource KvPanel2Brush}" />
+            <Setter Target="ConvertCircle.BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+            <Setter Target="ConvertCheck.Visibility" Value="Collapsed" />
+            <Setter Target="ConvertDot.Visibility" Value="Collapsed" />
+            <Setter Target="ConvertLabel.Foreground" Value="{ThemeResource KvMutedBrush}" />
+            <Setter Target="ConvertLabel.FontWeight" Value="Normal" />
+            <Setter Target="ConvertButton.Opacity" Value="0.7" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="ConvertCurrent">
+          <VisualState.Setters>
+            <Setter Target="ConvertCircle.Background" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="ConvertCircle.BorderBrush" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="ConvertCheck.Visibility" Value="Collapsed" />
+            <Setter Target="ConvertDot.Visibility" Value="Visible" />
+            <Setter Target="ConvertDot.Fill" Value="{ThemeResource KvOnMintBrush}" />
+            <Setter Target="ConvertLabel.Foreground" Value="{ThemeResource KvInkBrush}" />
+            <Setter Target="ConvertLabel.FontWeight" Value="SemiBold" />
+            <Setter Target="ConvertButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+        <VisualState x:Name="ConvertDone">
+          <VisualState.Setters>
+            <Setter Target="ConvertCircle.Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+            <Setter Target="ConvertCircle.BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+            <Setter Target="ConvertCheck.Visibility" Value="Visible" />
+            <Setter Target="ConvertCheck.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="ConvertDot.Visibility" Value="Collapsed" />
+            <Setter Target="ConvertLabel.Foreground" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="ConvertLabel.FontWeight" Value="Normal" />
+            <Setter Target="ConvertButton.Opacity" Value="1" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="4">
+
+      <!-- Step 1: drop files in -->
+      <Button
+        x:Name="DropButton"
+        x:Uid="Steps_Drop_Button"
+        Padding="10,6"
+        Background="Transparent"
+        BorderThickness="0"
+        Click="OnDropClick"
+        CornerRadius="6">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Border
+            x:Name="DropCircle"
+            Width="24"
+            Height="24"
+            BorderThickness="1"
+            CornerRadius="12">
+            <Grid>
+              <FontIcon
+                x:Name="DropCheck"
+                FontSize="12"
+                Glyph="&#xE73E;"
+                Visibility="Collapsed" />
+              <Ellipse
+                x:Name="DropDot"
+                Width="8"
+                Height="8"
+                Visibility="Collapsed" />
+            </Grid>
+          </Border>
+          <TextBlock
+            x:Name="DropLabel"
+            x:Uid="Steps_Drop_Label"
+            VerticalAlignment="Center"
+            Style="{StaticResource BodyTextBlockStyle}" />
+        </StackPanel>
+      </Button>
+
+      <Rectangle
+        x:Name="DropConnector"
+        Width="32"
+        Height="1"
+        VerticalAlignment="Center"
+        Fill="{ThemeResource KvLineBrush}" />
+
+      <!-- Step 2: target -->
+      <Button
+        x:Name="TargetButton"
+        x:Uid="Steps_Target_Button"
+        Padding="10,6"
+        Background="Transparent"
+        BorderThickness="0"
+        Click="OnTargetClick"
+        CornerRadius="6">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Border
+            x:Name="TargetCircle"
+            Width="24"
+            Height="24"
+            BorderThickness="1"
+            CornerRadius="12">
+            <Grid>
+              <FontIcon
+                x:Name="TargetCheck"
+                FontSize="12"
+                Glyph="&#xE73E;"
+                Visibility="Collapsed" />
+              <Ellipse
+                x:Name="TargetDot"
+                Width="8"
+                Height="8"
+                Visibility="Collapsed" />
+            </Grid>
+          </Border>
+          <TextBlock
+            x:Name="TargetLabel"
+            x:Uid="Steps_Target_Label"
+            VerticalAlignment="Center"
+            Style="{StaticResource BodyTextBlockStyle}" />
+        </StackPanel>
+      </Button>
+
+      <Rectangle
+        x:Name="TargetConnector"
+        Width="32"
+        Height="1"
+        VerticalAlignment="Center"
+        Fill="{ThemeResource KvLineBrush}" />
+
+      <!-- Step 3: convert -->
+      <Button
+        x:Name="ConvertButton"
+        x:Uid="Steps_Convert_Button"
+        Padding="10,6"
+        Background="Transparent"
+        BorderThickness="0"
+        Click="OnConvertClick"
+        CornerRadius="6">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <Border
+            x:Name="ConvertCircle"
+            Width="24"
+            Height="24"
+            BorderThickness="1"
+            CornerRadius="12">
+            <Grid>
+              <FontIcon
+                x:Name="ConvertCheck"
+                FontSize="12"
+                Glyph="&#xE73E;"
+                Visibility="Collapsed" />
+              <Ellipse
+                x:Name="ConvertDot"
+                Width="8"
+                Height="8"
+                Visibility="Collapsed" />
+            </Grid>
+          </Border>
+          <TextBlock
+            x:Name="ConvertLabel"
+            x:Uid="Steps_Convert_Label"
+            VerticalAlignment="Center"
+            Style="{StaticResource BodyTextBlockStyle}" />
+        </StackPanel>
+      </Button>
+
+    </StackPanel>
+  </Border>
+</UserControl>

@@ -207,6 +207,12 @@
   <data name="Card_WhatToDo_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>What can I do?</value>
   </data>
+  <data name="Convert_Placeholder_Text.Text" xml:space="preserve">
+    <value>This step is still being built. Until it is ready, start the conversion in the first step.</value>
+  </data>
+  <data name="Convert_Title.Text" xml:space="preserve">
+    <value>Convert</value>
+  </data>
   <data name="Dialog_Cancel_Button" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -911,6 +917,39 @@
   </data>
   <data name="Settings_Title.Text" xml:space="preserve">
     <value>Settings</value>
+  </data>
+  <data name="Steps_Convert_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Step 3 of 3: Convert</value>
+  </data>
+  <data name="Steps_Convert_Label.Text" xml:space="preserve">
+    <value>Convert</value>
+  </data>
+  <data name="Steps_Drop_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Step 1 of 3: Drop in</value>
+  </data>
+  <data name="Steps_Drop_Label.Text" xml:space="preserve">
+    <value>Drop in</value>
+  </data>
+  <data name="Steps_Status_Current" xml:space="preserve">
+    <value>Current step</value>
+  </data>
+  <data name="Steps_Status_Done" xml:space="preserve">
+    <value>Done</value>
+  </data>
+  <data name="Steps_Status_Upcoming" xml:space="preserve">
+    <value>Not yet reached</value>
+  </data>
+  <data name="Steps_Target_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Step 2 of 3: Target</value>
+  </data>
+  <data name="Steps_Target_Label.Text" xml:space="preserve">
+    <value>Target</value>
+  </data>
+  <data name="Target_Placeholder_Text.Text" xml:space="preserve">
+    <value>This step is still being built. Until it is ready, choose the output format in the first step.</value>
+  </data>
+  <data name="Target_Title.Text" xml:space="preserve">
+    <value>Target</value>
   </data>
   <data name="Warning_AnimationDropped" xml:space="preserve">
     <value>Only the first frame of the animation is converted.</value>

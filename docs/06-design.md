@@ -63,10 +63,45 @@ Erscheint nur, wenn ein Limit greift (Video-Datei abgelegt, Batch zu groß): kle
 
 ## Farben und Material
 
-- Hintergrund: Mica (Fenster), Acrylic für Flyouts. Fallback auf Windows 10: einfarbig aus den Systemfarben.
-- Akzent: Systemakzentfarbe (`SystemAccentColor`), nicht überschreiben. Der Start-Button ist das einzige große Element in Akzentfarbe.
-- Karten: `CardBackgroundFillColorDefault`, Radius 8 px, Schatten `ThemeShadow` mit Tiefe 8–16 je Zustand.
-- Status: Erfolg `SystemFillColorSuccess`, Fehler `SystemFillColorCritical`, Warnung `SystemFillColorCaution`. Nie nur Farbe als Informationsträger, immer Icon + Text.
+- Hintergrund: Mica (Fenster), Acrylic für Flyouts. Fallback auf Windows 10: einfarbig aus den eigenen Tokens.
+- Akzent: **eigene Farbtokens statt Systemakzent** (ADR-017 in `03-architektur.md`). Mint ist die einzige Aktionsfarbe; der Start-Button ist das einzige große Element in Mint. Die Dateiart-Farben sind Bedeutungsträger und dürfen nicht mit dem Systemakzent kollidieren, deshalb wird `SystemAccentColor` nirgends verwendet. Hell/Dunkel folgt dem System; im Hohen Kontrast gelten ausschließlich die Systemfarben.
+- Karten: eigener Kartenhintergrund (`panel`) und Linie (`line`) aus den Tokens, Radius 8 px, Schatten `ThemeShadow` mit Tiefe 8–16 je Zustand.
+- Status: Erfolg Mint, Fehler Koralle, Warnung Bernstein. Nie nur Farbe als Informationsträger, immer Icon + Text.
+
+Farbtokens (1:1 aus dem Entwurf `design/oberflaeche-mischentwurf.html`; Ressourcenschlüssel in
+`Kvertis.App/Themes/KvertisColors.xaml`, Schlüsselmuster `Kv<Token>Color` und `Kv<Token>Brush`):
+
+| Token | Bedeutung | Dunkel | Hell |
+|---|---|---|---|
+| `bg` | Fensterhintergrund | `#0c0f11` | `#f4f5f6` |
+| `panel` | Karten, Flächen | `#14181b` | `#ffffff` |
+| `panel2` | zweite Flächenstufe | `#1a1f23` | `#eef0f2` |
+| `tief` | vertiefte Flächen (Eingabefelder, Bahnen) | `#0f1416` | `#e7eaec` |
+| `line` | Linien, Ränder | `#262d32` | `#dde1e4` |
+| `line-stark` | betonte Linien | `#3a454b` | `#b6bec4` |
+| `ink` | Text | `#e7ecee` | `#171c1f` |
+| `muted` | Zweittext | `#8b959c` | `#5a656c` |
+| `leise` | Dritttext, Beschriftungen | `#7f8a91` | `#5b646a` |
+| `mint` | Aktion, Erfolg, Fokus | `#6fe0bf` | `#0a6851` |
+| `auf-mint` | Text auf Mint | `#08110e` | `#ffffff` |
+| `mint-rahmen` | Rahmen von Mint-Flächen | `#2b5a4d` | `#93cfbd` |
+| `mint-flaeche` | Mint-Hintergrund (schwach) | `#12201c` | `#e6f5f0` |
+| `blue` | Bilder | `#6ba7ff` | `#1a53a8` |
+| `violet` | Audio | `#b28cff` | `#5b39a3` |
+| `amber` | Video, Warnung | `#f2b45a` | `#7a5104` |
+| `amber-rahmen` | Rahmen von Warnflächen | `#5e4722` | `#e0c692` |
+| `cyan` | Dokumente | `#4fc3e8` | `#095c78` |
+| `model` | 3D-Modelle | `#f08fd0` | `#9a2f7d` |
+| `coral` | Fehler | `#f07a6a` | `#9e3123` |
+| `coral-rahmen` | Rahmen von Fehlerflächen | `#5e2f29` | `#e8b5ac` |
+| `paper` | Blätter (Dateien im Flug) | `#f2f0ea` | `#ffffff` |
+| `paper-linie` | Linien auf Blättern | `#cfcbc1` | `#d8d5cd` |
+| `glas` | halbdurchsichtige Überlagerung | `#14181bcc` | `#ffffffcc` |
+| `schatten` | Schattenfarbe | `#000000a0` | `#1a232a40` |
+
+Die Textfarben auf den jeweiligen Flächen sind im Entwurf gegen 4,5:1 geprüft; die Artfarben in Hell sind bewusst dunkler, damit sie auch als Text tragen.
+
+Noch nicht als XAML-Ressourcen angelegt sind `leise`, `amber-rahmen`, `coral-rahmen`, `paper`, `paper-linie`, `glas` und `schatten`. Sie kommen mit den Etappen, die sie brauchen (Blätter und Überlagerung im Übergang, Warn- und Fehlerflächen, Schatten der Karten); bis dahin bleibt die Tabelle die verbindliche Quelle der Werte.
 - Typografie: Segoe UI Variable, Fluent-Typografie-Stufen (`TitleTextBlockStyle`, `BodyTextBlockStyle`, `CaptionTextBlockStyle`).
 - Icons: Segoe Fluent Icons (System), Ergänzungen aus Fluent UI System Icons (MIT).
 
@@ -82,6 +117,8 @@ Erscheint nur, wenn ein Limit greift (Video-Datei abgelegt, Batch zu groß): kle
 | Flyouts | Fluent-Standard (Slide + Fade) | System | |
 
 Alle Animationen respektieren die Systemeinstellung „Animationen reduzieren“ (`UISettings.AnimationsEnabled`): dann nur Ein-/Ausblenden.
+
+Die partikelreichen Flächen des Entwurfs (Galaxie, Pixelwirbel, weißes Loch, Übergangs-Überlagerung) laufen nicht über die Composition API, sondern über eine Win2D-Zeichenschicht; bei „Animationen reduzieren“ und im Hohen Kontrast wird sie nicht erzeugt (ADR-018 in `03-architektur.md`).
 
 ## Barrierefreiheit
 
@@ -100,7 +137,7 @@ Alle Animationen respektieren die Systemeinstellung „Animationen reduzieren“
 
 ## Logo und Icon
 
-Platzhalter: ein abstraktes Symbol aus zwei ineinander übergehenden Formen (Wandlung), einfarbig auf Akzentfarbe. Kein Bezug zu bestehenden Marken. Wird später ersetzt; alle Größen liegen unter `Assets/` und werden aus einer SVG-Quelle erzeugt.
+Platzhalter: ein abstraktes Symbol aus zwei ineinander übergehenden Formen (Wandlung), einfarbig auf Mint (ADR-017). Kein Bezug zu bestehenden Marken. Wird später ersetzt; alle Größen liegen unter `Assets/` und werden aus einer SVG-Quelle erzeugt.
 
 ## Umsetzungsstand und Abweichungen (UI, 2026-09-23)
 
@@ -125,3 +162,42 @@ Die HTML-Entwürfe unter `design/` gehen über die Screens oben hinaus. Verbindl
 - **Abschluss:** Eingang und Speicherort blenden aus. Die Planeten drehen am weißen Loch hoch, das Loch zehrt an ihnen (Staub spiralt in ihrer Laufrichtung hinein). Dann kreisen schwarzes und weißes Loch im selben Drehsinn um einen gemeinsamen Mittelpunkt, der in die Mitte wandert, immer enger und schneller, bis sie verschmelzen. Kurze Stille, Supernova, Fenster, Kopfleiste und Zeilen beben mit. Danach legen sich die Planeten als Ring um die Mitte, darin Häkchen und Bericht („Alle 7 Dateien umgewandelt“, gesparte Größe, „Ordner öffnen“, „Neue Runde“). Fehlgeschlagene Dateien liegen wieder im Eingang, ihr Platz im Ring ist ein korallener Kreis, der Bericht sagt „6 von 7“. Bei „Animationen reduzieren“ stehen sofort Ring, Häkchen und Bericht.
 - **Barrierefreiheit:** Bei „Animationen reduzieren“ stehen alle Bewegungen still; Note und Balken haben `role="meter"` bzw. in WinUI `AutomationProperties.Name` mit Wert.
 
+
+## Umsetzungsstand Oberfläche, Etappe 0 (2026-09-25)
+
+Fundament für Fächer-Galaxie, Zoom-Wege und Pixelwirbel. Umgesetzt in `src/Kvertis.App`:
+
+- **Farbtokens** in `Themes/KvertisColors.xaml` mit den Theme-Wörterbüchern `Default` (dunkel), `Light` und
+  `HighContrast`. Schlüssel `Kv<Token>Color` und `Kv<Token>Brush`, Werte 1:1 aus der Tabelle oben. Im Hohen
+  Kontrast verweist jeder Token auf eine Systemfarbe (`SystemColorWindowColor`, `SystemColorWindowTextColor`,
+  `SystemColorHighlightColor`, `SystemColorHighlightTextColor`, `SystemColorButtonFaceColor`,
+  `SystemColorGrayTextColor`); alle fünf Artfarben fallen dort auf die Textfarbe zusammen.
+- **Akzent der Standard-Bedienelemente:** Dieselbe Datei überschreibt in `Default` und `Light` die
+  Akzent-Ressourcen von WinUI (`AccentFillColor*Brush`, `AccentTextFillColor*Brush`,
+  `TextOnAccentFillColor*Brush`, `AccentControlElevationBorderBrush`, `AccentButton*`, `SliderTrackValueFill*`,
+  `SliderThumbBackground*`, `ToggleSwitch*On*`, `CheckBoxCheck*Checked*`, `RadioButton*Checked*`,
+  `ProgressBarForeground`, `ProgressRingForegroundThemeBrush`, `Hyperlink*Foreground`,
+  `ListViewItemSelectionIndicator*`, `InfoBadge*`) auf Mint. Die Blattschlüssel werden einzeln überschrieben,
+  weil die `StaticResource`-Verweise in `generic.xaml` schon beim Parsen aufgelöst werden und ein Überschreiben
+  der Basis-Pinsel sie nicht erreicht. Im Hohen Kontrast tragen dieselben Schlüssel wieder Systemfarben; sie
+  stehen dort nur, damit kein Schlüssel auf das `Default`-Wörterbuch zurückfallen kann.
+- **Dreistufiger Rahmen** `Views/StepHeader.xaml`: „Hineinwerfen“, „Ziel“, „Umwandeln“ unter der Titelleiste,
+  über dem `ContentFrame`. Erledigte Schritte tragen ein Häkchen, der aktuelle einen gefüllten Mint-Punkt,
+  spätere einen leeren Kreis; Zustand zusätzlich als `AutomationProperties.ItemStatus`. Der Rahmen zeigt sich
+  nur auf den drei Schritt-Seiten.
+- **Schritt-Navigation** `Services/StepNavigationService.cs` mit `WorkflowStep { Drop, Target, Convert }` über
+  dem bestehenden `INavigationService` (neu: `AppPage.Target`, `AppPage.Convert`, `INavigationService.CurrentPage`).
+- **Platzhalterseiten** `Views/TargetPage.xaml` und `Views/ConvertPage.xaml` mit Überschrift und Hinweistext.
+  Der vollständige Ablauf (Dateien, Format, Start, Fortschritt) liegt unverändert auf `MainPage` = Schritt 1.
+- **Ruhige Ansicht** `Services/MotionSettings.cs` (`IMotionSettings`): liest `UISettings.AnimationsEnabled` und
+  `AccessibilitySettings.HighContrast`, meldet Änderungen auf dem UI-Thread. `CardAnimations` und `StepHeader`
+  fragen nur noch diesen Dienst.
+
+**Abweichung:** Der Dateiname lautet `Themes/KvertisColors.xaml` statt des in ADR-017 genannten
+`Themes/Colors.xaml`, damit er in der Zusammenführung mehrerer Wörterbücher eindeutig bleibt und nicht mit
+`Colors.xaml` anderer Bibliotheken verwechselt wird. ADR-017 ist entsprechend nachgezogen.
+
+**Offen:** Die drei Schritte sind alle anklickbar; das Vorwärtsgehen wird später an Bedingungen geknüpft
+(Dateien vorhanden, Ziel gewählt). Win2D ist nach ADR-018 vorgesehen, in dieser Etappe aber bewusst nicht
+eingebunden. Die Farbtokens sind angelegt, aber außerhalb von `StepHeader` noch nicht auf die bestehenden
+Ansichten angewandt; Karten und Job-Liste nutzen weiter die WinUI-Fluent-Pinsel.

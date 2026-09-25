@@ -52,6 +52,8 @@ public static class ServiceRegistration
         services.AddSingleton(state.Dispatcher);
         services.AddSingleton<FrameNavigationService>();
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<FrameNavigationService>());
+        services.AddSingleton<IStepNavigationService, StepNavigationService>();
+        services.AddSingleton<IMotionSettings, SystemMotionSettings>();
         services.AddSingleton<ILocalizer, ResourceLocalizer>();
         services.AddSingleton<ErrorMessageMapper>();
         services.AddSingleton<IDialogService, DialogService>();

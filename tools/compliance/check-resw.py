@@ -61,7 +61,7 @@ DYNAMIC = {
     'Preset_': 'ConversionPreset',
     'Pro_Purchase_': 'PurchaseOutcome',
 }
-KEY_LITERAL = re.compile(r'"((?:App|About|Card|Dialog|Error|Format|FormatPicker|History|Licenses|Main|More|Preset|Preview|Pro|Settings|Warning|Window)_[A-Za-z0-9_]*)"')
+KEY_LITERAL = re.compile(r'"((?:App|About|Card|Convert|Dialog|Error|Format|FormatPicker|History|Licenses|Main|More|Preset|Preview|Pro|Settings|Steps|Target|Warning|Window)_[A-Za-z0-9_]*)"')
 RESOURCE_REF = re.compile(r'\{(?:StaticResource|ThemeResource)\s+([A-Za-z0-9_.]+)\s*\}')
 PLACEHOLDER = re.compile(r'\{(\d+)\}')
 

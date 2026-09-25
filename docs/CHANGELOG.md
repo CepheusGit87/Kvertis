@@ -2,6 +2,45 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Neue Oberfläche, Etappe 0: Farbtokens, Schrittleiste, ruhige Ansicht
+
+**Geändert**
+
+- Farbtokens aus dem Mischentwurf als Theme-Wörterbuch `src/Kvertis.App/Themes/KvertisColors.xaml` (Dunkel, Hell, Hoher Kontrast); Mint ersetzt den Systemakzent bei Standard-Bedienelementen (ADR-017). Im Hohen Kontrast gelten die Systemfarben.
+- Schrittleiste „Hineinwerfen → Ziel → Umwandeln“ (`Views/StepHeader`) unter der Titelleiste, `StepNavigationService` mit `WorkflowStep`. Die bisherige Hauptseite bleibt Schritt 1; `TargetPage` und `ConvertPage` sind navigierbare Platzhalter.
+- `IMotionSettings` (`Services/MotionSettings.cs`) liest „Animationen reduzieren“ und Hohen Kontrast zentral; `CardAnimations` nutzt ihn. Grundlage für die statische Ansicht ohne Zeichenschicht (ADR-018).
+- ADR-017 (eigene Akzentfarbe), ADR-018 (Win2D als Zeichenschicht) und Nachtrag zu ADR-001 (.NET 10) in `03-architektur.md`; Token-Tabelle in `06-design.md`.
+- 13 neue Ressourcen-Schlüssel (`Steps_*`, `Target_*`, `Convert_*`) in DE und EN; `check-resw.py` kennt die neuen Präfixe.
+
+**Bibliotheken**
+
+- Microsoft.Graphics.Win2D 1.4.0 durch den Lizenz-Wächter geprüft und freigegeben (Quellcode MIT, Paket Microsoft Software License Terms wie Windows App SDK; native `Microsoft.Graphics.Canvas.dll` nur mit Windows-Systemimporten, keine Codecs, kein Netzwerk). Status „geprüft, geplant“ in `04-bibliotheken.md`, Lizenztexte in `third_party/_geplant/Win2D/`. Paketauflösung neben Windows App SDK 2.5.1 getestet, ohne Konflikt. Noch nicht im Code referenziert.
+
+## 2026-09-25 – Umstieg auf .NET 10
+
+**Geändert**
+
+- Alle Projekte von `net8.0` auf `net10.0` (App und Engine.Windows: `net10.0-windows10.0.19041.0`). Grund: Support-Ende von .NET 8 im November 2026, .NET 10 ist Langzeitversion bis November 2028. Windows App SDK 2.5.1 baut damit unverändert; App startet, Engine- und Queue-Tests 645 grün.
+- CI (`ci.yml`) auf .NET SDK 10. Doku nachgezogen: `CLAUDE.md`, `03-architektur.md`, `04-bibliotheken.md`, App-README.
+- Beobachtung auf dem Entwicklungsrechner: Smart App Control hat eine frisch gebaute Test-DLL einmalig blockiert (Ereignis 3077, Anwendungssteuerungsrichtlinie); ein Neubau mit anderem Hash lief durch. Kein Befund im Code.
+
+**Bibliotheken**
+
+- Aktualisiert: Microsoft.Extensions.DependencyInjection 8.0.1 → 10.0.12 (MIT), Microsoft.Extensions.Logging 8.0.1 → 10.0.12 (MIT), Microsoft.Extensions.Logging.Abstractions 8.0.3 → 10.0.12 (MIT).
+
+## 2026-09-25 – Erster Windows-Build und Start der App
+
+**Geändert**
+
+- Die WinUI-App baut erstmals unter Windows (`dotnet build src/Kvertis.App/Kvertis.App.csproj -p:Platform=x64`, .NET SDK 10, Windows App SDK 2.5.1), ohne Fehler und ohne XAML-Korrekturen. Engine- und Queue-Tests: 645 grün. Offener Punkt O-14 erledigt.
+- Unverpackter Entwicklerstart ohne Entwicklermodus: `PackageInfo` (`src/Kvertis.App/Services/`) erkennt fehlende Paket-Identität; `AppPaths` weicht dann auf `%LOCALAPPDATA%Kvertis` aus, die Versionsanzeige liest die Assembly-Version. Der Store-Build (MSIX) verhält sich unverändert. Anleitung in `src/Kvertis.App/README.md`.
+- `tools/design-server.js` und `.claude/launch.json`: kleiner lokaler Server ohne Abhängigkeiten für die Entwurfsseiten unter `design/`, damit die Vorschau Hell und Dunkel umschalten kann.
+- Bekannt: Compliance-Schritt 6 (`check-resw.py`) braucht Python 3, das auf dem Entwicklungsrechner fehlt; die übrigen sechs Schritte laufen durch.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Oberflächenentwurf Schritt 3: weißes Loch und Abschluss
 
 **Geändert (nur Entwurf und Doku)**

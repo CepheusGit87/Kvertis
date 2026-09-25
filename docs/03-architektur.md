@@ -20,7 +20,7 @@
 │  Formaterkennung · Eingabeprüfung · Konverter je Kategorie│
 │  Schätzung · Zielgrößen-Berechnung · Dateinamen-Muster    │
 │  ┌────────────────────────────────────────────────────┐   │
-│  │ Kvertis.Engine.Windows  (net8.0-windows)           │   │
+│  │ Kvertis.Engine.Windows  (net10.0-windows)           │   │
 │  │  Media Foundation, Windows Imaging Component (HEIC)│   │
 │  └────────────────────────────────────────────────────┘   │
 └──────────────────────────────────────────────────────────┘
@@ -31,7 +31,7 @@
 
 Regeln, die aus dem Bild folgen:
 
-- `Kvertis.Engine` und `Kvertis.Queue` referenzieren kein WinUI, kein Windows App SDK und keinen `DispatcherQueue`. Sie sind reine .NET-8-Klassenbibliotheken und bauen auf Linux.
+- `Kvertis.Engine` und `Kvertis.Queue` referenzieren kein WinUI, kein Windows App SDK und keinen `DispatcherQueue`. Sie sind reine .NET-10-Klassenbibliotheken und bauen auf Linux.
 - Windows-spezifischer Code (Media Foundation, Windows Imaging Component, Store-API) liegt in `Kvertis.Engine.Windows` bzw. `Kvertis.App` und wird über Schnittstellen eingehängt (Dependency Injection).
 - Die UI kennt die Engine nur über `Kvertis.Queue` und die Schnittstellen in `Kvertis.Engine.Abstractions`-Namespaces. Sie erzeugt Jobs, beobachtet Fortschritt und zeigt Ergebnisse.
 - Freemium-Limits (Batch-Größe, kein Video) werden in `Kvertis.App` beim Erzeugen der Jobs durchgesetzt, nicht in Engine oder Queue.
@@ -43,7 +43,7 @@ Kvertis.sln
 Directory.Build.props                 gemeinsame Einstellungen (LangVersion, Nullable, Warnings as Errors)
 Directory.Packages.props              zentrale Paketversionen (Central Package Management)
 src/
-  Kvertis.Engine/                     net8.0
+  Kvertis.Engine/                     net10.0
     Abstractions/                     IConverter, IFormatDetector, IInputValidator, IEstimator, IProcessRunner
     Formats/                          FormatId, FormatRegistry, MediaKind, Magic-Byte-Tabellen
     Validation/                       InputValidator, Grenzwerte
@@ -57,12 +57,12 @@ src/
     Naming/                           OutputNamePattern
     Ffmpeg/                           FfmpegLocator, FfmpegCommandBuilder, FfprobeReader
     Errors/                           ConversionErrorCode, ConversionException
-  Kvertis.Engine.Windows/             net8.0-windows10.0.19041.0
+  Kvertis.Engine.Windows/             net10.0-windows10.0.19041.0
     Codecs/                           MediaFoundationCapabilities (welche MF-Encoder verfügbar sind)
     Imaging/                          WicHeicDecoder (HEIC über Windows Imaging Component)
-  Kvertis.Queue/                      net8.0
+  Kvertis.Queue/                      net10.0
     ConversionJob, JobState, JobQueue, JobScheduler, ProgressAggregator, JobHistory
-  Kvertis.App/                        net8.0-windows10.0.19041.0, WinUI 3, MSIX
+  Kvertis.App/                        net10.0-windows10.0.19041.0, WinUI 3, MSIX
     Views/  ViewModels/  Services/  Strings/de-DE/  Strings/en-US/  Assets/
 tests/
   Kvertis.Engine.Tests/               xUnit, NSubstitute, Shouldly
@@ -174,7 +174,7 @@ public interface IJobQueue
 
 ### ADR-001 · 2026-09-23 · Drei Projekte mit harter Grenze zur UI
 
-**Entscheidung:** `Kvertis.Engine` und `Kvertis.Queue` sind reine `net8.0`-Bibliotheken ohne Windows-Abhängigkeit. Windows-spezifisches liegt in `Kvertis.Engine.Windows` und wird per DI eingehängt.
+**Entscheidung:** `Kvertis.Engine` und `Kvertis.Queue` sind reine `net10.0`-Bibliotheken (bis 2026-09-25 `net8.0`) ohne Windows-Abhängigkeit. Windows-spezifisches liegt in `Kvertis.Engine.Windows` und wird per DI eingehängt.
 **Alternativen:** (a) Ein Projekt mit Ordnern; (b) Engine direkt auf `net8.0-windows`.
 **Grund:** Die Engine soll testbar sein und später unter einer anderen UI (Avalonia für macOS) laufen. Ein Compiler-erzwungener Schnitt ist billiger als Disziplin. Nebeneffekt: Engine und Tests bauen in Linux-CI und in dieser Entwicklungsumgebung.
 **Folgen:** Media Foundation und WIC brauchen Schnittstellen (`IMediaFoundationCapabilities`, `IHeicDecoder`) mit einer Windows-Implementierung und einem Null-Objekt für andere Plattformen.
@@ -288,3 +288,24 @@ Die Parallelitätsgrenzen sind Zähler unter dem Queue-Lock statt `SemaphoreSlim
 **Alternativen:** (a) Allzweck-Bibliothek (Assimp, BSD-3): große native Angriffsfläche, bringt einen nachgebauten Importer für ein proprietäres Format mit; (b) SharpGLTF (MIT) nur für glTF: zusätzliche Abhängigkeit für einen kleinen Teil; (c) Windows-3D-Druck-API (`Windows.Graphics.Printing3D`): nur 3MF, nur Windows.
 **Grund:** Die Formate sind offen und lizenzfrei; eigene Parser sind klein, prüfbar und plattformneutral (Tests unter Linux). Keine neue Lizenz, keine native DLL, kein Patent- oder Markenbezug.
 **Folgen:** Keine Vorschau für 3D in dieser Version (bräuchte einen Renderer; eigenes Thema). Nicht unterstützt: FBX, USDZ, DAE, 3DS, Blend; glTF-Dateien, die Erweiterungen verlangen (z. B. Netzkompression), und dünn besetzte Accessoren (`UnsupportedFormat`). Verknüpfte Dateien werden nie geöffnet (OBJ-Materialdateien, glTF-Bilder); externe glTF-Puffer nur aus dem Ordner des Modells, ohne Schema, ohne absolute Pfade, ohne „..“. Schutz vor feindlichen Dateien: Obergrenzen für Dreiecke (20 Mio.) und Punkte (30 Mio.), PLY-Elementzahlen, 3MF-Modellteil (4 GB entpackt, gegen ZIP-Bomben), XML ohne DTD. 3D ist in der Gratis-Version enthalten.
+
+### Nachtrag zu ADR-001 · 2026-09-25 · Umstellung von .NET 8 auf .NET 10
+
+**Entscheidung:** Alle Projekte (Engine, Engine.Windows, Queue, App, Tests) wechseln von `net8.0` auf `net10.0` bzw. `net10.0-windows10.0.19041.0`. `Directory.Build.props` und `Directory.Packages.props` sind angepasst, die CI baut mit dem .NET-10-SDK.
+**Alternativen:** (a) Auf .NET 8 bleiben und erst kurz vor dem Support-Ende wechseln; (b) .NET 9 (kein LTS, Support-Ende bereits Mai 2026).
+**Grund:** Der Support für .NET 8 endet im November 2026, also noch vor oder kurz nach der ersten Store-Veröffentlichung. .NET 10 ist LTS mit Support bis November 2028. Windows App SDK 2.5.1 baut damit ohne Änderungen; Engine und Queue sind von der Umstellung nicht betroffen, weil sie nur die Basisklassenbibliothek nutzen.
+**Folgen:** Die Schichtenregeln aus ADR-001 gelten unverändert. Neue Bibliotheken müssen `net10.0` oder `netstandard2.0`/`2.1` unterstützen. Wer lokal baut, braucht das .NET-10-SDK (siehe `CLAUDE.md`).
+
+### ADR-017 · 2026-09-25 · Eigene Akzentfarbe statt Systemakzent
+
+**Entscheidung:** Die App definiert ihre Farben selbst als Theme-Ressourcen in einem `ResourceDictionary` mit den Theme-Wörterbüchern `Light`, `Dark` und `HighContrast`. Der Systemakzent (`SystemAccentColor`) wird nicht verwendet. Die Tokens aus dem Oberflächenentwurf (`design/ENTSCHEIDUNGEN.md`, Abschnitt Farben; Hex-Werte in `06-design.md`) sind verbindlich: Mint ist die einzige Aktionsfarbe, Blau steht für Bilder, Violett für Audio, Bernstein für Video, Cyan für Dokumente, Rosa für 3D-Modelle, Koralle für Fehler, jeweils in Hell und Dunkel. Hell/Dunkel folgt der Systemeinstellung (übersteuerbar in den Einstellungen). Im Hohen Kontrast gelten ausschließlich die Systemfarben (`SystemColor*`); das `HighContrast`-Wörterbuch definiert keine eigenen Farbwerte, sondern verweist auf die Systemressourcen. Dateiart und Zustand werden nie allein über Farbe vermittelt (Symbol und Text bleiben Pflicht).
+**Alternativen:** (a) Systemakzent für Aktionen, nur die Dateiart-Farben eigen; (b) alles aus den Systemfarben, keine eigenen Tokens.
+**Grund:** Die Dateiart-Farben sind Bedeutungsträger über alle drei Schritte hinweg (Bahnen, Pixel, Planeten, Fächer). Ein frei wählbarer Systemakzent kann mit jeder dieser Farben zusammenfallen (blauer Systemakzent neben Blau für Bilder) und die Unterscheidung zerstören; bei (a) bliebe genau dieses Risiko bestehen. Bei (b) gäbe es keine fünf voneinander unterscheidbaren Artfarben mit geprüftem Kontrast in Hell und Dunkel. Eine feste Palette ist zudem im Entwurf bereits gegen 4,5:1 geprüft und lässt sich in einer anderen UI (Avalonia) 1:1 übernehmen.
+**Folgen:** `Kvertis.App/Themes/KvertisColors.xaml` (Name verbindlich; umbenannt am 25.09.2026 gegenüber dem ursprünglich genannten `Colors.xaml`, damit die Datei beim Zusammenführen mehrerer Wörterbücher eindeutig bleibt) hält die Tokens als `Color`- und `SolidColorBrush`-Ressourcen in den Theme-Wörterbüchern `Default` (dunkel), `Light` und `HighContrast`. Schlüsselmuster ist `Kv<Token>Color` und `Kv<Token>Brush`: `KvBackground`, `KvPanel`, `KvPanel2`, `KvDeep`, `KvLine`, `KvLineStrong`, `KvInk`, `KvMuted`, `KvMint`, `KvOnMint`, `KvMintFrame`, `KvMintSurface`, `KvImage` (Bilder), `KvAudio`, `KvVideo`, `KvDocument`, `KvModel`, `KvError`. Statt eigener Stile je Bedienelement überschreibt dieselbe Datei in `Default` und `Light` die Akzent-Ressourcen von WinUI (`AccentFillColor*Brush`, `AccentTextFillColor*Brush`, `TextOnAccentFillColor*Brush`, `AccentControlElevationBorderBrush`, `AccentButton*`, `SliderTrackValueFill*`, `SliderThumbBackground*`, `ToggleSwitch*On*`, `CheckBoxCheck*Checked*`, `RadioButton*Checked*`, `ProgressBarForeground`, `ProgressRingForegroundThemeBrush`, `Hyperlink*Foreground`, `ListViewItemSelectionIndicator*`, `InfoBadge*`) auf Mint; die Blattschlüssel werden einzeln überschrieben, weil die `StaticResource`-Verweise in `generic.xaml` schon beim Parsen aufgelöst werden. Im `HighContrast`-Wörterbuch verweisen alle Schlüssel auf Systemfarben. Der Reviewer prüft, dass kein `SystemAccentColor*` mehr in XAML oder Code vorkommt. Der Abschnitt „Farben und Material“ in `06-design.md` ist entsprechend geändert. Das Logo bleibt einfarbig, jetzt in Mint.
+
+### ADR-018 · 2026-09-25 · Win2D als Zeichenschicht für die animierten Teile der Oberfläche
+
+**Entscheidung:** Die animierten Flächen des Oberflächenentwurfs werden mit Win2D (`Microsoft.Graphics.Win2D`, MIT, NuGet, verwaltete Bibliothek mit nativer DLL von Microsoft) gezeichnet: die Fächer-Galaxie in Schritt 1, Pixelwirbel und weißes Loch in Schritt 3 sowie die Übergangs-Überlagerung (Wurmloch, Abschluss). Dafür werden `CanvasControl` (Neuzeichnen auf Anforderung, z. B. Galaxie in Ruhe) und `CanvasAnimatedControl` (eigener Zeichentakt für Wirbel und Übergänge) verwendet. Alle normalen Bedienelemente (Fächer-Listen, Formatwahl, Note und Größenleiste, Speicherort, Knöpfe) bleiben XAML. Bei „Animationen reduzieren“ (`UISettings.AnimationsEnabled`) und im Hohen Kontrast wird die Zeichenschicht gar nicht erst erzeugt; an ihrer Stelle steht eine statische XAML-Ansicht mit demselben Informationsgehalt (Ring, Häkchen, Bericht, Liste). Bedingung: Die Lizenzprüfung durch `lizenz-waechter` läuft parallel; ohne Freigabe und Eintrag in `04-bibliotheken.md` wird das Paket nicht referenziert.
+**Alternativen:** (a) Nur die Composition API (Visual Layer): gut für Bewegung weniger Elemente, aber tausende Partikel mit eigener Farbe und Bahn wären tausende `SpriteVisual`s oder eigene Shader-Effekte, unhandlich und langsam; (b) SkiaSharp-Zeichenfläche für WinUI (`SkiaSharp.Views.WinUI`): rendert auf der CPU und kopiert jedes Bild in eine Bitmap, bei 60 Bildern pro Sekunde und großer Fläche zu langsam und stromhungrig, zudem eine weitere Paketvariante der ohnehin genutzten Bildbibliothek; (c) reines XAML mit Storyboards: skaliert nicht auf Partikel und macht die Ansicht unwartbar.
+**Grund:** GPU-Rendering über Direct2D für tausende Partikel bei geringer CPU-Last; Microsoft-Bibliothek, die zum Windows App SDK gehört und dieselben Direct2D-Grundlagen wie WinUI nutzt; MIT-Lizenz; enthält keine Codecs und keinen Netzwerkcode. Die Zeichenlogik (Bahnen, Partikel, Zeitverlauf) liegt als reine C#-Klassen ohne Win2D-Typen in `Kvertis.App/Rendering`, damit sie testbar bleibt und der Zeichner austauschbar ist.
+**Folgen:** `Kvertis.App` bekommt eine Abhängigkeit auf `Microsoft.Graphics.Win2D` (Eintrag in `04-bibliotheken.md` und `CHANGELOG.md` bei der ersten Verwendung im Code; Lizenztext nach `third_party/`). Engine und Queue bleiben unberührt. Jede Zeichenfläche wird beim Verlassen der Seite freigegeben (`RemoveFromVisualTree`), damit der Zeichentakt nicht weiterläuft. Die Zeichenschicht liefert keine Bedienelemente; alles, was klickbar oder per Tastatur erreichbar sein muss, liegt als XAML darüber oder daneben, mit `AutomationProperties.Name`. Bilder pro Sekunde werden bei Akkubetrieb und im Hintergrundfenster gedrosselt (`TargetElapsedTime`). Auf Geräten ohne passende Grafik (Direct3D-Feature-Level unter 9.3, WARP) greift dieselbe statische XAML-Ansicht wie bei „Animationen reduzieren“.

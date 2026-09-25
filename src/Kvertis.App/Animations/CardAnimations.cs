@@ -1,18 +1,18 @@
 using System.Numerics;
+using Kvertis.App.Services;
 using Microsoft.UI.Composition;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Hosting;
-using Windows.UI.ViewManagement;
 
 namespace Kvertis.App.Animations;
 
 /// <summary>
-/// Composition animations from docs/06-design.md ("Animationen"). When the user turned animations off in
-/// Windows (<see cref="UISettings.AnimationsEnabled"/>), only fades are used.
+/// Composition animations from docs/06-design.md ("Animationen"). Whether anything may move is decided by
+/// <see cref="IMotionSettings"/> ("reduce animations" and high contrast); without it only fades are used.
 /// </summary>
 public static class CardAnimations
 {
-    private static readonly UISettings Settings = new();
+    private static IMotionSettings? _motion;
 
     private static readonly TimeSpan DropZoneDuration = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan EntranceDuration = TimeSpan.FromMilliseconds(250);
@@ -26,20 +26,15 @@ public static class CardAnimations
     private const float TiltDegrees = 6f;
     private const int MaxStaggerSteps = 10;
 
-    public static bool AnimationsEnabled
+    /// <summary>Set once by <see cref="App"/> after the container exists.</summary>
+    public static void Use(IMotionSettings motion)
     {
-        get
-        {
-            try
-            {
-                return Settings.AnimationsEnabled;
-            }
-            catch (Exception)
-            {
-                return true;
-            }
-        }
+        ArgumentNullException.ThrowIfNull(motion);
+        _motion = motion;
     }
+
+    /// <summary>False while the system asks for reduced motion or high contrast.</summary>
+    public static bool AnimationsEnabled => _motion is null || !_motion.ReducedMotion;
 
     /// <summary>Drop zone lifts slightly while files are dragged over it (scale 1.02, 150 ms).</summary>
     public static void DropZoneHover(UIElement element, bool isOver)

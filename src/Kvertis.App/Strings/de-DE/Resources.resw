@@ -207,6 +207,12 @@
   <data name="Card_WhatToDo_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Was tun?</value>
   </data>
+  <data name="Convert_Placeholder_Text.Text" xml:space="preserve">
+    <value>Dieser Schritt ist noch in Arbeit. Bis er fertig ist, starten Sie die Umwandlung im ersten Schritt.</value>
+  </data>
+  <data name="Convert_Title.Text" xml:space="preserve">
+    <value>Umwandeln</value>
+  </data>
   <data name="Dialog_Cancel_Button" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
@@ -911,6 +917,39 @@
   </data>
   <data name="Settings_Title.Text" xml:space="preserve">
     <value>Einstellungen</value>
+  </data>
+  <data name="Steps_Convert_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Schritt 3 von 3: Umwandeln</value>
+  </data>
+  <data name="Steps_Convert_Label.Text" xml:space="preserve">
+    <value>Umwandeln</value>
+  </data>
+  <data name="Steps_Drop_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Schritt 1 von 3: Hineinwerfen</value>
+  </data>
+  <data name="Steps_Drop_Label.Text" xml:space="preserve">
+    <value>Hineinwerfen</value>
+  </data>
+  <data name="Steps_Status_Current" xml:space="preserve">
+    <value>Aktueller Schritt</value>
+  </data>
+  <data name="Steps_Status_Done" xml:space="preserve">
+    <value>Erledigt</value>
+  </data>
+  <data name="Steps_Status_Upcoming" xml:space="preserve">
+    <value>Noch offen</value>
+  </data>
+  <data name="Steps_Target_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Schritt 2 von 3: Ziel</value>
+  </data>
+  <data name="Steps_Target_Label.Text" xml:space="preserve">
+    <value>Ziel</value>
+  </data>
+  <data name="Target_Placeholder_Text.Text" xml:space="preserve">
+    <value>Dieser Schritt ist noch in Arbeit. Bis er fertig ist, wählen Sie das Zielformat im ersten Schritt.</value>
+  </data>
+  <data name="Target_Title.Text" xml:space="preserve">
+    <value>Ziel</value>
   </data>
   <data name="Warning_AnimationDropped" xml:space="preserve">
     <value>Nur das erste Bild der Animation wird umgewandelt.</value>

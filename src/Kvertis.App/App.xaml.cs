@@ -49,6 +49,8 @@ public partial class App : Application
             var dispatcher = new UiDispatcher(DispatcherQueue.GetForCurrentThread());
             _services = ServiceRegistration.Build(new StartupState(settings, speedStore, profile, platform, windowContext, dispatcher));
 
+            Animations.CardAnimations.Use(_services.GetRequiredService<IMotionSettings>());
+
             await _services.GetRequiredService<JobHistory>().LoadAsync();
             ClipboardImageService.CleanupOldFiles();
 

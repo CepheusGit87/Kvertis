@@ -14,11 +14,41 @@ public sealed class FrameNavigationService : INavigationService
         [AppPage.Pro] = typeof(ProPage),
         [AppPage.Licenses] = typeof(LicensesPage),
         [AppPage.About] = typeof(AboutPage),
+        [AppPage.Target] = typeof(TargetPage),
+        [AppPage.Convert] = typeof(ConvertPage),
     };
 
+    private readonly IMotionSettings _motion;
+
     private Frame? _frame;
+    private bool _dropNextBackEntry;
+
+    public FrameNavigationService(IMotionSettings motion)
+    {
+        _motion = motion ?? throw new ArgumentNullException(nameof(motion));
+    }
 
     public bool CanGoBack => _frame?.CanGoBack == true;
+
+    public AppPage? CurrentPage
+    {
+        get
+        {
+            var type = _frame?.CurrentSourcePageType;
+            if (type is null)
+            {
+                return null;
+            }
+            foreach (var pair in Pages)
+            {
+                if (pair.Value == type)
+                {
+                    return pair.Key;
+                }
+            }
+            return null;
+        }
+    }
 
     public event EventHandler? Navigated;
 
@@ -26,10 +56,10 @@ public sealed class FrameNavigationService : INavigationService
     {
         ArgumentNullException.ThrowIfNull(frame);
         _frame = frame;
-        _frame.Navigated += (_, _) => Navigated?.Invoke(this, EventArgs.Empty);
+        _frame.Navigated += OnFrameNavigated;
     }
 
-    public void Navigate(AppPage page)
+    public void Navigate(AppPage page, bool keepBackStack = true)
     {
         if (_frame is null)
         {
@@ -40,7 +70,29 @@ public sealed class FrameNavigationService : INavigationService
         {
             return;
         }
-        _frame.Navigate(type, null, new DrillInNavigationTransitionInfo());
+        // With "reduce animations" or high contrast the pages are exchanged without a transition (ADR-018).
+        NavigationTransitionInfo transition = _motion.ReducedMotion
+            ? new SuppressNavigationTransitionInfo()
+            : new DrillInNavigationTransitionInfo();
+        _dropNextBackEntry = !keepBackStack;
+        if (!_frame.Navigate(type, null, transition))
+        {
+            _dropNextBackEntry = false;
+        }
+    }
+
+    private void OnFrameNavigated(object sender, Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        if (_dropNextBackEntry)
+        {
+            _dropNextBackEntry = false;
+            // Remove the entry this navigation just pushed, before anyone reads CanGoBack.
+            if (_frame is not null && _frame.BackStack.Count > 0)
+            {
+                _frame.BackStack.RemoveAt(_frame.BackStack.Count - 1);
+            }
+        }
+        Navigated?.Invoke(this, EventArgs.Empty);
     }
 
     public void GoBack()
