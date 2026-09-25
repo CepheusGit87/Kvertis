@@ -139,9 +139,10 @@ public sealed class Estimator : IEstimator
         }
 
         var seconds = units / unitsPerSecond + 0.3; // process start overhead
-        var outputBytes = settings.TargetSizeBytes is { } target
-            ? Math.Min(target, (long)(input.SizeBytes * sizeRatio))
-            : (long)(input.SizeBytes * sizeRatio);
+        // The learned ratio describes the reference settings; SizeModel scales it to the chosen quality,
+        // resolution and bitrate (ADR-019).
+        var scaled = (long)(input.SizeBytes * sizeRatio * SizeModel.Factor(input, settings, _registry));
+        var outputBytes = settings.TargetSizeBytes is { } target ? Math.Min(target, scaled) : scaled;
         return new Estimate(TimeSpan.FromSeconds(seconds), Math.Max(outputBytes, 1), confidence);
     }
 
@@ -152,7 +153,9 @@ public sealed class Estimator : IEstimator
         ArgumentNullException.ThrowIfNull(result);
 
         var seconds = Math.Max(result.Elapsed.TotalSeconds - 0.3, 0.05);
-        _profile.Record(KeyFor(input, settings), UnitsOf(input) / seconds, result.SizeRatio);
+        // Divide out the settings so the profile keeps learning the ratio at the reference settings.
+        var factor = SizeModel.Factor(input, settings, _registry);
+        _profile.Record(KeyFor(input, settings), UnitsOf(input) / seconds, result.SizeRatio / factor);
     }
 
     public static string KeyFor(InputInfo input, ConversionSettings settings) =>

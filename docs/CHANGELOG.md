@@ -2,6 +2,18 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Schritt 2 „Ziel“, Teil A: Note und Größenmodell in der Engine
+
+**Geändert**
+
+- Schnittstellen-Skizze für Schritt 2 in `03-architektur.md` mit ADR-019 (Note 0–100 als reine Rechenfunktion in `Kvertis.Engine.Tuning`, kein neues Feld in den Einstellungen) und ADR-020 (Ablaufzustand `IWorkflowSession` in der App, Queue unverändert). Arbeitsblatt `docs/entwuerfe/schritt-2-ziel.md`.
+- Neu in der Engine: `Tuning/QualityGrade`, `GradeMapper` (Note ↔ Einstellungen, Merkmale Schärfe/Details/Bewegung/Klang), `EffectAnalyzer` (Codes statt Texte für „Was sich ändert“), `GradeSizeTable` (21 Stützstellen je Datei für Note ↔ Größe), `SizeMarks` (Marken wie „E-Mail“ aus den Presets), `Estimation/SizeModel`. `Estimator` berücksichtigt Qualität, Auflösung und Bitrate; Tempo-Profil bleibt kompatibel.
+- Engine-Tests 596 → 717.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Neue Oberfläche, Etappe 0: Farbtokens, Schrittleiste, ruhige Ansicht
 
 **Geändert**
