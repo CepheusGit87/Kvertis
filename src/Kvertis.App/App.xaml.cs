@@ -93,7 +93,7 @@ public partial class App : Application
         {
             return;
         }
-        await _services.GetRequiredService<ViewModels.MainViewModel>().AddPathsWithSettingsAsync(paths, null);
+        await _services.GetRequiredService<ViewModels.MainViewModel>().AddPathsWithSettingsAsync(paths);
         _services.GetRequiredService<IStepNavigationService>().GoTo(WorkflowStep.Target);
     }
 #endif

@@ -15,6 +15,7 @@ public sealed partial class StepHeader : UserControl
     private readonly IStepNavigationService _steps;
     private readonly IMotionSettings _motion;
     private readonly IWorkflowSession _session;
+    private readonly IConversionCoordinator _coordinator;
     private readonly ILocalizer _loc;
 
     public StepHeader()
@@ -22,6 +23,7 @@ public sealed partial class StepHeader : UserControl
         _steps = App.Services.GetRequiredService<IStepNavigationService>();
         _motion = App.Services.GetRequiredService<IMotionSettings>();
         _session = App.Services.GetRequiredService<IWorkflowSession>();
+        _coordinator = App.Services.GetRequiredService<IConversionCoordinator>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
         InitializeComponent();
 
@@ -36,9 +38,11 @@ public sealed partial class StepHeader : UserControl
         _steps.StepChanged -= OnStepChanged;
         _motion.Changed -= OnMotionChanged;
         _session.Changed -= OnSessionChanged;
+        _coordinator.Changed -= OnRoundChanged;
         _steps.StepChanged += OnStepChanged;
         _motion.Changed += OnMotionChanged;
         _session.Changed += OnSessionChanged;
+        _coordinator.Changed += OnRoundChanged;
         Update();
     }
 
@@ -47,9 +51,12 @@ public sealed partial class StepHeader : UserControl
         _steps.StepChanged -= OnStepChanged;
         _motion.Changed -= OnMotionChanged;
         _session.Changed -= OnSessionChanged;
+        _coordinator.Changed -= OnRoundChanged;
     }
 
     private void OnStepChanged(object? sender, EventArgs e) => Update();
+
+    private void OnRoundChanged(object? sender, RoundChangedEventArgs e) => Update();
 
     private void OnSessionChanged(object? sender, EventArgs e) => Update();
 
@@ -98,10 +105,18 @@ public sealed partial class StepHeader : UserControl
             state = "Upcoming";
             status = _loc.Get("Steps_Status_Upcoming");
         }
+        // While a round is running the way back is closed: whoever wants out presses "Abbrechen" first (ADR-021).
+        var locked = IsLocked && step != WorkflowStep.Convert;
+        if (locked)
+        {
+            status = _loc.Get("Steps_Status_Locked");
+        }
         VisualStateManager.GoToState(this, prefix + state, animate);
         AutomationProperties.SetItemStatus(button, status);
-        button.IsEnabled = step <= current || IsReachable(step);
+        button.IsEnabled = !locked && (step <= current || IsReachable(step));
     }
+
+    private bool IsLocked => _coordinator.State is RoundState.Running or RoundState.Paused;
 
     /// <summary>
     /// A step ahead of the current one is only reachable once it has something to show: step 2 needs at least

@@ -14,29 +14,6 @@
   </Page.KeyboardAccelerators>
 
   <Grid x:Name="PageRoot">
-    <VisualStateManager.VisualStateGroups>
-      <VisualStateGroup x:Name="WidthStates">
-        <VisualState x:Name="WideState">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="900" />
-          </VisualState.StateTriggers>
-        </VisualState>
-        <VisualState x:Name="NarrowState">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="0" />
-          </VisualState.StateTriggers>
-          <VisualState.Setters>
-            <!-- Below 900 px the buttons move to a second row (minimum window 640 x 480, docs/06). -->
-            <Setter Target="ActionButtons.(Grid.Row)" Value="1" />
-            <Setter Target="ActionButtons.(Grid.Column)" Value="0" />
-            <Setter Target="ActionButtons.(Grid.ColumnSpan)" Value="3" />
-            <Setter Target="ActionButtons.HorizontalAlignment" Value="Right" />
-            <Setter Target="OverallPanel.(Grid.ColumnSpan)" Value="2" />
-          </VisualState.Setters>
-        </VisualState>
-      </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
-
     <SplitView
       x:Name="HistorySplitView"
       DisplayMode="Overlay"
@@ -55,7 +32,6 @@
 
         <Grid Grid.Row="0" Padding="24,8,24,0" RowSpacing="12">
           <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -129,46 +105,11 @@
               IsActive="{x:Bind ViewModel.IsAdding, Mode=OneWay}" />
           </StackPanel>
 
-          <!-- 3. Pro hint: a small card, never a modal interruption (docs/06, "Pro-Hinweis"). -->
-          <Border
-            Grid.Row="2"
-            Style="{StaticResource CardBorderStyle}"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowProCard), Mode=OneWay}">
-            <Grid ColumnSpacing="12">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
-              <FontIcon Grid.Column="0" Foreground="{ThemeResource AccentFillColorDefaultBrush}" Glyph="&#xE734;" />
-              <TextBlock
-                x:Name="ProCardText"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                AutomationProperties.LiveSetting="Polite"
-                Text="{x:Bind ViewModel.ProCardText, Mode=OneWay}"
-                TextWrapping="Wrap" />
-              <Button x:Uid="Main_ProCard_LearnMore" Grid.Column="2" Command="{x:Bind ViewModel.OpenProCommand}" />
-              <Button
-                x:Uid="Main_ProCard_Dismiss"
-                Grid.Column="3"
-                Width="{StaticResource IconButtonSize}"
-                Height="{StaticResource IconButtonSize}"
-                Padding="0"
-                Background="Transparent"
-                BorderThickness="0"
-                Command="{x:Bind ViewModel.DismissProCardCommand}">
-                <FontIcon FontSize="12" Glyph="&#xE711;" />
-              </Button>
-            </Grid>
-          </Border>
-
-          <!-- 4. Job list: one card per file. -->
+          <!-- 3. Job list: one card per file. -->
           <ListView
             x:Name="JobList"
             x:Uid="Main_JobList"
-            Grid.Row="3"
+            Grid.Row="2"
             Padding="0,0,0,12"
             ContainerContentChanging="OnJobListContainerContentChanging"
             ItemsSource="{x:Bind ViewModel.Jobs}"
@@ -188,118 +129,31 @@
               </DataTemplate>
             </ListView.ItemTemplate>
           </ListView>
-
-          <!-- Screen reader live region for finished and failed jobs. -->
-          <TextBlock
-            x:Name="AnnouncementText"
-            Grid.Row="3"
-            Width="1"
-            Height="1"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            AutomationProperties.LiveSetting="Assertive"
-            IsHitTestVisible="False"
-            Opacity="0"
-            Text="{x:Bind ViewModel.Announcement, Mode=OneWay}" />
         </Grid>
 
-        <!-- 5. Action bar, fixed at the bottom. -->
+        <!-- 4. Action bar, fixed at the bottom. -->
         <Border
           Grid.Row="1"
           Padding="24,12"
           Background="{ThemeResource LayerFillColorDefaultBrush}"
           BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
           BorderThickness="0,1,0,0">
-          <Grid ColumnSpacing="12" RowSpacing="8">
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+          <Grid ColumnSpacing="12">
             <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
-              <ComboBox
-                x:Uid="Main_Output_ComboBox"
-                MinWidth="200"
-                SelectedIndex="{x:Bind ViewModel.OutputLocationIndex, Mode=TwoWay}">
-                <ComboBoxItem x:Uid="Main_Output_Same" />
-                <ComboBoxItem x:Uid="Main_Output_Sub" />
-                <ComboBoxItem x:Uid="Main_Output_Custom" />
-              </ComboBox>
-              <Button
-                x:Uid="Main_Output_Change"
-                Width="{StaticResource IconButtonSize}"
-                Height="{StaticResource IconButtonSize}"
-                Padding="0"
-                Command="{x:Bind ViewModel.ChangeOutputFolderCommand}">
-                <FontIcon FontSize="14" Glyph="&#xE8B7;" />
-              </Button>
-              <TextBlock
-                MaxWidth="220"
-                VerticalAlignment="Center"
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{x:Bind ViewModel.CustomFolderPath, Mode=OneWay}"
-                TextTrimming="CharacterEllipsis"
-                TextWrapping="NoWrap"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowCustomFolderPath), Mode=OneWay}" />
-            </StackPanel>
-
-            <StackPanel x:Name="OverallPanel" Grid.Column="1" VerticalAlignment="Center" Spacing="4">
-              <TextBlock
-                x:Name="OverallText"
-                AutomationProperties.LiveSetting="Polite"
-                Style="{StaticResource CaptionTextBlockStyle}"
-                Text="{x:Bind ViewModel.OverallText, Mode=OneWay}"
-                TextTrimming="CharacterEllipsis" />
-              <ProgressBar
-                x:Uid="Main_Overall_Progress"
-                AutomationProperties.HelpText="{x:Bind ViewModel.OverallAutomationText, Mode=OneWay}"
-                AutomationProperties.LiveSetting="Polite"
-                Maximum="100"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsQueueActive), Mode=OneWay}"
-                Value="{x:Bind ViewModel.OverallProgress, Mode=OneWay}" />
-            </StackPanel>
-
-            <StackPanel
-              x:Name="ActionButtons"
-              Grid.Column="2"
-              VerticalAlignment="Center"
-              Orientation="Horizontal"
-              Spacing="8">
-              <Button
-                x:Uid="Main_ClearFinished_Button"
-                Command="{x:Bind ViewModel.ClearFinishedCommand}"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasFinishedJobs), Mode=OneWay}" />
-              <Button
-                x:Name="PauseAllButton"
-                AutomationProperties.Name="{x:Bind ViewModel.PauseAllLabel, Mode=OneWay}"
-                Command="{x:Bind ViewModel.PauseAllCommand}"
-                Content="{x:Bind ViewModel.PauseAllLabel, Mode=OneWay}"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsQueueActive), Mode=OneWay}" />
-              <Button
-                x:Uid="Main_CancelAll_Button"
-                Command="{x:Bind ViewModel.CancelAllCommand}"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsQueueActive), Mode=OneWay}" />
-              <!-- The main path of the new interface: step 1 hands the files to step 2 (ADR-020).
-                   The old start button stays until step 3 runs the jobs itself. -->
-              <Button
-                x:Name="GoTargetButton"
-                x:Uid="Main_GoTarget_Button"
-                MinWidth="120"
-                MinHeight="40"
-                Command="{x:Bind ViewModel.GoToTargetCommand}" />
-              <Button
-                x:Name="StartButton"
-                x:Uid="Main_Start_Button"
-                MinWidth="120"
-                MinHeight="40"
-                Command="{x:Bind ViewModel.StartCommand}"
-                Style="{StaticResource AccentButtonStyle}" />
-            </StackPanel>
+            <!-- The main path of the new interface: step 1 hands the files to step 2 (ADR-020).
+                 Start, output location and progress belong to step 3 now (ADR-021). -->
+            <Button
+              x:Name="GoTargetButton"
+              x:Uid="Main_GoTarget_Button"
+              Grid.Column="1"
+              MinWidth="160"
+              MinHeight="40"
+              Command="{x:Bind ViewModel.GoToTargetCommand}"
+              Style="{StaticResource AccentButtonStyle}" />
           </Grid>
         </Border>
       </Grid>

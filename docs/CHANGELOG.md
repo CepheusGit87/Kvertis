@@ -2,6 +2,20 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Schritt 3 „Umwandeln“: Umwandeln-Seite, Koordinator, alter Start-Weg entfernt (ADR-021)
+
+**Geändert**
+
+- Neue Umwandeln-Seite (`Views/ConvertPage`): Eingangsstapel, Platzhalter-Fläche `SwirlHost` für den späteren Pixelwirbel mit laufenden Jobs, „fertig n von N“, Speicherort mit „Speicherort ändern“ (Neben dem Original, Unterordner „Kvertis“, eigener Ordner, Ordner aus dem Explorer ziehen) und eigenem Ziel je Datei, Liste Format → Format mit Zielpfad, „Ändern“, „Öffnen“, „Im Ordner zeigen“, Fehler mit Lösungsvorschlag; untere Leiste mit Gesamtfortschritt, Restzeit, Pause/Weiter, Abbrechen mit Rückfrage, Bericht und „Neue Runde“. Fortschritt als Text für den Erzähler.
+- `TargetPathPlanner` (Zielpfad-Vorschau mit Nummerierung, nie überschreiben), `ConversionCoordinator` (Jobs aus Plan und Speicherort, `EnqueueRange`, Filter auf die eigene Runde, Speicherort-Wechsel nach Start nur für wartende Jobs, `RoundReport`), `ShellLauncher` (nur lokale Pfade). `IWorkflowSession` mit `OwnLocations`.
+- Alter Start-Weg entfernt: Start-Knopf, Speicherort, Gesamtfortschritt, Pause/Abbruch und Queue-Anbindung aus Schritt 1; `MorePanel` und `FormatPickerFlyout` gelöscht; `JobCardControl` zeigt nur noch Erkennung, Bereit und Abgelehnt. Schrittleiste sperrt Schritt 1 und 2 während des Laufs.
+- Echter Durchlauf unter Windows: zwei Testbilder → JPG im Unterordner „Kvertis“, Nummerierung bei Namenskollision geprüft.
+- Tests: 22 neu (App 65), gesamt 831. Ressourcen: 78 neue `Convert_*`-Schlüssel, `More_*`, `FormatPicker_*` und die alten `Main_*`/`Card_*`-Schlüssel entfernt.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Schritt 2 „Ziel“, Teile B–D: Ziel-Seite in der App
 
 **Geändert**

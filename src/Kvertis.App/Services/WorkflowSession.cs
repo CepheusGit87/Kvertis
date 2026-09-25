@@ -37,13 +37,22 @@ public interface IWorkflowSession
     /// <summary>Step 2 result, null until the user continued from the target page.</summary>
     TargetPlan? Plan { get; set; }
 
-    /// <summary>Step 3, defaulted from the settings.</summary>
-    OutputLocation Location { get; set; }
+    /// <summary>
+    /// Step 3: the location that holds for every file. Null until it was chosen in this round; the convert
+    /// page then takes the default from the settings (ADR-021).
+    /// </summary>
+    OutputLocation? Location { get; set; }
+
+    /// <summary>Step 3: per-file exceptions ("Ändern"), keyed by <c>InputInfo.Path</c>. Empty by default.</summary>
+    IReadOnlyDictionary<string, OutputLocation> OwnLocations { get; }
 
     /// <summary>Set by "Anpassen aus dem Verlauf", cleared by <see cref="Reset"/>.</summary>
     HistoryEntry? Previous { get; set; }
 
     event EventHandler? Changed;
+
+    /// <summary>Sets or (with null) removes the exception for one file. Raises <see cref="Changed"/>.</summary>
+    void SetOwnLocation(string inputPath, OutputLocation? location);
 
     /// <summary>Replaces the staged files. Step 1 calls it whenever its own list changed.</summary>
     void SetStaged(IReadOnlyList<StagedFile> files);
@@ -54,9 +63,10 @@ public interface IWorkflowSession
 /// <inheritdoc cref="IWorkflowSession"/>
 public sealed class WorkflowSession : IWorkflowSession
 {
+    private readonly Dictionary<string, OutputLocation> _ownLocations = new(StringComparer.OrdinalIgnoreCase);
     private IReadOnlyList<StagedFile> _staged = [];
     private TargetPlan? _plan;
-    private OutputLocation _location = OutputLocation.SameFolder;
+    private OutputLocation? _location;
     private HistoryEntry? _previous;
 
     public IReadOnlyList<StagedFile> Staged => _staged;
@@ -71,15 +81,17 @@ public sealed class WorkflowSession : IWorkflowSession
         }
     }
 
-    public OutputLocation Location
+    public OutputLocation? Location
     {
         get => _location;
         set
         {
-            _location = value ?? throw new ArgumentNullException(nameof(value));
+            _location = value;
             Raise();
         }
     }
+
+    public IReadOnlyDictionary<string, OutputLocation> OwnLocations => _ownLocations;
 
     public HistoryEntry? Previous
     {
@@ -100,12 +112,27 @@ public sealed class WorkflowSession : IWorkflowSession
         Raise();
     }
 
+    public void SetOwnLocation(string inputPath, OutputLocation? location)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(inputPath);
+        if (location is null)
+        {
+            _ownLocations.Remove(inputPath);
+        }
+        else
+        {
+            _ownLocations[inputPath] = location;
+        }
+        Raise();
+    }
+
     public void Reset()
     {
         _staged = [];
         _plan = null;
         _previous = null;
-        _location = OutputLocation.SameFolder;
+        _location = null;
+        _ownLocations.Clear();
         Raise();
     }
 

@@ -63,10 +63,10 @@
   <data name="About_Description.Text" xml:space="preserve">
     <value>Kvertis converts images, audio, video, documents and 3D models right on your PC. Offline, no account, no cloud.</value>
   </data>
-  <data name="About_Licenses_Button.Content" xml:space="preserve">
+  <data name="About_Licenses_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Show third-party licenses</value>
   </data>
-  <data name="About_Licenses_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="About_Licenses_Button.Content" xml:space="preserve">
     <value>Show third-party licenses</value>
   </data>
   <data name="About_Privacy_Header.Text" xml:space="preserve">
@@ -84,74 +84,14 @@
   <data name="App_Manifest_Description" xml:space="preserve">
     <value>Convert files without them ever leaving your PC. Images, audio, video, documents and 3D models. Offline, no account.</value>
   </data>
-  <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Convert again</value>
-  </data>
-  <data name="Card_Again_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Convert again</value>
-  </data>
   <data name="Card_AutomationName" xml:space="preserve">
-    <value>{0}, {1} to {2}, {3}</value>
-  </data>
-  <data name="Card_AutomationName_NoFormat" xml:space="preserve">
     <value>{0}, {1}</value>
-  </data>
-  <data name="Card_Cancel_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="Card_Cancel_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Cancel</value>
   </data>
   <data name="Card_Detecting_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Detecting file</value>
   </data>
-  <data name="Card_EstimateSize_Text" xml:space="preserve">
-    <value>≈ {0}</value>
-  </data>
-  <data name="Card_EstimateTime_Text" xml:space="preserve">
-    <value>≈ {0}</value>
-  </data>
-  <data name="Card_More_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>More options</value>
-  </data>
-  <data name="Card_More_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>More options</value>
-  </data>
-  <data name="Card_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Open folder</value>
-  </data>
-  <data name="Card_OpenFolder_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Open folder</value>
-  </data>
-  <data name="Card_OutputChip_AutomationName" xml:space="preserve">
-    <value>Output format {0}. Change</value>
-  </data>
-  <data name="Card_OutputChip_Text" xml:space="preserve">
-    <value>→ {0}</value>
-  </data>
   <data name="Card_Pages_Text" xml:space="preserve">
     <value>{0} pages</value>
-  </data>
-  <data name="Card_Pause_Label" xml:space="preserve">
-    <value>Pause</value>
-  </data>
-  <data name="Card_PresetChip_AutomationName" xml:space="preserve">
-    <value>Preset {0}. Change</value>
-  </data>
-  <data name="Card_PresetList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Presets</value>
-  </data>
-  <data name="Card_Preview_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Preview</value>
-  </data>
-  <data name="Card_Preview_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Preview</value>
-  </data>
-  <data name="Card_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Progress</value>
-  </data>
-  <data name="Card_Remaining_Text" xml:space="preserve">
-    <value>about {0} left</value>
   </data>
   <data name="Card_Remove_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Remove</value>
@@ -162,35 +102,8 @@
   <data name="Card_Resolution_Text" xml:space="preserve">
     <value>{0} × {1}</value>
   </data>
-  <data name="Card_Result_Text" xml:space="preserve">
-    <value>Before {0} → After {1} ({2})</value>
-  </data>
-  <data name="Card_Resume_Label" xml:space="preserve">
-    <value>Resume</value>
-  </data>
-  <data name="Card_Retry_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Retry</value>
-  </data>
-  <data name="Card_Retry_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Retry</value>
-  </data>
-  <data name="Card_State_Cancelled" xml:space="preserve">
-    <value>Cancelled</value>
-  </data>
-  <data name="Card_State_Completed" xml:space="preserve">
-    <value>Done</value>
-  </data>
   <data name="Card_State_Detecting" xml:space="preserve">
     <value>Detecting …</value>
-  </data>
-  <data name="Card_State_Failed" xml:space="preserve">
-    <value>Failed</value>
-  </data>
-  <data name="Card_State_Paused" xml:space="preserve">
-    <value>Paused</value>
-  </data>
-  <data name="Card_State_Queued" xml:space="preserve">
-    <value>Waiting</value>
   </data>
   <data name="Card_State_Ready" xml:space="preserve">
     <value>Ready</value>
@@ -198,26 +111,293 @@
   <data name="Card_State_Rejected" xml:space="preserve">
     <value>Not possible</value>
   </data>
-  <data name="Card_State_Running" xml:space="preserve">
-    <value>Converting</value>
+  <data name="Convert_Announce_Cancelled" xml:space="preserve">
+    <value>{0} cancelled</value>
   </data>
-  <data name="Card_WhatToDo_Link.Content" xml:space="preserve">
-    <value>What can I do?</value>
+  <data name="Convert_Announce_Completed" xml:space="preserve">
+    <value>{0} is done</value>
   </data>
-  <data name="Card_WhatToDo_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>What can I do?</value>
+  <data name="Convert_Announce_Failed" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
-  <data name="Convert_NoPlan_Text" xml:space="preserve">
-    <value>Nothing planned yet.</value>
+  <data name="Convert_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Back</value>
   </data>
-  <data name="Convert_Placeholder_Text.Text" xml:space="preserve">
-    <value>This step is still being built. Until it is ready, start the conversion in the first step.</value>
+  <data name="Convert_Back_Button.Content" xml:space="preserve">
+    <value>Back</value>
   </data>
-  <data name="Convert_Plan_Text" xml:space="preserve">
-    <value>{0} files planned · ≈ {1}</value>
+  <data name="Convert_Bag_Entry" xml:space="preserve">
+    <value>{0} → {1}</value>
+  </data>
+  <data name="Convert_Bag_Header.Text" xml:space="preserve">
+    <value>Files with their own target</value>
+  </data>
+  <data name="Convert_Bag_One" xml:space="preserve">
+    <value>One file goes somewhere else</value>
+  </data>
+  <data name="Convert_Bag_Some" xml:space="preserve">
+    <value>{0} files go somewhere else</value>
+  </data>
+  <data name="Convert_CancelAll_Body" xml:space="preserve">
+    <value>Files that are being converted right now are lost. Finished files stay.</value>
+  </data>
+  <data name="Convert_CancelAll_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Convert_CancelAll_Button.Content" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Convert_CancelAll_Confirm" xml:space="preserve">
+    <value>Cancel everything</value>
+  </data>
+  <data name="Convert_CancelAll_Title" xml:space="preserve">
+    <value>Cancel everything?</value>
+  </data>
+  <data name="Convert_Error_Load_Text" xml:space="preserve">
+    <value>This step could not be prepared. Go back to step 2 and come here again.</value>
+  </data>
+  <data name="Convert_Error_StartFailed_Text" xml:space="preserve">
+    <value>The conversion could not be started. Check the output location and try again.</value>
+  </data>
+  <data name="Convert_Inbox_Failed" xml:space="preserve">
+    <value>{0} files were not converted</value>
+  </data>
+  <data name="Convert_Inbox_Header.Text" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="Convert_Inbox_Summary" xml:space="preserve">
+    <value>{0} files · {1}</value>
+  </data>
+  <data name="Convert_List_Header.Text" xml:space="preserve">
+    <value>Files in this job</value>
+  </data>
+  <data name="Convert_List_State_Done" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="Convert_List_State_Ready" xml:space="preserve">
+    <value>ready</value>
+  </data>
+  <data name="Convert_List_State_Running" xml:space="preserve">
+    <value>running</value>
+  </data>
+  <data name="Convert_List_Summary" xml:space="preserve">
+    <value>{0} in total · {1}</value>
+  </data>
+  <data name="Convert_Location_AutomationName" xml:space="preserve">
+    <value>Output location: {0}, {1}</value>
+  </data>
+  <data name="Convert_Location_Change_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Change output location</value>
+  </data>
+  <data name="Convert_Location_Change_Button.Content" xml:space="preserve">
+    <value>Change output location</value>
+  </data>
+  <data name="Convert_Location_Custom_Detail" xml:space="preserve">
+    <value>No folder chosen yet.</value>
+  </data>
+  <data name="Convert_Location_Custom_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Your own folder</value>
+  </data>
+  <data name="Convert_Location_Custom_Option.Content" xml:space="preserve">
+    <value>Your own folder</value>
+  </data>
+  <data name="Convert_Location_Custom_Title" xml:space="preserve">
+    <value>Your own folder</value>
+  </data>
+  <data name="Convert_Location_DropCaption" xml:space="preserve">
+    <value>Use as the output folder</value>
+  </data>
+  <data name="Convert_Location_Header.Text" xml:space="preserve">
+    <value>Output location</value>
+  </data>
+  <data name="Convert_Location_Pick_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Choose a folder…</value>
+  </data>
+  <data name="Convert_Location_Pick_Button.Content" xml:space="preserve">
+    <value>Choose a folder…</value>
+  </data>
+  <data name="Convert_Location_Same_Detail" xml:space="preserve">
+    <value>Every file lands in its own folder.</value>
+  </data>
+  <data name="Convert_Location_Same_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Next to the original</value>
+  </data>
+  <data name="Convert_Location_Same_Option.Content" xml:space="preserve">
+    <value>Next to the original</value>
+  </data>
+  <data name="Convert_Location_Same_Title" xml:space="preserve">
+    <value>Next to the original</value>
+  </data>
+  <data name="Convert_Location_Sub_Detail" xml:space="preserve">
+    <value>A folder “Kvertis” is created next to the originals.</value>
+  </data>
+  <data name="Convert_Location_Sub_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Subfolder “Kvertis”</value>
+  </data>
+  <data name="Convert_Location_Sub_Option.Content" xml:space="preserve">
+    <value>Subfolder “Kvertis”</value>
+  </data>
+  <data name="Convert_Location_Sub_Title" xml:space="preserve">
+    <value>Subfolder “Kvertis”</value>
+  </data>
+  <data name="Convert_NewRound_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>New round</value>
+  </data>
+  <data name="Convert_NewRound_Button.Content" xml:space="preserve">
+    <value>New round</value>
+  </data>
+  <data name="Convert_NoPlan_Text.Text" xml:space="preserve">
+    <value>Nothing planned yet. Go back to step 2 and choose a target.</value>
+  </data>
+  <data name="Convert_Overall_AutomationName" xml:space="preserve">
+    <value>{0} %, {1}</value>
+  </data>
+  <data name="Convert_Overall_Done" xml:space="preserve">
+    <value>{0} of {1} converted</value>
+  </data>
+  <data name="Convert_Overall_Progress" xml:space="preserve">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="Convert_Overall_Ready" xml:space="preserve">
+    <value>{0} files ready</value>
+  </data>
+  <data name="Convert_Overall_Remaining" xml:space="preserve">
+    <value>{0} of {1} · about {2} left</value>
+  </data>
+  <data name="Convert_Pause_Label" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="Convert_Pro_LearnMore_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="Convert_Pro_LearnMore_Button.Content" xml:space="preserve">
+    <value>Learn more</value>
+  </data>
+  <data name="Convert_Report_AllDone" xml:space="preserve">
+    <value>All {0} files converted</value>
+  </data>
+  <data name="Convert_Report_Failure" xml:space="preserve">
+    <value>{0}: {1}</value>
+  </data>
+  <data name="Convert_Report_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Convert_Report_OpenFolder_Button.Content" xml:space="preserve">
+    <value>Open folder</value>
+  </data>
+  <data name="Convert_Report_Partial" xml:space="preserve">
+    <value>{0} of {1} converted</value>
+  </data>
+  <data name="Convert_Report_Summary" xml:space="preserve">
+    <value>{0} → {1} · {2} · {3}</value>
+  </data>
+  <data name="Convert_Result_Done" xml:space="preserve">
+    <value>done {0} of {1}</value>
+  </data>
+  <data name="Convert_Result_Header.Text" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="Convert_Resume_Label" xml:space="preserve">
+    <value>Resume</value>
+  </data>
+  <data name="Convert_Row_AutomationName" xml:space="preserve">
+    <value>{0}, {1}, saved as {2}, {3}</value>
+  </data>
+  <data name="Convert_Row_Change_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Convert_Row_Change_Button.Content" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Convert_Row_Formats" xml:space="preserve">
+    <value>{0} → {1}</value>
+  </data>
+  <data name="Convert_Row_Location_Header.Text" xml:space="preserve">
+    <value>Target of this file</value>
+  </data>
+  <data name="Convert_Row_Location_Shared.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Like all the others</value>
+  </data>
+  <data name="Convert_Row_Location_Shared.Content" xml:space="preserve">
+    <value>Like all the others</value>
+  </data>
+  <data name="Convert_Row_NeedsFolder" xml:space="preserve">
+    <value>Choose a folder</value>
+  </data>
+  <data name="Convert_Row_Open_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Convert_Row_Open_Button.Content" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Convert_Row_OwnTarget" xml:space="preserve">
+    <value>own target</value>
+  </data>
+  <data name="Convert_Row_Percent" xml:space="preserve">
+    <value>{0} %</value>
+  </data>
+  <data name="Convert_Row_SharedTarget" xml:space="preserve">
+    <value>like all</value>
+  </data>
+  <data name="Convert_Row_ShowInFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="Convert_Row_ShowInFolder_Button.Content" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="Convert_Row_Sizes" xml:space="preserve">
+    <value>{0} → ≈ {1}</value>
+  </data>
+  <data name="Convert_Row_SizesFinal" xml:space="preserve">
+    <value>{0} → {1}</value>
+  </data>
+  <data name="Convert_Row_State_Cancelled" xml:space="preserve">
+    <value>cancelled</value>
+  </data>
+  <data name="Convert_Row_State_Done" xml:space="preserve">
+    <value>done</value>
+  </data>
+  <data name="Convert_Row_State_Failed" xml:space="preserve">
+    <value>failed</value>
+  </data>
+  <data name="Convert_Row_State_Paused" xml:space="preserve">
+    <value>paused</value>
+  </data>
+  <data name="Convert_Row_State_Running" xml:space="preserve">
+    <value>running</value>
+  </data>
+  <data name="Convert_Row_State_Waiting" xml:space="preserve">
+    <value>waiting</value>
+  </data>
+  <data name="Convert_Skipped_Batch" xml:space="preserve">
+    <value>{0}: above the limit of the free version</value>
+  </data>
+  <data name="Convert_Skipped_Header.Text" xml:space="preserve">
+    <value>Not in this job</value>
+  </data>
+  <data name="Convert_Skipped_Other" xml:space="preserve">
+    <value>{0}: not in this job</value>
+  </data>
+  <data name="Convert_Skipped_Video" xml:space="preserve">
+    <value>{0}: video is part of Pro</value>
+  </data>
+  <data name="Convert_Start_Button" xml:space="preserve">
+    <value>Convert · {0} files</value>
+  </data>
+  <data name="Convert_Swirl_Header.Text" xml:space="preserve">
+    <value>Swirl</value>
+  </data>
+  <data name="Convert_Swirl_More" xml:space="preserve">
+    <value>and {0} more are running</value>
+  </data>
+  <data name="Convert_Swirl_Ready" xml:space="preserve">
+    <value>Ready · Convert starts {0} files</value>
   </data>
   <data name="Convert_Title.Text" xml:space="preserve">
     <value>Convert</value>
+  </data>
+  <data name="Convert_Trust_Text.Text" xml:space="preserve">
+    <value>Your files never leave this PC.</value>
   </data>
   <data name="Dialog_Cancel_Button" xml:space="preserve">
     <value>Cancel</value>
@@ -393,15 +573,6 @@
   <data name="Error_UnsupportedFormat_Title" xml:space="preserve">
     <value>This format is not supported</value>
   </data>
-  <data name="FormatPicker_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Output formats</value>
-  </data>
-  <data name="FormatPicker_Suggested.Text" xml:space="preserve">
-    <value>Suggested</value>
-  </data>
-  <data name="FormatPicker_Title.Text" xml:space="preserve">
-    <value>Output format</value>
-  </data>
   <data name="Format_Change_Percent" xml:space="preserve">
     <value>{0}%</value>
   </data>
@@ -441,19 +612,19 @@
   <data name="Grade_Band_Usable" xml:space="preserve">
     <value>usable</value>
   </data>
-  <data name="History_Again_Button.Content" xml:space="preserve">
+  <data name="History_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Again with the same settings</value>
   </data>
-  <data name="History_Again_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="History_Again_Button.Content" xml:space="preserve">
     <value>Again with the same settings</value>
   </data>
   <data name="History_Clear_Body" xml:space="preserve">
     <value>The list of recent conversions is deleted. Your files are not touched.</value>
   </data>
-  <data name="History_Clear_Button.Content" xml:space="preserve">
+  <data name="History_Clear_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Clear</value>
   </data>
-  <data name="History_Clear_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="History_Clear_Button.Content" xml:space="preserve">
     <value>Clear</value>
   </data>
   <data name="History_Clear_Confirm" xml:space="preserve">
@@ -477,10 +648,10 @@
   <data name="History_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Recent conversions</value>
   </data>
-  <data name="History_OpenFolder_Button.Content" xml:space="preserve">
+  <data name="History_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Open folder</value>
   </data>
-  <data name="History_OpenFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="History_OpenFolder_Button.Content" xml:space="preserve">
     <value>Open folder</value>
   </data>
   <data name="History_Quality_Text" xml:space="preserve">
@@ -510,53 +681,32 @@
   <data name="Licenses_Title.Text" xml:space="preserve">
     <value>Third-party licenses</value>
   </data>
-  <data name="Main_AddFiles_Button.Content" xml:space="preserve">
-    <value>Choose files</value>
-  </data>
   <data name="Main_AddFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Choose files</value>
   </data>
-  <data name="Main_AddFolder_Link.Content" xml:space="preserve">
-    <value>Choose folder</value>
+  <data name="Main_AddFiles_Button.Content" xml:space="preserve">
+    <value>Choose files</value>
   </data>
   <data name="Main_AddFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Choose folder</value>
   </data>
-  <data name="Main_AddMoreFiles_Button.Content" xml:space="preserve">
-    <value>Add more files</value>
-  </data>
-  <data name="Main_AddMoreFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Add more files</value>
-  </data>
-  <data name="Main_AddMoreFolder_Link.Content" xml:space="preserve">
-    <value>Add folder</value>
-  </data>
-  <data name="Main_AddMoreFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Add folder</value>
+  <data name="Main_AddFolder_Link.Content" xml:space="preserve">
+    <value>Choose folder</value>
   </data>
   <data name="Main_Adding_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Detecting files</value>
   </data>
-  <data name="Main_Announce_Cancelled" xml:space="preserve">
-    <value>{0} was cancelled.</value>
+  <data name="Main_AddMoreFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Add more files</value>
   </data>
-  <data name="Main_Announce_Completed" xml:space="preserve">
-    <value>{0} is done.</value>
+  <data name="Main_AddMoreFiles_Button.Content" xml:space="preserve">
+    <value>Add more files</value>
   </data>
-  <data name="Main_Announce_Failed" xml:space="preserve">
-    <value>{0} could not be converted: {1}</value>
+  <data name="Main_AddMoreFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Add folder</value>
   </data>
-  <data name="Main_CancelAll_Button.Content" xml:space="preserve">
-    <value>Cancel all</value>
-  </data>
-  <data name="Main_CancelAll_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Cancel all</value>
-  </data>
-  <data name="Main_ClearFinished_Button.Content" xml:space="preserve">
-    <value>Clear finished</value>
-  </data>
-  <data name="Main_ClearFinished_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Clear finished</value>
+  <data name="Main_AddMoreFolder_Link.Content" xml:space="preserve">
+    <value>Add folder</value>
   </data>
   <data name="Main_DropZone_DragCaption" xml:space="preserve">
     <value>Add to Kvertis</value>
@@ -570,11 +720,11 @@
   <data name="Main_DropZone_Title.Text" xml:space="preserve">
     <value>Drag files here or choose them</value>
   </data>
-  <data name="Main_GoTarget_Button.Content" xml:space="preserve">
-    <value>Next: Target</value>
-  </data>
   <data name="Main_GoTarget_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Next to step 2: Target</value>
+  </data>
+  <data name="Main_GoTarget_Button.Content" xml:space="preserve">
+    <value>Next: Target</value>
   </data>
   <data name="Main_JobList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Files</value>
@@ -588,134 +738,8 @@
   <data name="Main_ManyFiles_Title" xml:space="preserve">
     <value>Many files</value>
   </data>
-  <data name="Main_Output_Change.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Choose output folder</value>
-  </data>
-  <data name="Main_Output_Change.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Choose output folder</value>
-  </data>
-  <data name="Main_Output_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Output folder</value>
-  </data>
-  <data name="Main_Output_Custom.Content" xml:space="preserve">
-    <value>Custom folder …</value>
-  </data>
-  <data name="Main_Output_Same.Content" xml:space="preserve">
-    <value>Same folder</value>
-  </data>
-  <data name="Main_Output_Sub.Content" xml:space="preserve">
-    <value>Subfolder “Kvertis”</value>
-  </data>
-  <data name="Main_Overall_AutomationName" xml:space="preserve">
-    <value>Overall progress {0} percent. {1}</value>
-  </data>
-  <data name="Main_Overall_Count" xml:space="preserve">
-    <value>{0} files ready</value>
-  </data>
-  <data name="Main_Overall_Done" xml:space="preserve">
-    <value>{0} done · before {1}, after {2}</value>
-  </data>
-  <data name="Main_Overall_Estimate" xml:space="preserve">
-    <value>{0} files · takes about {1}</value>
-  </data>
-  <data name="Main_Overall_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Overall progress</value>
-  </data>
-  <data name="Main_Overall_ProgressText" xml:space="preserve">
-    <value>{0} of {1} done</value>
-  </data>
-  <data name="Main_Overall_Remaining" xml:space="preserve">
-    <value>{0} of {1} done · about {2} left</value>
-  </data>
-  <data name="Main_PauseAll_Label" xml:space="preserve">
-    <value>Pause all</value>
-  </data>
-  <data name="Main_ProCard_Dismiss.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Dismiss</value>
-  </data>
-  <data name="Main_ProCard_Dismiss.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
-    <value>Dismiss</value>
-  </data>
-  <data name="Main_ProCard_LearnMore.Content" xml:space="preserve">
-    <value>Learn more</value>
-  </data>
-  <data name="Main_ProCard_LearnMore.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Learn more</value>
-  </data>
-  <data name="Main_ResumeAll_Label" xml:space="preserve">
-    <value>Resume all</value>
-  </data>
-  <data name="Main_Start_Button.Content" xml:space="preserve">
-    <value>Start</value>
-  </data>
-  <data name="Main_Start_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Start</value>
-  </data>
   <data name="Main_Trust_Text.Text" xml:space="preserve">
     <value>Your files never leave this PC.</value>
-  </data>
-  <data name="More_ApplyToAll_Button.Content" xml:space="preserve">
-    <value>Apply to all</value>
-  </data>
-  <data name="More_ApplyToAll_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Apply to all</value>
-  </data>
-  <data name="More_Estimate_Label.Text" xml:space="preserve">
-    <value>Estimated size:</value>
-  </data>
-  <data name="More_Metadata_Hint.Text" xml:space="preserve">
-    <value>Removes location, camera details and similar information. Colours stay correct.</value>
-  </data>
-  <data name="More_Metadata_Toggle.Header" xml:space="preserve">
-    <value>Remove EXIF and GPS data</value>
-  </data>
-  <data name="More_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Remove EXIF and GPS data</value>
-  </data>
-  <data name="More_NamePattern_TextBox.Header" xml:space="preserve">
-    <value>File name</value>
-  </data>
-  <data name="More_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
-    <value>{name}_{date}_{format}</value>
-  </data>
-  <data name="More_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>File name</value>
-  </data>
-  <data name="More_NamePreview_Label.Text" xml:space="preserve">
-    <value>Example:</value>
-  </data>
-  <data name="More_Quality_Better.Text" xml:space="preserve">
-    <value>Better quality</value>
-  </data>
-  <data name="More_Quality_Slider.Header" xml:space="preserve">
-    <value>Quality ↔ size</value>
-  </data>
-  <data name="More_Quality_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Quality ↔ size</value>
-  </data>
-  <data name="More_Quality_Smaller.Text" xml:space="preserve">
-    <value>Smaller file</value>
-  </data>
-  <data name="More_TargetSizeUnit_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Target size unit</value>
-  </data>
-  <data name="More_TargetSize_Hint.Text" xml:space="preserve">
-    <value>Kvertis picks the best quality that fits this size. Works for images and audio.</value>
-  </data>
-  <data name="More_TargetSize_NumberBox.Header" xml:space="preserve">
-    <value>Target size (empty = none)</value>
-  </data>
-  <data name="More_TargetSize_NumberBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Target size (empty = none)</value>
-  </data>
-  <data name="More_Title.Text" xml:space="preserve">
-    <value>More options</value>
-  </data>
-  <data name="More_Unit_KB.Content" xml:space="preserve">
-    <value>KB</value>
-  </data>
-  <data name="More_Unit_MB.Content" xml:space="preserve">
-    <value>MB</value>
   </data>
   <data name="Preset_Archive" xml:space="preserve">
     <value>Archive (lossless)</value>
@@ -774,10 +798,10 @@
   <data name="Pro_Busy_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Contacting the Store</value>
   </data>
-  <data name="Pro_Buy_Button.Content" xml:space="preserve">
+  <data name="Pro_Buy_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Buy Kvertis Pro</value>
   </data>
-  <data name="Pro_Buy_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Pro_Buy_Button.Content" xml:space="preserve">
     <value>Buy Kvertis Pro</value>
   </data>
   <data name="Pro_Card_Batch_Text" xml:space="preserve">
@@ -822,10 +846,10 @@
   <data name="Pro_Purchase_StoreUnavailable" xml:space="preserve">
     <value>The Store cannot be reached right now. Please try again later.</value>
   </data>
-  <data name="Pro_Restore_Button.Content" xml:space="preserve">
+  <data name="Pro_Restore_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Restore purchase</value>
   </data>
-  <data name="Pro_Restore_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Pro_Restore_Button.Content" xml:space="preserve">
     <value>Restore purchase</value>
   </data>
   <data name="Pro_Restore_Found" xml:space="preserve">
@@ -846,14 +870,14 @@
   <data name="Pro_Title.Text" xml:space="preserve">
     <value>Kvertis Pro</value>
   </data>
-  <data name="Settings_AboutLink_Card.Header" xml:space="preserve">
-    <value>About Kvertis</value>
+  <data name="Settings_About_Header.Text" xml:space="preserve">
+    <value>About</value>
   </data>
   <data name="Settings_AboutLink_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>About Kvertis</value>
   </data>
-  <data name="Settings_About_Header.Text" xml:space="preserve">
-    <value>About</value>
+  <data name="Settings_AboutLink_Card.Header" xml:space="preserve">
+    <value>About Kvertis</value>
   </data>
   <data name="Settings_Advanced_Header.Text" xml:space="preserve">
     <value>Advanced</value>
@@ -870,16 +894,16 @@
   <data name="Settings_Ffmpeg_Card.Header" xml:space="preserve">
     <value>Custom FFmpeg build</value>
   </data>
-  <data name="Settings_Ffmpeg_Choose.Content" xml:space="preserve">
-    <value>Choose folder</value>
-  </data>
   <data name="Settings_Ffmpeg_Choose.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Choose folder</value>
   </data>
-  <data name="Settings_Ffmpeg_Reset.Content" xml:space="preserve">
-    <value>Use included build</value>
+  <data name="Settings_Ffmpeg_Choose.Content" xml:space="preserve">
+    <value>Choose folder</value>
   </data>
   <data name="Settings_Ffmpeg_Reset.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Use included build</value>
+  </data>
+  <data name="Settings_Ffmpeg_Reset.Content" xml:space="preserve">
     <value>Use included build</value>
   </data>
   <data name="Settings_Ffmpeg_Status_Missing" xml:space="preserve">
@@ -909,13 +933,13 @@
   <data name="Settings_Language_System.Content" xml:space="preserve">
     <value>Same as Windows</value>
   </data>
+  <data name="Settings_Licenses_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Third-party licenses</value>
+  </data>
   <data name="Settings_Licenses_Card.Description" xml:space="preserve">
     <value>Libraries Kvertis uses</value>
   </data>
   <data name="Settings_Licenses_Card.Header" xml:space="preserve">
-    <value>Third-party licenses</value>
-  </data>
-  <data name="Settings_Licenses_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Third-party licenses</value>
   </data>
   <data name="Settings_Logging_Card.Description" xml:space="preserve">
@@ -945,11 +969,11 @@
   <data name="Settings_NamePattern_SampleFile" xml:space="preserve">
     <value>Holiday.heic</value>
   </data>
-  <data name="Settings_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
-    <value>{name}</value>
-  </data>
   <data name="Settings_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Default file name</value>
+  </data>
+  <data name="Settings_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
+    <value>{name}</value>
   </data>
   <data name="Settings_Output_Card.Description" xml:space="preserve">
     <value>Where converted files are saved</value>
@@ -959,6 +983,21 @@
   </data>
   <data name="Settings_Output_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Default output folder</value>
+  </data>
+  <data name="Settings_Output_Custom.Content" xml:space="preserve">
+    <value>Custom folder …</value>
+  </data>
+  <data name="Settings_Output_Same.Content" xml:space="preserve">
+    <value>Same folder</value>
+  </data>
+  <data name="Settings_Output_Sub.Content" xml:space="preserve">
+    <value>Subfolder “Kvertis”</value>
+  </data>
+  <data name="Settings_Parallel_Card.Description" xml:space="preserve">
+    <value>Matches the number of processor cores</value>
+  </data>
+  <data name="Settings_Parallel_Card.Header" xml:space="preserve">
+    <value>Automatic number of parallel conversions</value>
   </data>
   <data name="Settings_ParallelAuto_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Automatic number of parallel conversions</value>
@@ -972,25 +1011,19 @@
   <data name="Settings_ParallelCount_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Parallel conversions</value>
   </data>
-  <data name="Settings_Parallel_Card.Description" xml:space="preserve">
-    <value>Matches the number of processor cores</value>
-  </data>
-  <data name="Settings_Parallel_Card.Header" xml:space="preserve">
-    <value>Automatic number of parallel conversions</value>
-  </data>
   <data name="Settings_Privacy_Card.Description" xml:space="preserve">
     <value>Kvertis has no internet access, collects no data and sends nothing.</value>
   </data>
   <data name="Settings_Privacy_Card.Header" xml:space="preserve">
     <value>Privacy</value>
   </data>
+  <data name="Settings_Pro_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Kvertis Pro</value>
+  </data>
   <data name="Settings_Pro_Card.Description" xml:space="preserve">
     <value>Video and unlimited batches</value>
   </data>
   <data name="Settings_Pro_Card.Header" xml:space="preserve">
-    <value>Kvertis Pro</value>
-  </data>
-  <data name="Settings_Pro_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Kvertis Pro</value>
   </data>
   <data name="Settings_Restart_InfoBar.Message" xml:space="preserve">
@@ -1038,6 +1071,9 @@
   <data name="Steps_Status_Done" xml:space="preserve">
     <value>Done</value>
   </data>
+  <data name="Steps_Status_Locked" xml:space="preserve">
+    <value>Locked, conversion is running</value>
+  </data>
   <data name="Steps_Status_Upcoming" xml:space="preserve">
     <value>Not yet reached</value>
   </data>
@@ -1047,17 +1083,17 @@
   <data name="Steps_Target_Label.Text" xml:space="preserve">
     <value>Target</value>
   </data>
-  <data name="Target_Back_Button.Content" xml:space="preserve">
-    <value>Back</value>
-  </data>
   <data name="Target_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Back to step 1</value>
   </data>
-  <data name="Target_Continue_Button.Content" xml:space="preserve">
-    <value>Next: Convert</value>
+  <data name="Target_Back_Button.Content" xml:space="preserve">
+    <value>Back</value>
   </data>
   <data name="Target_Continue_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Next to step 3: Convert</value>
+  </data>
+  <data name="Target_Continue_Button.Content" xml:space="preserve">
+    <value>Next: Convert</value>
   </data>
   <data name="Target_Effects_Header.Text" xml:space="preserve">
     <value>What changes</value>
@@ -1074,16 +1110,16 @@
   <data name="Target_ExactSize_Hint.Text" xml:space="preserve">
     <value>This size is probably out of reach with the chosen formats.</value>
   </data>
-  <data name="Target_ExactSize_NumberBox.Header" xml:space="preserve">
-    <value>Size</value>
-  </data>
   <data name="Target_ExactSize_NumberBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Target size in megabytes</value>
   </data>
-  <data name="Target_ExactSize_Toggle.Header" xml:space="preserve">
-    <value>Set a target size</value>
+  <data name="Target_ExactSize_NumberBox.Header" xml:space="preserve">
+    <value>Size</value>
   </data>
   <data name="Target_ExactSize_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Set a target size</value>
+  </data>
+  <data name="Target_ExactSize_Toggle.Header" xml:space="preserve">
     <value>Set a target size</value>
   </data>
   <data name="Target_ExactSize_Unit.Text" xml:space="preserve">
@@ -1137,25 +1173,25 @@
   <data name="Target_Metadata_Hint.Text" xml:space="preserve">
     <value>Removes location and camera data from the output.</value>
   </data>
-  <data name="Target_Metadata_Toggle.Header" xml:space="preserve">
-    <value>Remove metadata</value>
-  </data>
   <data name="Target_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Remove metadata</value>
   </data>
-  <data name="Target_Mode_AllSame.Content" xml:space="preserve">
-    <value>All the same</value>
+  <data name="Target_Metadata_Toggle.Header" xml:space="preserve">
+    <value>Remove metadata</value>
   </data>
   <data name="Target_Mode_AllSame.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>All the same</value>
+  </data>
+  <data name="Target_Mode_AllSame.Content" xml:space="preserve">
     <value>All the same</value>
   </data>
   <data name="Target_Mode_Header.Text" xml:space="preserve">
     <value>Choose the target format</value>
   </data>
-  <data name="Target_Mode_Individual.Content" xml:space="preserve">
+  <data name="Target_Mode_Individual.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Each on its own</value>
   </data>
-  <data name="Target_Mode_Individual.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Target_Mode_Individual.Content" xml:space="preserve">
     <value>Each on its own</value>
   </data>
   <data name="Target_More_Expander.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -1164,22 +1200,22 @@
   <data name="Target_More_Header.Text" xml:space="preserve">
     <value>More</value>
   </data>
+  <data name="Target_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Pattern for the file name</value>
+  </data>
   <data name="Target_NamePattern_TextBox.Header" xml:space="preserve">
     <value>File name</value>
   </data>
   <data name="Target_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
     <value>{name}</value>
   </data>
-  <data name="Target_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Pattern for the file name</value>
-  </data>
   <data name="Target_Paths_Header.Text" xml:space="preserve">
     <value>Paths</value>
   </data>
-  <data name="Target_Previous_Apply_Button.Content" xml:space="preserve">
+  <data name="Target_Previous_Apply_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Use the old values</value>
   </data>
-  <data name="Target_Previous_Apply_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+  <data name="Target_Previous_Apply_Button.Content" xml:space="preserve">
     <value>Use the old values</value>
   </data>
   <data name="Target_Previous_Bar_Mark.Text" xml:space="preserve">
@@ -1197,6 +1233,9 @@
   <data name="Target_Previous_Title" xml:space="preserve">
     <value>From the history · {0}</value>
   </data>
+  <data name="Target_Size_Approx" xml:space="preserve">
+    <value>≈ {0}</value>
+  </data>
   <data name="Target_SizeBar_AutomationName" xml:space="preserve">
     <value>Size: {0}</value>
   </data>
@@ -1205,9 +1244,6 @@
   </data>
   <data name="Target_SizeBar_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Size</value>
-  </data>
-  <data name="Target_Size_Approx" xml:space="preserve">
-    <value>≈ {0}</value>
   </data>
   <data name="Target_Summary_Text" xml:space="preserve">
     <value>{0} files · ≈ {1}</value>

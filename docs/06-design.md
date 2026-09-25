@@ -242,3 +242,54 @@ Umgesetzt nach `docs/entwuerfe/schritt-2-ziel.md` und dem Abschnitt „Schritt 2
   (`ShowConverter`, `BrushKeyConverter` in `Helpers/Converters.cs`); `x:Bind` bleibt überall sonst.
 - Entwicklungshilfe: In Debug-Builds legt die Umgebungsvariable `KVERTIS_STAGE_FILES` (Pfade mit `;`)
   Dateien ab und öffnet Schritt 2. Im ausgelieferten Build existiert der Zweig nicht.
+
+## Umsetzungsstand Schritt 3 „Umwandeln“, Teilaufgaben A–C (2026-09-25)
+
+Umgesetzt nach `docs/entwuerfe/schritt-3-umwandeln.md` und dem Abschnitt „Schritt 3 „Umwandeln““ in
+`03-architektur.md` (ADR-020, ADR-021). Reines XAML, keine Zeichenschicht.
+
+- **Zielpfad-Vorschau** `Services/TargetPathPlanner.cs` (ohne WinUI): `EffectiveLocation`, `NeedsFolder`,
+  `PreviewAll` mit `TargetPathPreview`. Dieselbe Rechnung wie der `JobRunner` beim Start, mit Nummerierung
+  gegen Datenträger und gegen die übrigen Zeilen der Runde (ADR-007).
+- **Koordinator** `Services/ConversionCoordinator.cs` (ohne WinUI): `IConversionCoordinator` mit `Start`,
+  `RelocateWaiting`, `PauseAll`, `ResumeAll`, `CancelAll`, `Reset`, `Jobs`, `State`, `Overall`, `Report`,
+  `Changed`. Einzige Stelle der App, die für Umwandlungen mit der Queue spricht; Singleton.
+- **Öffnen und Zeigen** `Services/ShellLauncher.cs` (`IShellLauncher`), genutzt von Zeile, Bericht und Verlauf.
+- **Sitzung** `IWorkflowSession.Location` ist `OutputLocation?`, neu `OwnLocations` und `SetOwnLocation`.
+- **ViewModels** unter `ViewModels/Convert/`: `ConvertPageViewModel`, `ConvertRowViewModel`,
+  `LocationCardViewModel`, `RoundReportViewModel`.
+- **Seite** `Views/ConvertPage.xaml`: links Eingang mit Farbpunkten, übersprungenen Dateien und Pro-Karte;
+  Mitte `SwirlHost` (`KvDeepBrush`, Radius 8, Mindesthöhe 220) mit höchstens zwei laufenden Karten, Zeile
+  „und n weitere laufen“ und dem Abschlussbericht; rechts „fertig n von N“ und die Speicherort-Karte mit
+  Flyout (drei `RadioButton` plus „Ordner wählen…“), Ordner-Ablage aus dem Explorer und Tasche-Knopf; darunter
+  die Liste Format → Format mit Zielpfad, „Ändern“, „Öffnen“, „Im Ordner zeigen“ und Fehlertext aus
+  `Error_*`. Untere Leiste mit Vertrauenszeile, Gesamtfortschritt, „Zurück“, „Pause“/„Weiter“, „Abbrechen“
+  (mit Rückfrage), „Umwandeln · n Dateien“ als einzigem Mint-Knopf und „Neue Runde“ nach dem Lauf.
+  `AdaptiveTrigger` ab 900 px stapelt die drei Spalten.
+- **Abbau:** `MainPage` gibt Start, Zielordner-Dropdown, Gesamtfortschritt, „Alle pausieren“, „Alle
+  abbrechen“, „Fertige entfernen“, Pro-Karte und Ansage-Region ab; der einzige Mint-Knopf ist „Weiter: Ziel“.
+  Die Job-Karte zeigt nur noch Miniatur oder Typ-Symbol, Formatschild, Name, Größe, Maße, Warnung, die
+  Zustände Erkennen/Bereit/Abgelehnt und „Entfernen“. `Views/MorePanel.xaml(.cs)` und
+  `Views/FormatPickerFlyout.xaml(.cs)` sind gelöscht, die frei gewordenen Ressourcen-Schlüssel ebenfalls.
+  `MainViewModel` kennt die Queue nicht mehr. Die Schrittleiste sperrt Schritt 1 und 2, solange die Runde
+  läuft oder pausiert (`Steps_Status_Locked`).
+
+**Abweichungen vom Arbeitsblatt:**
+
+- `TargetPathPreview` trägt zusätzlich `BatchIndex`, damit der Koordinator die Jobs allein aus den Vorschauen
+  bauen kann und die Nummerierung des `{n}`-Platzhalters nur an einer Stelle entsteht.
+- `RoundReport.Failures` ist eine Liste von `RoundFailure(Job, Error)` statt einer Tupel-Liste; ein Record ist
+  in Tests und in XAML besser lesbar.
+- Die Ansage des Gesamtfortschritts wird direkt über `TimeProvider` zurückgehalten (Zählerwechsel oder
+  5 Sekunden) statt über `Debouncer`; der `Debouncer` würde hier nur eine zweite Zeitquelle einführen.
+- `JobItemState` hat nur noch `Detecting`, `Ready`, `Rejected`; damit entfallen auch die Schlüssel
+  `Card_State_Queued/Running/Paused/Completed/Failed/Cancelled`, `Card_PresetList.*` und `Card_Progress.*`,
+  die das Arbeitsblatt nicht einzeln aufzählt.
+- `Main_Output_Same/Sub/Custom` werden weiter von der Einstellungsseite gebraucht und heißen dort jetzt
+  `Settings_Output_Same/Sub/Custom`; gelöscht statt umbenannt wäre die Einstellungsseite kaputt.
+- `Convert_NoPlan_Text` ist zu `Convert_NoPlan_Text.Text` geworden, weil der Hinweis jetzt fest in der Seite
+  steht und nicht mehr aus dem Code kommt.
+- Der Bericht zeigt die Ersparnis als vorzeichenbehaftete Änderung (`Format_Change_Percent`), nicht als
+  „71 % gespart“; derselbe Text wird schon im Verlauf und auf der Karte benutzt.
+- `SettingsViewModel` setzt weiterhin `IJobQueue.MaxParallel`; das ist eine Einstellung, keine Umwandlung,
+  und `App.OnWindowClosed` ruft weiterhin `JobQueue.StopAsync`.

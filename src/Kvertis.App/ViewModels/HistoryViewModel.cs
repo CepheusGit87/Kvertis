@@ -7,9 +7,6 @@ using Kvertis.App.Services;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
 using Kvertis.Queue;
-using Microsoft.Extensions.Logging;
-using Windows.Storage;
-using Windows.System;
 
 namespace Kvertis.App.ViewModels;
 
@@ -63,35 +60,35 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
     private readonly FormatRegistry _registry;
     private readonly MainViewModel _main;
     private readonly IFilePickerService _pickers;
+    private readonly IShellLauncher _shell;
     private readonly IDialogService _dialogs;
     private readonly ILocalizer _loc;
     private readonly IUiDispatcher _ui;
     private readonly IWorkflowSession _session;
     private readonly IStepNavigationService _steps;
-    private readonly ILogger<HistoryViewModel> _logger;
 
     public HistoryViewModel(
         JobHistory history,
         FormatRegistry registry,
         MainViewModel main,
         IFilePickerService pickers,
+        IShellLauncher shell,
         IDialogService dialogs,
         ILocalizer loc,
         IUiDispatcher ui,
         IWorkflowSession session,
-        IStepNavigationService steps,
-        ILogger<HistoryViewModel> logger)
+        IStepNavigationService steps)
     {
         _history = history;
         _registry = registry;
         _main = main;
         _pickers = pickers;
+        _shell = shell;
         _dialogs = dialogs;
         _loc = loc;
         _ui = ui;
         _session = session;
         _steps = steps;
-        _logger = logger;
         _history.Changed += OnHistoryChanged;
         Reload();
     }
@@ -122,28 +119,17 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
             return;
         }
         _session.Previous = item.Entry;
-        await _main.AddPathsWithSettingsAsync(paths, item.Entry.Settings);
+        await _main.AddPathsWithSettingsAsync(paths);
         IsOpen = false;
         _steps.GoTo(WorkflowStep.Target);
     }
 
-    public async Task OpenFolderAsync(HistoryItemViewModel item)
+    public Task OpenFolderAsync(HistoryItemViewModel item)
     {
         ArgumentNullException.ThrowIfNull(item);
-        var directory = item.Entry.OutputPath is { } output ? Path.GetDirectoryName(output) : null;
-        if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
-        {
-            return;
-        }
-        try
-        {
-            var folder = await StorageFolder.GetFolderFromPathAsync(directory);
-            await Launcher.LaunchFolderAsync(folder);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogInformation(ex, "Opening a history folder failed");
-        }
+        return item.Entry.OutputPath is { Length: > 0 } output
+            ? _shell.ShowInFolderAsync(output)
+            : Task.CompletedTask;
     }
 
     [RelayCommand(CanExecute = nameof(HasItems))]

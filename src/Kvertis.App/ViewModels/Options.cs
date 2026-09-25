@@ -22,22 +22,6 @@ public sealed class FormatOption
     public override string ToString() => Label;
 }
 
-/// <summary>A named target preset ("For messaging"). Labels come from the resources, never product names.</summary>
-public sealed class PresetOption
-{
-    public PresetOption(ConversionPreset preset, string label)
-    {
-        Preset = preset;
-        Label = label;
-    }
-
-    public ConversionPreset Preset { get; }
-
-    public string Label { get; }
-
-    public override string ToString() => Label;
-}
-
 /// <summary>A localized choice in a combo box (unit, language, theme).</summary>
 public sealed class ChoiceOption
 {

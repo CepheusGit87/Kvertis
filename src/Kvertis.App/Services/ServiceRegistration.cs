@@ -60,6 +60,7 @@ public static class ServiceRegistration
         services.AddSingleton<ErrorMessageMapper>();
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IFilePickerService, FilePickerService>();
+        services.AddSingleton<IShellLauncher, ShellLauncher>();
         services.AddSingleton<ClipboardImageService>();
         services.AddSingleton<ThirdPartyLicensesProvider>();
 #if DEBUG
@@ -148,10 +149,14 @@ public static class ServiceRegistration
             sp.GetRequiredService<JobQueueOptions>()));
         services.AddSingleton<IJobQueue>(sp => sp.GetRequiredService<JobQueue>());
         // ConversionJobFactory is a static helper and needs no registration.
+        // The only place that talks to the queue about conversions (ADR-021).
+        services.AddSingleton<IConversionCoordinator>(sp => new ConversionCoordinator(
+            sp.GetRequiredService<IJobQueue>(), sp.GetRequiredService<IUiDispatcher>()));
 
         // View models
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<Kvertis.App.ViewModels.Target.TargetPageViewModel>();
+        services.AddSingleton<Kvertis.App.ViewModels.Convert.ConvertPageViewModel>();
         services.AddSingleton<HistoryViewModel>();
         services.AddSingleton<ProViewModel>();
         services.AddTransient<SettingsViewModel>();

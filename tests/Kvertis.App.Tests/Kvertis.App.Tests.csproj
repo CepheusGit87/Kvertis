@@ -31,6 +31,8 @@
   <ItemGroup>
     <Compile Include="..\..\src\Kvertis.App\Services\TargetPlanner.cs" Link="FromApp\TargetPlanner.cs" />
     <Compile Include="..\..\src\Kvertis.App\Services\WorkflowSession.cs" Link="FromApp\WorkflowSession.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\TargetPathPlanner.cs" Link="FromApp\TargetPathPlanner.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\ConversionCoordinator.cs" Link="FromApp\ConversionCoordinator.cs" />
     <Compile Include="..\..\src\Kvertis.App\Services\Debouncer.cs" Link="FromApp\Debouncer.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Options.cs" Link="FromApp\Options.cs" />
     <Compile Include="..\..\src\Kvertis.App\Services\ILocalizer.cs" Link="FromApp\ILocalizer.cs" />

@@ -1,54 +1,102 @@
-using Kvertis.App.Helpers;
+using System.ComponentModel;
 using Kvertis.App.Services;
-using Kvertis.Engine.Abstractions;
+using Kvertis.App.ViewModels.Convert;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
+using Windows.ApplicationModel.DataTransfer;
+using Windows.Storage;
 
 namespace Kvertis.App.Views;
 
 /// <summary>
-/// Step 3 "Umwandeln". Still a placeholder for the swirl and the closing sequence; it already reports what
-/// step 2 planned, so the hand-over through <see cref="IWorkflowSession"/> is visible.
+/// Step 3 "Umwandeln". The code-behind only handles the folder drop on the location card and the live
+/// region; everything else is in <see cref="ConvertPageViewModel"/>. The swirl surface stays empty until the
+/// drawing layer arrives (ADR-018).
 /// </summary>
 public sealed partial class ConvertPage : Page
 {
-    private readonly IWorkflowSession _session;
-    private readonly IEstimator _estimator;
     private readonly ILocalizer _loc;
+    private readonly ILogger<ConvertPage> _logger;
 
     public ConvertPage()
     {
-        _session = App.Services.GetRequiredService<IWorkflowSession>();
-        _estimator = App.Services.GetRequiredService<IEstimator>();
+        ViewModel = App.Services.GetRequiredService<ConvertPageViewModel>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
+        _logger = App.Services.GetRequiredService<ILoggerFactory>().CreateLogger<ConvertPage>();
         InitializeComponent();
+        ViewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
+
+    public ConvertPageViewModel ViewModel { get; }
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {
         base.OnNavigatedTo(e);
-        PlanText.Text = Describe();
+        // LoadAsync never throws; it turns a failure into ViewModel.ErrorText. The guard is the last net.
+        _ = LoadAsync();
     }
 
-    private string Describe()
+    private async Task LoadAsync()
     {
-        if (_session.Plan is not { Items.Count: > 0 } plan)
+        try
         {
-            return _loc.Get("Convert_NoPlan_Text");
+            await ViewModel.LoadAsync();
         }
-        long total = 0;
-        foreach (var item in plan.Items)
+        catch (Exception ex)
         {
-            try
-            {
-                total += _estimator.Estimate(item.Input, item.Settings).OutputBytes;
-            }
-            catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
-            {
-                total += item.Input.SizeBytes;
-            }
+            _logger.LogError(ex, "Showing the convert page failed");
         }
-        return _loc.Format("Convert_Plan_Text", plan.Items.Count, Formatting.Bytes(_loc, total));
+    }
+
+    private void OnLocationDragOver(object sender, DragEventArgs e)
+    {
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            e.AcceptedOperation = DataPackageOperation.None;
+            return;
+        }
+        e.AcceptedOperation = DataPackageOperation.Link;
+        e.DragUIOverride.Caption = _loc.Get("Convert_Location_DropCaption");
+    }
+
+    // Drag-and-drop handlers are events; async void is intended here.
+    private async void OnLocationDrop(object sender, DragEventArgs e)
+    {
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
+        {
+            return;
+        }
+        var deferral = e.GetDeferral();
+        IReadOnlyList<IStorageItem> items;
+        try
+        {
+            items = await e.DataView.GetStorageItemsAsync();
+        }
+        finally
+        {
+            deferral.Complete();
+        }
+        // Exactly one folder; anything else is not a target.
+        var folders = items.OfType<StorageFolder>().ToList();
+        if (folders.Count == 1)
+        {
+            await ViewModel.DropFolderAsync(folders[0]);
+        }
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(ConvertPageViewModel.Announcement) && !string.IsNullOrEmpty(ViewModel.Announcement))
+        {
+            FrameworkElementAutomationPeer.FromElement(AnnouncementText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+        }
+        else if (e.PropertyName == nameof(ConvertPageViewModel.OverallAnnouncement))
+        {
+            FrameworkElementAutomationPeer.FromElement(OverallText)?.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+        }
     }
 }

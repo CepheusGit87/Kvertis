@@ -64,9 +64,9 @@
           <FontIcon Glyph="&#xE8B7;" />
         </controls:SettingsCard.HeaderIcon>
         <ComboBox x:Uid="Settings_Output_ComboBox" MinWidth="220" SelectedIndex="{x:Bind ViewModel.OutputLocationIndex, Mode=TwoWay}">
-          <ComboBoxItem x:Uid="Main_Output_Same" />
-          <ComboBoxItem x:Uid="Main_Output_Sub" />
-          <ComboBoxItem x:Uid="Main_Output_Custom" />
+          <ComboBoxItem x:Uid="Settings_Output_Same" />
+          <ComboBoxItem x:Uid="Settings_Output_Sub" />
+          <ComboBoxItem x:Uid="Settings_Output_Custom" />
         </ComboBox>
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_NamePattern_Card">
