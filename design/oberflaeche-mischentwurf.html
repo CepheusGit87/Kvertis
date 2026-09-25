@@ -608,29 +608,33 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .w5-ein { position: absolute; left: 22px; bottom: 16px; display: grid; gap: 1px; z-index: 2; max-width: 300px; }
 .w5-ein b { font-size: 13px; }
 .w5-ein small { font-size: 11px; color: var(--coral); }
-.w5-gross { position: absolute; right: 22px; top: 14px; width: 262px; display: grid; gap: 10px; z-index: 2; padding: 4px; border-radius: 16px; transition: background .2s, box-shadow .2s; }
+/* Ziel: weißes Loch mit gebündelten Bahnen (Zeichenfläche), darunter rechts der Speicherort */
+.w5-gross { position: absolute; right: 22px; bottom: 12px; width: min(300px, 30%); display: grid; gap: 6px; z-index: 4; padding: 6px 8px; margin: -6px -8px; border-radius: 12px; transition: background .2s, box-shadow .2s, opacity .45s, transform .45s; }
 .w5-gross.drop { background: var(--mint-flaeche); box-shadow: 0 0 0 2px var(--mint); }
-.w5-ordner { position: relative; height: 190px; }
-.w5-rueck { position: absolute; left: 0; right: 0; top: 14px; bottom: 0; border-radius: 12px; background: color-mix(in srgb, var(--mint) 30%, var(--karton-tief)); }
-.w5-rueck::before { content: ''; position: absolute; left: 14px; top: -14px; width: 92px; height: 18px; border-radius: 9px 9px 0 0; background: inherit; }
-.w5-mund { position: absolute; left: 22px; right: 22px; top: 30px; height: 26px; border-radius: 6px; background: #0008; box-shadow: inset 0 6px 10px -4px #000; }
-.w5-vorn { position: absolute; left: -4px; right: -4px; bottom: 0; height: 142px; border-radius: 14px; padding: 13px 16px; display: grid; align-content: space-between; background: linear-gradient(180deg, color-mix(in srgb, var(--mint) 72%, #fff 6%), color-mix(in srgb, var(--mint) 46%, var(--karton-tief))); box-shadow: inset 0 1.5px 0 #ffffff55, 0 24px 34px -18px var(--schatten); color: #0b0f12; transform-origin: bottom; }
-.w5-gross.schluck .w5-vorn { animation: w5schluck .45s var(--feder); }
-@keyframes w5schluck { 40% { transform: perspective(600px) rotateX(-22deg); } }
-.w5-vorn small { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
-.w5-vorn b { display: block; font-size: 19px; font-weight: 700; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.w5-pf { display: block; font: 500 10.5px var(--mono); opacity: .75; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 3px; }
-.w5-aendern { justify-self: start; border: 0; border-radius: 9px; padding: 6px 12px; background: #0b0f12; color: #e7ecee; font-size: 12px; font-weight: 600; }
-.w5-aendern:hover:not(:disabled) { background: #1a1f23; }
+.w5-ort { display: grid; gap: 1px; min-width: 0; }
+.w5-ort small { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.w5-ort b { font-size: 16px; font-weight: 600; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w5-pf { font: 500 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w5-knoepfe { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.w5-aendern { border: 1px solid var(--line-stark); border-radius: 8px; padding: 4px 10px; background: var(--panel); font-size: 12px; font-weight: 600; }
+.w5-aendern:hover:not(:disabled) { border-color: var(--mint-rahmen); }
 .w5-aendern:disabled { opacity: .5; cursor: default; }
-.w5-zahl { position: absolute; right: -10px; top: 4px; min-width: 32px; height: 32px; padding: 0 9px; border-radius: 16px; background: var(--panel); border: 2px solid var(--mint); color: var(--mint); font: 700 13px/28px var(--mono); text-align: center; }
-.w5-tasche { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 0 10px; align-items: center; padding: 8px 12px; border-radius: 12px; border: 1px dashed var(--line-stark); background: color-mix(in srgb, var(--panel) 85%, transparent); text-align: left; font-size: 12px; }
-.w5-tasche svg { grid-row: span 2; width: 20px; height: 20px; color: var(--mint); }
-.w5-tasche b { font-weight: 600; }
-.w5-tasche small { font: 10.5px var(--mono); color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w5-tasche { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 4px 9px; border-radius: 8px; border: 1px dashed var(--line-stark); background: transparent; font-size: 11.5px; min-width: 0; }
+.w5-tasche svg { width: 14px; height: 14px; flex: none; color: var(--mint); }
+.w5-tasche b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.w5-tasche small { display: none; }
 .w5-tasche:hover { border-color: var(--mint); }
 .w5-tasche.hupf { animation: w5hupf .4s var(--feder); }
-@keyframes w5hupf { 40% { transform: scale(1.04); border-color: var(--mint); } }
+@keyframes w5hupf { 40% { transform: scale(1.06); border-color: var(--mint); } }
+.w5-zahl { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.w5-ein { transition: opacity .45s, transform .45s; }
+#lauf.abschluss .w5-ein, #lauf.abschluss .w5-gross { opacity: 0; transform: translateY(6px); pointer-events: none; }
+.w5-bericht { position: absolute; left: 50%; top: 128px; z-index: 4; width: min(440px, 90%); transform: translate(-50%, 8px); display: grid; justify-items: center; gap: 3px; text-align: center; opacity: 0; pointer-events: none; transition: opacity .6s, transform .6s var(--sanft); }
+.w5-bericht.an { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.w5-bericht b { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.w5-bericht span { font: 11.5px var(--mono); color: var(--muted); }
+.w5-bericht span.fehl { color: var(--coral); }
+.w5-bericht .akt { display: flex; gap: 8px; margin-top: 8px; }
 
 .w5-liste { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 4px; padding: 6px 20px 8px; min-height: 0; border-top: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 30%, transparent); }
 .w5-kopf { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 2px; }
@@ -686,13 +690,6 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
 .ueb > canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
 .ueb-host { position: absolute; inset: 0; }
 .ueb-blatt { position: absolute; left: 0; top: 0; transform-origin: 0 0; opacity: 0; filter: drop-shadow(0 6px 10px var(--schatten)); }
-.ueb-erg { position: absolute; transform: translate(-50%, 0); display: grid; justify-items: center; gap: 3px; text-align: center; white-space: nowrap; transition: opacity .5s, transform .6s var(--feder); }
-.ueb-erg.weg { opacity: 0; transform: translate(-50%, 8px) scale(.97); }
-.ueb-erg b { font-size: 16px; font-weight: 600; letter-spacing: -.01em; }
-.ueb-erg small { font: 11.5px var(--mono); color: var(--muted); }
-.ueb-erg small.f { color: var(--coral); font-family: var(--schrift); font-size: 12.5px; }
-.ueb-erg .hk { width: 34px; height: 34px; border-radius: 50%; background: var(--mint); color: var(--auf-mint); display: grid; place-items: center; font-weight: 700; font-size: 17px; margin-bottom: 4px; box-shadow: 0 0 24px color-mix(in srgb, var(--mint) 45%, transparent); }
-.ueb-erg .hk.teil { background: var(--panel); color: var(--mint); border: 1.5px solid var(--mint); }
 .ueb-wahl { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; font-size: 13.5px; color: var(--muted); }
 .ueb-wahl label { display: inline-flex; gap: 6px; align-items: center; }
 .ueb-wahl select { font: inherit; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line-stark); border-radius: 8px; padding: 6px 8px; }
@@ -781,14 +778,15 @@ input[type="range"] { width: 100%; accent-color: var(--mint); margin: 0; }
           <section class="ebene" data-pos="1" data-s="2" aria-label="Schritt 3: Umwandeln">
             <div class="w5" id="lauf">
               <div class="w5-buehne">
-                <canvas id="w5-cv" role="img" aria-label="Umwandeln: Die Dateien lösen sich in Pixel auf, wirbeln durch Kvertis und landen im Zielordner"></canvas>
+                <canvas id="w5-cv" role="img" aria-label="Umwandeln: Die Dateien lösen sich in Pixel auf, wirbeln durch das schwarze Loch und landen als Planeten am weißen Loch"></canvas>
                 <div class="w5-ein"><span class="label">Eingang</span><b id="ein-zahl"></b><small id="ein-klein"></small></div>
                 <div class="w5-gross" id="aus-spalte">
-                  <div class="w5-ordner"><span class="w5-rueck"></span><span class="w5-mund" id="w5-mund"></span>
-                    <div class="w5-vorn"><span><small>Hierhin speichern</small><b id="w5-titel"></b><span class="w5-pf" id="w5-pfad"></span></span><button type="button" class="w5-aendern" id="w5-aendern" aria-haspopup="dialog">Speicherort ändern ▾</button></div>
-                    <span class="w5-zahl" id="w5-zahl" aria-label="Dateien im Zielordner">0</span></div>
-                  <button type="button" class="w5-tasche" id="w5-tasche"></button>
+                  <div class="w5-ort"><small>Hierhin speichern</small><b id="w5-titel"></b><span class="w5-pf" id="w5-pfad"></span></div>
+                  <div class="w5-knoepfe"><button type="button" class="w5-aendern" id="w5-aendern" aria-haspopup="dialog">Speicherort ändern ▾</button><button type="button" class="w5-tasche" id="w5-tasche"></button></div>
+                  <span class="w5-zahl" id="w5-zahl" aria-live="polite"></span>
                 </div>
+                <div class="w5-bericht" id="w5-bericht" role="status" aria-live="polite"><b id="w5-b-titel"></b><span id="w5-b-zeile"></span>
+                  <div class="akt"><button type="button" class="w5-akt haupt" id="w5-b-ordner">Ordner öffnen</button><button type="button" class="w5-akt" id="w5-b-neu">Neue Runde</button></div></div>
               </div>
               <div class="w5-liste">
                 <div class="w5-kopf"><span class="label">Dateien in diesem Auftrag</span><span class="gross" id="l-summe"></span><span class="label" id="l-stand">bereit</span></div>
@@ -4365,7 +4363,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   function farbenLesen() {
     const cs = getComputedStyle(document.body), c = document.createElement('canvas').getContext('2d');
     const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
-    ['paper', 'blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'auf-mint', 'line-stark', 'bg', 'tief', 'coral'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
+    ['paper', 'ink', 'muted', 'blue', 'violet', 'amber', 'cyan', 'model', 'mint', 'auf-mint', 'line-stark', 'bg', 'tief', 'coral'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
     const [r, g, b] = hexRgb(F.bg); F.dunkel = (r * .3 + g * .59 + b * .11) < 128;
     F.mintRgb = hexRgb(F.mint);
   }
@@ -4476,19 +4474,21 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   new ResizeObserver(s5Groesse).observe(S5.cv);
   const relS = el => { const a = el.getBoundingClientRect(), b = S5.cv.getBoundingClientRect(), s = b.width / (S5.cv.clientWidth || b.width) || 1; return { x: (a.left - b.left) / s, y: (a.top - b.top) / s, w: a.width / s, h: a.height / s }; };
   const quelle5 = (i, n) => { const j = n - 1 - i; return { x: 40 + j * 4, y: S5.cy - 70 - j * 5, s: .5, rot: (j % 3 - 1) * .04 }; };
-  function ziel5(it) {
+  function ziel5(it, T) {
     if (it.st === 'fehler') return quelle5(it.i, W5.items.length);
-    const eig = !!ausnahmen[it.d.name], r = eig ? S5.tasche : S5.mund;
-    return { x: r.x + (eig ? 18 : r.w / 2 - 8), y: r.y + (eig ? 6 : 2), s: .16 };
+    if (ausnahmen[it.d.name]) { const r = S5.tasche; return { x: r.x + 10, y: r.y + r.h / 2 - 3, s: .06 }; }
+    return WL.ziel(it, T);
   }
   function s5Zeichnen(T) {
     const ctx = S5.ctx; ctx.clearRect(0, 0, S5.w, S5.h);
-    S5.mund = relS($('w5-mund')); S5.tasche = relS($('w5-tasche'));
+    S5.tasche = relS($('w5-tasche'));
     const its = W5.items, lauf = W5.lauf;
+    if (WL.laeuft()) { WL.zeichnen(ctx, T); its.forEach((it, i) => { if (it.st === 'fehler') bildAt(ctx, daten(it.f).alt, quelle5(i, its.length)); }); return; }
     const anteil = its.length ? its.reduce((a, x) => a + x.p, 0) / its.length : 0;
     glühen(ctx, S5.cx, S5.cy, S5.R + 60, mischHex(F.violet, F.mint, anteil), laeuft ? .2 : .07 + .02 * Math.sin(T * 2));
     ctx.strokeStyle = rgba(F['line-stark'], .6); ctx.setLineDash([2, 6]); ctx.lineWidth = 1;
     ctx.beginPath(); ctx.ellipse(S5.cx, S5.cy, S5.R + 24, (S5.R + 24) * S5.fl, T * .05, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+    WL.zeichnen(ctx, T);
     its.forEach((it, i) => {
       const d = daten(it.f), q = quelle5(i, its.length);
       if (!lauf) { if (it.st !== 'fertig') bildAt(ctx, d.alt, q); return; }
@@ -4496,7 +4496,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const ein = clamp((T - tIn) / .95), aus = tOut ? clamp((T - tOut) / .95) : 0;
       if (aus >= 1) { if (it.st === 'fehler') bildAt(ctx, d.alt, q); return; }
       if (ein <= 0) { bildAt(ctx, d.alt, q); return; }
-      const z = ziel5(it), tint = hexRgb(F[KF[it.d.kat]] || F.mint);
+      const z = ziel5(it, T), tint = hexRgb(F[KF[it.d.kat]] || F.mint);
       // Pixel nehmen im Wirbel die Farbe ihrer Dateiart an und behalten sie bis ins Ziel
       pixel(ctx, d.P, p => {
         const w = p.r1 * 6.283 + (T - tIn) * (0.5 + 1.6 * (1 - p.r2)), rad = 14 + p.r2 * S5.R;
@@ -4515,6 +4515,334 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
     ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, 7); ctx.stroke();
   }
+  /* ===== Weißes Loch: Ziel in Schritt 3 und Abschluss (festgehalten 25.09., siehe design/ENTSCHEIDUNGEN.md)
+     Rechts ein weißes Loch mit gebündelten Bahnen: bis 10 Dateien eine Bahn je Datei, darüber höchstens 10 Bahnen
+     mit mehreren Plätzen. Jede fertige Datei wird ein Planet in ihrer Farbe. Nach der letzten Datei der Abschluss:
+     Planeten drehen hoch, das weiße Loch zehrt an ihnen, beide Löcher kreisen um ihren Mittelpunkt in die Mitte,
+     Verschmelzung, Supernova, Beben, die Planeten legen sich als Ring um den Bericht in der Mitte. */
+  const WL = (() => {
+    const TAU = Math.PI * 2, FL = .42, FLt = .45;
+    const PH1 = 1.15, PH2 = .75, ANL = PH1 + PH2, M = 2.4, STILL = .28, DET = ANL + M + STILL, RUNDEN = 4, MAXW = 16 / 180 * Math.PI * 60;
+    const aus3 = t => 1 - Math.pow(1 - t, 3), phase = (f, a, b) => clamp((f - a) / (b - a));
+    const P2 = (a, b, u) => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) });
+    const rotV = (v, a) => ({ x: v.x * Math.cos(a) - v.y * Math.sin(a), y: v.x * Math.sin(a) + v.y * Math.cos(a) });
+    const weiss = () => F.dunkel ? '#ffffff' : F.mint;
+    const hell = ctx => { ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over'; };
+    const normal = ctx => { ctx.globalCompositeOperation = 'source-over'; };
+    const welle = (ctx, x, y, r, a, c, fl, lw) => { if (a <= 0 || r <= 0) return; ctx.globalAlpha = a; ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); ctx.ellipse(x, y, r, r * fl, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; };
+    const artFarbe = s => s.fehl ? F.coral : F[KF[s.art]] || F.mint;
+
+    // Plätze: je Datei mit Ziel „wie alle“ einer; vergeben in der Reihenfolge, in der die Dateien fertig werden
+    const Z = { slots: [], N: 0, ende: null, sim: null, stern: [], staub: [], funken: [] };
+    function vorbereiten() {
+      const haupt = W5.items.filter(it => !ausnahmen[it.d.name]);
+      Z.N = haupt.length; Z.slots = []; Z.ende = null; Z.sim = null;
+      Z.stern = Array.from({ length: 70 }, () => ({ w: Math.random() * TAU, r: Math.sqrt(Math.random()), a: Math.random(), f: .5 + Math.random() * 1.5, s: Math.random() < .15 ? 1.6 : 1 }));
+      Z.voll = Array.from({ length: 110 }, () => ({ x: Math.random(), y: Math.random(), a: Math.random() * 9, f: .4 + Math.random() * 1.2, s: Math.random() < .12 ? 1.6 : 1 }));
+    }
+    function platzFuer(it, t, fehl) {
+      if (ausnahmen[it.d.name] || it.slot != null) return;
+      it.slot = Z.slots.length; Z.slots.push({ art: it.d.kat, t, fehl: !!fehl, it });
+    }
+    const B = () => Math.min(Math.max(Z.N, 1), 10);
+    const kap = j => Math.floor(Z.N / B()) + (j < Z.N % B() ? 1 : 0);
+    const G = () => ({ tw: Math.min(300, S5.w * .3), T: { x: S5.w - 22 - Math.min(300, S5.w * .3) / 2, y: 100 } });
+    const rx = j => 24 + j * Math.min(12, (G().tw / 2 - 30) / Math.max(1, B() - 1));
+    const winkel = (k, t) => { const j = k % B(), p = Math.floor(k / B()); return j * 2.39 + p / Math.max(1, kap(j)) * TAU + t * .9 * Math.pow(24 / rx(j), 1.5); };
+    const gP = () => Z.N <= 10 ? 2.8 : 2;
+    const zaehlerY = () => G().T.y + rx(B() - 1) * FL + 22;
+
+    function punkt(ctx, s, q, a = 1, schweif) {
+      const c = artFarbe(s), g = gP();
+      if (a <= 0) return;
+      if (s.fehl) { ctx.globalAlpha = a * .8; ctx.strokeStyle = c; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(q.x, q.y, g + 1.5, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; return; }
+      if (schweif) for (let i = 8; i >= 1; i--) { const ww = schweif.w - i * .07; ctx.globalAlpha = a * .38 * (1 - i / 9); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(schweif.m.x + Math.cos(ww) * schweif.r, schweif.m.y + Math.sin(ww) * schweif.r * FL, g * (1 - i / 12), 0, TAU); ctx.fill(); }
+      ctx.globalAlpha = a; hell(ctx); glühen(ctx, q.x, q.y, g * 4, c, .5); normal(ctx);
+      ctx.fillStyle = c; ctx.beginPath(); ctx.arc(q.x, q.y, g, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    function kern(ctx, x, y, t, s = 1, anteil = 1) {
+      const g = (1 + anteil * .35) * s, puls = 1 + .04 * Math.sin(t * 2.2);
+      hell(ctx);
+      glühen(ctx, x, y, (46 + anteil * 36) * puls * s, F.mint, F.dunkel ? .2 : .14);
+      glühen(ctx, x, y, 20 * g, weiss(), F.dunkel ? .75 : .35);
+      ctx.strokeStyle = rgba(weiss(), F.dunkel ? .45 : .35); ctx.lineWidth = 1;
+      const L = 20 * g * puls; ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L * .7); ctx.lineTo(x, y + L * .7); ctx.stroke();
+      normal(ctx);
+      ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x, y, 6.5 * g, 0, TAU); ctx.fill();
+      ctx.strokeStyle = F.mint; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 7.6 * g, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+    }
+    function schwarz(ctx, x, y, s = 1) {
+      if (s <= 0) return; const r = 12 * s;
+      glühen(ctx, x, y, r * 3.4, F.violet, .22); glühen(ctx, x, y, r * 2, F.mint, .25);
+      ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+      ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+    }
+    function zaehler(ctx, x, y, n, N, a = 1) {
+      if (a <= 0 || !N) return; ctx.globalAlpha = a; ctx.textBaseline = 'middle';
+      ctx.font = `600 15px ${MONO}`; const w1 = ctx.measureText(String(n)).width;
+      ctx.font = `500 11px ${MONO}`; const w2 = ctx.measureText(' von ' + N).width;
+      const x0 = x - (w1 + w2) / 2;
+      ctx.fillStyle = F.ink || F.paper; ctx.font = `600 15px ${MONO}`; ctx.fillText(String(n), x0, y);
+      ctx.fillStyle = F.muted; ctx.font = `500 11px ${MONO}`; ctx.fillText(' von ' + N, x0 + w1, y + 1);
+      ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+    }
+    function sterneUm(ctx, t, a) {
+      if (a <= 0) return; const { T, tw } = G();
+      Z.stern.forEach(p => { ctx.globalAlpha = (.25 + .5 * (.5 + .5 * Math.sin(t * p.f + p.a * 9))) * (F.dunkel ? 1 : .7) * a; ctx.fillStyle = F.dunkel ? '#dfe9ef' : F['line-stark']; ctx.fillRect(T.x + Math.cos(p.w) * p.r * (tw / 2 + 6), T.y + Math.sin(p.w) * p.r * 90, p.s, p.s); });
+      ctx.globalAlpha = 1;
+    }
+    function sterneVoll(ctx, t, a) {
+      if (a <= 0) return;
+      Z.voll.forEach(p => { ctx.globalAlpha = (.25 + .5 * (.5 + .5 * Math.sin(t * p.f + p.a))) * (F.dunkel ? .8 : .55) * a; ctx.fillStyle = F.dunkel ? '#dfe9ef' : F['line-stark']; ctx.fillRect(p.x * S5.w, p.y * S5.h, p.s, p.s); });
+      ctx.globalAlpha = 1;
+    }
+    function bahnen(ctx, a, m, skal) {
+      if (a <= 0) return;
+      for (let j = 0; j < B(); j++) {
+        const auf = Z.slots.filter((s, k) => k % B() === j && s.da);
+        ctx.globalAlpha = a;
+        if (auf.length) { ctx.strokeStyle = Z.N <= 10 ? rgba(artFarbe(auf[0]), .38) : rgba(F.mint, .12 + .25 * auf.length / kap(j)); ctx.lineWidth = 1.2; ctx.setLineDash([]); }
+        else { ctx.strokeStyle = rgba(F['line-stark'], .75); ctx.setLineDash([2, 5]); ctx.lineWidth = 1; }
+        ctx.beginPath(); ctx.ellipse(m.x, m.y, rx(j) * skal, rx(j) * skal * FL, 0, 0, TAU); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.lineWidth = 1; ctx.globalAlpha = 1;
+    }
+    const platzPos = (k, t, m = G().T, skal = 1) => { const j = k % B(), w = winkel(k, t), r = rx(j) * skal; return { x: m.x + Math.cos(w) * r, y: m.y + Math.sin(w) * r * FL, w, r, m }; };
+
+    /* ---------- während des Umwandelns ---------- */
+    function zeichnen(ctx, T) {
+      if (!Z.N || !S5.w) return;
+      if (Z.ende) { endeZeichnen(ctx, T); return; }
+      const { T: m } = G();
+      Z.slots.forEach(s => { s.da = T >= s.t; });
+      const n = Z.slots.filter(s => s.da && !s.fehl).length;
+      sterneUm(ctx, T, .4 + .6 * n / Z.N);
+      bahnen(ctx, 1, m, 1);
+      kern(ctx, m.x, m.y, T, 1, n / Z.N);
+      if (Z.N > 10) for (let k = Z.slots.length; k < Z.N; k++) { const p = platzPos(k, T); ctx.fillStyle = rgba(F['line-stark'], .95); ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, TAU); ctx.fill(); }
+      Z.slots.forEach((s, k) => {
+        const p = platzPos(k, T);
+        if (!s.da) { if (Z.N > 10) { ctx.fillStyle = rgba(F['line-stark'], .95); ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, TAU); ctx.fill(); } return; }
+        const e = T - s.t;
+        if (e < .8) { const q = aus3(e / .8); ctx.globalAlpha = 1 - q; ctx.strokeStyle = artFarbe(s); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(p.x, p.y, 5 + q * 14, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; }
+        punkt(ctx, s, p, 1, { w: p.w, r: p.r, m: p.m });
+      });
+      zaehler(ctx, m.x, zaehlerY(), n, Z.N);
+    }
+    // Ziel der Pixel einer Datei: ihr Platz im Universum (winzig, damit die Pixel zu einem Planeten zusammenfallen)
+    function ziel(it, T) { const p = platzPos(it.slot ?? 0, T); return { x: p.x - 2, y: p.y - 2.5, s: .04 }; }
+
+    /* ---------- Abschluss ---------- */
+    function tabelle() {
+      const H = { x: S5.cx, y: S5.cy }, T = G().T, C = { x: S5.w / 2, y: 150 };
+      const fl0 = FLt * .55, v = { x: H.x - T.x, y: (H.y - T.y) / fl0 }, d0 = Math.hypot(v.x, v.y), phi0 = Math.atan2(v.y, v.x);
+      const dt = .002, n = Math.ceil(M / dt) + 1, D = new Float32Array(n), W = new Float32Array(n);
+      const abstand = f => d0 * lerp(1, .36, ease(phase(f, 0, 1.1))) * Math.pow(Math.max(0, M - f) / M, .25);
+      const tempo = f => Math.pow(Math.max(abstand(f), d0 * .02) / d0, -1.5);
+      let summe = 0; for (let i = 1; i < n; i++) summe += tempo(i * dt) * dt;
+      const k = RUNDEN * TAU / summe, w0 = tempo(0) * k;
+      let w = 0; for (let i = 0; i < n; i++) { D[i] = abstand(i * dt); if (i) w += Math.min(tempo(i * dt) * k, MAXW) * dt; W[i] = w; }
+      // gleicher Drehsinn wie die Planeten; im Schritt 2 steigt das Kreisen linear auf das Anfangstempo des Tanzes
+      for (let i = 0; i < n; i++) W[i] = phi0 + w0 * PH2 / 2 + W[i];
+      const n2 = Math.ceil((DET + 3) / dt), X = new Float32Array(n2), E3 = Math.exp(3.2) - 1;
+      let x = 0; for (let i = 0; i < n2; i++) { const f = i * dt; if (i) x += (14 * (Math.exp(3.2 * phase(f, 0, PH1)) - 1) / E3 + 4 * phase(f, ANL, ANL + M)) * dt; X[i] = x; }
+      return { H, T, C, D, W, X, dt, n, n2, d0, w0, fl0, s0: P2(H, T, .5) };
+    }
+    const mitteBei = (Tb, f) => P2(Tb.s0, Tb.C, ease(phase(f, PH1, ANL + 1.2)));
+    function loecher(f) {
+      const Tb = Z.ende.tab;
+      if (f >= ANL) {
+        const fd = f - ANL, i = Math.max(0, Math.min(Tb.n - 1, Math.round(fd / Tb.dt))), d = Tb.D[i], phi = Tb.W[i];
+        const m = mitteBei(Tb, f), fl = FLt * (.55 + .45 * clamp(1 - d / Tb.d0));
+        return { schwarz: { x: m.x + Math.cos(phi) * d * .5, y: m.y + Math.sin(phi) * d * .5 * fl }, weiss: { x: m.x - Math.cos(phi) * d * .5, y: m.y - Math.sin(phi) * d * .5 * fl }, nah: clamp(1 - d / (Tb.d0 * .36)) };
+      }
+      const u = phase(f, PH1, ANL), a = Tb.w0 * PH2 * u * u / 2, m = mitteBei(Tb, f);
+      const lage = p => { const v = rotV({ x: p.x - Tb.s0.x, y: (p.y - Tb.s0.y) / Tb.fl0 }, a); return { x: m.x + v.x, y: m.y + v.y * Tb.fl0 }; };
+      return { weiss: lage(Tb.T), schwarz: lage(Tb.H), nah: 0 };
+    }
+    const schub = f => { const Tb = Z.ende.tab; return f <= 0 ? 0 : Tb.X[Math.min(Tb.n2 - 1, Math.round(f / Tb.dt))]; };
+    const skalVon = f => lerp(1, .58, ease(phase(f, .15, PH1 + .45))) * lerp(1, .75, ease(phase(f - ANL, 0, M)));
+    const bahnW = (k, f) => winkel(k, Z.ende.t0 + f) + .9 * Math.pow(24 / rx(k % B()), .7) * schub(f);
+    function zielAbschluss(k, f) {
+      const j = k % B(), m = loecher(f).weiss, r = rx(j) * skalVon(f), w = bahnW(k, f);
+      return P2({ x: m.x + Math.cos(w) * r, y: m.y + Math.sin(w) * r * FL }, m, ease(phase(f - ANL, M - .5, M)));
+    }
+    // Planeten mit eigener Trägheit: gezogen zu ihrem Platz, bleiben beim Beschleunigen zurück, schwingen nach
+    function simulieren(f) {
+      const h = 1 / 240, N = Z.slots.length;
+      let S = Z.sim;
+      if (!S || S.f > f + 1e-6) {
+        S = Z.sim = { f: 0, n: 0, P: Z.slots.map((s, k) => { const a = zielAbschluss(k, 0), b = zielAbschluss(k, -h), T = G().T; return { x: a.x, y: a.y, vx: (a.x - b.x) / h, vy: (a.y - b.y) / h, spur: Array.from({ length: 14 }, (_, i) => { const q = zielAbschluss(k, -(i + 1) * 4 * h); return { x: q.x - T.x, y: q.y - T.y }; }) }; }) };
+      }
+      let schritte = 0;
+      while (S.f + h <= f && schritte++ < 2400) {
+        S.f += h; S.n++;
+        const nah = S.f > ANL ? loecher(S.f).nah : 0;
+        S.P.forEach((p, k) => {
+          const a = zielAbschluss(k, S.f), b = zielAbschluss(k, S.f - h), j = k % B();
+          const kf = lerp(150, 45, j / Math.max(1, B() - 1)) * (1 + 12 * nah * nah), c = 2 * Math.sqrt(kf) * .5;
+          p.vx += (kf * (a.x - p.x) + c * ((a.x - b.x) / h - p.vx)) * h; p.vy += (kf * (a.y - p.y) + c * ((a.y - b.y) / h - p.vy)) * h;
+          p.x += p.vx * h; p.y += p.vy * h;
+          const dx = p.x - a.x, dy = p.y - a.y, l = Math.hypot(dx, dy); if (l > 1) { const g = 28 * Math.tanh(l / 28) / l; p.x = a.x + dx * g; p.y = a.y + dy * g; }
+          if (S.n % 4 === 0) { const m = loecher(S.f).weiss; p.spur.unshift({ x: p.x - m.x, y: p.y - m.y }); if (p.spur.length > 14) p.spur.pop(); }
+        });
+      }
+      return S.P;
+    }
+    function explosion(ctx, e, st) {
+      if (e < 0) return; const C = Z.ende.tab.C;
+      hell(ctx);
+      glühen(ctx, C.x, C.y, 60 + 280 * aus3(clamp(e / .35)) * st, weiss(), .7 * (1 - clamp(e / .9)));
+      glühen(ctx, C.x, C.y, 30 + 140 * aus3(clamp(e / .2)), F.mint, .6 * (1 - clamp(e / .6)));
+      if (e < .45) { ctx.fillStyle = rgba(weiss(), .1 * st * (1 - e / .45)); ctx.fillRect(0, 0, S5.w, S5.h); }
+      normal(ctx);
+      for (let i = 0; i < 3; i++) { const u = clamp((e - i * .12) / 1.4); if (u > 0) welle(ctx, C.x, C.y, 10 + aus3(u) * S5.w * .62 * st, (1 - u) * .8, i ? F.mint : weiss(), FLt, 3.4 * (1 - u) + .6); }
+      hell(ctx);
+      Z.funken.forEach(p => {
+        const u = clamp(e / p.dur); if (u >= 1) return;
+        const r = p.v * st * aus3(u), r2 = p.v * st * aus3(Math.max(0, u - .07)), c = Math.cos(p.w), s = Math.sin(p.w) * .5;
+        ctx.globalAlpha = (1 - u) * .85; ctx.strokeStyle = p.c; ctx.lineWidth = p.g;
+        ctx.beginPath(); ctx.moveTo(C.x + c * r2, C.y + s * r2); ctx.lineTo(C.x + c * r, C.y + s * r); ctx.stroke();
+      });
+      ctx.globalAlpha = 1; ctx.lineWidth = 1; normal(ctx);
+    }
+    function nova(ctx, e) {
+      const C = Z.ende.tab.C, i = e + STILL;
+      if (i >= 0 && i < STILL) { hell(ctx); glühen(ctx, C.x, C.y, 70 * (1 - i / STILL) + 6, weiss(), .9); normal(ctx); return; }
+      if (e < 0) return;
+      const u = clamp(e / 1.3);
+      hell(ctx);
+      const r = 20 + aus3(u) * S5.w * .32, g = ctx.createRadialGradient(C.x, C.y, 0, C.x, C.y, r);
+      g.addColorStop(0, rgba(weiss(), .7 * (1 - u))); g.addColorStop(.55, rgba(F.mint, .35 * (1 - u))); g.addColorStop(.85, rgba(F.violet, .25 * (1 - u))); g.addColorStop(1, rgba(F.violet, 0));
+      ctx.save(); ctx.translate(C.x, C.y); ctx.scale(1, .62); ctx.translate(-C.x, -C.y); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(C.x, C.y, r, 0, TAU); ctx.fill(); ctx.restore();
+      const fa = 1 - clamp(e / .9), lg = ctx.createLinearGradient(0, 0, S5.w, 0);
+      lg.addColorStop(0, rgba(F.mint, 0)); lg.addColorStop(.5, rgba(weiss(), .9 * fa)); lg.addColorStop(1, rgba(F.mint, 0));
+      ctx.fillStyle = lg; ctx.fillRect(0, C.y - 1.2, S5.w, 2.4);
+      ctx.save(); ctx.translate(C.x, C.y); ctx.scale(1, .05); glühen(ctx, 0, 0, S5.w * .5, F.mint, .5 * fa); ctx.restore();
+      normal(ctx);
+      explosion(ctx, e, 1.3);
+    }
+    function haken(ctx, x, y, k, t) {
+      if (k <= 0) return;
+      const r = 16 * aus3(clamp(k / .45)), h = clamp((k - .4) / .6);
+      hell(ctx); glühen(ctx, x, y, 58, F.mint, (F.dunkel ? .22 : .16) * (1 + .1 * Math.sin(t * 1.6))); normal(ctx);
+      ctx.fillStyle = F.mint; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+      if (h > 0) {
+        const P = [[-7, .5], [-2, 5.5], [7.5, -5.5]], s1 = .4;
+        ctx.strokeStyle = F['auf-mint']; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x + P[0][0], y + P[0][1]);
+        if (h < s1) ctx.lineTo(x + lerp(P[0][0], P[1][0], h / s1), y + lerp(P[0][1], P[1][1], h / s1));
+        else { ctx.lineTo(x + P[1][0], y + P[1][1]); const m = (h - s1) / (1 - s1); ctx.lineTo(x + lerp(P[1][0], P[2][0], m), y + lerp(P[1][1], P[2][1], m)); }
+        ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter'; ctx.lineWidth = 1;
+      }
+    }
+    // weicher Grund hinter dem Bericht
+    function grund(ctx, a) {
+      if (a <= 0) return;
+      ctx.save(); ctx.translate(S5.w / 2, 168); ctx.scale(1, .42);
+      const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 250); g.addColorStop(0, rgba(F.bg, .9 * a)); g.addColorStop(.6, rgba(F.bg, .7 * a)); g.addColorStop(1, rgba(F.bg, 0));
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 250, 0, TAU); ctx.fill(); ctx.restore();
+    }
+    function spurLoch(ctx, f, wer, farbe, a) {
+      ctx.lineCap = 'round';
+      for (let i = 1; i <= 10; i++) {
+        const p = loecher(Math.max(0, f - (i - 1) * .018))[wer], q = loecher(Math.max(0, f - i * .018))[wer];
+        ctx.globalAlpha = a * (1 - i / 11); ctx.strokeStyle = farbe; ctx.lineWidth = 3 * (1 - i / 12);
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+      ctx.globalAlpha = 1; ctx.lineWidth = 1; ctx.lineCap = 'butt';
+    }
+    // Beben: Fenster ruckt, Kopfleiste und Zeilen schwingen nacheinander aus
+    function beben() {
+      const teile = [win.querySelector('.faden'), ...$('auftrag').querySelectorAll('.w5-zeile')].filter(Boolean);
+      teile.forEach((el, i) => {
+        const s = i % 2 ? 1 : -1, t = x => ({ transform: x });
+        el.animate([t('none'), t(`translate(${5 * s}px, 3px) rotate(${.4 * s}deg)`), t(`translateX(${-5 * s}px)`), t(`translateX(${3 * s}px)`), t(`translateX(${-1.5 * s}px)`), t('none')], { duration: 700, delay: 40 + i * 70, easing: 'cubic-bezier(.3, .7, .4, 1)' });
+      });
+      win.animate([{ transform: 'none' }, { transform: 'translate(-6px, 4px)' }, { transform: 'translate(5px, -3px)' }, { transform: 'translate(-3px, 2px)' }, { transform: 'translate(1.5px, -1px)' }, { transform: 'none' }], { duration: 520, easing: 'ease-out' });
+    }
+
+    function ende(e) {
+      if (!Z.N || !S5.w) return false;
+      const t0 = performance.now() / 1000;
+      Z.slots.forEach(s => { s.da = true; });
+      Z.ende = { t0, e, tab: tabelle(), gebebt: leise, bericht: false };
+      Z.sim = null;
+      const farbe = () => { const s = Z.slots[Math.floor(Math.random() * Z.slots.length)]; return Math.random() < .08 ? weiss() : artFarbe(s); };
+      Z.funken = Array.from({ length: 320 }, () => ({ w: Math.random() * TAU, v: (.25 + .75 * Math.pow(Math.random(), .7)) * S5.w * .5, dur: .9 + Math.random() * .8, c: farbe(), g: Math.random() < .25 ? 2.2 : 1.3 }));
+      Z.staub = Array.from({ length: 120 }, (_, i) => ({ k: i, p: Math.random(), d: (Math.random() - .5) * .3, c: Math.random() < .2 ? weiss() : null }));
+      $('lauf').classList.add('abschluss');
+      berichtSetzen(e);
+      if (leise) { $('w5-bericht').classList.add('an'); }
+      return true;
+    }
+    function berichtSetzen(e) {
+      const n = e.gut + e.fehl, p = Math.round((1 - e.nach / e.vor) * 100);
+      $('w5-b-titel').textContent = e.fehl ? `${e.gut} von ${n} Dateien umgewandelt` : `Alle ${n} Dateien umgewandelt`;
+      const z = $('w5-b-zeile'); z.classList.toggle('fehl', !!e.fehl);
+      z.textContent = e.fehl ? `${e.fehlName}: Datei beschädigt, liegt wieder im Eingang` : `${mb(e.vor)} MB → ${mb(e.nach)} MB · ${p} % kleiner`;
+    }
+    function endeZeichnen(ctx, T) {
+      const E = Z.ende, Tb = E.tab, f = leise ? DET + 3 : T - E.t0, fd = f - ANL, L = loecher(Math.min(f, ANL + M)), e = f - DET, N = Z.slots.length, C = Tb.C;
+      const Rx = Math.min(S5.w * .44, 440), Ry = 116, EM = { x: C.x, y: 96 };
+      if (!E.gebebt && e >= 0) { E.gebebt = true; beben(); }
+      if (!E.bericht && e >= 1.2) { E.bericht = true; $('w5-bericht').classList.add('an'); }
+      const P = simulieren(Math.min(f, ANL + M));
+      ctx.save();
+      if (e >= 0 && e < .45) { const k = (1 - e / .45) * 5; ctx.translate(Math.sin(e * 97) * k, Math.cos(e * 83) * k * .6); }
+      sterneUm(ctx, T, 1 - phase(f, PH1, ANL + 1));
+      sterneVoll(ctx, T, phase(e, .4, 1.8));
+      grund(ctx, phase(e, .9, 1.7));
+      if (fd < M) {
+        const hoch = phase(f, 0, PH1), aus = 1 - phase(fd, M - .3, M);
+        bahnen(ctx, 1 - phase(f, .3, PH1 + .3), L.weiss, skalVon(f));
+        // Sog: Staub löst sich von den Planeten und spiralt in ihrer Laufrichtung immer schneller ins weiße Loch
+        const sog = phase(f, .1, PH1 * .7) * (1 - phase(fd, M - .5, M - .1));
+        if (sog > 0) {
+          const TL = .85; hell(ctx); ctx.lineWidth = 1.2;
+          Z.staub.forEach(q => {
+            const k = q.k % N, s = Z.slots[k]; if (!s || s.fehl) return;
+            const u = (f / TL + q.p) % 1, fr = f - u * TL; if (fr < 0) return;
+            const r0 = rx(k % B()) * skalVon(fr), w0 = bahnW(k, fr);
+            const lage = x => { const v = clamp((x - fr) / TL), r = 4 + r0 * Math.pow(1 - v, 1.4) * (1 + q.d * v), w = w0 + (bahnW(k, x) - w0) * (1 + 1.3 * v); return { x: L.weiss.x + Math.cos(w) * r, y: L.weiss.y + Math.sin(w) * r * FL }; };
+            const a = lage(f), b = lage(Math.max(fr, f - .045));
+            ctx.globalAlpha = sog * Math.pow(Math.sin(Math.PI * u), .7) * (.35 + .65 * u); ctx.strokeStyle = q.c || artFarbe(s); ctx.fillStyle = ctx.strokeStyle;
+            ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(a.x, a.y); ctx.stroke(); ctx.fillRect(a.x - 1, a.y - 1, 2, 2);
+          });
+          ctx.globalAlpha = 1; ctx.lineWidth = 1; normal(ctx);
+        }
+        hell(ctx); glühen(ctx, L.weiss.x, L.weiss.y, 50 + 40 * hoch, F.mint, .22 * hoch * (1 - phase(fd, 0, 1))); normal(ctx);
+        const lang = Math.round(8 + 6 * hoch);
+        P.forEach((p, k) => {
+          const s = Z.slots[k], c = artFarbe(s);
+          if (!s.fehl) { hell(ctx); p.spur.slice(0, lang).forEach((q, i) => { ctx.globalAlpha = aus * .42 * (1 - (i + 1) / (lang + 1)); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(L.weiss.x + q.x, L.weiss.y + q.y, gP() * (1 - (i + 1) / (lang + 4)), 0, TAU); ctx.fill(); }); normal(ctx); ctx.globalAlpha = 1; }
+          punkt(ctx, s, p, aus);
+        });
+        if (f > PH1) { hell(ctx); spurLoch(ctx, f, 'schwarz', F.violet, .6 * phase(f, PH1, ANL)); spurLoch(ctx, f, 'weiss', F.mint, .6 * phase(f, PH1, ANL)); normal(ctx); }
+        hell(ctx); glühen(ctx, C.x, C.y, 40 + 80 * L.nah, weiss(), .35 * L.nah * L.nah); normal(ctx);
+        kern(ctx, L.weiss.x, L.weiss.y, T, 1 + .2 * L.nah + .1 * hoch, 1);
+        schwarz(ctx, L.schwarz.x, L.schwarz.y, 1 - .25 * L.nah);
+        zaehler(ctx, G().T.x, zaehlerY(), Z.slots.filter(s => !s.fehl).length, Z.N, 1 - phase(f, 0, .4));
+      }
+      nova(ctx, e);
+      ctx.globalAlpha = .22 * phase(e, .9, 1.6); ctx.strokeStyle = F.mint; ctx.beginPath(); ctx.ellipse(C.x, C.y, Rx, Ry, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+      if (e > 0) {
+        const ord = Z.slots.map((s, k) => k).sort((a, b) => KATS.indexOf(Z.slots[a].art) - KATS.indexOf(Z.slots[b].art) || a - b);
+        ord.forEach((k, o) => {
+          const u = aus3(phase(e, .1 + o / N * .35, 1.2 + o / N * .35)), w = -Math.PI / 2 + o / N * TAU + T * .08;
+          punkt(ctx, Z.slots[k], P2(C, { x: C.x + Math.cos(w) * Rx, y: C.y + Math.sin(w) * Ry }, u), phase(e, .1, .3));
+        });
+      }
+      ctx.restore();
+      haken(ctx, EM.x, lerp(C.y, EM.y, ease(phase(e, .6, 1.4))), phase(e, .5, 1.4), T);
+    }
+    function weg() {
+      if (!Z.ende) return;
+      Z.ende = null; Z.sim = null;
+      $('lauf').classList.remove('abschluss'); $('w5-bericht').classList.remove('an');
+    }
+    return { vorbereiten, platzFuer, zeichnen, ziel, ende, weg, laeuft: () => !!Z.ende };
+  })();
+
   function s5Schleife(t) {
     if (schritt === 2 && S5.w && !document.hidden) { try { s5Zeichnen(t / 1000); } catch (e) { console.error(e); } }
     requestAnimationFrame(s5Schleife);
@@ -4530,13 +4858,13 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const ordner = [...new Set(umwandelbar().map(d => d.ordner).filter(Boolean))];
     $('w5-titel').textContent = wohin === 'neben' ? 'Neben dem Original' : wohin === 'unter' ? 'Unterordner „Kvertis“' : eigener ? eigener.split('\\').pop() : 'Ordner wählen';
     $('w5-pfad').textContent = wohin === 'neben' ? `jede Datei in ihren Ordner${ordner.length > 1 ? ' · ' + ordner.length + ' Ordner' : ''}` : wohin === 'unter' ? 'neuer Ordner „Kvertis“ neben jedem Original' : eigener ? voll(eigener) : (wohinHinweis || 'Ordner hierher ziehen');
-    $('w5-zahl').textContent = W5.gelandet;
     $('w5-aendern').disabled = laeuft;
     const aus = umwandelbar().filter(d => ausnahmen[d.name]);
     const t = $('w5-tasche');
     t.innerHTML = aus.length
-      ? `${ICON_ORD}<b>${aus.length === 1 ? '1 Datei geht woanders hin' : aus.length + ' Dateien gehen woanders hin'}</b><small>${aus.map(d => `${esc(d.name)} → ${esc(zielOrdner(d))}`).join(' · ')}</small>`
+      ? `${ICON_ORD}<b>${aus.length === 1 ? '1 Datei woanders hin' : aus.length + ' Dateien woanders hin'}</b><small>${aus.map(d => `${esc(d.name)} → ${esc(zielOrdner(d))}`).join(' · ')}</small>`
       : `${ICON_ORD}<b>Eine Datei woanders hin?</b><small>in der Liste auf „Ändern“</small>`;
+    t.title = aus.length ? aus.map(d => `${d.name} → ${zielOrdner(d)}`).join('\n') : 'In der Liste bei einer Datei auf „Ändern“ klicken';
     t.dataset.i = aus.length ? umwandelbar().indexOf(aus[0]) : '';
     t.disabled = laeuft;
   }
@@ -4570,11 +4898,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const nein = dateien.filter(d => !d.kat);
     if (!laeuft) $('ein-zahl').textContent = fertig ? (fertig.fehl ? `${fertig.fehl} nicht umgewandelt` : 'alles umgewandelt') : `${u.length} ${u.length === 1 ? 'Datei' : 'Dateien'} · ${mb(summeVorher())} MB`;
     $('ein-klein').textContent = nein.length ? `${nein.length} nicht umwandelbar: ${nein.map(d => d.name).join(', ')}` : '';
+    if (!laeuft && !fertig) WL.vorbereiten();
     renderGross();
     $('auftrag').innerHTML = W5.items.map(zeileW5).join('');
     $('l-summe').innerHTML = `${mb(summeVorher())} <span>MB →</span> <b>≈ ${mb(summeNachher())} MB</b>`;
     if (!laeuft) $('l-stand').innerHTML = fertig ? `<span style="color:var(--mint)">fertig · ${mb(fertig.vor)} → ${mb(fertig.nach)} MB</span>` : 'bereit';
   }
+  $('w5-b-ordner').addEventListener('click', () => w5Toast(wohin === 'neben' ? 'Öffnet den Explorer mit den Ordnern der Originale' : `Öffnet den Explorer: ${wohin === 'unter' ? 'Unterordner „Kvertis“' : voll(eigener || '')}`));
+  $('w5-b-neu').addEventListener('click', () => leeren());
   $('w5-aendern').addEventListener('click', e => { if (!laeuft) { pop && popAnker === e.currentTarget ? popZu() : globalMenue(e.currentTarget); } });
   $('w5-tasche').addEventListener('click', e => {
     if (laeuft) return;
@@ -4595,8 +4926,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     setTimeout(() => {
       if (!laeuft && !fertig) return;
       if (ausnahmen[it.d.name]) { const t = $('w5-tasche'); t.classList.remove('hupf'); void t.offsetWidth; t.classList.add('hupf'); return; }
-      W5.gelandet++; $('w5-zahl').textContent = W5.gelandet;
-      ausSp.classList.remove('schluck'); void ausSp.offsetWidth; ausSp.classList.add('schluck');
+      W5.gelandet++; $('w5-zahl').textContent = `${W5.gelandet} ${W5.gelandet === 1 ? 'Datei' : 'Dateien'} angekommen`;
     }, leise ? 0 : 950);
   }
   async function los() {
@@ -4606,7 +4936,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     fertig = null; renderLauf();
     laeuft = true; renderLeiste(); renderLauf();
     $('lauf').classList.add('aktiv');
-    const its = W5.items; W5.gelandet = 0; $('w5-zahl').textContent = 0;
+    const its = W5.items; W5.gelandet = 0; $('w5-zahl').textContent = '';
     W5.fehl = new Set();
     const fehlI = $('ueb-fehler').checked && its.length > 1 ? (its.find(x => x.d.name === 'Urlaub_Clip.mov') || its[its.length - 1]).i : -1;
     W5.lauf = { t0: performance.now() / 1000, raus: {} };
@@ -4620,6 +4950,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
           it.p = Math.min(1, it.p + dt / it.dur);
           if (it.p >= 1) {
             aktivS.delete(it); W5.lauf.raus[it.i] = performance.now() / 1000;
+            WL.platzFuer(it, W5.lauf.raus[it.i] + (leise ? 0 : .95), it.i === fehlI);
             if (it.i === fehlI) { it.st = 'fehler'; W5.fehl.add(it.d.name); } else { it.st = 'fertig'; gespart += it.d.mb - schaetzeDatei(it.d); landen(it); }
             zeileNeu(it);
           }
@@ -4777,7 +5108,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const ctx = cv.getContext('2d'); let cw = 0, ch = 0;
     new ResizeObserver(() => { const r = win.getBoundingClientRect(), d = Math.min(2, devicePixelRatio || 1); cw = r.width; ch = r.height; cv.width = Math.round(cw * d); cv.height = Math.round(ch * d); ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(win);
 
-    const Z = { loch: null, ringe: [], funken: [], ende: null, blitz: null };
+    const Z = { loch: null, ringe: [], funken: [], blitz: null };
     const jetzt = () => performance.now();
     const rahmen = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     let WR = win.getBoundingClientRect();
@@ -4798,7 +5129,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const zeitAnteil = (o, t) => clamp((t - o.t0 - (o.warte || 0)) / o.dur);
     function malen() {
       requestAnimationFrame(malen);
-      const t = jetzt(), leer = !Z.loch && !Z.ringe.length && !Z.funken.length && !Z.ende && !Z.blitz;
+      const t = jetzt(), leer = !Z.loch && !Z.ringe.length && !Z.funken.length && !Z.blitz;
       if (leer && !Z.warLeer) { ctx.clearRect(0, 0, cw, ch); Z.warLeer = true; }
       if (leer) return; Z.warLeer = false;
       ctx.clearRect(0, 0, cw, ch);
@@ -4810,7 +5141,6 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
         const aus = L.aus ? clamp(1 - (t - L.aus) / 280) : 1;
         if (L.aus && aus <= 0) Z.loch = null; else lochMalen(x, y, r, aus);
       }
-      if (Z.ende) endeMalen(t);
     }
     requestAnimationFrame(malen);
 
@@ -4953,58 +5283,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       zeiten.push(setTimeout(aufraeumen, fertigZeit + 80));
     }
 
-    /* ---------- Abschluss ---------- */
-    let label = null, nr = 0;
-    function endeWeg() {
-      nr++; Z.ende = null; Z.funken = [];
-      if (label) { const l = label; label = null; l.classList.add('weg'); setTimeout(() => l.remove(), 500); }
-    }
-    function labelZeigen(html, x, y, cls = '') {
-      label = document.createElement('div'); label.className = 'ueb-erg weg ' + cls; label.innerHTML = html;
-      Object.assign(label.style, { left: x + 'px', top: y + 'px' }); lage.append(label);
-      requestAnimationFrame(() => requestAnimationFrame(() => label && label.classList.remove('weg')));
-    }
-    function abschluss(e) {
-      if (schritt !== 2) return;
-      WR = win.getBoundingClientRect();
-      const cvR = R(S5.cv), x = cvR.x + S5.cx, y = cvR.y + S5.cy, n = e.gut + e.fehl;
-      const p = Math.round((1 - e.nach / e.vor) * 100);
-      const titel = e.fehl ? `${e.gut} von ${n} umgewandelt` : `Alle ${n} Dateien umgewandelt`;
-      const zeile = e.fehl ? `<small class="f">${esc(e.fehlName)}: Datei beschädigt, liegt wieder im Eingang</small>` : `<small>${mb(e.vor)} MB → ${mb(e.nach)} MB · ${p} % kleiner</small>`;
-      const t0 = jetzt(), meins = ++nr, gilt = () => meins === nr && schritt === 2;
-      Z.ende = { t0, x, y, fehl: e.fehl, schon: {} };
-      if (leise) { labelZeigen(`<span class="hk${e.fehl ? ' teil' : ''}">✓</span><b>${titel}</b>${zeile}`, x, y - 40); Z.ende = null; return; }
-      // Loch bildet sich im Wirbel und saugt die letzten Funken ein, dann wird es zum Häkchen
-      for (let i = 0; i < 46; i++) Z.funken.push({ x, y, r: 60 + Math.random() * 110, w: Math.random() * 7, c: rgba([F.blue, F.violet, F.amber, F.cyan, F.model][i % 5], 1), t0: t0 + i * 12, dur: 700 });
-      setTimeout(() => { if (gilt()) labelZeigen(`<b>${titel}</b>${zeile}`, x, y + 38); }, 1500);
-    }
-    function endeMalen(t) {
-      const E = Z.ende, e = (t - E.t0) / 1000, { x, y } = E;
-      const einmal = (k, f) => { if (!E.schon[k]) { E.schon[k] = 1; f(); } };
-      if (e < .5) lochMalen(x, y, 16 * ease(e / .5));
-      else if (e < .75) lochMalen(x, y, lerp(16, 3, ((e - .5) / .25) ** 2));
-      if (e >= .75) einmal('blitz', () => { Z.blitz = { x, y, t0: t }; Z.ringe.push({ x, y, r0: 4, r1: 110, fl: 1, c: F.mint, lw: 2, dur: 700, t0: t }); });
-      if (e >= .75) {
-        const R2 = lerp(3, 24, ease(clamp((e - .75) / .4)));
-        glühen(ctx, x, y, 70, F.mint, .1 + .04 * Math.sin(e * 2));
-        ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, R2, 0, 7); ctx.fill();
-        ctx.strokeStyle = F.mint; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, R2, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * clamp((e - .75) / .5)); ctx.stroke();
-        const k = clamp((e - 1.15) / .35);
-        if (k > 0) {
-          const s = R2 / 24, pk = [[-9, 1], [-3, 7], [10, -7]];
-          ctx.lineWidth = 3.2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x + pk[0][0] * s, y + pk[0][1] * s);
-          if (k < .4) ctx.lineTo(x + lerp(pk[0][0], pk[1][0], k / .4) * s, y + lerp(pk[0][1], pk[1][1], k / .4) * s);
-          else { ctx.lineTo(x + pk[1][0] * s, y + pk[1][1] * s); const m = (k - .4) / .6; ctx.lineTo(x + lerp(pk[1][0], pk[2][0], m) * s, y + lerp(pk[1][1], pk[2][1], m) * s); }
-          ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineWidth = 1;
-        }
-        if (E.fehl && e > 1.3) {
-          // Bruchstück kreist außen weiter
-          const a = clamp((e - 1.3) / .5), w = e * 1.1, bx = x + Math.cos(w) * 62, by = y + Math.sin(w) * 22;
-          ctx.globalAlpha = a * .3; ctx.strokeStyle = F.coral; ctx.lineWidth = 1; ctx.setLineDash([2, 5]); ctx.beginPath(); ctx.ellipse(x, y, 62, 22, 0, 0, 7); ctx.stroke(); ctx.setLineDash([]);
-          ctx.globalAlpha = a; ctx.fillStyle = F.coral; ctx.beginPath(); ctx.moveTo(bx, by - 4.5); ctx.lineTo(bx + 4.5, by + 1); ctx.lineTo(bx - 1, by + 4.5); ctx.lineTo(bx - 4.5, by); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
-        }
-      }
-    }
+    /* ---------- Abschluss: läuft auf der Bühne von Schritt 3 (WL) ---------- */
+    function endeWeg() { WL.weg(); }
+    function abschluss(e) { if (schritt === 2) WL.ende(e); }
 
     return { wechsel, abschluss, endeWeg, sofortFertig };
   })();

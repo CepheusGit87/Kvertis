@@ -2,6 +2,18 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Oberflächenentwurf Schritt 3: weißes Loch und Abschluss
+
+**Geändert (nur Entwurf und Doku)**
+
+- Mischentwurf (`design/oberflaeche-mischentwurf.html`), Schritt 3: Die Pixel tragen die Farbe ihrer Dateiart. Statt des Zielordners rechts ein weißes Loch mit gebündelten Bahnen, jede fertige Datei wird ein Planet; Speicherort und „Speicherort ändern“ darunter, eigene Ziele im kleinen Knopf daneben.
+- Neuer Abschluss statt „Häkchen im Loch“: Planeten drehen hoch, Sog, beide Löcher kreisen um die Mitte und verschmelzen, Supernova mit Beben von Fenster, Kopfleiste und Liste, danach Ring aus Planeten mit Häkchen und Bericht in der Mitte.
+- Entwurfsseiten: `zielwelten-konzepte.html`, `weisses-loch-varianten.html`, `weisses-loch-mengen.html`, `weisses-loch-abschluss*.html`, `weisses-loch-tanz*.html`, `weisses-loch-finale.html`, `weisses-loch-anlauf.html`, `weisses-loch-einfach.html` (gewählt). Entscheidung in `design/ENTSCHEIDUNGEN.md`, Kurzfassung in `06-design.md`.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-24 – Oberflächenentwurf Übergänge und Abschluss
 
 **Geändert (nur Entwurf und Doku)**
