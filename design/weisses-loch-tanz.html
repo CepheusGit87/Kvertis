@@ -1,0 +1,603 @@
+<title>Tanz der Löcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf. Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --loch: #000000; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --loch: #0b0f12; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --loch: #0b0f12; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 52px; }
+.kopf { display: grid; gap: 14px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.legende { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 500 12.5px var(--mono); color: var(--muted); }
+.legende span { display: inline-flex; align-items: center; gap: 7px; }
+.legende i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+
+.konzept { display: grid; gap: 16px; padding-top: 8px; border-top: 1px solid var(--line); }
+.k-titel { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.k-nr { font: 600 13px var(--mono); color: var(--mint); letter-spacing: .06em; }
+.k-kurz { color: var(--muted); font-size: 15px; }
+.empf { font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--auf-mint); background: var(--mint); border-radius: 6px; padding: 2px 8px; }
+
+.buehne { position: relative; height: 380px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden;
+  background: radial-gradient(700px 320px at 20% -20%, color-mix(in srgb, var(--mint) 7%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 30px 60px -40px var(--schatten); }
+.buehne canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.eingang { position: absolute; left: 18px; bottom: 14px; display: grid; gap: 1px; font-size: 12px; }
+.eingang small, .ziel-text small { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.eingang b { font-size: 13px; font-weight: 600; }
+.ziel-text { position: absolute; right: 16px; bottom: 14px; width: min(300px, 46%); display: grid; gap: 2px; }
+.ziel-text b { font-size: 16px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ziel-text .pfad { font: 10.5px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ort { justify-self: start; margin-top: 6px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.ort:hover { border-color: var(--mint-rahmen); }
+.nochmal { position: absolute; left: 14px; top: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); border-radius: 8px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+.nochmal:hover { color: var(--ink); border-color: var(--line-stark); }
+
+.punkte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.punkte > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); display: grid; gap: 4px; align-content: start; }
+.punkte small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.punkte p { margin: 0; font-size: 13.5px; color: var(--muted); }
+@media (max-width: 760px) { .punkte { grid-template-columns: 1fr; } .ziel-text { width: 52%; } .ziel-text b { font-size: 14px; } }
+
+.fazit { display: grid; gap: 12px; }
+.fazit p { margin: 0; color: var(--muted); max-width: 72ch; }
+.fazit b { color: var(--ink); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .nochmal { display: none; } }
+.steuer { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 10px 14px; border: 1px solid var(--line-stark); border-radius: 12px; background: color-mix(in srgb, var(--panel) 92%, transparent); backdrop-filter: blur(8px); }
+.steuer .gruppe { display: flex; align-items: center; gap: 8px; }
+.steuer .gruppe > span { font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.seg { display: inline-flex; border: 1px solid var(--line-stark); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 5px 14px; font: 600 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.seg button + button { border-left: 1px solid var(--line-stark); }
+.seg button[aria-pressed="true"] { background: var(--mint-flaeche); color: var(--mint); }
+.seg button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+
+/* Fenster: obere Fläche (Bühne) und darunter die unveränderte Liste */
+.fenster { border: 1px solid var(--line-stark); border-radius: 14px; overflow: hidden; background: var(--bg); box-shadow: 0 30px 60px -40px var(--schatten); }
+.fenster .buehne { height: 300px; border: 0; border-radius: 0; box-shadow: none; }
+.eingang, .ziel-text { transition: opacity .45s, transform .45s; }
+.weg { opacity: 0 !important; transform: translateY(6px); pointer-events: none; }
+.report { position: absolute; left: 50%; top: 128px; transform: translate(-50%, 8px); width: min(360px, 90%); display: grid; justify-items: center; gap: 3px; text-align: center; opacity: 0; transition: opacity .6s, transform .6s cubic-bezier(.2, .9, .25, 1); pointer-events: none; }
+.report.an { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+.report b { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.report span { font: 11.5px var(--mono); color: var(--muted); }
+.report span.fehl { color: var(--coral); }
+.report .akt { display: flex; gap: 8px; margin-top: 8px; }
+.report .akt button { border: 1px solid var(--line-stark); background: var(--panel); border-radius: 8px; padding: 5px 12px; font-size: 12.5px; font-weight: 600; }
+.report .akt button.haupt { border-color: var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); }
+.liste { border-top: 1px solid var(--line); padding: 8px 14px 10px; display: grid; gap: 4px; background: color-mix(in srgb, var(--panel) 30%, transparent); }
+.liste .kopfz { display: flex; justify-content: space-between; font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); padding: 2px 2px 4px; }
+.zeile { display: grid; grid-template-columns: 8px minmax(0, 1fr) 110px 70px; gap: 12px; align-items: center; padding: 5px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); font-size: 12.5px; }
+.zeile i { width: 8px; height: 8px; border-radius: 50%; background: var(--c); }
+.zeile b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zeile .fmt { font: 600 11px var(--mono); color: var(--muted); }
+.zeile .st { font: 600 11px var(--mono); color: var(--mint); text-align: right; }
+.zeile.fehl .st { color: var(--coral); }
+.liste .mehr { font: 11px var(--mono); color: var(--leise); padding: 2px 4px; }
+@media (max-width: 560px) { .zeile { grid-template-columns: 8px minmax(0, 1fr) 64px; } .zeile .fmt { display: none; } }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Schritt 3 · Abschluss · Variante „Tanz und Ring“</span>
+    <h1>Der Tanz der beiden Löcher</h1>
+    <p class="lead">Fünf Ausarbeitungen des gewählten Abschlusses. Es geht nur um die Abschlussanimation: Beide Löcher kommen in die Mitte der Fläche und umkreisen sich dort. Je näher sie sich kommen, desto schneller kreisen sie, wie zwei Sterne kurz vor dem Verschmelzen. Dann folgt eine kräftigere Explosion. Das Ende bleibt, wie es war: Ring aus Planeten, Häkchen und Bericht in der Mitte. Das weiße Loch sieht jetzt genauso aus wie im gewählten Entwurf „Gebündelte Bahnen“.</p>
+  </header>
+
+  <div class="steuer" role="group" aria-label="Beispiel einstellen">
+    <div class="gruppe"><span id="l-anzahl">Anzahl</span><div class="seg" id="anzahl" role="group" aria-labelledby="l-anzahl">
+      <button type="button" data-n="10" aria-pressed="true">10</button><button type="button" data-n="50" aria-pressed="false">50</button></div></div>
+    <div class="gruppe"><span id="l-fehler">Ergebnis</span><div class="seg" id="fehler" role="group" aria-labelledby="l-fehler">
+      <button type="button" data-f="0" aria-pressed="true">alles fertig</button><button type="button" data-f="1" aria-pressed="false">eine mit Fehler</button></div></div>
+  </div>
+
+  <section class="konzept" data-k="chirp">
+    <div class="k-titel"><span class="k-nr">1</span><h2>Enger Tanz</h2><span class="empf">Empfehlung</span><span class="k-kurz">Der Grundentwurf: schneller werdender Tanz, großer Knall</span></div>
+    <div class="fenster"><div class="buehne"></div><div class="liste"></div></div>
+    <div class="punkte">
+      <div><small>Tanz</small><p>Beide Löcher ziehen in die Mitte und kreisen umeinander, erst ruhig, dann immer schneller, gut viereinhalb Runden. Kurze Lichtspuren zeigen das Tempo, zwischen ihnen wächst ein heller Schein.</p></div>
+      <div><small>Explosion</small><p>Großer Blitz, die ganze Fläche hellt kurz auf, drei kräftige Druckwellen und über 300 Funken mit Schweif in den Farben der Dateien. Die Fläche ruckt ganz leicht.</p></div>
+      <div><small>Ende</small><p>Wie gehabt: Die Planeten legen sich als Ring um die Mitte, das Häkchen steigt auf, darunter der Bericht.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="spuren">
+    <div class="k-titel"><span class="k-nr">2</span><h2>Lichtspirale</h2><span class="k-kurz">Lange Spuren zeichnen eine Spirale, die bei der Explosion aufbricht</span></div>
+    <div class="fenster"><div class="buehne"></div><div class="liste"></div></div>
+    <div class="punkte">
+      <div><small>Tanz</small><p>Beide Löcher ziehen lange Lichtspuren hinter sich her, violett und mint. So entsteht beim Umkreisen eine doppelte Spirale.</p></div>
+      <div><small>Explosion</small><p>Im Moment der Verschmelzung wird die ganze Spirale nach außen geschleudert, zusammen mit Blitz, Wellen und Funken.</p></div>
+      <div><small>Ende</small><p>Ring, Häkchen, Bericht. Am grafischsten von den fünf, die Spirale bleibt als Bild im Kopf.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="scheibe">
+    <div class="k-titel"><span class="k-nr">3</span><h2>Gemeinsame Scheibe</h2><span class="k-kurz">Farbiger Staub dreht mit und wird bei der Verschmelzung hinausgeschleudert</span></div>
+    <div class="fenster"><div class="buehne"></div><div class="liste"></div></div>
+    <div class="punkte">
+      <div><small>Tanz</small><p>Um beide Löcher bildet sich eine flache Scheibe aus Staub in den Farben der Dateien. Sie zieht sich mit dem Tanz zusammen und dreht immer schneller.</p></div>
+      <div><small>Explosion</small><p>Die Scheibe wird in einem dichten, farbigen Ring hinausgeschleudert, dazu Blitz und Wellen.</p></div>
+      <div><small>Ende</small><p>Ring, Häkchen, Bericht. Wirkt am meisten wie „die Dateien fliegen noch einmal“.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="wellen">
+    <div class="k-titel"><span class="k-nr">4</span><h2>Gravitationswellen</h2><span class="k-kurz">Mit jeder Runde läuft eine Welle über die Fläche, die Sterne schwingen mit</span></div>
+    <div class="fenster"><div class="buehne"></div><div class="liste"></div></div>
+    <div class="punkte">
+      <div><small>Tanz</small><p>Bei jedem halben Umlauf löst sich eine feine Welle. Weil die Löcher immer schneller kreisen, folgen die Wellen immer dichter aufeinander. Die Sterne der ganzen Fläche werden von jeder Welle kurz verschoben.</p></div>
+      <div><small>Explosion</small><p>Eine große Welle schiebt alle Sterne sichtbar zur Seite, dazu Blitz und Funken.</p></div>
+      <div><small>Ende</small><p>Ring, Häkchen, Bericht. Die eleganteste Variante, die Kraft steckt in der Bewegung der ganzen Fläche.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="nova">
+    <div class="k-titel"><span class="k-nr">5</span><h2>Supernova</h2><span class="k-kurz">Erst zieht sich alles zu einem Punkt zusammen, dann die volle Detonation</span></div>
+    <div class="fenster"><div class="buehne"></div><div class="liste"></div></div>
+    <div class="punkte">
+      <div><small>Tanz</small><p>Wie bei 1. Nach der Verschmelzung ein Viertel Sekunde Stille: Alles zieht sich zu einem hellen Punkt zusammen.</p></div>
+      <div><small>Explosion</small><p>Detonation mit Hitzekugel, einem Lichtstreifen quer über die ganze Breite, stärkeren Wellen und mehr Funken. Die Fläche ruckt spürbar.</p></div>
+      <div><small>Ende</small><p>Ring, Häkchen, Bericht. Die mächtigste Variante.</p></div>
+    </div>
+  </section>
+
+  <section class="fazit">
+    <h2>Meine Empfehlung</h2>
+    <p><b>1, Enger Tanz.</b> Der Tanz in der Mitte mit dem schneller werdenden Umkreisen trägt die Spannung, die Explosion ist jetzt deutlich kräftiger, bleibt aber kurz. Danach ist die Fläche schnell ruhig, und der Bericht steht klar in der Mitte.</p>
+    <p>Wenn es noch mächtiger sein soll: <b>5, Supernova</b>. Die Lichtspirale aus 2 oder die Wellen aus 4 lassen sich auch als Zusatz in 1 übernehmen. Bei „Animationen reduzieren“ stehen in allen fünf sofort Häkchen und Bericht in der Mitte.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const ARTEN = ['bild', 'audio', 'video', 'dok'];
+  const FARBVAR = { bild: '--blue', audio: '--violet', video: '--amber', dok: '--cyan' };
+  const MIX = { 10: { bild: 6, audio: 2, video: 1, dok: 1 }, 50: { bild: 30, audio: 10, video: 5, dok: 5 } };
+  const ENDUNG = { bild: ['HEIC', 'JPG'], audio: ['WAV', 'MP3'], video: ['MOV', 'MP4'], dok: ['DOCX', 'PDF'] };
+  const NAME = { bild: 'IMG_', audio: 'Aufnahme_', video: 'Clip_', dok: 'Protokoll_' };
+  const TAU = Math.PI * 2, FL = .42;
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lerp = (a, b, t) => a + (b - a) * t, clamp = t => Math.max(0, Math.min(1, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const aus3 = t => 1 - Math.pow(1 - t, 3);
+  const phase = (f, a, b) => clamp((f - a) / (b - a));
+  const bump = (f, a, b) => Math.sin(Math.PI * phase(f, a, b));
+  const P2 = (a, b, u) => ({ x: lerp(a.x, b.x, u), y: lerp(a.y, b.y, u) });
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  let zufall = 7;
+  const rnd = () => (zufall = (zufall * 16807) % 2147483647) / 2147483647;
+  function auftrag(n) {
+    const l = []; ARTEN.forEach(a => { for (let i = 0; i < MIX[n][a]; i++) l.push(a); });
+    zufall = 7 + n; for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
+    return l;
+  }
+
+  const F = {};
+  function farben() {
+    const cs = getComputedStyle(document.documentElement), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['bg', 'ink', 'muted', 'mint', 'violet', 'coral', 'line-stark', 'panel2', 'auf-mint'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
+    ARTEN.forEach(a => F[a] = norm(cs.getPropertyValue(FARBVAR[a])));
+    const h = F.bg; F.dunkel = (parseInt(h.slice(1, 3), 16) * .3 + parseInt(h.slice(3, 5), 16) * .59 + parseInt(h.slice(5, 7), 16) * .11) < 128;
+  }
+  const rgba = (h, a) => `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+  function glow(ctx, x, y, r, farbe, a) { if (r <= 0 || a <= 0) return; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(farbe, a)); g.addColorStop(1, rgba(farbe, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  const hell = ctx => { ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over'; };
+  const normal = ctx => { ctx.globalCompositeOperation = 'source-over'; };
+  const weiss = () => F.dunkel ? '#ffffff' : F.mint;
+  function welle(ctx, x, y, r, a, c, fl = FL, lw = 1.5) { if (a <= 0 || r <= 0) return; ctx.globalAlpha = a; ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); ctx.ellipse(x, y, r, r * fl, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; }
+
+  /* ---------- Löcher und Häkchen ---------- */
+  // weißes Loch genau wie im gewählten Entwurf „Gebündelte Bahnen“; anteil = fertiger Anteil des Auftrags
+  function kern(ctx, x, y, t, s = 1, a = 1, anteil = 1) {
+    if (a <= 0 || s <= 0) return;
+    const g = (1 + anteil * .35) * s, puls = 1 + .04 * Math.sin(t * 2.2);
+    ctx.globalAlpha = a; hell(ctx);
+    glow(ctx, x, y, (46 + anteil * 36) * puls * s, F.mint, F.dunkel ? .2 : .14);
+    glow(ctx, x, y, 20 * g, weiss(), F.dunkel ? .75 : .35);
+    ctx.strokeStyle = rgba(weiss(), F.dunkel ? .45 : .35); ctx.lineWidth = 1;
+    const L = 20 * g * puls; ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L * .7); ctx.lineTo(x, y + L * .7); ctx.stroke();
+    normal(ctx);
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x, y, 6.5 * g, 0, TAU); ctx.fill();
+    ctx.strokeStyle = F.mint; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 7.6 * g, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.globalAlpha = 1;
+  }
+  function schwarz(ctx, x, y, s = 1) {
+    if (s <= 0) return;
+    const r = 12 * s;
+    glow(ctx, x, y, r * 3.4, F.violet, .22); glow(ctx, x, y, r * 2, F.mint, .25);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+  }
+  function haken(ctx, x, y, k, t) {
+    if (k <= 0) return;
+    const r = 16 * aus3(clamp(k / .45)), h = clamp((k - .4) / .6);
+    hell(ctx); glow(ctx, x, y, 58, F.mint, (F.dunkel ? .22 : .16) * (1 + .1 * Math.sin(t * 1.6))); normal(ctx);
+    ctx.fillStyle = F.mint; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    if (h > 0) {
+      const P = [[-7, .5], [-2, 5.5], [7.5, -5.5]], s1 = .4;
+      ctx.strokeStyle = F['auf-mint']; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x + P[0][0], y + P[0][1]);
+      if (h < s1) ctx.lineTo(x + lerp(P[0][0], P[1][0], h / s1), y + lerp(P[0][1], P[1][1], h / s1));
+      else { ctx.lineTo(x + P[1][0], y + P[1][1]); const m = (h - s1) / (1 - s1); ctx.lineTo(x + lerp(P[1][0], P[2][0], m), y + lerp(P[1][1], P[2][1], m)); }
+      ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter'; ctx.lineWidth = 1;
+    }
+  }
+  // weicher Grund hinter dem Bericht, damit er auf jedem Hintergrund lesbar bleibt
+  function grund(ctx, S, a) {
+    if (a <= 0) return;
+    ctx.save(); ctx.translate(S.w / 2, 168); ctx.scale(1, .42);
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 250); g.addColorStop(0, rgba(F.bg, .9 * a)); g.addColorStop(.6, rgba(F.bg, .7 * a)); g.addColorStop(1, rgba(F.bg, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 250, 0, TAU); ctx.fill(); ctx.restore();
+  }
+
+  /* ---------- Universum „Gebündelte Bahnen“ ---------- */
+  function universum(S) {
+    const N = S.N, B = Math.min(N, 10);
+    const kap = j => Math.floor(N / B) + (j < N % B ? 1 : 0);
+    const schritt = () => Math.min(12, (S.tw / 2 - 30) / Math.max(1, B - 1));
+    const rx = j => 24 + j * schritt();
+    const winkel = (k, t) => { const j = k % B, p = Math.floor(k / B); return j * 2.39 + p / kap(j) * TAU + t * .9 * Math.pow(24 / rx(j), 1.5); };
+    const g = N <= 10 ? 2.8 : 2;
+    const U = {
+      B, rx, g, winkel, aussen: () => rx(B - 1),
+      pos(k, t, m = S.T, skal = 1, fl = FL) { const j = k % B, w = winkel(k, t), r = rx(j) * skal; return { x: m.x + Math.cos(w) * r, y: m.y + Math.sin(w) * r * fl, w, r }; },
+      bahnen(ctx, a, m = S.T, skal = 1) {
+        if (a <= 0) return;
+        for (let j = 0; j < B; j++) {
+          const auf = S.slots.filter((s, k) => k % B === j && s.fertig);
+          ctx.globalAlpha = a;
+          if (auf.length) { ctx.strokeStyle = N <= 10 ? rgba(F[auf[0].art], .38) : rgba(F.mint, .12 + .25 * auf.length / kap(j)); ctx.lineWidth = 1.2; ctx.setLineDash([]); }
+          else { ctx.strokeStyle = rgba(F['line-stark'], .75); ctx.setLineDash([2, 5]); ctx.lineWidth = 1; }
+          ctx.beginPath(); ctx.ellipse(m.x, m.y, rx(j) * skal, rx(j) * skal * FL, 0, 0, TAU); ctx.stroke();
+        }
+        ctx.setLineDash([]); ctx.lineWidth = 1; ctx.globalAlpha = 1;
+      },
+      // Planet als Punkt mit Schein; mit Schweif nur auf seiner Bahn
+      punkt(ctx, k, q, a = 1, schweif = null) {
+        const s = S.slots[k], c = s.fehl ? F.coral : F[s.art];
+        if (a <= 0) return;
+        if (s.fehl) { ctx.globalAlpha = a * .8; ctx.strokeStyle = c; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(q.x, q.y, g + 1.5, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; return; }
+        if (schweif) for (let i = 8; i >= 1; i--) { const ww = schweif.w - i * .07; ctx.globalAlpha = a * .38 * (1 - i / 9); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(schweif.m.x + Math.cos(ww) * schweif.r, schweif.m.y + Math.sin(ww) * schweif.r * FL, g * (1 - i / 12), 0, TAU); ctx.fill(); }
+        ctx.globalAlpha = a; hell(ctx); glow(ctx, q.x, q.y, g * 4, c, .5); normal(ctx);
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(q.x, q.y, g, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+      },
+      planet(ctx, k, t, m = S.T, skal = 1, a = 1) { const p = U.pos(k, t, m, skal); U.punkt(ctx, k, p, a, { w: p.w, r: p.r, m }); return p; }
+    };
+    return U;
+  }
+  // Sterne: um das weiße Loch (während des Laufs) und über die ganze Fläche (am Ende)
+  function sterne(S) {
+    const um = Array.from({ length: 70 }, () => ({ w: Math.random() * TAU, r: Math.sqrt(Math.random()), a: Math.random(), f: .5 + Math.random() * 1.5, s: Math.random() < .15 ? 1.6 : 1 }));
+    const voll = Array.from({ length: 110 }, () => ({ x: Math.random(), y: Math.random(), a: Math.random(), f: .4 + Math.random() * 1.2, s: Math.random() < .12 ? 1.6 : 1 }));
+    const pkt = (ctx, x, y, p, t, a) => { ctx.globalAlpha = (.25 + .5 * (.5 + .5 * Math.sin(t * p.f + p.a * 9))) * (F.dunkel ? 1 : .7) * a; ctx.fillStyle = F.dunkel ? '#dfe9ef' : F.muted; ctx.fillRect(x, y, p.s, p.s); };
+    return {
+      um(ctx, t, a = 1) { if (a <= 0) return; um.forEach(p => pkt(ctx, S.T.x + Math.cos(p.w) * p.r * (S.tw / 2 + 6), S.T.y + Math.sin(p.w) * p.r * 96, p, t, a)); ctx.globalAlpha = 1; },
+      voll(ctx, t, a = 1) { if (a <= 0) return; voll.forEach(p => pkt(ctx, p.x * S.w, p.y * S.h, p, t, a * .8)); ctx.globalAlpha = 1; }
+    };
+  }
+  function zaehler(ctx, x, y, n, N, a = 1) {
+    if (a <= 0) return; ctx.globalAlpha = a; ctx.textBaseline = 'middle';
+    ctx.font = `600 15px ${MONO}`; const w1 = ctx.measureText(String(n)).width;
+    ctx.font = `500 11px ${MONO}`; const w2 = ctx.measureText(' von ' + N).width;
+    const x0 = x - (w1 + w2) / 2;
+    ctx.fillStyle = F.ink; ctx.font = `600 15px ${MONO}`; ctx.fillText(String(n), x0, y);
+    ctx.fillStyle = F.muted; ctx.font = `500 11px ${MONO}`; ctx.fillText(' von ' + N, x0 + w1, y + 1);
+    ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+  }
+
+  // Zwei Löcher umkreisen sich um einen wandernden Mittelpunkt und verschmelzen bei f = M im Ziel Z
+  function tanz(S, f, M, Z) {
+    const mitte = P2(S.H, S.T, .5), d0 = Math.hypot(S.T.x - S.H.x, S.T.y - S.H.y) / 2;
+    const m = P2(mitte, Z, ease(phase(f, 0, M * .75)));
+    const u = phase(f, 0, M), d = d0 * Math.pow(1 - u, 1.3), w = Math.PI + TAU * 2.6 * Math.pow(u, 2.3);
+    const b = { x: m.x + Math.cos(w) * d, y: m.y + Math.sin(w) * d * .45 }, ws = { x: m.x - Math.cos(w) * d, y: m.y - Math.sin(w) * d * .45 };
+    const ein = ease(phase(f, 0, .6));
+    return { schwarz: P2(S.H, b, ein), weiss: P2(S.T, ws, ein), u };
+  }
+
+  /* ---------- Tanz: beide Löcher kreisen um die Mitte, je näher, desto schneller ---------- */
+  // Wie bei echten Doppelsternen kurz vor dem Verschmelzen: Abstand ~ (M - f)^(1/4), Winkel läuft immer schneller
+  const ANK = .9, M = 2.8, RUNDEN = 4.5, FLt = .45;
+  function tanzLage(S, f) {
+    const C = S.C, d0 = Math.min(S.w * .24, 220), rest = Math.max(0, M - f);
+    const d = d0 * Math.pow(rest / M, .25), K = RUNDEN * TAU / Math.pow(M, .625);
+    const phi = Math.PI + K * (Math.pow(M, .625) - Math.pow(rest, .625));
+    // das weiße Loch trägt das Universum und ist schwerer: kleinerer Kreis
+    const b = { x: C.x + Math.cos(phi) * d * .62, y: C.y + Math.sin(phi) * d * .62 * FLt };
+    const wv = { x: C.x - Math.cos(phi) * d * .38, y: C.y - Math.sin(phi) * d * .38 * FLt };
+    const ein = ease(phase(f, 0, ANK));
+    return { schwarz: P2(S.H, b, ein), weiss: P2(S.T, wv, ein), nah: 1 - d / d0, phi };
+  }
+  function spur(ctx, S, f, lang, wer, farbe, breite, a) {
+    ctx.lineCap = 'round';
+    for (let i = 1; i <= lang; i++) {
+      const p = tanzLage(S, f - (i - 1) * .018)[wer], q = tanzLage(S, f - i * .018)[wer];
+      ctx.globalAlpha = a * (1 - i / (lang + 1)); ctx.strokeStyle = farbe; ctx.lineWidth = breite * (1 - i / (lang + 2));
+      ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1; ctx.lineWidth = 1; ctx.lineCap = 'butt';
+  }
+  // Explosion: Blitz, Aufhellen, drei Druckwellen, Funken mit Schweif in den Farben der Dateien
+  function explosion(ctx, S, e, st = 1) {
+    if (e < 0) return;
+    const C = S.C;
+    hell(ctx);
+    glow(ctx, C.x, C.y, 60 + 280 * aus3(clamp(e / .35)) * st, weiss(), .7 * (1 - clamp(e / .9)));
+    glow(ctx, C.x, C.y, 30 + 140 * aus3(clamp(e / .2)), F.mint, .6 * (1 - clamp(e / .6)));
+    if (e < .45) { ctx.fillStyle = rgba(weiss(), .1 * st * (1 - e / .45)); ctx.fillRect(0, 0, S.w, S.h); }
+    normal(ctx);
+    for (let i = 0; i < 3; i++) { const u = clamp((e - i * .12) / 1.4); if (u > 0) welle(ctx, C.x, C.y, 10 + aus3(u) * S.w * .62 * st, (1 - u) * .8, i ? F.mint : weiss(), FLt, 3.4 * (1 - u) + .6); }
+    hell(ctx);
+    S.funkenX.forEach(p => {
+      const u = clamp(e / p.dur); if (u >= 1) return;
+      const r = p.v * st * aus3(u), r2 = p.v * st * aus3(Math.max(0, u - .07)), c = Math.cos(p.w), s = Math.sin(p.w) * .5;
+      ctx.globalAlpha = (1 - u) * .85; ctx.strokeStyle = p.c; ctx.lineWidth = p.g;
+      ctx.beginPath(); ctx.moveTo(C.x + c * r2, C.y + s * r2); ctx.lineTo(C.x + c * r, C.y + s * r); ctx.stroke();
+    });
+    ctx.globalAlpha = 1; ctx.lineWidth = 1; normal(ctx);
+  }
+  function wackeln(ctx, e, staerke) { if (e < 0 || e > .4) return; const k = (1 - e / .4) * staerke; ctx.translate(Math.sin(e * 97) * k, Math.cos(e * 83) * k * .6); }
+
+  // Grundgerüst aller fünf: Anflug und Tanz, Explosion (je Entwurf), Planeten legen sich als Ring, Häkchen steigt auf
+  function abschluss(opt) {
+    return { D: 4.6, malen(ctx, S, U, f, t) {
+      const C = S.C, E = S.E, N = S.N, L = tanzLage(S, f), e = f - M - (opt.verzug || 0);
+      const Rx = Math.min(S.w * .44, 440), Ry = 116;
+      ctx.save(); wackeln(ctx, e, opt.wackeln ?? 3);
+      S.st.um(ctx, t, 1 - phase(f, 0, 1));
+      if (!opt.eigeneSterne) S.st.voll(ctx, t, phase(f, M + .4, M + 1.8));
+      if (opt.vor) opt.vor(ctx, S, U, f, t, L, e);
+      grund(ctx, S, phase(f, M + 1.2, M + 2));
+      const skal = lerp(1, .4, ease(phase(f, 0, M)));
+      if (f < M) {
+        U.bahnen(ctx, 1 - phase(f, 0, 1.1), L.weiss, skal);
+        S.slots.forEach((s, k) => U.planet(ctx, k, t * (1 + 2 * phase(f, 0, M)), L.weiss, skal, 1 - phase(f, M - .35, M)));
+        if (opt.spurLang !== 0) { hell(ctx); spur(ctx, S, f, opt.spurLang || 10, 'schwarz', F.violet, 3, .6); spur(ctx, S, f, opt.spurLang || 10, 'weiss', F.mint, 3, .6); normal(ctx); }
+        hell(ctx); glow(ctx, C.x, C.y, 40 + 80 * L.nah, weiss(), .35 * L.nah * L.nah); normal(ctx);
+        kern(ctx, L.weiss.x, L.weiss.y, t, 1 + .2 * L.nah, 1, 1);
+        schwarz(ctx, L.schwarz.x, L.schwarz.y, 1 - .25 * L.nah);
+      }
+      opt.knall(ctx, S, e, t);
+      ctx.globalAlpha = .22 * phase(e, .9, 1.6); ctx.strokeStyle = F.mint; ctx.beginPath(); ctx.ellipse(C.x, C.y, Rx, Ry, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+      if (e > 0) S.slots.forEach((s, k) => {
+        const o = S.ordnung[k] / N, u = aus3(phase(e, .1 + o * .35, 1.2 + o * .35));
+        const w = -Math.PI / 2 + o * TAU + t * .08, z = { x: C.x + Math.cos(w) * Rx, y: C.y + Math.sin(w) * Ry };
+        U.punkt(ctx, k, P2(C, z, u), phase(e, .1, .3));
+      });
+      ctx.restore();
+      haken(ctx, lerp(C.x, E.x, 0), lerp(C.y, E.y, ease(phase(e, .6, 1.4))), phase(e, .5, 1.4), t);
+    } };
+  }
+
+  const ENDE = {
+    // 1: der Grundentwurf, deutlich kräftiger
+    chirp: abschluss({ knall: (ctx, S, e) => explosion(ctx, S, e, 1) }),
+    // 2: lange Lichtspuren zeichnen eine Spirale, die bei der Explosion nach außen aufbricht
+    spuren: abschluss({ spurLang: 55, knall(ctx, S, e) {
+      if (e >= 0 && e < 1.1) {
+        const k = 1 + 3.2 * aus3(clamp(e / 1.1)), a = 1 - clamp(e / 1.1), C = S.C;
+        hell(ctx); ctx.lineCap = 'round';
+        ['schwarz', 'weiss'].forEach((wer, j) => { for (let i = 1; i <= 55; i++) {
+          const p = tanzLage(S, M - (i - 1) * .018)[wer], q = tanzLage(S, M - i * .018)[wer];
+          ctx.globalAlpha = a * (1 - i / 56) * .8; ctx.strokeStyle = j ? F.mint : F.violet; ctx.lineWidth = 3 * (1 - i / 57);
+          ctx.beginPath(); ctx.moveTo(C.x + (p.x - C.x) * k, C.y + (p.y - C.y) * k); ctx.lineTo(C.x + (q.x - C.x) * k, C.y + (q.y - C.y) * k); ctx.stroke();
+        } });
+        ctx.globalAlpha = 1; ctx.lineWidth = 1; ctx.lineCap = 'butt'; normal(ctx);
+      }
+      explosion(ctx, S, e, .9);
+    } }),
+    // 3: eine gemeinsame Scheibe aus farbigem Staub dreht mit, bei der Verschmelzung wird sie hinausgeschleudert
+    scheibe: abschluss({ vor(ctx, S, U, f, t, L, e) {
+      const C = S.C, a = phase(f, .4, 1.6);
+      if (a <= 0) return;
+      hell(ctx);
+      S.staub.forEach(p => {
+        let x, y, al;
+        const rr = 16 + p.r * (40 + 150 * (1 - L.nah));
+        if (e < 0) { const w = p.a + L.phi * (.55 + .5 / Math.max(.25, p.r)); x = C.x + Math.cos(w) * rr; y = C.y + Math.sin(w) * rr * FLt; al = a * .75; }
+        else { const u = clamp(e / 1.3), w = p.a + tanzLage(S, M).phi * (.55 + .5 / Math.max(.25, p.r)), r = rr + aus3(u) * S.w * (.25 + .4 * p.r); x = C.x + Math.cos(w) * r; y = C.y + Math.sin(w) * r * FLt; al = .9 * (1 - u); }
+        if (al <= 0) return; ctx.globalAlpha = al; ctx.fillStyle = p.c; ctx.fillRect(x - p.g / 2, y - p.g / 2, p.g, p.g);
+      });
+      ctx.globalAlpha = 1; normal(ctx);
+    }, knall: (ctx, S, e) => explosion(ctx, S, e, .8) }),
+    // 4: Gravitationswellen: je Umlauf eine Welle, die Sterne der ganzen Fläche schwingen mit
+    wellen: abschluss({ eigeneSterne: true, wackeln: 2, vor(ctx, S, U, f, t, L, e) {
+      const C = S.C, ringe = S.wellenZeiten.filter(z => z <= f).map(z => ({ r: (f - z) * 240, a: .32 })), gross = e >= 0 ? [{ r: e * 420, a: 1 }] : [];
+      const alle = ringe.concat(gross), grenze = S.w * .65;
+      alle.forEach(g => { if (g.r < grenze) welle(ctx, C.x, C.y, g.r, g.a * .5 * (1 - g.r / grenze), F.mint, FLt, g.a > .5 ? 2.4 : 1); });
+      const a = phase(f, 0, 1);
+      S.sterneW.forEach(p => {
+        const x0 = p.x * S.w, y0 = p.y * S.h, dx = x0 - C.x, dy = (y0 - C.y) / FLt, dist = Math.hypot(dx, dy) || 1;
+        let v = 0; alle.forEach(g => { v += g.a * (g.a > .5 ? 16 : 6) * Math.exp(-Math.pow((dist - g.r) / 16, 2)); });
+        ctx.globalAlpha = (.3 + .5 * (.5 + .5 * Math.sin(t * p.f + p.a))) * (F.dunkel ? 1 : .7) * a; ctx.fillStyle = F.dunkel ? '#dfe9ef' : F.muted;
+        ctx.fillRect(x0 + dx / dist * v, y0 + dy / dist * v * FLt, p.s, p.s);
+      });
+      ctx.globalAlpha = 1;
+    }, knall: (ctx, S, e) => explosion(ctx, S, e, .7) }),
+    // 5: Supernova: erst zieht sich alles zu einem Punkt zusammen, dann Detonation mit Hitzekugel und Lichtstreifen
+    nova: abschluss({ verzug: .28, wackeln: 5, knall(ctx, S, e, t) {
+      const C = S.C, i = e + .28;
+      if (i >= 0 && i < .28) { hell(ctx); glow(ctx, C.x, C.y, 70 * (1 - i / .28) + 6, weiss(), .9); normal(ctx); return; }
+      if (e < 0) return;
+      const u = clamp(e / 1.3);
+      hell(ctx);
+      const r = 20 + aus3(u) * S.w * .32, g = ctx.createRadialGradient(C.x, C.y, 0, C.x, C.y, r);
+      g.addColorStop(0, rgba(weiss(), .7 * (1 - u))); g.addColorStop(.55, rgba(F.mint, .35 * (1 - u))); g.addColorStop(.85, rgba(F.violet, .25 * (1 - u))); g.addColorStop(1, rgba(F.violet, 0));
+      ctx.save(); ctx.translate(C.x, C.y); ctx.scale(1, .62); ctx.translate(-C.x, -C.y); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(C.x, C.y, r, 0, TAU); ctx.fill(); ctx.restore();
+      // Lichtstreifen quer über die ganze Fläche
+      const fa = 1 - clamp(e / .9), lg = ctx.createLinearGradient(0, 0, S.w, 0);
+      lg.addColorStop(0, rgba(F.mint, 0)); lg.addColorStop(.5, rgba(weiss(), .9 * fa)); lg.addColorStop(1, rgba(F.mint, 0));
+      ctx.fillStyle = lg; ctx.fillRect(0, C.y - 1.2, S.w, 2.4);
+      ctx.save(); ctx.translate(C.x, C.y); ctx.scale(1, .05); glow(ctx, 0, 0, S.w * .5, F.mint, .5 * fa); ctx.restore();
+      normal(ctx);
+      explosion(ctx, S, e, 1.3);
+    } })
+  };
+
+  /* ---------- Bühne ---------- */
+  let ANZ = 10, FEHLER = false;
+  const VOR = 1.7, RUHE = 4.2;
+  function buehne(fenster, art) {
+    const el = fenster.querySelector('.buehne'), liste = fenster.querySelector('.liste');
+    el.innerHTML = `<canvas role="img" aria-label="Animation: Die letzte Datei landet, danach verschmelzen die Löcher und der Bericht erscheint in der Mitte"></canvas>
+      <button type="button" class="nochmal">Nochmal abspielen</button>
+      <div class="eingang"><small>Eingang</small><b class="ein-zahl"></b></div>
+      <div class="ziel-text"><small>Hierhin speichern</small><b>Neben dem Original</b><span class="pfad">jede Datei in ihren Ordner</span>
+        <button type="button" class="ort">Speicherort ändern ▾</button></div>
+      <div class="report" aria-live="polite"><b class="r-titel"></b><span class="r-zeile"></span><div class="akt"><button type="button" class="haupt">Ordner öffnen</button><button type="button">Neue Runde</button></div></div>`;
+    const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), E = ENDE[art];
+    const S = { w: 0, h: 0 };
+    let U, t0 = 0, zustand = '';
+    const rep = el.querySelector('.report'), eingang = el.querySelector('.eingang'), ziel = el.querySelector('.ziel-text'), einZahl = el.querySelector('.ein-zahl');
+    function plaetze() {
+      if (!S.slots || !S.w) return;
+      // Sterne des Himmels: über die ganze Fläche, frei um den Bericht
+      const frei = (x, y) => Math.abs(x - S.w / 2) < 200 && y > 70 && y < 236;
+      const zp = () => { let x, y, i = 0; do { x = 14 + Math.random() * (S.w - 28); y = 12 + Math.random() * (S.h - 24); } while (frei(x, y) && i++ < 40); return { x, y }; };
+      S.plaetze = S.slots.map(zp);
+      const farbe = () => { const s = S.slots[Math.floor(Math.random() * S.slots.length)]; return Math.random() < .08 ? weiss() : F[s.art]; };
+      S.funkenX = Array.from({ length: 320 }, () => ({ w: Math.random() * TAU, v: (.25 + .75 * Math.pow(Math.random(), .7)) * S.w * .5, dur: .9 + Math.random() * .8, c: farbe(), g: Math.random() < .25 ? 2.2 : 1.3 }));
+      S.staub = Array.from({ length: 360 }, () => ({ r: Math.random(), a: Math.random() * TAU, c: farbe(), g: Math.random() < .2 ? 2 : 1.4 }));
+      S.sterneW = Array.from({ length: 150 }, () => ({ x: Math.random(), y: Math.random(), a: Math.random() * 9, f: .4 + Math.random() * 1.2, s: Math.random() < .12 ? 1.6 : 1 }));
+      S.wellenZeiten = []; { let alt = null; for (let f = ANK * .5; f < M; f += .005) { const k = Math.floor(tanzLage(S, f).phi / Math.PI); if (alt !== null && k !== alt) S.wellenZeiten.push(f); alt = k; } }
+      S.funken = Array.from({ length: 170 }, () => { const s = S.slots[Math.floor(Math.random() * S.slots.length)]; return { ...zp(), c: F[s.art], s: Math.random() < .2 ? 2 : 1.3, f: .5 + Math.random() * 1.4, a: Math.random() * 9 }; });
+    }
+    function aufbauen(vorlauf) {
+      S.N = ANZ; S.fehler = FEHLER;
+      const l = auftrag(ANZ), fk = FEHLER ? l.indexOf('video') : -1;
+      S.slots = l.map((a, k) => ({ art: a, fertig: k !== fk, fehl: k === fk }));
+      S.letzte = ANZ - 1 === fk ? ANZ - 2 : ANZ - 1;
+      S.fertig = S.slots.filter(s => !s.fehl).length;
+      S.sortiert = l.map((a, k) => k).sort((i, j) => ARTEN.indexOf(l[i]) - ARTEN.indexOf(l[j]) || i - j);
+      S.ordnung = []; S.sortiert.forEach((k, o) => S.ordnung[k] = o);
+      S.P = Array.from({ length: 64 }, () => ({ r1: Math.random(), r2: Math.random(), r3: Math.random(), px: null, py: null }));
+      U = universum(S); S.st = sterne(S);
+      if (S.w) plaetze();
+      t0 = performance.now() / 1000 - (leise ? 99 : vorlauf);
+      zustand = '';
+      const vor = ANZ * 19.7, nach = ANZ * 9.5, mb = v => v.toLocaleString('de-DE', { maximumFractionDigits: 1 });
+      el.querySelector('.r-titel').textContent = FEHLER ? `${S.fertig} von ${ANZ} Dateien umgewandelt` : `Alle ${ANZ} Dateien umgewandelt`;
+      const z = el.querySelector('.r-zeile'); z.className = 'r-zeile' + (FEHLER ? ' fehl' : '');
+      z.textContent = FEHLER ? 'Clip_1.mov ist beschädigt und liegt wieder im Eingang' : `${mb(vor)} MB → ${mb(nach)} MB · ${Math.round((1 - nach / vor) * 100)} % kleiner`;
+      // Liste unter der Fläche: bleibt, wie sie ist
+      const zeilen = l.slice(0, 4).map((a, k) => { const nr = l.slice(0, k + 1).filter(x => x === a).length, f = k === fk;
+        return `<div class="zeile${f ? ' fehl' : ''}" style="--c:var(${FARBVAR[a]})"><i></i><b>${NAME[a]}${nr}.${ENDUNG[a][0].toLowerCase()}</b><span class="fmt">${ENDUNG[a][0]} → ${ENDUNG[a][1]}</span><span class="st">${f ? '✕ Fehler' : '✓ fertig'}</span></div>`; }).join('');
+      liste.innerHTML = `<div class="kopfz"><span>Dateien in diesem Auftrag</span><span>${S.fertig} von ${ANZ}</span></div>${zeilen}<div class="mehr">… und ${ANZ - 4} weitere</div>`;
+    }
+    function groesse() {
+      const w = el.clientWidth, h = el.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      if (!w) return;
+      S.w = w; S.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      S.tw = Math.min(320, w * .48);
+      S.T = { x: w - 16 - S.tw / 2, y: 106 };
+      S.H = { x: Math.max(100, Math.min(w * .36, S.T.x - S.tw / 2 - 64)), y: h * .5 };
+      S.RAD = Math.max(40, Math.min(80, (S.H.x - 60) * .7));
+      S.E = { x: w / 2, y: 96 }; S.C = { x: w / 2, y: 150 };
+      plaetze();
+    }
+    new ResizeObserver(groesse).observe(el);
+    aufbauen(0);
+    el.querySelector('.nochmal').addEventListener('click', () => aufbauen(0));
+
+    function malen(T) {
+      if (!S.w) return;
+      let t = T - t0;
+      if (t > VOR + E.D + RUHE && !leise) { aufbauen(0); t = 0; }
+      if (leise) t = VOR + E.D + 1;
+      ctx.clearRect(0, 0, S.w, S.h);
+      const f = t - VOR;
+      if (f < 0) {
+        S.slots[S.letzte].fertig = false;
+        glow(ctx, S.H.x, S.H.y, S.RAD + 50, F.violet, .08);
+        ctx.setLineDash([2, 6]); ctx.strokeStyle = rgba(F['line-stark'], .6); ctx.beginPath(); ctx.ellipse(S.H.x, S.H.y, S.RAD + 18, (S.RAD + 18) * FL, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+        S.st.um(ctx, t); U.bahnen(ctx, 1);
+        S.slots.forEach((s, k) => { if (k !== S.letzte) U.planet(ctx, k, t); });
+        kern(ctx, S.T.x, S.T.y, t, 1, 1, (S.fertig - 1) / S.N);
+        schwarz(ctx, S.H.x, S.H.y);
+        const c = F[S.slots[S.letzte].art], aus = clamp((t - .7) / (VOR - .7)), z = U.pos(S.letzte, t);
+        ctx.fillStyle = c; ctx.strokeStyle = rgba(c, .3);
+        S.P.forEach(p => {
+          const w = p.r1 * TAU + (t + 2) * (.6 + 1.6 * (1 - p.r2)), rad = 16 + p.r2 * S.RAD;
+          let px = S.H.x + Math.cos(w) * rad, py = S.H.y + Math.sin(w) * rad * FL + (p.r3 - .5) * 10;
+          if (aus > 0) { const e = ease(aus); px = lerp(px, z.x + (p.r1 - .5) * 4, e); py = lerp(py, z.y + (p.r2 - .5) * 4, e); }
+          if (p.px != null) { const dx = px - p.px, dy = py - p.py, dd = dx * dx + dy * dy; if (dd > 6 && dd < 4000) { ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(px, py); ctx.stroke(); } }
+          ctx.fillRect(px - 1, py - 1, 2, 2); p.px = px; p.py = py;
+        });
+        ctx.lineWidth = 1;
+        zaehler(ctx, S.T.x, S.T.y + U.aussen() * FL + 20, S.fertig - 1, S.N);
+      } else {
+        S.slots[S.letzte].fertig = true;
+        E.malen(ctx, S, U, f, t);
+      }
+      const z = f < 0 ? 'lauf' : f < E.D - .5 ? 'ende' : 'fertig';
+      if (z !== zustand) {
+        zustand = z;
+        if (z === 'lauf') { S.P.forEach(p => p.px = null); einZahl.textContent = '1 im Wirbel'; }
+        eingang.classList.toggle('weg', z !== 'lauf'); ziel.classList.toggle('weg', z !== 'lauf');
+        rep.classList.toggle('an', z === 'fertig');
+      }
+    }
+    return { malen, sichtbar: false, el: fenster, aufbauen };
+  }
+
+  farben();
+  const B = [...document.querySelectorAll('.konzept')].map(k => buehne(k.querySelector('.fenster'), k.dataset.k));
+  function steuer(id, attr, setzen) {
+    const g = document.getElementById(id);
+    g.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      setzen(b.dataset[attr]); B.forEach(x => x.aufbauen(0));
+    });
+  }
+  steuer('anzahl', 'n', v => { ANZ = +v; });
+  steuer('fehler', 'f', v => { FEHLER = v === '1'; });
+  const io = new IntersectionObserver(es => es.forEach(e => { const b = B.find(x => x.el === e.target); if (b) b.sichtbar = e.isIntersecting; }));
+  B.forEach(b => io.observe(b.el));
+  const neuFarben = () => { farben(); B.forEach(b => b.aufbauen(0)); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', neuFarben);
+  new MutationObserver(neuFarben).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  function schleife(ms) { const T = ms / 1000; B.forEach(b => { if (b.sichtbar) b.malen(T); }); requestAnimationFrame(schleife); }
+  requestAnimationFrame(schleife);
+})();
+</script>
