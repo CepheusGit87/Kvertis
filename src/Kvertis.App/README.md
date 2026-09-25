@@ -1,12 +1,12 @@
 # Kvertis.App
 
-WinUI-3-Oberfläche von Kvertis (Windows App SDK 2.5, .NET 8, MVVM mit CommunityToolkit.Mvvm, Single-Project-MSIX).
+WinUI-3-Oberfläche von Kvertis (Windows App SDK 2.5, .NET 10, MVVM mit CommunityToolkit.Mvvm, Single-Project-MSIX).
 Die App spricht nur mit `Kvertis.Queue` und den Schnittstellen aus `Kvertis.Engine`; die Verdrahtung steht in
 `Services/ServiceRegistration.cs`.
 
 ## Bauen (nur Windows)
 
-Voraussetzungen: Windows 10 1809 oder neuer, .NET 8 SDK. Visual Studio ist nicht nötig.
+Voraussetzungen: Windows 10 1809 oder neuer, .NET 10 SDK. Visual Studio ist nicht nötig.
 
 ```
 dotnet build src/Kvertis.App/Kvertis.App.csproj -p:Platform=x64
@@ -19,6 +19,28 @@ Tests bauen dort über `Kvertis.Core.slnf`.
 
 Zum Starten aus Visual Studio das Projekt `Kvertis.App` mit dem Profil „Paket“ wählen; beim ersten Start wird ein
 lokales Testzertifikat erzeugt. Zertifikate und Pakete gehören nie ins Repository (`.gitignore`).
+
+## Starten ohne Visual Studio
+
+**Unverpackt (Entwicklerschleife, kein Entwicklermodus nötig):**
+
+```
+dotnet build src/Kvertis.App/Kvertis.App.csproj -p:Platform=x64 -p:WindowsPackageType=None -p:OutDir=bin/x64/Debug-unpackaged/
+src/Kvertis.App/bin/x64/Debug-unpackaged/Kvertis.exe
+```
+
+Voraussetzung ist die installierte Windows-App-Runtime 2.5 (auf Entwicklerrechnern meist vorhanden). Ohne Paket-Identität
+liegen Einstellungen, Verlauf und Protokolle unter `%LOCALAPPDATA%Kvertis` (siehe `Services/PackageInfo.cs`); der
+Store-Kauf ist in Debug-Builds ohnehin durch `DebugLicenseService` ersetzt.
+
+**Verpackt (MSIX, wie im Store):** Entwicklermodus in den Windows-Einstellungen einschalten, dann
+
+```
+dotnet build src/Kvertis.App/Kvertis.App.csproj -p:Platform=x64
+Add-AppxPackage -Register src/Kvertis.App/bin/x64/Debug/net10.0-windows10.0.19041.0/AppxManifest.xml
+```
+
+Danach steht „Kvertis“ im Startmenü. Entfernen mit `Get-AppxPackage Kvertis | Remove-AppxPackage`.
 
 ## FFmpeg
 

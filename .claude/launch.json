@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "design",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/design-server.js", "8765"],
+      "port": 8765
+    }
+  ]
+}

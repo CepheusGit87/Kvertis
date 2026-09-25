@@ -1,9 +1,7 @@
-using System.Globalization;
 using Kvertis.App.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.ApplicationModel;
 
 namespace Kvertis.App.Views;
 
@@ -16,9 +14,7 @@ public sealed partial class AboutPage : Page
     {
         _navigation = App.Services.GetRequiredService<INavigationService>();
         var loc = App.Services.GetRequiredService<ILocalizer>();
-        var version = Package.Current.Id.Version;
-        VersionText = loc.Format("About_Version_Text",
-            string.Join('.', new[] { version.Major, version.Minor, version.Build }.Select(v => v.ToString(CultureInfo.InvariantCulture))));
+        VersionText = loc.Format("About_Version_Text", PackageInfo.VersionText);
         InitializeComponent();
     }
 

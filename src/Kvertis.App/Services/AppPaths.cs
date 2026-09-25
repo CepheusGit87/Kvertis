@@ -6,9 +6,14 @@ namespace Kvertis.App.Services;
 /// <summary>Every file location the app uses. All user data stays in the package's local app data (ADR-008).</summary>
 public static class AppPaths
 {
-    public static string LocalFolder => ApplicationData.Current.LocalFolder.Path;
+    /// <summary>Packaged: the MSIX local folder. Unpackaged (developer run): %LOCALAPPDATA%\Kvertis.</summary>
+    public static string LocalFolder => PackageInfo.HasIdentity
+        ? ApplicationData.Current.LocalFolder.Path
+        : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Kvertis");
 
-    public static string LocalCacheFolder => ApplicationData.Current.LocalCacheFolder.Path;
+    public static string LocalCacheFolder => PackageInfo.HasIdentity
+        ? ApplicationData.Current.LocalCacheFolder.Path
+        : Path.Combine(LocalFolder, "cache");
 
     public static string SettingsFile => Path.Combine(LocalFolder, "settings.json");
 

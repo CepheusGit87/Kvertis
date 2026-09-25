@@ -7,7 +7,6 @@ using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Ffmpeg;
 using Kvertis.Engine.Naming;
 using Kvertis.Queue;
-using Windows.ApplicationModel;
 
 namespace Kvertis.App.ViewModels;
 
@@ -62,9 +61,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         LoggingEnabled = s.LoggingEnabled;
         _initializing = false;
 
-        var version = Package.Current.Id.Version;
-        VersionText = loc.Format("About_Version_Text",
-            string.Join('.', new[] { version.Major, version.Minor, version.Build }.Select(v => v.ToString(CultureInfo.InvariantCulture))));
+        VersionText = loc.Format("About_Version_Text", PackageInfo.VersionText);
     }
 
     public string VersionText { get; }
