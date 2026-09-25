@@ -115,11 +115,13 @@ h3 { margin: 0; font-size: 15px; font-weight: 600; }
 .seg.voll::after { transform: scaleX(1); }
 
 /* Ebenen (aus Entwurf C): die aktuelle vorn, die übrigen in der Tiefe */
-.ebenen { position: relative; perspective: 1400px; overflow: hidden; }
-.ebene { position: absolute; inset: 0; transition: transform .65s var(--feder), opacity .4s; }
-.ebene[data-pos="0"] { transform: none; opacity: 1; }
-.ebene[data-pos="-1"] { transform: translateY(-24px) translateZ(-240px); opacity: 0; pointer-events: none; }
-.ebene[data-pos="1"] { transform: translateY(40px) translateZ(170px); opacity: 0; pointer-events: none; }
+.ebenen { position: relative; overflow: hidden; }
+/* Jede Ebene skaliert um ihr eigenes Loch (--hx/--hy) und wird so verschoben, dass es auf dem Loch der aktiven Ebene liegt (--dx/--dy).
+   Beim Wechsel wandern beide Löcher gleichzeitig vom alten zum neuen Punkt: sie bleiben deckungsgleich. */
+.ebene { position: absolute; inset: 0; transform-origin: var(--hx, 50%) var(--hy, 50%); transition: transform .7s cubic-bezier(.45, 0, .2, 1), opacity .5s ease; }
+.ebene[data-pos="0"] { transform: none; opacity: 1; transition: transform .7s cubic-bezier(.45, 0, .2, 1), opacity .45s ease .12s; }
+.ebene[data-pos="-1"] { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(.82); opacity: 0; pointer-events: none; }
+.ebene[data-pos="1"] { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(1.22); opacity: 0; pointer-events: none; }
 
 /* 3D-Kiste (aus ShoeBox) */
 .szene { position: relative; perspective: 900px; display: grid; place-items: center; }
@@ -2390,11 +2392,11 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const K = {};
   const bezugslinien = (S, e, sel, farbeK) => {
     const { ctx, W } = S, v = W.sicht * (1 - e); if (v < .02 || W.ziel == null || W.ziel < 0) return;
-    const k = W.ziel, b = S.cv.getBoundingClientRect();
+    const k = W.ziel, b = S.cv.getBoundingClientRect(), sk = b.width / (S.cv.clientWidth || b.width) || 1;
     ['l', 'r'].forEach(seite => {
       const els = [...W.el.querySelectorAll(`.seite-${seite} ${sel}`)], n = els.length;
       els.forEach((el, j) => {
-        const r = el.getBoundingClientRect(), y0 = r.top - b.top + r.height / 2, x0 = seite === 'l' ? r.right - b.left + 6 : r.left - b.left - 6;
+        const r = el.getBoundingClientRect(), y0 = (r.top - b.top + r.height / 2) / sk, x0 = seite === 'l' ? (r.right - b.left) / sk + 6 : (r.left - b.left) / sk - 6;
         const t = n === 1 ? .5 : j / (n - 1), A = seite === 'l' ? Math.PI + .95 - t * 1.9 : -.95 + t * 1.9;
         const [x1, y1] = punkt(S, k, A, 0), mitte = seite === 'l' ? x0 + 26 : x0 - 26;
         const lauf = clamp(W.sicht * 1.6 - j * .05);
@@ -2407,8 +2409,8 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     });
   };
   const wegZeichnen = (S, T, e, von, zu, farbe, a, empfohlen) => {
-    const { ctx } = S, b = S.cv.getBoundingClientRect(), r1 = von.getBoundingClientRect(), r2 = zu.getBoundingClientRect();
-    const x0 = r1.right - b.left + 4, y0 = r1.top - b.top + r1.height / 2, x1 = r2.left - b.left - 4, y1 = r2.top - b.top + r2.height / 2, c = S.c;
+    const { ctx } = S, b = S.cv.getBoundingClientRect(), r1 = von.getBoundingClientRect(), r2 = zu.getBoundingClientRect(), sk = b.width / (S.cv.clientWidth || b.width) || 1;
+    const x0 = (r1.right - b.left) / sk + 4, y0 = (r1.top - b.top + r1.height / 2) / sk, x1 = (r2.left - b.left) / sk - 4, y1 = (r2.top - b.top + r2.height / 2) / sk, c = S.c;
     const pt = t => t < .5 ? (u => [(1 - u) * (1 - u) * x0 + 2 * (1 - u) * u * (c.x - 70) + u * u * c.x, (1 - u) * (1 - u) * y0 + 2 * (1 - u) * u * y0 + u * u * c.y])(t * 2) : (u => [(1 - u) * (1 - u) * c.x + 2 * (1 - u) * u * (c.x + 70) + u * u * x1, (1 - u) * (1 - u) * c.y + 2 * (1 - u) * u * y1 + u * u * y1])((t - .5) * 2);
     ctx.strokeStyle = rgba(empfohlen ? F.mintR : farbe, (empfohlen ? .55 : .25) * a); ctx.lineWidth = empfohlen ? 2 : 1;
     ctx.beginPath(); for (let i = 0; i <= 40; i++) { const [x, y] = pt(i / 40); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); } ctx.stroke();
@@ -2986,7 +2988,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     const cv = W.welt.querySelector('canvas');
     W.S = { cv, ctx: cv.getContext('2d'), w: 0, h: 0, W };
     const groesse = () => {
-      const r = cv.getBoundingClientRect(); if (!r.width) return;
+      const r = { width: cv.clientWidth, height: cv.clientHeight }; if (!r.width) return;
       const d = Math.min(2, devicePixelRatio || 1);
       W.S.w = r.width; W.S.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
       W.S.ctx.setTransform(d, 0, 0, d, 0, 0);
@@ -3027,6 +3029,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const KATS = ['bild', 'audio', 'video', 'dok', 'model'], ZU = new WeakMap();
   const API = window.KvertisGalaxie = {
     aktiv: true, waehlen: null, weg: null,
+    lochR: () => (ALLE[0] && ALLE[0].lochR) || 18,
     // Dateiliste des Mischentwurfs übernehmen; neue Dateien fliegen ein, wenn animiert
     sync(liste, animiert) {
       const W = ALLE[0]; if (!W) return;
@@ -3191,7 +3194,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     q.addColorStop(0, rgba(c.map(v => Math.min(255, v + 70)), 1)); q.addColorStop(.55, rgba(c, 1)); q.addColorStop(1, rgba(c.map(v => v * .35), 1));
     ctx.fillStyle = q; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
   }
-  function rel(W, el) { const a = el.getBoundingClientRect(), b = W.innen.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; }
+  function rel(W, el) { const a = el.getBoundingClientRect(), b = W.innen.getBoundingClientRect(), s = b.width / (W.innen.offsetWidth || b.width) || 1; return { x: (a.left - b.left) / s, y: (a.top - b.top) / s, w: a.width / s, h: a.height / s }; }
 
   /* ---------- gemeinsame Bausteine ---------- */
   function reihenHTML(W, g) {
@@ -3806,8 +3809,9 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   function zeichnen(W, T) {
     const ctx = W.ctx, Z = W.Z, g = GR[W.art], c = farbe(g), m = ART[W.a].mitte(W);
     const z = leise ? 1 : ease(clamp((T - W.tZoom) / .9));
-    const links = (m.links || 16) + 266, rechts = 316, cx = (links + W.w - rechts) / 2, cy = m.oben + (W.h - m.oben - m.unten) * .5 + 8;
-    const rx = Math.min((W.w - links - rechts) / 2 - 36, 180) * lerp(.25, 1, z), ry = rx * .42;
+    // Loch am gemeinsamen Ankerpunkt der Schritte 1 und 2 (siehe ebenenSetzen im Mischentwurf)
+    const links = (m.links || 16) + 266, rechts = 316, cx = W.w * .5, cy = (W.h - 200) * .5 + 50;
+    const rx = Math.max(60, Math.min(cx - links - 30, W.w - rechts - cx - 30, 180)) * lerp(.25, 1, z), ry = rx * .42;
     ctx.strokeStyle = rgba(c, .45 * z); ctx.lineWidth = 1.4; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.stroke();
     ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
     for (let i = 0; i < 90; i++) { const a = i / 90 * TAU + T * .12, d = ((i * 37) % 11 - 5) * 1.4; ctx.fillStyle = rgba(c, .5 * z); ctx.fillRect(cx + Math.cos(a) * (rx + d) - 1, cy + Math.sin(a) * (ry + d * .5) - 1, 2, 2); }
@@ -3820,7 +3824,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const A = Math.PI * .75 + j * 1.3 + T * .12; kugel(ctx, cx + Math.cos(A) * rx, cy + Math.sin(A) * ry, 5 + Math.sqrt(f.mb) * .6, c, z);
     });
     W.innen.querySelectorAll('.v-r [data-wt]').forEach(b => { if (an(W, b.dataset.wt) || gelb(W, b.dataset.wt)) return; const e = rel(W, b), p3 = [e.x - 3, e.y + e.h / 2]; weg(ctx, [cx, cy], [cx + 60, cy], [p3[0] - 60, p3[1]], p3, F['line-stark'], .22 * z, 1); });
-    loch(ctx, cx, cy, lerp(18, 12, z));
+    loch(ctx, cx, cy, lerp(W.r0 ?? 18, 12, z));
     // A4: Arten als Planeten im Bogen über der Bahn
     if (W.a === 'A4') {
       const R = Math.min(W.w / 2 - 340, 250), bx = cx, by = m.oben + 40 + R * .5;
@@ -3865,7 +3869,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     W.el.innerHTML = '<div class="innen"><canvas class="lage" aria-hidden="true"></canvas><div class="z-titel-platz"></div><div class="v-l"></div><div class="v-r"></div><div class="v-wahl"></div><div class="z2-damals-platz"></div></div>';
     SH.append(W.el); W.innen = W.el.querySelector('.innen');
     const cv = W.innen.querySelector('canvas'); W.ctx = cv.getContext('2d');
-    new ResizeObserver(() => { const r = W.innen.getBoundingClientRect(); if (!r.width) return; const d = Math.min(2, devicePixelRatio || 1); W.w = r.width; W.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); W.ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(W.innen);
+    new ResizeObserver(() => { const r = { width: W.innen.offsetWidth, height: W.innen.offsetHeight }; if (!r.width) return; const d = Math.min(2, devicePixelRatio || 1); W.w = r.width; W.h = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); W.ctx.setTransform(d, 0, 0, d, 0, 0); }).observe(W.innen);
     const g0 = () => GR[W.art];
     W.el.addEventListener('click', e => {
       const t = e.target, Z = W.Z;
@@ -3883,7 +3887,7 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const we = t.closest('[data-wechsel]'); if (we) { const [k, f] = we.dataset.wechsel.split('|'), g = G(k); setzeArt(Z, g, g.ziele.findIndex(z => z[0] === f)); zielAnwenden(W, g); neu(W); return; }
       const ak = t.closest('[data-akk]'); if (ak) { W.akk = (W.akk ?? (KAND[g0().k] ? 'ziel' : null)) === ak.dataset.akk ? '' : ak.dataset.akk; neu(W); W.el.querySelector(`[data-akk="${ak.dataset.akk}"]`)?.focus(); return; }
       const o = t.closest('[data-auf]'); if (o) { const k = o.dataset.auf; W.offen.has(k) ? W.offen.delete(k) : W.offen.add(k); neu(W); return; }
-      const s = t.closest('[data-w2k]'); if (s) { if (+s.dataset.w2k !== W.art) { W.art = +s.dataset.w2k; W.sel = null; W.einzeln = false; W.tZoom = W.jetzt; W.akk = undefined; W.zone = null; W.fmtAuf = false; } neu(W); W.el.querySelector(`[role="tab"][data-w2k="${W.art}"]`)?.focus(); return; }
+      const s = t.closest('[data-w2k]'); if (s) { if (+s.dataset.w2k !== W.art) { W.art = +s.dataset.w2k; W.sel = null; W.einzeln = false; W.tZoom = W.jetzt; W.r0 = 18; W.akk = undefined; W.zone = null; W.fmtAuf = false; } neu(W); W.el.querySelector(`[role="tab"][data-w2k="${W.art}"]`)?.focus(); return; }
       const f = t.closest('[data-w2f]'); if (f) { W.sel = f.dataset.w2f || null; if (g0().files.length === 1) W.sel = null; neu(W); return; }
     });
     W.el.addEventListener('input', e => { const pr = e.target.dataset.pr; if (pr) { const [k, id] = pr.split('|'); W.Z.p[k][id] = +e.target.value; W.Z.preset[k] = presetVon(W.Z, G(k)); W.Z.ziel[k].an = false; const b = W.el.querySelector(`[data-pw="${pr}"]`); if (b) b.textContent = e.target.value; zahlenLeicht(W); } });
@@ -3929,6 +3933,8 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       artAktiv: () => GR[W.art] && GR[W.art].k,
       // neue Runde: alle Einstellungen auf Anfang
       reset() { W.Z = neuerZustand(); W.besucht.clear(); W.art = 0; W.sel = null; W.einzeln = false; W.zone = null; W.qZuletzt = QSTART(); W.zc = {}; },
+      // Schritt 2 wird sichtbar: Bahn wächst aus dem Loch, Startgröße wie das Loch davor
+      betreten(r0) { if (r0 == null) { W.r0 = 12; W.tZoom = -9; } else { W.r0 = r0; W.tZoom = performance.now() / 1000; } },
       einzeln(k, n) { const j = GR.findIndex(g => g.k === k); if (j < 0) return; W.art = j; W.einzeln = GR[j].files.length > 1; W.sel = W.einzeln ? (n || GR[j].files[0].n) : null; neu(W); },
     });
   }
@@ -4422,14 +4428,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const S5 = { cv: $('w5-cv'), w: 0, h: 0 };
   S5.ctx = S5.cv.getContext('2d');
   function s5Groesse() {
-    const r = S5.cv.getBoundingClientRect(); if (!r.width) return;
+    const r = { width: S5.cv.clientWidth, height: S5.cv.clientHeight }; if (!r.width) return;
     const dpr = Math.min(2, devicePixelRatio || 1);
     S5.w = r.width; S5.h = r.height; S5.cv.width = Math.round(r.width * dpr); S5.cv.height = Math.round(r.height * dpr);
     S5.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    S5.cx = S5.w * .44; S5.cy = S5.h * .5; S5.R = 100; S5.fl = .42;
+    S5.cx = S5.w * .5; S5.cy = S5.h * .5; S5.R = 100; S5.fl = .42;
   }
   new ResizeObserver(s5Groesse).observe(S5.cv);
-  const relS = el => { const a = el.getBoundingClientRect(), b = S5.cv.getBoundingClientRect(); return { x: a.left - b.left, y: a.top - b.top, w: a.width, h: a.height }; };
+  const relS = el => { const a = el.getBoundingClientRect(), b = S5.cv.getBoundingClientRect(), s = b.width / (S5.cv.clientWidth || b.width) || 1; return { x: (a.left - b.left) / s, y: (a.top - b.top) / s, w: a.width / s, h: a.height / s }; };
   const quelle5 = (i, n) => { const j = n - 1 - i; return { x: 40 + j * 4, y: S5.cy - 70 - j * 5, s: .5, rot: (j % 3 - 1) * .04 }; };
   function ziel5(it) {
     const eig = !!ausnahmen[it.d.name], r = eig ? S5.tasche : S5.mund;
@@ -4459,6 +4465,14 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
         return { x: lerp(sx, ox, e), y: lerp(sy, oy, e), k: it.p * .7, o: it.p * .5 };
       }, 2);
     });
+    s5Loch();
+  }
+  // dasselbe Loch wie in Schritt 2, damit der Übergang nahtlos ist
+  function s5Loch() {
+    const ctx = S5.ctx, x = S5.cx, y = S5.cy, r = 12;
+    glühen(ctx, x, y, r * 3.4, F.violet, .22); glühen(ctx, x, y, r * 2, F.mint, .25);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+    ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, 7); ctx.stroke();
   }
   function s5Schleife(t) {
     if (schritt === 2 && S5.w && !document.hidden) { try { s5Zeichnen(t / 1000); } catch (e) { console.error(e); } }
@@ -4702,14 +4716,28 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
     else { w.hidden = laeuft; w.disabled = !hat || (wohin === 'eigen' && !eigener); w.textContent = fertig ? 'Neue Runde' : `Umwandeln · ${umwandelbar().length} ${umwandelbar().length === 1 ? 'Datei' : 'Dateien'}`; }
   }
   function geheZu(s) {
-    schritt = s;
+    const vorher = schritt; schritt = s;
     if (GAL) GAL.aktiv = s === 0;
     if (ZIEL) ZIEL.aktiv = s === 1;
-    document.querySelectorAll('.ebene').forEach(e => { const d = +e.dataset.s - s; e.dataset.pos = d > 0 ? 1 : d < 0 ? -1 : 0; e.inert = d !== 0; });
+    ebenenSetzen(s);
+    if (ZIEL && s === 1 && vorher !== 1) ZIEL.betreten(vorher === 2 ? null : GAL && GAL.lochR ? GAL.lochR() : 18);
     if (s === 1) renderZiel();
     if (s === 2) renderLauf();
     renderFaden(); renderLeiste();
   }
+  // Lage des Lochs je Schritt, in Koordinaten der Ebene. Galaxie, Ziel und Wirbel zeichnen es genau dort.
+  function anker(i, w, h) { return i === 2 ? { x: w * .5, y: 150 } : { x: w * .5, y: (h - 200) * .5 + 50 }; }
+  function ebenenSetzen(s) {
+    const eb = document.querySelector('.ebenen'), w = eb.offsetWidth, h = eb.offsetHeight, a = anker(s, w, h);
+    document.querySelectorAll('.ebene').forEach(e => {
+      const i = +e.dataset.s, o = anker(i, w, h), d = i - s;
+      e.style.setProperty('--hx', o.x + 'px'); e.style.setProperty('--hy', o.y + 'px');
+      e.style.setProperty('--dx', (a.x - o.x) + 'px'); e.style.setProperty('--dy', (a.y - o.y) + 'px');
+      e.dataset.pos = d > 0 ? 1 : d < 0 ? -1 : 0; e.inert = d !== 0;
+    });
+  }
+  ebenenSetzen(0);
+  new ResizeObserver(() => ebenenSetzen(schritt)).observe(document.querySelector('.ebenen'));
   document.querySelectorAll('.knoten').forEach(k => k.addEventListener('click', () => geheZu(+k.dataset.s)));
   $('weiter').addEventListener('click', () => { if (schritt === 2) { fertig ? leeren() : los(); return; } geheZu(schritt + 1); });
   $('zurueck').addEventListener('click', () => geheZu(Math.max(0, schritt - 1)));
