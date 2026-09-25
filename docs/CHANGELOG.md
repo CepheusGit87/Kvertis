@@ -2,6 +2,18 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Übergänge und Abschluss, Teil A: Szene-Modelle (ADR-023)
+
+**Geändert**
+
+- ADR-023 und Arbeitsblatt `docs/entwuerfe/uebergaenge.md`: fensterweite Überlagerung `TransitionOverlay` mit Ankern der Seiten, Navigation parallel zum Flug, Pixelquelle des Wirbels als rechnerisches Blatt-Raster (kein Bild in Win2D), nur ein Zeichen-Control zur Zeit.
+- Szene-Modelle ohne UI in `Scenes/`: `SceneMotion` (CSS-Bezier-Löser, Keyframes), `TransitionScene` (Wurmloch 1→2, Andocken 2→1, Blätter 2→3 mit Deckel 24 und 2 s), `SheetRaster`, `SwirlScene` (zwei Dateien, Budget 4000), `WhiteHoleScene` (bis 10 Bahnen, Kapazitäten, Fehler-Ring), `FinaleScene` (Anlauf 1,15 s + 0,75 s, Tanz 2,4 s mit höchstens 16° je Bild, Stille 0,28 s, Supernova, 320 Funken, Ring 440×116, Häkchen). Palette um LineStrong/Paper/PaperLine/OnMint/Shadow erweitert.
+- 80 neue Tests (App 201), gesamt 971; Finale-Simulation 60 s in 194 ms.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Galaxie, Teile B–D: Zeichenschicht, Fächer, Zoom auf die Wege
 
 **Geändert**
