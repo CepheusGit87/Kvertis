@@ -1,0 +1,609 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Kvertis control styles (docs/entwuerfe/abgleich-mischentwurf.md, sections 1.2, 1.5, 1.6 and 2.1).
+  Merged in App.xaml after KvertisColors.xaml. The colours come from there as {ThemeResource Kv*} only, so every
+  style and template follows light, dark and high contrast without own colour values.
+
+  Order in this file: fonts and sizes, theme-dependent sizes, text styles, implicit styles for standard controls
+  (values only, the WinUI template stays), keyed styles without a template, then the small templates
+  (ghost/icon button, outline mint button, primary button with socket, dashed box, paper tag).
+-->
+<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:tk="using:CommunityToolkit.WinUI.Controls">
+
+  <ResourceDictionary.ThemeDictionaries>
+    <!-- Text fields: a 1 px mint border on focus like the draft (.eingabe), not WinUI's 2 px bottom line.
+         High contrast keeps the system's 2 px. -->
+    <ResourceDictionary x:Key="Default">
+      <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="Light">
+      <Thickness x:Key="TextControlBorderThemeThicknessFocused">1</Thickness>
+    </ResourceDictionary>
+    <ResourceDictionary x:Key="HighContrast">
+      <Thickness x:Key="TextControlBorderThemeThicknessFocused">2</Thickness>
+    </ResourceDictionary>
+  </ResourceDictionary.ThemeDictionaries>
+
+  <!-- ============================ Fonts and sizes ============================ -->
+  <!-- Segoe UI Variable instead of the draft's Geist (not cleared); mono is Cascadia Mono with Consolas as fallback.
+       No other font name appears in markup. -->
+  <FontFamily x:Key="KvFontFamily">Segoe UI Variable Text, Segoe UI</FontFamily>
+  <FontFamily x:Key="KvDisplayFontFamily">Segoe UI Variable Display, Segoe UI</FontFamily>
+  <FontFamily x:Key="KvMonoFontFamily">Cascadia Mono, Consolas</FontFamily>
+
+  <!-- Layout numbers of the draft at >= 1060 px (1.1); pages switch them in code-behind. -->
+  <x:Double x:Key="KvGutter">16</x:Double>
+  <Thickness x:Key="KvCardPadding">10</Thickness>
+
+  <!-- Standard control sizes (2.1 a): slider thumb 20, progress track 6. -->
+  <x:Double x:Key="SliderHorizontalThumbWidth">20</x:Double>
+  <x:Double x:Key="SliderHorizontalThumbHeight">20</x:Double>
+  <x:Double x:Key="ProgressBarTrackHeight">6</x:Double>
+
+  <!-- ============================ Text styles (1.2) ============================ -->
+  <Style x:Key="KvTextBaseStyle" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource KvFontFamily}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Normal" />
+    <Setter Property="Foreground" Value="{ThemeResource KvInkBrush}" />
+    <Setter Property="TextWrapping" Value="NoWrap" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <!-- .v-kopf h4, .z-titel b, .z-frage h3 -->
+  <Style x:Key="KvTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontSize" Value="17" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <!-- .fach-kopf b, .rk-titel b, .w-titel, .tb b, .knoten b (13.5 in the draft's cards, 13 in the frame) -->
+  <Style x:Key="KvHeadTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontSize" Value="13.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <!-- Window base text: 13 / 1.45 -->
+  <Style x:Key="KvBodyTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="LineHeight" Value="19" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- .w5-nm b, .wo b, .w5-opt b -->
+  <Style x:Key="KvRowTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+
+  <!-- .einwurf small, .w5-akt, .abweis -->
+  <Style x:Key="KvSmallTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMutedBrush}" />
+  </Style>
+
+  <!-- .w5-pf, .fz .nm small, .vd .dn small: counters, times, sizes, paths -->
+  <Style x:Key="KvMonoTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMutedBrush}" />
+  </Style>
+
+  <!-- .label, .ueber, .tag-titel: the text itself is upper case in the resource file. -->
+  <Style x:Key="KvLabelTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvMonoTextStyle}">
+    <Setter Property="CharacterSpacing" Value="100" />
+    <Setter Property="Foreground" Value="{ThemeResource KvQuietBrush}" />
+  </Style>
+
+  <!-- .fach-kopf em: the colour is the kind colour, set where it is used. -->
+  <Style x:Key="KvCountTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="LineHeight" Value="20" />
+    <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- .e5-gross .ring b (26); .zielfeld input uses 17 on the element. -->
+  <Style x:Key="KvBigNumberTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="26" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- Format chip text (.fc): colour per kind where it is used, mint by default. -->
+  <Style x:Key="KvChipTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMintBrush}" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- .ersparnis, .zuletzt button -->
+  <Style x:Key="KvPillTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMintBrush}" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- .pro -->
+  <Style x:Key="KvProBadgeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="CharacterSpacing" Value="80" />
+    <Setter Property="Foreground" Value="{ThemeResource KvVideoBrush}" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- .etikett -->
+  <Style x:Key="KvPaperTagTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvTextBaseStyle}">
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{ThemeResource KvPaperInkBrush}" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <!-- Kept key (pages that change in parallel still use it): now the draft's small label (.ueber). -->
+  <Style x:Key="SectionHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvLabelTextStyle}">
+    <Setter Property="Margin" Value="0,10,0,4" />
+  </Style>
+
+  <!-- ============================ Standard controls, values only (2.1 a) ============================ -->
+  <!-- Implicit styles only set properties; the WinUI default style (and its template) stays underneath. The
+       colours of these controls are overridden as resources in KvertisColors.xaml. -->
+
+  <!-- .btn: border 1 line, panel2, radius 9, padding 7/12, 500 12.5 -->
+  <Style TargetType="Button">
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="12,7" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+  </Style>
+
+  <!-- .link -->
+  <Style TargetType="HyperlinkButton">
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+  </Style>
+
+  <!-- .eingabe -->
+  <Style TargetType="TextBox">
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="Padding" Value="10,7" />
+    <Setter Property="FontFamily" Value="{StaticResource KvMonoFontFamily}" />
+    <Setter Property="FontSize" Value="12.5" />
+  </Style>
+
+  <Style TargetType="NumberBox">
+    <Setter Property="CornerRadius" Value="9" />
+  </Style>
+
+  <Style TargetType="AutoSuggestBox">
+    <Setter Property="CornerRadius" Value="9" />
+  </Style>
+
+  <!-- select -->
+  <Style TargetType="ComboBox">
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="8,6,0,6" />
+    <Setter Property="FontSize" Value="13" />
+  </Style>
+
+  <!-- .e5-z > button: 34 high, radius 11 (the full look comes with KvExpanderStyle in part C). -->
+  <Style TargetType="Expander">
+    <Setter Property="MinHeight" Value="34" />
+    <Setter Property="CornerRadius" Value="11" />
+  </Style>
+
+  <Style TargetType="ListViewItem">
+    <Setter Property="MinHeight" Value="32" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+
+  <!-- .bal: 6 high, radius 4, track tief -->
+  <Style TargetType="ProgressBar">
+    <Setter Property="MinHeight" Value="6" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Background" Value="{ThemeResource KvDeepBrush}" />
+  </Style>
+
+  <!-- .einst-k -->
+  <Style TargetType="tk:SettingsCard">
+    <Setter Property="Background" Value="{ThemeResource KvBg80Brush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineBrush}" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="10,9" />
+    <Setter Property="MinHeight" Value="44" />
+  </Style>
+
+  <!-- .toggle / .schalter i: no On/Off words, the label stands next to the switch. -->
+  <Style x:Key="KvSwitchStyle" TargetType="ToggleSwitch">
+    <Setter Property="OnContent" Value="" />
+    <Setter Property="OffContent" Value="" />
+    <Setter Property="MinWidth" Value="0" />
+  </Style>
+
+  <!-- .w5-menue -->
+  <Style x:Key="KvMenuFlyoutPresenterStyle" TargetType="FlyoutPresenter">
+    <Setter Property="Background" Value="{ThemeResource KvPanelBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="13" />
+    <Setter Property="Padding" Value="8" />
+  </Style>
+
+  <!-- ============================ Surfaces (2.1 b) ============================ -->
+  <!-- .rk / .zrow: gradient card -->
+  <Style x:Key="KvCardStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvCardGradientBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="13" />
+    <Setter Property="Padding" Value="12" />
+  </Style>
+
+  <!-- Kept key, same values as KvCardStyle so pages changed in parallel do not break. -->
+  <Style x:Key="CardBorderStyle" TargetType="Border" BasedOn="{StaticResource KvCardStyle}" />
+
+  <!-- .karte-e / .einst-k: translucent card over the drawing layer -->
+  <Style x:Key="KvGlassCardStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvBg80Brush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="10" />
+  </Style>
+
+  <!-- .w5-zeile / .vd -->
+  <Style x:Key="KvRowStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvPanelBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="11" />
+    <Setter Property="Padding" Value="12,4" />
+  </Style>
+
+  <!-- .leiste -->
+  <Style x:Key="KvBottomBarStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvPanel70Brush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineBrush}" />
+    <Setter Property="BorderThickness" Value="0,1,0,0" />
+    <Setter Property="Padding" Value="16,10" />
+  </Style>
+
+  <!-- .fc: neutral mint chip; a kind chip sets Background Kv<Kind>Tint12Brush and BorderBrush Kv<Kind>Frame40Brush. -->
+  <Style x:Key="KvChipStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="7,2" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- .ersparnis, .zuletzt button -->
+  <Style x:Key="KvPillStyle" TargetType="Border">
+    <Setter Property="Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- .pro: amber outline badge, text KvProBadgeTextStyle -->
+  <Style x:Key="KvProBadgeStyle" TargetType="Border">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvVideoFrameBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="7,2" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- ============================ Buttons (2.1 b/c) ============================ -->
+  <!-- Ghost button: transparent, hover = KvHover and ink, disabled 0.5. The base of the icon buttons and of the
+       step nodes. In high contrast the border becomes a visible 1 px ButtonText line (KvGhostBorderBrush). -->
+  <Style x:Key="KvGhostButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvGhostBorderBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Foreground" Value="{ThemeResource KvInkBrush}" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="FocusVisualMargin" Value="-3" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <ContentPresenter
+            x:Name="ContentPresenter"
+            Padding="{TemplateBinding Padding}"
+            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+            AutomationProperties.AccessibilityView="Raw"
+            Background="{TemplateBinding Background}"
+            BackgroundSizing="{TemplateBinding BackgroundSizing}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            ContentTransitions="{TemplateBinding ContentTransitions}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            Foreground="{TemplateBinding Foreground}">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Background" Value="{ThemeResource KvHoverBrush}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource KvInkBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Background" Value="{ThemeResource KvHoverBrush}" />
+                    <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource KvInkBrush}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="0.85" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Opacity" Value="0.5" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </ContentPresenter>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- .ikon: 32 x 32, radius 8, muted, hover KvHover + ink; symbols are 16 on the element. -->
+  <Style x:Key="KvIconButtonStyle" TargetType="Button" BasedOn="{StaticResource KvGhostButtonStyle}">
+    <Setter Property="Width" Value="32" />
+    <Setter Property="Height" Value="32" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMutedBrush}" />
+  </Style>
+
+  <!-- .w5-akt / .vk: the small secondary button -->
+  <Style x:Key="KvSmallButtonStyle" TargetType="Button">
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="9,5" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="FontWeight" Value="Medium" />
+  </Style>
+
+  <!-- .demo-knopf / .vk.haupt / .w5-akt.haupt: mint outline on the mint surface, hover border mint -->
+  <Style x:Key="KvOutlineMintButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource KvMintSurfaceBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvMintFrameBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Foreground" Value="{ThemeResource KvMintBrush}" />
+    <Setter Property="Padding" Value="12,7" />
+    <Setter Property="CornerRadius" Value="9" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="FocusVisualMargin" Value="-3" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <ContentPresenter
+            x:Name="ContentPresenter"
+            Padding="{TemplateBinding Padding}"
+            HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+            VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+            AutomationProperties.AccessibilityView="Raw"
+            Background="{TemplateBinding Background}"
+            BackgroundSizing="{TemplateBinding BackgroundSizing}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Content="{TemplateBinding Content}"
+            ContentTemplate="{TemplateBinding ContentTemplate}"
+            ContentTransitions="{TemplateBinding ContentTransitions}"
+            CornerRadius="{TemplateBinding CornerRadius}"
+            Foreground="{TemplateBinding Foreground}">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource KvMintBrush}" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.BorderBrush" Value="{ThemeResource KvMintBrush}" />
+                    <Setter Target="ContentPresenter.Opacity" Value="0.85" />
+                  </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="ContentPresenter.Opacity" Value="0.4" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+          </ContentPresenter>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- .taste: the primary (mint) button with its 4 px socket in dark mint (1.5). The face lifts 1 px on hover and
+       sinks 3 px when pressed, so 5 px or 1 px of the socket show; disabled = 0.4 without socket. The socket brush
+       is the window colour in high contrast, so it disappears there. States switch without animation, which also
+       covers "reduce animations". -->
+  <Style x:Key="KvPrimaryButtonStyle" TargetType="Button">
+    <Setter Property="Background" Value="{ThemeResource KvMintBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvMintBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="Foreground" Value="{ThemeResource KvOnMintBrush}" />
+    <Setter Property="Padding" Value="20,11" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="MinWidth" Value="190" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="UseSystemFocusVisuals" Value="True" />
+    <Setter Property="FocusVisualMargin" Value="-3" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Grid x:Name="RootGrid" Background="Transparent">
+            <VisualStateManager.VisualStateGroups>
+              <VisualStateGroup x:Name="CommonStates">
+                <VisualState x:Name="Normal" />
+                <VisualState x:Name="PointerOver">
+                  <Storyboard>
+                    <DoubleAnimation
+                      Storyboard.TargetName="FaceShift"
+                      Storyboard.TargetProperty="Y"
+                      To="-1"
+                      Duration="0" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Pressed">
+                  <Storyboard>
+                    <DoubleAnimation
+                      Storyboard.TargetName="FaceShift"
+                      Storyboard.TargetProperty="Y"
+                      To="3"
+                      Duration="0" />
+                  </Storyboard>
+                </VisualState>
+                <VisualState x:Name="Disabled">
+                  <VisualState.Setters>
+                    <Setter Target="RootGrid.Opacity" Value="0.4" />
+                    <Setter Target="Socket.Visibility" Value="Collapsed" />
+                  </VisualState.Setters>
+                </VisualState>
+              </VisualStateGroup>
+            </VisualStateManager.VisualStateGroups>
+
+            <Border
+              x:Name="Socket"
+              Margin="0,4,0,0"
+              Background="{ThemeResource KvMintDark45Brush}"
+              CornerRadius="{TemplateBinding CornerRadius}" />
+            <ContentPresenter
+              x:Name="ContentPresenter"
+              Margin="0,0,0,4"
+              Padding="{TemplateBinding Padding}"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+              AutomationProperties.AccessibilityView="Raw"
+              Background="{TemplateBinding Background}"
+              BackgroundSizing="{TemplateBinding BackgroundSizing}"
+              BorderBrush="{TemplateBinding BorderBrush}"
+              BorderThickness="{TemplateBinding BorderThickness}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              ContentTransitions="{TemplateBinding ContentTransitions}"
+              CornerRadius="{TemplateBinding CornerRadius}"
+              Foreground="{TemplateBinding Foreground}">
+              <ContentPresenter.RenderTransform>
+                <TranslateTransform x:Name="FaceShift" />
+              </ContentPresenter.RenderTransform>
+            </ContentPresenter>
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Every mint button of the app keeps its key but wears the primary look with the socket. No minimum width here,
+       so pages that are aligned later keep their layout; they switch to KvPrimaryButtonStyle in parts B to F. -->
+  <Style x:Key="AccentButtonStyle" TargetType="Button" BasedOn="{StaticResource KvPrimaryButtonStyle}">
+    <Setter Property="MinWidth" Value="0" />
+  </Style>
+
+  <!-- ============================ Content templates ============================ -->
+  <!-- .abweis, .w5-tasche, .damals-hinweis: a Border cannot dash, so a Rectangle draws the dashed frame. -->
+  <Style x:Key="KvDashedBoxStyle" TargetType="ContentControl">
+    <Setter Property="Background" Value="{ThemeResource KvPanel85Brush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+    <Setter Property="Padding" Value="12,10" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ContentControl">
+          <Grid>
+            <Rectangle
+              Fill="{TemplateBinding Background}"
+              RadiusX="12"
+              RadiusY="12"
+              Stroke="{TemplateBinding BorderBrush}"
+              StrokeDashArray="3,3"
+              StrokeThickness="1" />
+            <ContentPresenter
+              Margin="{TemplateBinding Padding}"
+              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}" />
+          </Grid>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- .etikett: paper label, turned by -1.2 degrees, 2 px shadow line below. The rotation lives in the template,
+       so every label owns its transform. -->
+  <Style x:Key="KvPaperTagStyle" TargetType="ContentControl">
+    <Setter Property="Background" Value="{ThemeResource KvPaperBrush}" />
+    <Setter Property="BorderBrush" Value="{ThemeResource KvShadowBrush}" />
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="IsTabStop" Value="False" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ContentControl">
+          <Border
+            Padding="{TemplateBinding Padding}"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="0,0,0,2"
+            CornerRadius="3"
+            RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+              <RotateTransform Angle="-1.2" />
+            </Border.RenderTransform>
+            <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

@@ -6,7 +6,10 @@
 
   Structure per theme dictionary: first the Color values (Kv*Color), then the brushes (Kv*Brush), then the
   overrides for the WinUI accent resources so that standard controls (AccentButtonStyle, Slider, ToggleSwitch,
-  CheckBox, RadioButton, ProgressBar, Hyperlink) wear mint without an extra style per control.
+  CheckBox, RadioButton, ProgressBar, Hyperlink) wear mint without an extra style per control. The tokens and
+  mixed brushes of the draft alignment (quiet, hover, frames, tints, panel/bg percentages, card gradient) and the
+  colour overrides for the standard controls (secondary button, text fields, combo box, expander, focus ring) live
+  here as well, because they are colours; the styles and templates that use them are in KvertisControls.xaml.
 
   High contrast: no own colour values at all. Every token is an alias of a system colour, and the accent
   overrides resolve to the same system colours WinUI itself uses there, so the result is identical to having
@@ -66,6 +69,63 @@
       <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
       <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
       <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
+
+      <!-- Added for the draft alignment (docs/entwuerfe/abgleich-mischentwurf.md, 1.3). Tints are color-mix(kind 12%, panel)
+           and the socket is color-mix(mint 45%, #000), both precomputed so no brush is built in code. -->
+      <Color x:Key="KvQuietColor">#7F8A91</Color>
+      <Color x:Key="KvHoverColor">#08FFFFFF</Color>
+      <Color x:Key="KvVideoFrameColor">#5E4722</Color>
+      <Color x:Key="KvErrorFrameColor">#5E2F29</Color>
+      <Color x:Key="KvEdgeColor">#0DFFFFFF</Color>
+      <Color x:Key="KvPaperInkColor">#23272A</Color>
+      <Color x:Key="KvMintDark45Color">#326556</Color>
+      <Color x:Key="KvImageTint12Color">#1E2936</Color>
+      <Color x:Key="KvAudioTint12Color">#272636</Color>
+      <Color x:Key="KvVideoTint12Color">#2F2B23</Color>
+      <Color x:Key="KvDocumentTint12Color">#1B2D34</Color>
+      <Color x:Key="KvModelTint12Color">#2E2631</Color>
+
+      <SolidColorBrush x:Key="KvQuietBrush" Color="{ThemeResource KvQuietColor}" />
+      <SolidColorBrush x:Key="KvHoverBrush" Color="{ThemeResource KvHoverColor}" />
+      <SolidColorBrush x:Key="KvVideoFrameBrush" Color="{ThemeResource KvVideoFrameColor}" />
+      <SolidColorBrush x:Key="KvErrorFrameBrush" Color="{ThemeResource KvErrorFrameColor}" />
+      <SolidColorBrush x:Key="KvEdgeBrush" Color="{ThemeResource KvEdgeColor}" />
+      <SolidColorBrush x:Key="KvPaperInkBrush" Color="{ThemeResource KvPaperInkColor}" />
+      <SolidColorBrush x:Key="KvMintDark45Brush" Color="{ThemeResource KvMintDark45Color}" />
+      <SolidColorBrush x:Key="KvImageTint12Brush" Color="{ThemeResource KvImageTint12Color}" />
+      <SolidColorBrush x:Key="KvAudioTint12Brush" Color="{ThemeResource KvAudioTint12Color}" />
+      <SolidColorBrush x:Key="KvVideoTint12Brush" Color="{ThemeResource KvVideoTint12Color}" />
+      <SolidColorBrush x:Key="KvDocumentTint12Brush" Color="{ThemeResource KvDocumentTint12Color}" />
+      <SolidColorBrush x:Key="KvModelTint12Brush" Color="{ThemeResource KvModelTint12Color}" />
+      <SolidColorBrush x:Key="KvImageFrame40Brush" Color="{ThemeResource KvImageColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvImageFrame60Brush" Color="{ThemeResource KvImageColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvAudioFrame40Brush" Color="{ThemeResource KvAudioColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvAudioFrame60Brush" Color="{ThemeResource KvAudioColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvVideoFrame40Brush" Color="{ThemeResource KvVideoColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvVideoFrame60Brush" Color="{ThemeResource KvVideoColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvDocumentFrame40Brush" Color="{ThemeResource KvDocumentColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvDocumentFrame60Brush" Color="{ThemeResource KvDocumentColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvModelFrame40Brush" Color="{ThemeResource KvModelColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvModelFrame60Brush" Color="{ThemeResource KvModelColor}" Opacity="0.6" />
+      <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
+      <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.30" />
+      <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.35" />
+      <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.55" />
+      <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.70" />
+      <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.80" />
+      <SolidColorBrush x:Key="KvPanel85Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.85" />
+      <SolidColorBrush x:Key="KvBg70Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.70" />
+      <SolidColorBrush x:Key="KvBg78Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.78" />
+      <SolidColorBrush x:Key="KvBg80Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.80" />
+      <SolidColorBrush x:Key="KvBg82Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.82" />
+      <SolidColorBrush x:Key="KvBg86Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.86" />
+      <SolidColorBrush x:Key="KvBg90Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.90" />
+      <LinearGradientBrush x:Key="KvCardGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{ThemeResource KvPanel2Color}" />
+        <GradientStop Offset="1" Color="{ThemeResource KvPanelColor}" />
+      </LinearGradientBrush>
+      <SolidColorBrush x:Key="KvGhostBorderBrush" Color="Transparent" />
+      <x:Double x:Key="KvShadowDepth">8</x:Double>
 
       <!-- WinUI accent resources -> mint. Secondary = pointer over, tertiary = pressed (same opacities WinUI uses). -->
       <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{ThemeResource KvMintColor}" />
@@ -138,6 +198,48 @@
       <StaticResource x:Key="ListViewItemSelectionIndicatorPressedBrush" ResourceKey="AccentFillColorTertiaryBrush" />
       <StaticResource x:Key="InfoBadgeBackground" ResourceKey="AccentFillColorDefaultBrush" />
       <StaticResource x:Key="InfoBadgeForeground" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
+
+      <!-- Draft alignment, standard controls (docs/entwuerfe/abgleich-mischentwurf.md 2.1 a and 1.6): the secondary
+           button (.btn), links, text fields, combo boxes, slider track, expander, list hover and the focus ring (mint
+           outer ring, background-coloured gap) wear the tokens. Leaf keys, for the same reason as the accent keys above. -->
+      <SolidColorBrush x:Key="ButtonBackground" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ButtonForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource KvMutedColor}" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPointerOver" Color="{ThemeResource KvMintSurfaceColor}" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPressed" Color="{ThemeResource KvMintSurfaceColor}" />
+      <SolidColorBrush x:Key="TextControlBackground" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackground" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="SliderTrackFill" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{ThemeResource KvPanelColor}" Opacity="0.85" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPointerOverBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPressedBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
+      <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
+      <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{ThemeResource KvMutedColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPointerOverForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPressedForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="{ThemeResource KvHoverColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="{ThemeResource KvBackgroundColor}" />
     </ResourceDictionary>
 
     <!-- ================================== Light ================================== -->
@@ -187,6 +289,63 @@
       <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
       <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
       <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
+
+      <!-- Added for the draft alignment (docs/entwuerfe/abgleich-mischentwurf.md, 1.3). Tints are color-mix(kind 12%, panel)
+           and the socket is color-mix(mint 45%, #000), both precomputed so no brush is built in code. -->
+      <Color x:Key="KvQuietColor">#5B646A</Color>
+      <Color x:Key="KvHoverColor">#0A000000</Color>
+      <Color x:Key="KvVideoFrameColor">#E0C692</Color>
+      <Color x:Key="KvErrorFrameColor">#E8B5AC</Color>
+      <Color x:Key="KvEdgeColor">#14000000</Color>
+      <Color x:Key="KvPaperInkColor">#23272A</Color>
+      <Color x:Key="KvMintDark45Color">#052F24</Color>
+      <Color x:Key="KvImageTint12Color">#E4EAF5</Color>
+      <Color x:Key="KvAudioTint12Color">#EBE7F4</Color>
+      <Color x:Key="KvVideoTint12Color">#EFEAE1</Color>
+      <Color x:Key="KvDocumentTint12Color">#E1EBEF</Color>
+      <Color x:Key="KvModelTint12Color">#F3E6EF</Color>
+
+      <SolidColorBrush x:Key="KvQuietBrush" Color="{ThemeResource KvQuietColor}" />
+      <SolidColorBrush x:Key="KvHoverBrush" Color="{ThemeResource KvHoverColor}" />
+      <SolidColorBrush x:Key="KvVideoFrameBrush" Color="{ThemeResource KvVideoFrameColor}" />
+      <SolidColorBrush x:Key="KvErrorFrameBrush" Color="{ThemeResource KvErrorFrameColor}" />
+      <SolidColorBrush x:Key="KvEdgeBrush" Color="{ThemeResource KvEdgeColor}" />
+      <SolidColorBrush x:Key="KvPaperInkBrush" Color="{ThemeResource KvPaperInkColor}" />
+      <SolidColorBrush x:Key="KvMintDark45Brush" Color="{ThemeResource KvMintDark45Color}" />
+      <SolidColorBrush x:Key="KvImageTint12Brush" Color="{ThemeResource KvImageTint12Color}" />
+      <SolidColorBrush x:Key="KvAudioTint12Brush" Color="{ThemeResource KvAudioTint12Color}" />
+      <SolidColorBrush x:Key="KvVideoTint12Brush" Color="{ThemeResource KvVideoTint12Color}" />
+      <SolidColorBrush x:Key="KvDocumentTint12Brush" Color="{ThemeResource KvDocumentTint12Color}" />
+      <SolidColorBrush x:Key="KvModelTint12Brush" Color="{ThemeResource KvModelTint12Color}" />
+      <SolidColorBrush x:Key="KvImageFrame40Brush" Color="{ThemeResource KvImageColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvImageFrame60Brush" Color="{ThemeResource KvImageColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvAudioFrame40Brush" Color="{ThemeResource KvAudioColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvAudioFrame60Brush" Color="{ThemeResource KvAudioColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvVideoFrame40Brush" Color="{ThemeResource KvVideoColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvVideoFrame60Brush" Color="{ThemeResource KvVideoColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvDocumentFrame40Brush" Color="{ThemeResource KvDocumentColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvDocumentFrame60Brush" Color="{ThemeResource KvDocumentColor}" Opacity="0.6" />
+      <SolidColorBrush x:Key="KvModelFrame40Brush" Color="{ThemeResource KvModelColor}" Opacity="0.4" />
+      <SolidColorBrush x:Key="KvModelFrame60Brush" Color="{ThemeResource KvModelColor}" Opacity="0.6" />
+      <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
+      <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.30" />
+      <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.35" />
+      <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.55" />
+      <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.70" />
+      <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.80" />
+      <SolidColorBrush x:Key="KvPanel85Brush" Color="{ThemeResource KvPanelColor}" Opacity="0.85" />
+      <SolidColorBrush x:Key="KvBg70Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.70" />
+      <SolidColorBrush x:Key="KvBg78Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.78" />
+      <SolidColorBrush x:Key="KvBg80Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.80" />
+      <SolidColorBrush x:Key="KvBg82Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.82" />
+      <SolidColorBrush x:Key="KvBg86Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.86" />
+      <SolidColorBrush x:Key="KvBg90Brush" Color="{ThemeResource KvBackgroundColor}" Opacity="0.90" />
+      <LinearGradientBrush x:Key="KvCardGradientBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Offset="0" Color="{ThemeResource KvPanel2Color}" />
+        <GradientStop Offset="1" Color="{ThemeResource KvPanelColor}" />
+      </LinearGradientBrush>
+      <SolidColorBrush x:Key="KvGhostBorderBrush" Color="Transparent" />
+      <x:Double x:Key="KvShadowDepth">8</x:Double>
 
       <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{ThemeResource KvMintColor}" />
       <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{ThemeResource KvMintColor}" Opacity="0.9" />
@@ -258,6 +417,48 @@
       <StaticResource x:Key="ListViewItemSelectionIndicatorPressedBrush" ResourceKey="AccentFillColorTertiaryBrush" />
       <StaticResource x:Key="InfoBadgeBackground" ResourceKey="AccentFillColorDefaultBrush" />
       <StaticResource x:Key="InfoBadgeForeground" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
+
+      <!-- Draft alignment, standard controls (docs/entwuerfe/abgleich-mischentwurf.md 2.1 a and 1.6): the secondary
+           button (.btn), links, text fields, combo boxes, slider track, expander, list hover and the focus ring (mint
+           outer ring, background-coloured gap) wear the tokens. Leaf keys, for the same reason as the accent keys above. -->
+      <SolidColorBrush x:Key="ButtonBackground" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ButtonForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource KvMutedColor}" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPointerOver" Color="{ThemeResource KvMintSurfaceColor}" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPressed" Color="{ThemeResource KvMintSurfaceColor}" />
+      <SolidColorBrush x:Key="TextControlBackground" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="TextControlBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackground" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{ThemeResource KvPanel2Color}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="SliderTrackFill" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{ThemeResource KvDeepColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{ThemeResource KvPanelColor}" Opacity="0.85" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="{ThemeResource KvLineColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPointerOverBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPressedBrush" Color="{ThemeResource KvLineStrongColor}" />
+      <SolidColorBrush x:Key="ExpanderContentBackground" Color="Transparent" />
+      <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="Transparent" />
+      <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{ThemeResource KvMutedColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPointerOverForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPressedForeground" Color="{ThemeResource KvInkColor}" />
+      <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="{ThemeResource KvHoverColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{ThemeResource KvMintColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="{ThemeResource KvBackgroundColor}" />
     </ResourceDictionary>
 
     <!-- =============================== High contrast ===============================
@@ -309,6 +510,60 @@
       <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
       <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
       <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
+
+      <!-- Draft alignment tokens (1.3): system colours only. Tints, sockets and half-transparent surfaces sit on the window
+           colour with full opacity, frames on the window text colour; the inner edge disappears. -->
+      <StaticResource x:Key="KvQuietColor" ResourceKey="SystemColorGrayTextColor" />
+      <StaticResource x:Key="KvHoverColor" ResourceKey="SystemColorHighlightColor" />
+      <StaticResource x:Key="KvVideoFrameColor" ResourceKey="SystemColorWindowTextColor" />
+      <StaticResource x:Key="KvErrorFrameColor" ResourceKey="SystemColorWindowTextColor" />
+      <Color x:Key="KvEdgeColor">Transparent</Color>
+      <StaticResource x:Key="KvPaperInkColor" ResourceKey="SystemColorWindowTextColor" />
+      <StaticResource x:Key="KvMintDark45Color" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvImageTint12Color" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvAudioTint12Color" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvVideoTint12Color" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvDocumentTint12Color" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvModelTint12Color" ResourceKey="SystemColorWindowColor" />
+
+      <SolidColorBrush x:Key="KvQuietBrush" Color="{ThemeResource KvQuietColor}" />
+      <SolidColorBrush x:Key="KvHoverBrush" Color="{ThemeResource KvHoverColor}" Opacity="0.2" />
+      <SolidColorBrush x:Key="KvVideoFrameBrush" Color="{ThemeResource KvVideoFrameColor}" />
+      <SolidColorBrush x:Key="KvErrorFrameBrush" Color="{ThemeResource KvErrorFrameColor}" />
+      <SolidColorBrush x:Key="KvEdgeBrush" Color="{ThemeResource KvEdgeColor}" />
+      <SolidColorBrush x:Key="KvPaperInkBrush" Color="{ThemeResource KvPaperInkColor}" />
+      <SolidColorBrush x:Key="KvMintDark45Brush" Color="{ThemeResource KvMintDark45Color}" />
+      <SolidColorBrush x:Key="KvImageTint12Brush" Color="{ThemeResource KvImageTint12Color}" />
+      <SolidColorBrush x:Key="KvAudioTint12Brush" Color="{ThemeResource KvAudioTint12Color}" />
+      <SolidColorBrush x:Key="KvVideoTint12Brush" Color="{ThemeResource KvVideoTint12Color}" />
+      <SolidColorBrush x:Key="KvDocumentTint12Brush" Color="{ThemeResource KvDocumentTint12Color}" />
+      <SolidColorBrush x:Key="KvModelTint12Brush" Color="{ThemeResource KvModelTint12Color}" />
+      <SolidColorBrush x:Key="KvImageFrame40Brush" Color="{ThemeResource KvImageColor}" />
+      <SolidColorBrush x:Key="KvImageFrame60Brush" Color="{ThemeResource KvImageColor}" />
+      <SolidColorBrush x:Key="KvAudioFrame40Brush" Color="{ThemeResource KvAudioColor}" />
+      <SolidColorBrush x:Key="KvAudioFrame60Brush" Color="{ThemeResource KvAudioColor}" />
+      <SolidColorBrush x:Key="KvVideoFrame40Brush" Color="{ThemeResource KvVideoColor}" />
+      <SolidColorBrush x:Key="KvVideoFrame60Brush" Color="{ThemeResource KvVideoColor}" />
+      <SolidColorBrush x:Key="KvDocumentFrame40Brush" Color="{ThemeResource KvDocumentColor}" />
+      <SolidColorBrush x:Key="KvDocumentFrame60Brush" Color="{ThemeResource KvDocumentColor}" />
+      <SolidColorBrush x:Key="KvModelFrame40Brush" Color="{ThemeResource KvModelColor}" />
+      <SolidColorBrush x:Key="KvModelFrame60Brush" Color="{ThemeResource KvModelColor}" />
+      <!-- color-mix(panel X%, transparent) and color-mix(bg X%, transparent); bg 86/90 replace the blur of the draft (1.4). -->
+      <SolidColorBrush x:Key="KvPanel30Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel35Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel55Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel70Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel80Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvPanel85Brush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvBg70Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvBg78Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvBg80Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvBg82Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvBg86Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvBg90Brush" Color="{ThemeResource KvBackgroundColor}" />
+      <SolidColorBrush x:Key="KvCardGradientBrush" Color="{ThemeResource KvPanelColor}" />
+      <SolidColorBrush x:Key="KvGhostBorderBrush" Color="{ThemeResource SystemColorButtonTextColor}" />
+      <x:Double x:Key="KvShadowDepth">0</x:Double>
 
       <!-- The accent keys below carry the same system colours WinUI uses in high contrast (highlight, highlight
            text, window, window text), so the result equals having no override at all. They are listed only so
@@ -383,6 +638,47 @@
       <SolidColorBrush x:Key="ListViewItemSelectionIndicatorPressedBrush" Color="{ThemeResource KvMintColor}" />
       <SolidColorBrush x:Key="InfoBadgeBackground" Color="{ThemeResource KvMintColor}" />
       <SolidColorBrush x:Key="InfoBadgeForeground" Color="{ThemeResource KvOnMintColor}" />
+
+      <!-- Standard control overrides of the draft alignment: the system colours WinUI itself uses in high contrast,
+           except that the secondary button keeps a visible 1 px border (ButtonText) instead of a transparent one. -->
+      <SolidColorBrush x:Key="ButtonBackground" Color="{ThemeResource SystemColorButtonFaceColor}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="{ThemeResource SystemColorHighlightTextColor}" />
+      <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="{ThemeResource SystemColorHighlightTextColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrush" Color="{ThemeResource SystemColorButtonTextColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="{ThemeResource SystemColorHighlightTextColor}" />
+      <SolidColorBrush x:Key="ButtonForeground" Color="{ThemeResource SystemColorButtonTextColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ButtonForegroundPressed" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPointerOver" Color="Transparent" />
+      <SolidColorBrush x:Key="HyperlinkButtonBackgroundPressed" Color="Transparent" />
+      <SolidColorBrush x:Key="TextControlBackground" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackground" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPointerOver" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="ComboBoxBackgroundPressed" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="SliderTrackFill" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPointerOver" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="SliderTrackFillPressed" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBackground" Color="{ThemeResource SystemColorButtonFaceColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderBrush" Color="{ThemeResource SystemColorButtonTextColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPointerOverBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ExpanderHeaderBorderPressedBrush" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ExpanderContentBackground" Color="{ThemeResource SystemColorWindowColor}" />
+      <SolidColorBrush x:Key="ExpanderContentBorderBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronForeground" Color="{ThemeResource SystemColorButtonTextColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPointerOverForeground" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ExpanderChevronPressedForeground" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="{ThemeResource SystemColorHighlightColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{ThemeResource SystemColorWindowTextColor}" />
+      <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="{ThemeResource SystemColorWindowColor}" />
     </ResourceDictionary>
 
   </ResourceDictionary.ThemeDictionaries>

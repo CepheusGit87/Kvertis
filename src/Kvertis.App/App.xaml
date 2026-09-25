@@ -11,20 +11,11 @@
         <!-- After XamlControlsResources on purpose: the Kvertis tokens override the WinUI accent resources
              (ADR-017). Merged dictionaries are searched from last to first. -->
         <ResourceDictionary Source="ms-appx:///Themes/KvertisColors.xaml" />
+        <!-- Text styles, standard-control values and the few templates of the draft alignment; uses the tokens above. -->
+        <ResourceDictionary Source="ms-appx:///Themes/KvertisControls.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
-      <!-- Cards (docs/06-design.md, "Farben und Material"): theme brushes only, so high contrast works. -->
-      <Style x:Key="CardBorderStyle" TargetType="Border">
-        <Setter Property="Background" Value="{ThemeResource CardBackgroundFillColorDefaultBrush}" />
-        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeColorDefaultBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Padding" Value="16" />
-      </Style>
-
-      <Style x:Key="SectionHeaderTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyStrongTextBlockStyle}">
-        <Setter Property="Margin" Value="0,16,0,8" />
-      </Style>
+      <!-- CardBorderStyle and SectionHeaderTextStyle moved to Themes/KvertisControls.xaml (aliases of the new styles). -->
 
       <Style x:Key="SecondaryCaptionTextStyle" TargetType="TextBlock" BasedOn="{StaticResource CaptionTextBlockStyle}">
         <Setter Property="Foreground" Value="{ThemeResource TextFillColorSecondaryBrush}" />

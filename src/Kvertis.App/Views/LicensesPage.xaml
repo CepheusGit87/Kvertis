@@ -40,7 +40,7 @@
       <Border Grid.Column="1" Padding="0" Style="{StaticResource CardBorderStyle}">
         <ScrollViewer x:Uid="Licenses_Text_Scroller" Padding="16" IsTabStop="True">
           <TextBlock
-            FontFamily="Consolas"
+            FontFamily="{StaticResource KvMonoFontFamily}"
             IsTextSelectionEnabled="True"
             Text="{x:Bind ViewModel.SelectedText, Mode=OneWay}"
             TextWrapping="Wrap" />

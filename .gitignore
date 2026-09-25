@@ -38,3 +38,6 @@ src/Kvertis.App/Tools/
 
 # Agent worktrees (local only)
 .claude/worktrees/
+
+# Local comparison images of the draft alignment (docs/entwuerfe/abgleich-mischentwurf.md, section 5)
+docs/entwuerfe/bilder/
