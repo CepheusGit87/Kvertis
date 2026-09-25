@@ -70,8 +70,14 @@ DYNAMIC = {
 DYNAMIC_SUFFIX = {
     ('Effect_', '_Text'): 'EffectCode',
     ('Zone_', '_Name'): 'TuningAspect',
+    # Step 1 trays and the zoom title (ADR-022): one name and one subtitle per media kind.
+    ('Kind_', '_Name'): 'MediaKind',
+    ('Kind_', '_Sub'): 'MediaKind',
 }
-KEY_LITERAL = re.compile(r'"((?:App|About|Card|Convert|Dialog|Effect|Error|Format|FormatPicker|Grade|History|Licenses|Main|More|Preset|Preview|Pro|Settings|Steps|Target|Warning|Window|Zone)_[A-Za-z0-9_]*)"')
+# Families whose key is prefix + a FormatId of the engine's registry + suffix ("Format_heic_Hint").
+DYNAMIC_FORMAT = [('Format_', '_Hint')]
+FORMAT_ID = re.compile(r'FormatId\s+\w+\s*=\s*new\("([^"]+)"\)')
+KEY_LITERAL = re.compile(r'"((?:App|About|Card|Convert|Dialog|Effect|Error|Format|FormatPicker|Galaxy|Grade|History|Kind|Licenses|Main|More|Preset|Preview|Pro|Settings|Steps|Target|Tray|Warning|Window|Zone)_[A-Za-z0-9_]*)"')
 RESOURCE_REF = re.compile(r'\{(?:StaticResource|ThemeResource)\s+([A-Za-z0-9_.]+)\s*\}')
 PLACEHOLDER = re.compile(r'\{(\d+)\}')
 
@@ -111,6 +117,19 @@ def enum_members(repo, name):
             return [m.split('=')[0].strip() for m in body.split(',') if m.split('=')[0].strip()]
     fail(f'enum {name} not found under src/')
     return []
+
+
+def format_ids(repo):
+    """Every FormatId declared in the engine's registry, so Format_<id>_Hint can be checked."""
+    path = os.path.join(repo, 'src', 'Kvertis.Engine', 'Formats', 'FormatRegistry.cs')
+    if not os.path.exists(path):
+        fail('FormatRegistry.cs not found; Format_<id>_Hint cannot be checked')
+        return []
+    with open(path, encoding='utf-8') as f:
+        ids = FORMAT_ID.findall(f.read())
+    if not ids:
+        fail('no FormatId found in FormatRegistry.cs')
+    return ids
 
 
 def local(tag):
@@ -220,7 +239,7 @@ def main():
         if f'{os.sep}obj{os.sep}' in path or f'{os.sep}bin{os.sep}' in path:
             continue
         with open(path, encoding='utf-8') as f:
-            prefixes = set(DYNAMIC) | {p for p, _ in DYNAMIC_SUFFIX}
+            prefixes = set(DYNAMIC) | {p for p, _ in DYNAMIC_SUFFIX} | {p for p, _ in DYNAMIC_FORMAT}
             for literal in KEY_LITERAL.findall(f.read()):
                 if literal.endswith('_'):
                     if literal not in prefixes and not literal.startswith('Error_'):
@@ -236,6 +255,9 @@ def main():
     for (prefix, suffix), enum in DYNAMIC_SUFFIX.items():
         for member in enum_members(repo, enum):
             used.add(prefix + member + suffix)
+    for prefix, suffix in DYNAMIC_FORMAT:
+        for format_id in format_ids(repo):
+            used.add(prefix + format_id + suffix)
     for member in enum_members(repo, 'ConversionErrorCode'):
         used.add(f'Error_{member}_Title')
         used.add(f'Error_{member}_Body')

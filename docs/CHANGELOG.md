@@ -2,6 +2,21 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Galaxie, Teile B–D: Zeichenschicht, Fächer, Zoom auf die Wege
+
+**Geändert**
+
+- Schritt 1 zeigt oben die Fächer-Galaxie (Win2D, `Rendering/GalaxyRenderer` und `GalaxyCanvas`): schwarzes Loch mit Sog-Schein, fünf Bahnen mit Staub, Planeten je Datei in der Farbe ihrer Dateiart, Anflug neuer Dateien, sanfter Maus-Einfluss. Darunter immer alle fünf Fächer (`TrayControl`, `TrayFileControl`) mit Zahl, Dateien, Vorschau, Formatschild, Hinweis bei falscher Endung und „öffnet X → macht Y Formate“; nicht Umwandelbares mit Grund. Ablage auf der ganzen Seite; Dateidialog, Ordner und Strg+V bleiben.
+- Zoom auf „Wege durchs Loch“ (`PathsOverlay`): Klick auf Fach oder Bahn, links lesbare Formate, rechts Ziele mit Empfehlung, Fächer werden zur Leiste, Esc zurück; Auswahl eines Ziels setzt Dateiart und Vorzugsformat für Schritt 2 (dort vorausgewählt, wenn es in der Schnittmenge liegt).
+- `GalaxyHost` als Weiche: bei „Animationen reduzieren“ statische Ringe (`GalaxyStaticView`), im Hohen Kontrast keine Galaxie; Umschalten zur Laufzeit. Galaxie ist für Hilfstechnik dekorativ, alle Informationen stehen in den Fächern.
+- Entfernt: Ablagefläche, „Weitere Dateien“-Leiste, Job-Liste und `JobCardControl`. Neue Tokens `KvGlas`, `KvPaper`, `KvPaperLine`, `KvShadow`.
+- Bekannt: `RemoveFromVisualTree` von Win2D 1.4.0 stürzt mit diesem App SDK ab; stattdessen Pause und Entfernen aus dem Eltern-Grid (möglicher kleiner Leak beim Seitenwechsel, beobachten). Debug-Variable `KVERTIS_REDUCED_MOTION` (nur Debug-Build).
+- Tests: 21 neu (App 121), gesamt 891. Vorzugsformat aus dem Zoom wird an Schritt 2 übergeben (`IWorkflowSession.PreferredOutput`). 74 neue Ressourcen-Schlüssel (`Galaxy_*`, `Tray_*`, `Kind_*`, `Format_<id>_Hint`).
+
+**Bibliotheken**
+
+- Keine Änderung (Win2D seit Teil A im Code).
+
 ## 2026-09-25 – Galaxie, Teil A: Win2D im Projekt, Szene-Modell mit Tests (ADR-022)
 
 **Geändert**

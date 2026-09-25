@@ -30,8 +30,11 @@ public interface IJobItemHost
     void Remove(JobItemViewModel item);
 }
 
-/// <summary>One file card of step 1 (docs/06-design.md, "Job-Karte"): what was dropped in and what it is.</summary>
-public sealed partial class JobItemViewModel : ObservableObject
+/// <summary>
+/// One file of step 1 (docs/06-design.md): what was dropped in and what it is. Since the trays replaced the
+/// job cards (ADR-022) this is the model of one tray row and of one planet in the galaxy.
+/// </summary>
+public sealed partial class JobItemViewModel : ObservableObject, Drop.ITrayFile
 {
     private const string GlyphImage = "";
     private const string GlyphAudio = "";
@@ -106,6 +109,11 @@ public sealed partial class JobItemViewModel : ObservableObject
     [ObservableProperty]
     private string warningText = string.Empty;
 
+    /// <summary>"Endung .jpg, Inhalt ist PNG" — replaces the size in the tray row when the extension lies.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasMismatch))]
+    private string mismatchText = string.Empty;
+
     [ObservableProperty]
     private string errorTitle = string.Empty;
 
@@ -124,6 +132,8 @@ public sealed partial class JobItemViewModel : ObservableObject
     public bool CanRemove => State != JobItemState.Detecting;
 
     public bool HasThumbnail => ThumbnailLoaded;
+
+    public bool HasMismatch => MismatchText.Length > 0;
 
     /// <summary>Screen reader name of the whole card: "photo.heic, ready".</summary>
     public string AutomationName => _loc.Format("Card_AutomationName", FileName, StatusText);
@@ -156,6 +166,9 @@ public sealed partial class JobItemViewModel : ObservableObject
         SizeText = sizeText;
         DetailsText = detailsText;
         WarningText = warningText;
+        MismatchText = input.Warnings.Contains(InputWarning.ExtensionMismatch)
+            ? _loc.Format("Tray_ExtensionMismatch_Text", Path.GetExtension(FilePath).TrimStart('.'), inputFormatLabel)
+            : string.Empty;
         SetState(JobItemState.Ready);
         OnPropertyChanged(nameof(Kind));
         OnPropertyChanged(nameof(IsVideo));

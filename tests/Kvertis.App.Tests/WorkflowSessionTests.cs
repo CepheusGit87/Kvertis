@@ -23,6 +23,8 @@ public sealed class WorkflowSessionTests
         session.Previous.ShouldBeNull();
         session.Location.ShouldBeNull();
         session.OwnLocations.ShouldBeEmpty();
+        session.FocusKind.ShouldBeNull();
+        session.PreferredOutput.ShouldBeNull();
     }
 
     [Fact]
@@ -65,6 +67,8 @@ public sealed class WorkflowSessionTests
         session.Plan = TargetPlan.Empty;
         session.Location = OutputLocation.SubFolder();
         session.SetOwnLocation("a.png", OutputLocation.Custom(@"C:\out"));
+        session.FocusKind = MediaKind.Image;
+        session.PreferredOutput = FormatRegistry.Jpg;
 
         session.Reset();
 
@@ -72,6 +76,8 @@ public sealed class WorkflowSessionTests
         session.Plan.ShouldBeNull();
         session.Location.ShouldBeNull();
         session.OwnLocations.ShouldBeEmpty();
+        session.FocusKind.ShouldBeNull();
+        session.PreferredOutput.ShouldBeNull();
     }
 
     [Fact]
@@ -84,5 +90,7 @@ public sealed class WorkflowSessionTests
 
         session.SetOwnLocation("a.png", null);
         session.OwnLocations.ShouldBeEmpty();
+        session.FocusKind.ShouldBeNull();
+        session.PreferredOutput.ShouldBeNull();
     }
 }

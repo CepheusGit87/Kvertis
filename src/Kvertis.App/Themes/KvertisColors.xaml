@@ -38,6 +38,11 @@
       <Color x:Key="KvDocumentColor">#4FC3E8</Color>
       <Color x:Key="KvModelColor">#F08FD0</Color>
       <Color x:Key="KvErrorColor">#F07A6A</Color>
+      <!-- Sheets, glass overlays and shadows (token table in docs/06-design.md); the galaxy of step 1 uses them. -->
+      <Color x:Key="KvPaperColor">#F2F0EA</Color>
+      <Color x:Key="KvPaperLineColor">#CFCBC1</Color>
+      <Color x:Key="KvGlasColor">#CC14181B</Color>
+      <Color x:Key="KvShadowColor">#A0000000</Color>
 
       <SolidColorBrush x:Key="KvBackgroundBrush" Color="{ThemeResource KvBackgroundColor}" />
       <SolidColorBrush x:Key="KvPanelBrush" Color="{ThemeResource KvPanelColor}" />
@@ -57,6 +62,10 @@
       <SolidColorBrush x:Key="KvDocumentBrush" Color="{ThemeResource KvDocumentColor}" />
       <SolidColorBrush x:Key="KvModelBrush" Color="{ThemeResource KvModelColor}" />
       <SolidColorBrush x:Key="KvErrorBrush" Color="{ThemeResource KvErrorColor}" />
+      <SolidColorBrush x:Key="KvPaperBrush" Color="{ThemeResource KvPaperColor}" />
+      <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
+      <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
+      <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
 
       <!-- WinUI accent resources -> mint. Secondary = pointer over, tertiary = pressed (same opacities WinUI uses). -->
       <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{ThemeResource KvMintColor}" />
@@ -151,6 +160,10 @@
       <Color x:Key="KvDocumentColor">#095C78</Color>
       <Color x:Key="KvModelColor">#9A2F7D</Color>
       <Color x:Key="KvErrorColor">#9E3123</Color>
+      <Color x:Key="KvPaperColor">#FFFFFF</Color>
+      <Color x:Key="KvPaperLineColor">#D8D5CD</Color>
+      <Color x:Key="KvGlasColor">#CCFFFFFF</Color>
+      <Color x:Key="KvShadowColor">#401A232A</Color>
 
       <SolidColorBrush x:Key="KvBackgroundBrush" Color="{ThemeResource KvBackgroundColor}" />
       <SolidColorBrush x:Key="KvPanelBrush" Color="{ThemeResource KvPanelColor}" />
@@ -170,6 +183,10 @@
       <SolidColorBrush x:Key="KvDocumentBrush" Color="{ThemeResource KvDocumentColor}" />
       <SolidColorBrush x:Key="KvModelBrush" Color="{ThemeResource KvModelColor}" />
       <SolidColorBrush x:Key="KvErrorBrush" Color="{ThemeResource KvErrorColor}" />
+      <SolidColorBrush x:Key="KvPaperBrush" Color="{ThemeResource KvPaperColor}" />
+      <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
+      <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
+      <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
 
       <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{ThemeResource KvMintColor}" />
       <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{ThemeResource KvMintColor}" Opacity="0.9" />
@@ -265,6 +282,10 @@
       <StaticResource x:Key="KvDocumentColor" ResourceKey="SystemColorWindowTextColor" />
       <StaticResource x:Key="KvModelColor" ResourceKey="SystemColorWindowTextColor" />
       <StaticResource x:Key="KvErrorColor" ResourceKey="SystemColorWindowTextColor" />
+      <StaticResource x:Key="KvPaperColor" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvPaperLineColor" ResourceKey="SystemColorWindowTextColor" />
+      <StaticResource x:Key="KvGlasColor" ResourceKey="SystemColorWindowColor" />
+      <StaticResource x:Key="KvShadowColor" ResourceKey="SystemColorWindowTextColor" />
 
       <SolidColorBrush x:Key="KvBackgroundBrush" Color="{ThemeResource KvBackgroundColor}" />
       <SolidColorBrush x:Key="KvPanelBrush" Color="{ThemeResource KvPanelColor}" />
@@ -284,6 +305,10 @@
       <SolidColorBrush x:Key="KvDocumentBrush" Color="{ThemeResource KvDocumentColor}" />
       <SolidColorBrush x:Key="KvModelBrush" Color="{ThemeResource KvModelColor}" />
       <SolidColorBrush x:Key="KvErrorBrush" Color="{ThemeResource KvErrorColor}" />
+      <SolidColorBrush x:Key="KvPaperBrush" Color="{ThemeResource KvPaperColor}" />
+      <SolidColorBrush x:Key="KvPaperLineBrush" Color="{ThemeResource KvPaperLineColor}" />
+      <SolidColorBrush x:Key="KvGlasBrush" Color="{ThemeResource KvGlasColor}" />
+      <SolidColorBrush x:Key="KvShadowBrush" Color="{ThemeResource KvShadowColor}" />
 
       <!-- The accent keys below carry the same system colours WinUI uses in high contrast (highlight, highlight
            text, window, window text), so the result equals having no override at all. They are listed only so

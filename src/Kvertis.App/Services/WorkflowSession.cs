@@ -55,6 +55,12 @@ public interface IWorkflowSession
     /// </summary>
     MediaKind? FocusKind { get; set; }
 
+    /// <summary>
+    /// Step 1: the target the zoom recommended for <see cref="FocusKind"/> when the user moved on (ADR-022).
+    /// Step 2 preselects it if that group can produce it; null means no preference. Cleared by <see cref="Reset"/>.
+    /// </summary>
+    FormatId? PreferredOutput { get; set; }
+
     event EventHandler? Changed;
 
     /// <summary>Sets or (with null) removes the exception for one file. Raises <see cref="Changed"/>.</summary>
@@ -75,6 +81,7 @@ public sealed class WorkflowSession : IWorkflowSession
     private OutputLocation? _location;
     private HistoryEntry? _previous;
     private MediaKind? _focusKind;
+    private FormatId? _preferredOutput;
 
     public IReadOnlyList<StagedFile> Staged => _staged;
 
@@ -120,6 +127,16 @@ public sealed class WorkflowSession : IWorkflowSession
         }
     }
 
+    public FormatId? PreferredOutput
+    {
+        get => _preferredOutput;
+        set
+        {
+            _preferredOutput = value;
+            Raise();
+        }
+    }
+
     public event EventHandler? Changed;
 
     public void SetStaged(IReadOnlyList<StagedFile> files)
@@ -150,6 +167,7 @@ public sealed class WorkflowSession : IWorkflowSession
         _previous = null;
         _location = null;
         _focusKind = null;
+        _preferredOutput = null;
         _ownLocations.Clear();
         Raise();
     }

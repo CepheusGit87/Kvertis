@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- One of the five trays of step 1 (ADR-022). Always visible, also while empty: head with colour dot, name
+     and count, then the files, then "öffnet X → macht Y Formate". The head opens the zoom. -->
+<UserControl
+  x:Class="Kvertis.App.Views.TrayControl"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:helpers="using:Kvertis.App.Helpers"
+  xmlns:views="using:Kvertis.App.Views"
+  xmlns:vm="using:Kvertis.App.ViewModels">
+
+  <Grid
+    x:Name="TrayRoot"
+    Padding="8"
+    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1"
+    CornerRadius="8"
+    RowSpacing="6">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <VisualStateManager.VisualStateGroups>
+      <VisualStateGroup x:Name="ZoomStates">
+        <VisualState x:Name="Overview" />
+        <!-- In the zoom the five trays shrink to a bar of heads. -->
+        <VisualState x:Name="Zoomed">
+          <VisualState.Setters>
+            <Setter Target="FileArea.Visibility" Value="Collapsed" />
+            <Setter Target="FootLine.Visibility" Value="Collapsed" />
+            <Setter Target="TrayRoot.MinHeight" Value="52" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
+    <!-- Head: the whole line is the button that opens and closes the zoom (Enter, space). -->
+    <ToggleButton
+      x:Name="HeadButton"
+      Grid.Row="0"
+      MinHeight="36"
+      Padding="6,2"
+      HorizontalAlignment="Stretch"
+      HorizontalContentAlignment="Stretch"
+      AutomationProperties.Name="{x:Bind Tray.AutomationName, Mode=OneWay}"
+      Background="Transparent"
+      BorderThickness="0"
+      Click="OnHeadClick"
+      IsChecked="{x:Bind Tray.IsZoomed, Mode=OneWay}">
+      <Grid ColumnSpacing="8">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Ellipse
+          Grid.Column="0"
+          Width="10"
+          Height="10"
+          VerticalAlignment="Center"
+          Fill="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}" />
+        <TextBlock
+          Grid.Column="1"
+          VerticalAlignment="Center"
+          Style="{StaticResource BodyStrongTextBlockStyle}"
+          Text="{x:Bind Tray.Name, Mode=OneWay}"
+          TextTrimming="CharacterEllipsis" />
+        <TextBlock
+          x:Name="CountBig"
+          Grid.Column="2"
+          VerticalAlignment="Center"
+          AutomationProperties.LiveSetting="Polite"
+          Foreground="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}"
+          Style="{StaticResource SubtitleTextBlockStyle}"
+          Text="{x:Bind Tray.CountText, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}" />
+        <TextBlock
+          Grid.Column="2"
+          VerticalAlignment="Center"
+          AutomationProperties.LiveSetting="Polite"
+          Foreground="{ThemeResource KvMutedBrush}"
+          Style="{StaticResource CaptionTextBlockStyle}"
+          Text="{x:Bind Tray.CountText, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}" />
+      </Grid>
+    </ToggleButton>
+
+    <Grid x:Name="FileArea" Grid.Row="1">
+      <!-- Empty tray: what it would accept. -->
+      <StackPanel Spacing="4" Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}">
+        <TextBlock
+          x:Uid="Tray_Empty_Text"
+          Foreground="{ThemeResource KvMutedBrush}"
+          Style="{StaticResource CaptionTextBlockStyle}"
+          TextWrapping="Wrap" />
+        <TextBlock
+          Foreground="{ThemeResource KvMutedBrush}"
+          Style="{StaticResource CaptionTextBlockStyle}"
+          Text="{x:Bind Tray.ExampleText, Mode=OneWay}"
+          TextWrapping="Wrap" />
+      </StackPanel>
+
+      <!-- From four files on the tray scrolls instead of growing. -->
+      <ScrollViewer
+        HorizontalScrollMode="Disabled"
+        VerticalScrollBarVisibility="Auto"
+        VerticalScrollMode="Auto"
+        Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}">
+        <ItemsControl ItemsSource="{x:Bind Tray.Files, Mode=OneWay}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:JobItemViewModel">
+              <views:TrayFileControl AcceptRequested="OnRowAccepted" Item="{x:Bind}" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+
+    <TextBlock
+      x:Name="FootLine"
+      Grid.Row="2"
+      Foreground="{ThemeResource KvMutedBrush}"
+      Style="{StaticResource CaptionTextBlockStyle}"
+      Text="{x:Bind Tray.FootText, Mode=OneWay}"
+      TextWrapping="Wrap" />
+  </Grid>
+</UserControl>

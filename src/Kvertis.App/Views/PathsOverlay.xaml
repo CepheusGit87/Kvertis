@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- The zoom "Wege durchs Loch" of step 1 (ADR-022): left what Kvertis can open, right what it can become.
+     The ways themselves are drawn by the Win2D surface underneath; everything readable is XAML. -->
+<UserControl
+  x:Class="Kvertis.App.Views.PathsOverlay"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:drop="using:Kvertis.App.ViewModels.Drop"
+  xmlns:helpers="using:Kvertis.App.Helpers">
+
+  <Grid Padding="12" ColumnSpacing="12">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="260" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="260" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Button
+      x:Uid="Galaxy_Back_Button"
+      Grid.Row="0"
+      Grid.Column="0"
+      HorizontalAlignment="Left"
+      Click="OnBackClick">
+      <Button.KeyboardAccelerators>
+        <KeyboardAccelerator Key="Escape" />
+      </Button.KeyboardAccelerators>
+    </Button>
+
+    <StackPanel
+      Grid.Row="0"
+      Grid.Column="1"
+      HorizontalAlignment="Center">
+      <TextBlock
+        HorizontalAlignment="Center"
+        Style="{StaticResource SubtitleTextBlockStyle}"
+        Text="{x:Bind Paths.Title, Mode=OneWay}" />
+      <TextBlock
+        HorizontalAlignment="Center"
+        Foreground="{ThemeResource KvMutedBrush}"
+        Style="{StaticResource CaptionTextBlockStyle}"
+        Text="{x:Bind Paths.Subtitle, Mode=OneWay}" />
+    </StackPanel>
+
+    <!-- Left: the readable formats of this kind as one radio group. -->
+    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4">
+      <TextBlock x:Uid="Galaxy_Opens_Title" Style="{StaticResource BodyStrongTextBlockStyle}" />
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl x:Name="InputList" ItemsSource="{x:Bind Paths.Inputs, Mode=OneWay}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="drop:PathFormatViewModel">
+              <RadioButton
+                MinHeight="32"
+                AutomationProperties.Name="{x:Bind Label}"
+                Checked="OnInputChecked"
+                GroupName="GalaxyInputs"
+                IsChecked="{x:Bind IsSelected, Mode=OneWay}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Ellipse
+                    Width="8"
+                    Height="8"
+                    VerticalAlignment="Center"
+                    Fill="{ThemeResource KvMintBrush}"
+                    Visibility="{x:Bind helpers:Ui.Show(IsStaged)}" />
+                  <TextBlock
+                    VerticalAlignment="Center"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="{x:Bind Label}" />
+                  <TextBlock
+                    VerticalAlignment="Center"
+                    Foreground="{ThemeResource KvMutedBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind Hint}" />
+                </StackPanel>
+              </RadioButton>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </StackPanel>
+
+    <!-- Right: the writable formats. Read only; the focus skips them. -->
+    <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4">
+      <TextBlock x:Uid="Galaxy_Becomes_Title" Style="{StaticResource BodyStrongTextBlockStyle}" />
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl x:Name="OutputList" ItemsSource="{x:Bind Paths.Outputs, Mode=OneWay}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="drop:PathTargetViewModel">
+              <Grid
+                MinHeight="32"
+                Padding="8,4"
+                AutomationProperties.HelpText="{x:Bind HelpText, Mode=OneWay}"
+                AutomationProperties.Name="{x:Bind Label}"
+                ColumnSpacing="8"
+                Opacity="{x:Bind helpers:Ui.DimIf(IsReachable), Mode=OneWay}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                  Grid.Column="0"
+                  VerticalAlignment="Center"
+                  Style="{StaticResource BodyStrongTextBlockStyle}"
+                  Text="{x:Bind Label}" />
+                <TextBlock
+                  Grid.Column="1"
+                  VerticalAlignment="Center"
+                  Foreground="{ThemeResource KvMutedBrush}"
+                  Style="{StaticResource CaptionTextBlockStyle}"
+                  Text="{x:Bind Hint}"
+                  TextTrimming="CharacterEllipsis" />
+                <Border
+                  Grid.Column="2"
+                  Padding="6,1"
+                  VerticalAlignment="Center"
+                  BorderBrush="{ThemeResource KvMintBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Visibility="{x:Bind helpers:Ui.Show(IsRecommended), Mode=OneWay}">
+                  <TextBlock
+                    Foreground="{ThemeResource KvMintBrush}"
+                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Text="{x:Bind HelpText, Mode=OneWay}" />
+                </Border>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </StackPanel>
+  </Grid>
+</UserControl>

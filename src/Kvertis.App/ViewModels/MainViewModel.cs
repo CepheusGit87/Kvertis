@@ -2,7 +2,9 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kvertis.App.Helpers;
+using Kvertis.App.Scenes;
 using Kvertis.App.Services;
+using Kvertis.App.ViewModels.Drop;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
 using Microsoft.Extensions.Logging;
@@ -43,6 +45,9 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     /// <summary>The paths of the cards last handed to the session; guards against publishing on every tick.</summary>
     private string _stagedKey = string.Empty;
 
+    /// <summary>The files that already have a body in the scene, so nothing is added twice.</summary>
+    private readonly HashSet<Guid> _inScene = [];
+
     public MainViewModel(
         IFormatDetector detector,
         FormatRegistry registry,
@@ -72,10 +77,54 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         _steps = steps;
         _logger = logger;
 
+        // The galaxy of step 1 (ADR-022). The scene belongs to the view model, not to the drawing surface: it
+        // survives navigating away and back, so the planets stand where they stood. It costs nothing while no
+        // surface exists, because nobody calls Update then.
+        Scene = new GalaxyScene(
+            new GalaxyLayout(700f, 280f),
+            NeutralPalette,
+            new Random(Random.Shared.Next()),
+            new GalaxyBudget());
+        Trays = GalaxyLayout.OrbitOrder
+            .Reverse()
+            .Select(kind => new TrayViewModel(kind, registry, codecs, loc))
+            .ToList();
+        Rejected = new RejectedListViewModel(loc);
+        Paths = new PathsViewModel(registry, codecs, loc, TimeProvider.System);
+
         Jobs.CollectionChanged += (_, _) => UpdateCounts();
         _session.Changed += OnSessionChanged;
         UpdateCounts();
     }
+
+    /// <summary>Grey stand-in until a drawing surface reads the real theme colours (<c>ScenePaletteReader</c>).</summary>
+    private static ScenePalette NeutralPalette { get; } = new(
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(128, 128, 128),
+        new SceneColor(230, 230, 230),
+        new SceneColor(16, 16, 16),
+        new SceneColor(140, 140, 140),
+        IsDark: true);
+
+    /// <summary>The galaxy of step 1. The UI thread only enqueues commands and reads the snapshot.</summary>
+    public GalaxyScene Scene { get; }
+
+    /// <summary>The five trays, left to right: images, audio, video, 3D models, documents.</summary>
+    public IReadOnlyList<TrayViewModel> Trays { get; }
+
+    /// <summary>The card "Nicht umwandelbar" above the galaxy.</summary>
+    public RejectedListViewModel Rejected { get; }
+
+    /// <summary>The zoom "Wege durchs Loch"; empty while no kind is zoomed.</summary>
+    public PathsViewModel Paths { get; }
+
+    /// <summary>Raised after the trays, the rejected card and the scene were brought in line with the files.</summary>
+    public event EventHandler? StagedChanged;
 
     /// <summary>
     /// "Neue Runde" in step 3 resets the session. Step 1 has to follow, otherwise its cards would stay and
@@ -94,6 +143,9 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     {
         _stagedKey = string.Empty;
         Jobs.Clear();
+        ZoomKind = null;
+        _inScene.Clear();
+        Scene.Enqueue(new Clear());
         UpdateCounts();
     }
 
@@ -112,10 +164,90 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     [ObservableProperty]
     private bool isAdding;
 
+    /// <summary>The kind the galaxy is zoomed to, or null for the overview.</summary>
     [ObservableProperty]
-    private JobItemViewModel? selectedJob;
+    [NotifyPropertyChangedFor(nameof(IsZoomed))]
+    private MediaKind? zoomKind;
 
     public bool ShowEmptyState => !HasJobs;
+
+    public bool IsZoomed => ZoomKind is not null;
+
+    // ---- Galaxy: zoom and scene ------------------------------------------------------------------
+
+    /// <summary>Clicking the same tray head again (or the hole, or Esc) goes back to the overview.</summary>
+    [RelayCommand]
+    public void ToggleZoom(MediaKind? kind) => ZoomKind = ZoomKind == kind ? null : kind;
+
+    partial void OnZoomKindChanged(MediaKind? value)
+    {
+        Scene.Enqueue(new ZoomTo(value));
+        foreach (var tray in Trays)
+        {
+            tray.IsZoomed = value is { } zoomed && tray.Kind == zoomed;
+            tray.IsBar = value is not null;
+        }
+
+        if (value is { } kind)
+        {
+            var staged = Jobs
+                .Where(j => j.IsReady && j.Kind == kind && j.Input is not null)
+                .Select(j => j.Input!.Format)
+                .Distinct()
+                .ToList();
+            Paths.Open(kind, staged);
+        }
+        else
+        {
+            Paths.Close();
+        }
+    }
+
+    /// <summary>Mirrors the detected files into the trays, the rejected card and the scene.</summary>
+    private void SyncTrays()
+    {
+        var all = Jobs.Cast<ITrayFile>().ToList();
+        foreach (var tray in Trays)
+        {
+            tray.Sync(all);
+        }
+
+        Rejected.Sync(all);
+        SyncScene();
+        // The still picture draws its dots from the kinds, which only exist once detection is done; a plain
+        // collection change of Jobs comes too early for it.
+        StagedChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Adds a planet for every newly detected file and removes the ones that left. Files still being detected
+    /// have no kind yet, so they enter the scene the moment detection named one.
+    /// </summary>
+    private void SyncScene()
+    {
+        foreach (var job in Jobs)
+        {
+            if (job.IsDetecting || _inScene.Contains(job.Id))
+            {
+                continue;
+            }
+
+            // Kind Unknown tells the scene "this one flies to the rejected card instead of to an orbit".
+            var kind = job.IsRejected ? MediaKind.Unknown : job.Kind;
+            var label = string.IsNullOrEmpty(job.InputFormatLabel)
+                ? Path.GetExtension(job.FileName).TrimStart('.').ToUpperInvariant()
+                : job.InputFormatLabel;
+            Scene.Enqueue(new AddBody(job.Id, kind, label, job.FileName, job.Input?.SizeBytes ?? 0L));
+            _inScene.Add(job.Id);
+        }
+
+        var live = Jobs.Select(j => j.Id).ToHashSet();
+        foreach (var id in _inScene.Where(id => !live.Contains(id)).ToList())
+        {
+            Scene.Enqueue(new RemoveBody(id));
+            _inScene.Remove(id);
+        }
+    }
 
     // ---- Adding files ----------------------------------------------------------------------------
 
@@ -297,6 +429,9 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         finally
         {
             _detectGate.Release();
+            // Every file lands in its tray and on its orbit the moment its own detection is done, not only
+            // once the whole batch finished.
+            UpdateCounts();
         }
     }
 
@@ -321,7 +456,8 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     /// <summary>Warnings that only depend on the file itself; the ones that depend on the target are step 2's.</summary>
     private string DescribeWarnings(InputInfo input) =>
         string.Join(" ", input.Warnings
-            .Where(w => w != InputWarning.MetadataNotStrippable)
+            // The extension mismatch has its own line in the tray row (Tray_ExtensionMismatch_Text).
+            .Where(w => w is not (InputWarning.MetadataNotStrippable or InputWarning.ExtensionMismatch))
             .Select(w => _loc.Get("Warning_" + w.ToString())));
 
     private async Task LoadThumbnailAsync(JobItemViewModel item)
@@ -359,6 +495,9 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     private void GoToTarget()
     {
         PublishStaged();
+        // The zoom is a view, not a decision: it only tells step 2 which kind to open first (ADR-022).
+        _session.FocusKind = ZoomKind;
+        _session.PreferredOutput = ZoomKind is null ? null : Paths.PreferredOutput;
         _steps.GoTo(WorkflowStep.Target);
     }
 
@@ -389,19 +528,11 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
             .ToList());
     }
 
-    /// <summary>Keyboard: Delete removes the selected card.</summary>
-    public void RemoveSelected()
-    {
-        if (SelectedJob is { CanRemove: true } item)
-        {
-            Remove(item);
-        }
-    }
-
     private void UpdateCounts()
     {
         HasJobs = Jobs.Count > 0;
         HasStagedJobs = Jobs.Any(j => j.IsReady);
+        SyncTrays();
         PublishStaged();
     }
 

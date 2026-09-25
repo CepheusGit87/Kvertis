@@ -20,6 +20,7 @@ public static class CardAnimations
     private static readonly TimeSpan TiltDuration = TimeSpan.FromMilliseconds(300);
     private static readonly TimeSpan CheckDuration = TimeSpan.FromMilliseconds(200);
     private static readonly TimeSpan GlowDuration = TimeSpan.FromMilliseconds(1600);
+    private static readonly TimeSpan CountHopDuration = TimeSpan.FromMilliseconds(450);
 
     private const float DropZoneScale = 1.02f;
     private const float EntranceOffset = 12f;
@@ -83,6 +84,28 @@ public static class CardAnimations
         slide.DelayTime = delay;
         slide.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
         visual.StartAnimation("Translation", slide);
+    }
+
+    /// <summary>
+    /// The count of a tray hops once when a file arrived (0.45 s, spring with a slight overshoot). Without
+    /// animations the number simply changes, because a hop carries no information of its own.
+    /// </summary>
+    public static void CountHop(UIElement element)
+    {
+        ArgumentNullException.ThrowIfNull(element);
+        if (!AnimationsEnabled)
+        {
+            return;
+        }
+        var visual = ElementCompositionPreview.GetElementVisual(element);
+        var compositor = visual.Compositor;
+        CenterOn(element, visual);
+        var hop = compositor.CreateVector3KeyFrameAnimation();
+        hop.InsertKeyFrame(0f, Vector3.One);
+        hop.InsertKeyFrame(0.45f, new Vector3(1.25f, 1.25f, 1f));
+        hop.InsertKeyFrame(1f, Vector3.One, compositor.CreateCubicBezierEasingFunction(new Vector2(0.34f, 1.56f), new Vector2(0.64f, 1f)));
+        hop.Duration = CountHopDuration;
+        visual.StartAnimation("Scale", hop);
     }
 
     /// <summary>At start the card tilts 6 degrees around the X axis and back (300 ms, once).</summary>

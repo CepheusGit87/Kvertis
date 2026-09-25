@@ -35,6 +35,9 @@ public sealed class SystemMotionSettings : IMotionSettings
 
     private bool _animationsEnabled = true;
     private bool _isHighContrast;
+#if DEBUG
+    private readonly bool _forceReduced;
+#endif
 
     public SystemMotionSettings(IUiDispatcher ui)
     {
@@ -53,6 +56,15 @@ public sealed class SystemMotionSettings : IMotionSettings
 
         _animationsEnabled = ReadAnimationsEnabled();
         _isHighContrast = ReadHighContrast();
+#if DEBUG
+        // Development aid: KVERTIS_REDUCED_MOTION=1 forces the "reduce animations" branch, so the static
+        // views can be looked at without changing a Windows setting. Debug builds only.
+        _forceReduced = Environment.GetEnvironmentVariable("KVERTIS_REDUCED_MOTION") == "1";
+        if (_forceReduced)
+        {
+            _animationsEnabled = false;
+        }
+#endif
 
         try
         {
@@ -114,6 +126,12 @@ public sealed class SystemMotionSettings : IMotionSettings
 
     private bool ReadAnimationsEnabled()
     {
+#if DEBUG
+        if (_forceReduced)
+        {
+            return false;
+        }
+#endif
         try
         {
             return _uiSettings.AnimationsEnabled;

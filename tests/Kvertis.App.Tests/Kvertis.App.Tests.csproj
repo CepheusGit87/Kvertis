@@ -45,6 +45,10 @@
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\SizeBarViewModel.cs" Link="FromApp\Target\SizeBarViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\EffectViewModel.cs" Link="FromApp\Target\EffectViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\PathRowViewModel.cs" Link="FromApp\Target\PathRowViewModel.cs" />
+    <!-- Step 1 (ADR-022): trays, rejected card and the zoom lists carry logic and are free of WinUI. -->
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\TrayViewModel.cs" Link="FromApp\Drop\TrayViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\RejectedListViewModel.cs" Link="FromApp\Drop\RejectedListViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\PathsViewModel.cs" Link="FromApp\Drop\PathsViewModel.cs" />
   </ItemGroup>
 
   <!-- The scene models of the drawing layer (ADR-022) are free of WinUI and Win2D by definition, so the

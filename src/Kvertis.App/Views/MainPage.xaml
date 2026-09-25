@@ -5,135 +5,100 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:helpers="using:Kvertis.App.Helpers"
   xmlns:views="using:Kvertis.App.Views"
-  xmlns:vm="using:Kvertis.App.ViewModels"
+  KeyboardAcceleratorPlacementMode="Hidden"
   NavigationCacheMode="Required">
 
+  <!-- The accelerators belong to the whole page; their floating labels would drift across the galaxy, so
+       they are hidden and the shortcuts stand in the drop line and in the tooltips instead. -->
   <Page.KeyboardAccelerators>
     <KeyboardAccelerator Key="O" Modifiers="Control" Invoked="OnOpenAcceleratorInvoked" />
     <KeyboardAccelerator Key="V" Modifiers="Control" Invoked="OnPasteAcceleratorInvoked" />
+    <KeyboardAccelerator Key="Escape" Invoked="OnEscapeAcceleratorInvoked" />
   </Page.KeyboardAccelerators>
 
-  <Grid x:Name="PageRoot">
+  <!-- The whole page is the drop target now, not one card (worksheet step 1). -->
+  <Grid
+    x:Name="PageRoot"
+    AllowDrop="True"
+    DragLeave="OnPageDragLeave"
+    DragOver="OnPageDragOver"
+    Drop="OnPageDrop">
     <SplitView
       x:Name="HistorySplitView"
       DisplayMode="Overlay"
       IsPaneOpen="{x:Bind History.IsOpen, Mode=TwoWay}"
       OpenPaneLength="380"
+      PaneClosed="OnHistoryPaneChanged"
+      PaneOpened="OnHistoryPaneChanged"
       PanePlacement="Right">
       <SplitView.Pane>
         <views:HistoryPanel ViewModel="{x:Bind History}" />
       </SplitView.Pane>
 
-      <Grid>
+      <Grid Padding="24,8,24,0" RowSpacing="12" SizeChanged="OnContentSizeChanged">
         <Grid.RowDefinitions>
-          <RowDefinition Height="*" />
+          <RowDefinition x:Name="GalaxyRow" Height="2*" MinHeight="240" MaxHeight="520" />
+          <RowDefinition x:Name="TrayRow" Height="3*" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Padding="24,8,24,0" RowSpacing="12">
-          <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-          </Grid.RowDefinitions>
 
-          <!-- 1. Drop zone: large while empty, a slim bar once files are there (docs/06, "Hauptansicht"). -->
-          <Grid
-            x:Name="DropZone"
-            Grid.Row="0"
-            AllowDrop="True"
-            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-            CornerRadius="8"
-            DragLeave="OnDropZoneDragLeave"
-            DragOver="OnDropZoneDragOver"
-            Drop="OnDropZoneDrop">
-            <Rectangle
-              RadiusX="8"
-              RadiusY="8"
-              Stroke="{ThemeResource ControlStrongStrokeColorDefaultBrush}"
-              StrokeDashArray="4,3"
-              StrokeThickness="1.5" />
-
-            <StackPanel
-              Padding="24,40"
-              HorizontalAlignment="Center"
-              Spacing="12"
-              Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowEmptyState), Mode=OneWay}">
-              <FontIcon FontSize="40" Glyph="&#xE898;" />
-              <TextBlock
-                x:Uid="Main_DropZone_Title"
-                HorizontalAlignment="Center"
-                Style="{StaticResource SubtitleTextBlockStyle}"
-                TextAlignment="Center"
-                TextWrapping="Wrap" />
-              <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="12">
-                <Button x:Uid="Main_AddFiles_Button" Command="{x:Bind ViewModel.AddFilesCommand}" />
-                <HyperlinkButton x:Uid="Main_AddFolder_Link" Command="{x:Bind ViewModel.AddFolderCommand}" />
-              </StackPanel>
-              <TextBlock x:Uid="Main_DropZone_PasteHint" HorizontalAlignment="Center" Style="{StaticResource SecondaryCaptionTextStyle}" />
-            </StackPanel>
-
-            <Grid
-              Padding="16,8"
-              ColumnSpacing="12"
-              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasJobs), Mode=OneWay}">
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-              </Grid.ColumnDefinitions>
-              <FontIcon Grid.Column="0" FontSize="18" Glyph="&#xE898;" />
-              <TextBlock
-                x:Uid="Main_DropZone_More"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                TextTrimming="CharacterEllipsis" />
-              <Button x:Uid="Main_AddMoreFiles_Button" Grid.Column="2" Command="{x:Bind ViewModel.AddFilesCommand}" />
-              <HyperlinkButton x:Uid="Main_AddMoreFolder_Link" Grid.Column="3" Command="{x:Bind ViewModel.AddFolderCommand}" />
-            </Grid>
-          </Grid>
-
-          <!-- 2. Trust line, always visible. -->
-          <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
-            <FontIcon FontSize="14" Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE72E;" />
-            <TextBlock x:Uid="Main_Trust_Text" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
-            <ProgressRing
-              x:Uid="Main_Adding_Progress"
-              Width="16"
-              Height="16"
-              IsActive="{x:Bind ViewModel.IsAdding, Mode=OneWay}" />
-          </StackPanel>
-
-          <!-- 3. Job list: one card per file. -->
-          <ListView
-            x:Name="JobList"
-            x:Uid="Main_JobList"
-            Grid.Row="2"
-            Padding="0,0,0,12"
-            ContainerContentChanging="OnJobListContainerContentChanging"
-            ItemsSource="{x:Bind ViewModel.Jobs}"
-            PreviewKeyDown="OnJobListPreviewKeyDown"
-            SelectedItem="{x:Bind ViewModel.SelectedJob, Mode=TwoWay}"
-            SelectionMode="Single">
-            <ListView.ItemContainerStyle>
-              <Style TargetType="ListViewItem">
-                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                <Setter Property="Padding" Value="0" />
-                <Setter Property="Margin" Value="0,4" />
-              </Style>
-            </ListView.ItemContainerStyle>
-            <ListView.ItemTemplate>
-              <DataTemplate x:DataType="vm:JobItemViewModel">
-                <views:JobCardControl Item="{x:Bind}" />
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
+        <!-- 1. The galaxy with the drop line, the rejected card and, while zoomed, the two format lists. -->
+        <Grid Grid.Row="0">
+          <views:GalaxyHost x:Name="Galaxy" ZoomRequested="OnGalaxyZoomRequested" />
+          <views:PathsOverlay
+            x:Name="Paths"
+            BackRequested="OnPathsBackRequested"
+            Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsZoomed), Mode=OneWay}" />
         </Grid>
 
-        <!-- 4. Action bar, fixed at the bottom. -->
-        <Border
+        <!-- 2. The five trays, always all of them: images, audio, video, 3D models, documents. -->
+        <ScrollViewer
+          x:Name="TrayScroll"
           Grid.Row="1"
+          HorizontalScrollBarVisibility="Disabled"
+          HorizontalScrollMode="Disabled"
+          VerticalScrollMode="Disabled">
+          <Grid ColumnSpacing="8">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition x:Name="TrayColumn0" Width="*" />
+              <ColumnDefinition x:Name="TrayColumn1" Width="*" />
+              <ColumnDefinition x:Name="TrayColumn2" Width="*" />
+              <ColumnDefinition x:Name="TrayColumn3" Width="*" />
+              <ColumnDefinition x:Name="TrayColumn4" Width="*" />
+            </Grid.ColumnDefinitions>
+            <views:TrayControl
+              x:Name="Tray0"
+              Grid.Column="0"
+              AcceptRequested="OnTrayAccepted"
+              HeadInvoked="OnTrayHeadInvoked" />
+            <views:TrayControl
+              x:Name="Tray1"
+              Grid.Column="1"
+              AcceptRequested="OnTrayAccepted"
+              HeadInvoked="OnTrayHeadInvoked" />
+            <views:TrayControl
+              x:Name="Tray2"
+              Grid.Column="2"
+              AcceptRequested="OnTrayAccepted"
+              HeadInvoked="OnTrayHeadInvoked" />
+            <views:TrayControl
+              x:Name="Tray3"
+              Grid.Column="3"
+              AcceptRequested="OnTrayAccepted"
+              HeadInvoked="OnTrayHeadInvoked" />
+            <views:TrayControl
+              x:Name="Tray4"
+              Grid.Column="4"
+              AcceptRequested="OnTrayAccepted"
+              HeadInvoked="OnTrayHeadInvoked" />
+          </Grid>
+        </ScrollViewer>
+
+        <!-- 3. Action bar: trust line and the single mint button. -->
+        <Border
+          Grid.Row="2"
+          Margin="-24,0"
           Padding="24,12"
           Background="{ThemeResource LayerFillColorDefaultBrush}"
           BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
@@ -144,8 +109,21 @@
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- The main path of the new interface: step 1 hands the files to step 2 (ADR-020).
-                 Start, output location and progress belong to step 3 now (ADR-021). -->
+            <StackPanel
+              Grid.Column="0"
+              VerticalAlignment="Center"
+              Orientation="Horizontal"
+              Spacing="8">
+              <FontIcon FontSize="14" Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE72E;" />
+              <TextBlock x:Uid="Main_Trust_Text" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+              <ProgressRing
+                x:Uid="Main_Adding_Progress"
+                Width="16"
+                Height="16"
+                IsActive="{x:Bind ViewModel.IsAdding, Mode=OneWay}" />
+            </StackPanel>
+
+            <!-- The main path of the new interface: step 1 hands the files to step 2 (ADR-020). -->
             <Button
               x:Name="GoTargetButton"
               x:Uid="Main_GoTarget_Button"

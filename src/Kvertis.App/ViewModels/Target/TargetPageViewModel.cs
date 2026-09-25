@@ -125,7 +125,15 @@ public sealed partial class TargetPageViewModel : ObservableObject, IDisposable
             Kinds.Add(group);
         }
 
-        SelectedKind = Kinds.FirstOrDefault();
+        // Step 1 may have been zoomed to one kind (ADR-022): open that one first if it is staged at all.
+        SelectedKind = Kinds.FirstOrDefault(k => _session.FocusKind is { } focus && k.Kind == focus)
+            ?? Kinds.FirstOrDefault();
+        // The zoom may also have named a target; it only counts where the whole group can become it.
+        if (_session.PreferredOutput is { } preferred)
+        {
+            var group = Kinds.FirstOrDefault(k => _session.FocusKind is { } focus && k.Kind == focus);
+            group?.Preselect(preferred);
+        }
         LoadPrevious();
         Refresh();
         // Buying Pro unlocks the video group and drops the batch limit; the page is rebuilt from scratch.

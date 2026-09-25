@@ -293,3 +293,49 @@ Umgesetzt nach `docs/entwuerfe/schritt-3-umwandeln.md` und dem Abschnitt „Schr
   „71 % gespart“; derselbe Text wird schon im Verlauf und auf der Karte benutzt.
 - `SettingsViewModel` setzt weiterhin `IJobQueue.MaxParallel`; das ist eine Einstellung, keine Umwandlung,
   und `App.OnWindowClosed` ruft weiterhin `JobQueue.StopAsync`.
+
+## Abweichungen Schritt 1 „Fächer-Galaxie“ (Teil B/C/D, 2026-09-25)
+
+Grundlage: `docs/entwuerfe/schritt-1-galaxie.md`. Abweichungen und ihr Grund:
+
+- **`RemoveFromVisualTree()` wird nicht gerufen, die Fläche bleibt bei der Navigation stehen.** Der Aufruf
+  stürzt mit Win2D 1.4.0 und diesem Windows App SDK reproduzierbar ab (Zugriffsverletzung in
+  `Microsoft.Graphics.Canvas.dll`, auch mit leerem `Draw`). Deshalb behält jede `GalaxyCanvas` ein
+  einziges `CanvasAnimatedControl` über die Lebensdauer der gecachten Seite; `Suspend()` pausiert nur.
+  Abgebaut (Renderer auf dem Spielschleifen-Thread entsorgt, pausiert, aus dem Eltern-Grid genommen) wird
+  nur bei einem Wechsel der Bewegungs-Einstellung oder nach einem Zeichenfehler. Einzelheiten im Nachtrag
+  zu ADR-022 in `03-architektur.md`.
+- **`x:Uid` in `DataTemplate`s nur für feste Texte.** Ein `x:Uid` in einer Vorlage funktioniert (z. B.
+  `Card_Remove_Button` in der Karte „Nicht umwandelbar“). Der Abbruch des XAML-Compilers (nicht
+  formatierbarer interner Fehler) trat in der rechten Liste des Zooms auf, zusammen mit zwei Vorlagen
+  desselben `x:DataType` in einer Datei (siehe nächster Punkt); welcher der beiden Umstände ihn allein
+  auslöst, ist nicht getrennt geprüft. Der Text „empfohlen“ kommt ohnehin aus dem ViewModel
+  (`Galaxy_Recommended_Text`), weil derselbe Text auch als `HelpText` für Bildschirmleser dient; der
+  Schlüssel `Galaxy_Recommended_Tag.Text` entfällt.
+- **Vorzugsformat aus dem Zoom.** Wer aus dem Zoom mit „Weiter: Ziel“ weitergeht, gibt Schritt 2 neben der
+  Art (`IWorkflowSession.FocusKind`) auch das empfohlene Ziel mit (`IWorkflowSession.PreferredOutput`),
+  sofern das links gewählte Format wirklich eingeworfen oder vom Nutzer angeklickt wurde; der automatische
+  Wechsel allein drückt keinen Wunsch aus. Schritt 2 wählt es in der Gruppe dieser Art vor, wenn es in der
+  Schnittmenge aller Dateien liegt, sonst bleibt der Vorschlag der Engine.
+- **Kein schwebendes Tastenschild.** Die Tastenkürzel der Seite zeigen kein eigenes Schild
+  (`KeyboardAcceleratorPlacementMode="Hidden"`), weil es dem Zeiger folgend über die Galaxie und im Zoom über
+  die Schrittleiste wanderte. Strg+O steht im Tooltip von „Dateien wählen“, Strg+V in der Einwurf-Zeile.
+- **Einwurf-Karte nur im leeren Zustand.** Die Karte „Dateien hierher ziehen“ steht nur, solange keine Datei
+  eingeworfen ist, kleiner und mittig; danach ersetzt sie eine dezente Zeile am Fuß der Galaxie, damit keine
+  Bahn verdeckt wird.
+- **Zwei `DataTemplate`s mit demselben `x:DataType` in einer Datei** brechen denselben Compiler ebenfalls;
+  deshalb hat die rechte Liste des Zooms einen eigenen Typ `PathTargetViewModel` neben
+  `PathFormatViewModel` (gemeinsame Basis `PathRowBase`).
+- **`VisualState`-Setter auf `RowDefinition`/`ColumnDefinition`** brechen den Compiler ebenso. Der schmale
+  Aufbau unter 900 px (fünf Spalten à 200 px, seitliches Rollen) und die Höhe der Galaxie stehen deshalb im
+  Code-behind von `MainPage` statt in einem `AdaptiveTrigger`.
+- **Bezugslinien im Zoom** zeichnet der Renderer nicht getrennt: die Szene gibt die Ankerpunkte der Zeilen
+  nicht einzeln heraus, und der gezeichnete Weg läuft ohnehin vom Rand der linken Zeile durch das Loch bis
+  zum Rand der rechten Zeile. Das Glühen von Bahnen und Loch ist ein zweiter, breiter und blasser Strich
+  statt eines Weichzeichners (ADR-022 verbietet Blur-Effekte je Bild).
+- **Bilddrossel bei Akkubetrieb** (1/30 s) ist nicht umgesetzt; die Fläche läuft immer mit 1/60 s.
+- **Fächer-Zeilen** erscheinen erst, wenn die Erkennung die Art einer Datei kennt; eine Datei ohne Art hätte
+  kein Fach. Das Erscheinen ist die Einblende-Animation aus `CardAnimations`, die Zahl hüpft über
+  `CardAnimations.CountHop`.
+- **Entwicklungshilfe:** `KVERTIS_REDUCED_MOTION=1` erzwingt in Debug-Builds die ruhige Ansicht
+  (`SystemMotionSettings`), damit sie ohne Änderung einer Windows-Einstellung geprüft werden kann.

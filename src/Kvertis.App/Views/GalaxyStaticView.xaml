@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- The still picture of the galaxy for "reduce animations" (ADR-018, ADR-022): the same five orbits and the
+     same hole, but nothing moves and no particle is drawn. Decorative, like the Win2D surface. -->
+<UserControl
+  x:Class="Kvertis.App.Views.GalaxyStaticView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  AutomationProperties.AccessibilityView="Raw"
+  IsTabStop="False">
+
+  <Grid Background="Transparent" SizeChanged="OnRootSizeChanged">
+    <Canvas x:Name="Surface" />
+  </Grid>
+</UserControl>

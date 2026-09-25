@@ -16,7 +16,13 @@ public static class Ui
 
     public static Visibility ShowAll(bool first, bool second) => first && second ? Visibility.Visible : Visibility.Collapsed;
 
+    /// <summary>Visible when <paramref name="show"/> holds and <paramref name="suppress"/> does not.</summary>
+    public static Visibility ShowUnless(bool show, bool suppress) => show && !suppress ? Visibility.Visible : Visibility.Collapsed;
+
     public static bool Not(bool value) => !value;
+
+    /// <summary>Full opacity when true, dimmed when false (used for targets an input cannot reach).</summary>
+    public static double DimIf(bool value) => value ? 1.0 : 0.4;
 
     /// <summary>
     /// Looks up a theme brush by key, so a view model can name a colour ("KvMintBrush") without referencing

@@ -154,6 +154,22 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
 
     public void ShowPrevious(ConversionSettings settings) => Tuning.ShowPrevious(settings);
 
+    /// <summary>
+    /// Step 1's zoom named a target (<see cref="Services.IWorkflowSession.PreferredOutput"/>): it becomes the
+    /// shared format if every file of the group can become it. Returns false when it is not in the group.
+    /// </summary>
+    public bool Preselect(FormatId output)
+    {
+        var match = SharedFormats.FirstOrDefault(f => f.Id == output);
+        if (match is null)
+        {
+            return false;
+        }
+
+        SharedFormat = match;
+        return true;
+    }
+
     partial void OnSharedFormatChanged(FormatOption? value)
     {
         PushFormat();

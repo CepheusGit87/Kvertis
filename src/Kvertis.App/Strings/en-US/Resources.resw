@@ -87,9 +87,6 @@
   <data name="Card_AutomationName" xml:space="preserve">
     <value>{0}, {1}</value>
   </data>
-  <data name="Card_Detecting_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Detecting file</value>
-  </data>
   <data name="Card_Pages_Text" xml:space="preserve">
     <value>{0} pages</value>
   </data>
@@ -573,8 +570,35 @@
   <data name="Error_UnsupportedFormat_Title" xml:space="preserve">
     <value>This format is not supported</value>
   </data>
+  <data name="Format_3gp_Hint" xml:space="preserve">
+    <value>Video from old phones</value>
+  </data>
+  <data name="Format_3mf_Hint" xml:space="preserve">
+    <value>Print file, modern</value>
+  </data>
+  <data name="Format_aiff_Hint" xml:space="preserve">
+    <value>Lossless, studio</value>
+  </data>
+  <data name="Format_avi_Hint" xml:space="preserve">
+    <value>Older video</value>
+  </data>
+  <data name="Format_avif_Hint" xml:space="preserve">
+    <value>New, very small</value>
+  </data>
+  <data name="Format_bmp_Hint" xml:space="preserve">
+    <value>Uncompressed</value>
+  </data>
   <data name="Format_Change_Percent" xml:space="preserve">
     <value>{0}%</value>
+  </data>
+  <data name="Format_csv_Hint" xml:space="preserve">
+    <value>Spreadsheet as text</value>
+  </data>
+  <data name="Format_doc_Hint" xml:space="preserve">
+    <value>Older office file</value>
+  </data>
+  <data name="Format_docx_Hint" xml:space="preserve">
+    <value>Text document</value>
   </data>
   <data name="Format_Duration_Hours" xml:space="preserve">
     <value>{0} h {1} min</value>
@@ -588,6 +612,81 @@
   <data name="Format_Duration_UnderSecond" xml:space="preserve">
     <value>under 1 s</value>
   </data>
+  <data name="Format_flac_Hint" xml:space="preserve">
+    <value>Lossless, smaller</value>
+  </data>
+  <data name="Format_flv_Hint" xml:space="preserve">
+    <value>Very old web video</value>
+  </data>
+  <data name="Format_gif_Hint" xml:space="preserve">
+    <value>Short animation</value>
+  </data>
+  <data name="Format_glb_Hint" xml:space="preserve">
+    <value>Scene in one file</value>
+  </data>
+  <data name="Format_gltf_Hint" xml:space="preserve">
+    <value>Scene with extra files</value>
+  </data>
+  <data name="Format_heic_Hint" xml:space="preserve">
+    <value>Phone photo</value>
+  </data>
+  <data name="Format_html_Hint" xml:space="preserve">
+    <value>Web page</value>
+  </data>
+  <data name="Format_ico_Hint" xml:space="preserve">
+    <value>Program icon</value>
+  </data>
+  <data name="Format_jpg_Hint" xml:space="preserve">
+    <value>Photos, small</value>
+  </data>
+  <data name="Format_m4a_Hint" xml:space="preserve">
+    <value>Music from phones</value>
+  </data>
+  <data name="Format_md_Hint" xml:space="preserve">
+    <value>Text with simple markup</value>
+  </data>
+  <data name="Format_mkv_Hint" xml:space="preserve">
+    <value>Video with many tracks</value>
+  </data>
+  <data name="Format_mov_Hint" xml:space="preserve">
+    <value>Video from phones</value>
+  </data>
+  <data name="Format_mp3_Hint" xml:space="preserve">
+    <value>Music, plays everywhere</value>
+  </data>
+  <data name="Format_mp4_Hint" xml:space="preserve">
+    <value>Video, plays everywhere</value>
+  </data>
+  <data name="Format_mpeg_Hint" xml:space="preserve">
+    <value>Video from DVD and TV</value>
+  </data>
+  <data name="Format_obj_Hint" xml:space="preserve">
+    <value>Model as text</value>
+  </data>
+  <data name="Format_ogg_Hint" xml:space="preserve">
+    <value>Free and compressed</value>
+  </data>
+  <data name="Format_opus_Hint" xml:space="preserve">
+    <value>Speech, very small</value>
+  </data>
+  <data name="Format_pdf_Hint" xml:space="preserve">
+    <value>Pages as printed</value>
+  </data>
+  <data name="Format_ply_Hint" xml:space="preserve">
+    <value>Point cloud or mesh</value>
+  </data>
+  <data name="Format_png_Hint" xml:space="preserve">
+    <value>Crisp graphics, transparent</value>
+  </data>
+  <data name="Format_pptx_Hint" xml:space="preserve">
+    <value>Presentation</value>
+  </data>
+  <data name="Format_psd_Hint" xml:space="preserve">
+    <value>File with layers</value>
+  </data>
+  <data name="Format_raw_Hint" xml:space="preserve">
+    <value>Camera raw data</value>
+  </data>
   <data name="Format_Size_Bytes" xml:space="preserve">
     <value>{0} bytes</value>
   </data>
@@ -599,6 +698,69 @@
   </data>
   <data name="Format_Size_MB" xml:space="preserve">
     <value>{0} MB</value>
+  </data>
+  <data name="Format_stl_Hint" xml:space="preserve">
+    <value>Print file made of triangles</value>
+  </data>
+  <data name="Format_svg_Hint" xml:space="preserve">
+    <value>Drawing made of lines</value>
+  </data>
+  <data name="Format_tiff_Hint" xml:space="preserve">
+    <value>Scan, lossless</value>
+  </data>
+  <data name="Format_ts_Hint" xml:space="preserve">
+    <value>TV recording</value>
+  </data>
+  <data name="Format_txt_Hint" xml:space="preserve">
+    <value>Plain text</value>
+  </data>
+  <data name="Format_wav_Hint" xml:space="preserve">
+    <value>Lossless, large</value>
+  </data>
+  <data name="Format_webm_Hint" xml:space="preserve">
+    <value>Video for the web</value>
+  </data>
+  <data name="Format_webp_Hint" xml:space="preserve">
+    <value>For the web, small</value>
+  </data>
+  <data name="Format_wma_Hint" xml:space="preserve">
+    <value>Older Windows audio</value>
+  </data>
+  <data name="Format_wmv_Hint" xml:space="preserve">
+    <value>Older Windows video</value>
+  </data>
+  <data name="Format_xlsx_Hint" xml:space="preserve">
+    <value>Spreadsheet</value>
+  </data>
+  <data name="Galaxy_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Back to the overview</value>
+  </data>
+  <data name="Galaxy_Back_Button.Content" xml:space="preserve">
+    <value>Overview</value>
+  </data>
+  <data name="Galaxy_Becomes_Title.Text" xml:space="preserve">
+    <value>can become</value>
+  </data>
+  <data name="Galaxy_Entry_PasteHint.Text" xml:space="preserve">
+    <value>Ctrl+V pastes an image from the clipboard</value>
+  </data>
+  <data name="Galaxy_Entry_Title.Text" xml:space="preserve">
+    <value>Drag files here or pick them</value>
+  </data>
+  <data name="Galaxy_NotReachable_Text" xml:space="preserve">
+    <value>not from {0}</value>
+  </data>
+  <data name="Galaxy_Opens_Title.Text" xml:space="preserve">
+    <value>Kvertis opens</value>
+  </data>
+  <data name="Galaxy_Recommended_Text" xml:space="preserve">
+    <value>recommended</value>
+  </data>
+  <data name="Galaxy_Rejected_More_Text" xml:space="preserve">
+    <value>and {0} more</value>
+  </data>
+  <data name="Galaxy_Rejected_Title.Text" xml:space="preserve">
+    <value>Cannot be converted</value>
   </data>
   <data name="Grade_Band_Excellent" xml:space="preserve">
     <value>excellent</value>
@@ -663,6 +825,42 @@
   <data name="History_Title.Text" xml:space="preserve">
     <value>History</value>
   </data>
+  <data name="Kind_Audio_Name" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="Kind_Audio_Sub" xml:space="preserve">
+    <value>Music, recordings, podcasts</value>
+  </data>
+  <data name="Kind_Document_Name" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="Kind_Document_Sub" xml:space="preserve">
+    <value>Texts, spreadsheets, presentations</value>
+  </data>
+  <data name="Kind_Image_Name" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="Kind_Image_Sub" xml:space="preserve">
+    <value>Photos, graphics, screenshots</value>
+  </data>
+  <data name="Kind_Model3D_Name" xml:space="preserve">
+    <value>3D models</value>
+  </data>
+  <data name="Kind_Model3D_Sub" xml:space="preserve">
+    <value>Print files and scenes</value>
+  </data>
+  <data name="Kind_Unknown_Name" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="Kind_Unknown_Sub" xml:space="preserve">
+    <value>Not recognised</value>
+  </data>
+  <data name="Kind_Video_Name" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Kind_Video_Sub" xml:space="preserve">
+    <value>Movies, clips, screen recordings</value>
+  </data>
   <data name="Licenses_Empty_Text.Text" xml:space="preserve">
     <value>The license texts were not found. Please reinstall Kvertis.</value>
   </data>
@@ -687,6 +885,9 @@
   <data name="Main_AddFiles_Button.Content" xml:space="preserve">
     <value>Choose files</value>
   </data>
+  <data name="Main_AddFiles_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Choose files (Ctrl+O)</value>
+  </data>
   <data name="Main_AddFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Choose folder</value>
   </data>
@@ -696,38 +897,14 @@
   <data name="Main_Adding_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Detecting files</value>
   </data>
-  <data name="Main_AddMoreFiles_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Add more files</value>
-  </data>
-  <data name="Main_AddMoreFiles_Button.Content" xml:space="preserve">
-    <value>Add more files</value>
-  </data>
-  <data name="Main_AddMoreFolder_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Add folder</value>
-  </data>
-  <data name="Main_AddMoreFolder_Link.Content" xml:space="preserve">
-    <value>Add folder</value>
-  </data>
   <data name="Main_DropZone_DragCaption" xml:space="preserve">
     <value>Add to Kvertis</value>
-  </data>
-  <data name="Main_DropZone_More.Text" xml:space="preserve">
-    <value>Drag more files here</value>
-  </data>
-  <data name="Main_DropZone_PasteHint.Text" xml:space="preserve">
-    <value>Tip: Press Ctrl+V to paste images from the clipboard.</value>
-  </data>
-  <data name="Main_DropZone_Title.Text" xml:space="preserve">
-    <value>Drag files here or choose them</value>
   </data>
   <data name="Main_GoTarget_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Next to step 2: Target</value>
   </data>
   <data name="Main_GoTarget_Button.Content" xml:space="preserve">
     <value>Next: Target</value>
-  </data>
-  <data name="Main_JobList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Files</value>
   </data>
   <data name="Main_ManyFiles_Body" xml:space="preserve">
     <value>The folder contains {0} files. Add all of them?</value>
@@ -1277,6 +1454,18 @@
   </data>
   <data name="Target_Zone_Fixed_Text.Text" xml:space="preserve">
     <value>Fixed by the format; it cannot be changed here.</value>
+  </data>
+  <data name="Tray_AutomationName" xml:space="preserve">
+    <value>{0}, {1} files</value>
+  </data>
+  <data name="Tray_Empty_Text.Text" xml:space="preserve">
+    <value>still empty, for example</value>
+  </data>
+  <data name="Tray_ExtensionMismatch_Text" xml:space="preserve">
+    <value>Extension .{0}, content is {1}</value>
+  </data>
+  <data name="Tray_Foot_Text" xml:space="preserve">
+    <value>opens {0} → makes {1} formats</value>
   </data>
   <data name="Warning_AnimationDropped" xml:space="preserve">
     <value>Only the first frame of the animation is converted.</value>
