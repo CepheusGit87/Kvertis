@@ -69,6 +69,12 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
     /// <summary>Raised whenever the resulting settings changed, so the group can refresh its rows.</summary>
     public event EventHandler? SettingsChanged;
 
+    /// <summary>
+    /// Raised after the debounced part (zones, effects) settled: at most every 50 ms while dragging. The group
+    /// recomputes the sizes of its target list on it, which is too costly per frame.
+    /// </summary>
+    public event EventHandler? Settled;
+
     /// <summary>False for documents and 3D: no ring, no bar, no zones; only effects and "Weiteres".</summary>
     [ObservableProperty]
     private bool supportsGrade;
@@ -368,6 +374,7 @@ public sealed partial class TuningPanelViewModel : ObservableObject, IDisposable
             // 50 ms after the last move: the drag is over, the handle may follow the grade again.
             SizeBar.Settle(_largestBytes);
         }
+        Settled?.Invoke(this, EventArgs.Empty);
     }
 
     private void SyncZones(IReadOnlyList<AspectLevel> levels)

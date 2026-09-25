@@ -1,6 +1,11 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
+using System.Numerics;
+using System.Text;
 using Kvertis.App.Helpers;
+using Kvertis.App.Rendering;
+using Kvertis.App.Scenes;
 using Kvertis.App.Services;
 using Kvertis.App.ViewModels.Target;
 using Kvertis.Engine.Abstractions;
@@ -15,14 +20,17 @@ using Microsoft.UI.Xaml.Shapes;
 namespace Kvertis.App.Views;
 
 /// <summary>
-/// Step 2 "Ziel". The page only shows what <see cref="TargetPageViewModel"/> computes. The code-behind does three
+/// Step 2 "Ziel". The page only shows what <see cref="TargetPageViewModel"/> computes. The code-behind does four
 /// view-only jobs: it switches the column layout by window width, it lights up the chosen kind in the list of
-/// universes (and lets its orbit open once), and it lays out the colour track and the marks of the size bar, whose
-/// positions depend on the width of the bar. In high contrast the colour segments disappear and only text carries the
-/// meaning (docs/06-design.md).
+/// universes (and lets its orbit open once), it lays out the colour track and the marks of the size bar, whose
+/// positions depend on the width of the bar, and it hosts the drawn middle (ADR-022): the Win2D surface with
+/// orbit, hole and ways, fed with the edges of the file cards and the target rows. With reduced motion or in high
+/// contrast there is no surface and the plain list "source -> target" stands in its place (docs/06-design.md).
 /// </summary>
 public sealed partial class TargetPage : Page, ITransitionAnchors
 {
+    /// <summary>Height the drawn middle keeps when the columns stack below 900 px.</summary>
+    private const double StackedSurfaceHeight = 260;
     // Column widths of the draft at >= 1060 px and the 85 % below (docs/entwuerfe/abgleich-mischentwurf.md 1.1).
     private const double WideLeft = 250;
     private const double WideRight = 300;
@@ -38,18 +46,33 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
     private static readonly TimeSpan IconFade = TimeSpan.FromMilliseconds(700);
 
     private readonly IMotionSettings _motion;
+    private readonly ITransitionService _transitions;
     private TuningPanelViewModel? _tuning;
     private bool? _stacked;
+
+    // The drawn middle: surface, its pause reasons and the last anchors handed to the scene.
+    private TargetPathsCanvas? _canvas;
+    private bool _suspended = true;
+    private bool _windowVisible = true;
+    private bool _drawFailed;
+    private string? _reportedAnchors;
 
     public TargetPage()
     {
         ViewModel = App.Services.GetRequiredService<TargetPageViewModel>();
         _motion = App.Services.GetRequiredService<IMotionSettings>();
+        _transitions = App.Services.GetRequiredService<ITransitionService>();
         InitializeComponent();
         Loaded += OnLoaded;
         Unloaded += OnUnloaded;
         SizeChanged += OnPageSizeChanged;
         ActualThemeChanged += OnActualThemeChanged;
+        // Only one drawing loop runs at a time (ADR-023): the middle stands still while the overlay flies.
+        _transitions.Changed += (_, _) => UpdatePathsPaused();
+        if (App.Services.GetRequiredService<IWindowContext>().Window is { } window)
+        {
+            window.VisibilityChanged += OnWindowVisibilityChanged;
+        }
     }
 
     public TargetPageViewModel ViewModel { get; }
@@ -58,6 +81,11 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
     {
         base.OnNavigatedTo(e);
         ViewModel.Load();
+        _suspended = false;
+        _reportedAnchors = null;
+        EnsurePathsSurface();
+        PushKindToScene();
+        UpdatePathsPaused();
     }
 
     protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -65,6 +93,8 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
         base.OnNavigatedFrom(e);
         // The page is cached, so the groups and their timers would otherwise stay alive on the other steps.
         ViewModel.Unload();
+        _suspended = true;
+        UpdatePathsPaused();
     }
 
     private void OnLoaded(object sender, RoutedEventArgs e)
@@ -73,29 +103,180 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
         _motion.Changed += OnMotionChanged;
         ViewModel.PropertyChanged -= OnViewModelChanged;
         ViewModel.PropertyChanged += OnViewModelChanged;
+        LayoutUpdated -= OnLayoutUpdated;
+        LayoutUpdated += OnLayoutUpdated;
         AttachTuning(ViewModel.SelectedKind?.Tuning);
         ApplyLayout(ActualWidth);
         ApplyContrast();
         UpdateKindVisuals(animate: false);
+        EnsurePathsSurface();
+        PushKindToScene();
+        UpdatePathsPaused();
     }
 
     private void OnUnloaded(object sender, RoutedEventArgs e)
     {
         _motion.Changed -= OnMotionChanged;
         ViewModel.PropertyChanged -= OnViewModelChanged;
+        LayoutUpdated -= OnLayoutUpdated;
         AttachTuning(null);
     }
 
-    private void OnMotionChanged(object? sender, EventArgs e) => ApplyContrast();
+    private void OnMotionChanged(object? sender, EventArgs e)
+    {
+        ApplyContrast();
+        EnsurePathsSurface();
+    }
 
     private void OnActualThemeChanged(FrameworkElement sender, object args) => LayoutSizeBar();
+
+    private void OnWindowVisibilityChanged(object sender, WindowVisibilityChangedEventArgs args)
+    {
+        _windowVisible = args.Visible;
+        UpdatePathsPaused();
+    }
 
     private void OnViewModelChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(TargetPageViewModel.SelectedKind))
         {
             AttachTuning(ViewModel.SelectedKind?.Tuning);
+            PushKindToScene();
         }
+    }
+
+    // ---- The drawn middle (ADR-022) -------------------------------------------------------------------------
+
+    /// <summary>
+    /// Puts exactly what the settings ask for into the middle: the Win2D surface, or the plain list with reduced
+    /// motion, in high contrast and after a drawing error. The surface stays across navigation (paused), like the
+    /// galaxy of step 1 (Nachtrag zu ADR-022).
+    /// </summary>
+    private void EnsurePathsSurface()
+    {
+        var wantSurface = !_motion.ReducedMotion && !_drawFailed;
+        if (wantSurface)
+        {
+            if (_canvas is null)
+            {
+                var canvas = new TargetPathsCanvas { Scene = ViewModel.PathsScene };
+                canvas.DrawFailed += OnPathsDrawFailed;
+                _canvas = canvas;
+                PathsSurface.Children.Add(canvas);
+                _reportedAnchors = null;
+            }
+            PathsStaticList.Visibility = Visibility.Collapsed;
+        }
+        else
+        {
+            if (_canvas is { } canvas)
+            {
+                canvas.DrawFailed -= OnPathsDrawFailed;
+                _canvas = null;
+                _ = RetirePathsAsync(canvas);
+            }
+            PathsStaticList.Visibility = Visibility.Visible;
+        }
+        UpdatePathsPaused();
+    }
+
+    /// <summary>The old surface stays in the tree until its renderer was handed back on the game loop thread.</summary>
+    private async Task RetirePathsAsync(TargetPathsCanvas canvas)
+    {
+        await canvas.DestroyAsync();
+        PathsSurface.Children.Remove(canvas);
+    }
+
+    private void OnPathsDrawFailed(object? sender, EventArgs e)
+    {
+        _drawFailed = true;
+        EnsurePathsSurface();
+    }
+
+    /// <summary>The surface only runs while the page is the current step, the window is visible and no overlay flies.</summary>
+    private void UpdatePathsPaused()
+    {
+        if (_canvas is { } canvas)
+        {
+            canvas.Paused = _suspended || !_windowVisible || _transitions.IsTransitioning;
+        }
+    }
+
+    /// <summary>The chosen kind and its files as planets; the scene opens the orbit in that kind's colour.</summary>
+    private void PushKindToScene()
+    {
+        var group = ViewModel.SelectedKind;
+        var planets = group is null
+            ? []
+            : group.Files.Select(f => new TargetPlanet(f.Input.Path, f.Input.SizeBytes)).ToList();
+        ViewModel.PathsScene.Enqueue(new ShowKind(group?.Kind, planets));
+        _reportedAnchors = null;
+    }
+
+    private void OnLayoutUpdated(object? sender, object e) => ReportPathAnchors();
+
+    private void OnPanelViewChanged(object? sender, ScrollViewerViewChangedEventArgs e) => ReportPathAnchors();
+
+    /// <summary>
+    /// Hands the scene the surface coordinates of the right edge of every file card and the left edge of every
+    /// target row, so the ways start and end exactly where the lists do. Runs after every layout pass, but only
+    /// sends when something moved.
+    /// </summary>
+    private void ReportPathAnchors()
+    {
+        if (_canvas is null || !IsLoaded || ViewModel.SelectedKind is not { } group || PathsSurface.ActualWidth <= 0)
+        {
+            return;
+        }
+
+        var key = new StringBuilder();
+        var files = new List<TargetFileAnchor>(group.Files.Count);
+        for (var i = 0; i < group.Files.Count; i++)
+        {
+            if (FilesList.ContainerFromIndex(i) is not FrameworkElement container || container.ActualHeight <= 0)
+            {
+                continue;
+            }
+
+            var file = group.Files[i];
+            var point = container.TransformToVisual(PathsSurface).TransformPoint(new Windows.Foundation.Point(container.ActualWidth + 3, container.ActualHeight / 2));
+            var position = new Vector2((float)point.X, (float)point.Y);
+            var target = file.EffectiveOutput?.Id;
+            var own = file.IsIndividual && file.OwnFormat is not null && file.OwnFormat.Id != file.SharedFormat?.Id;
+            files.Add(new TargetFileAnchor(file.Input.Path, position, target, own));
+            Append(key, i, position, target, own);
+        }
+
+        var formats = new List<TargetFormatAnchor>(group.TargetOptions.Count);
+        for (var i = 0; i < group.TargetOptions.Count; i++)
+        {
+            if (TargetsList.ContainerFromIndex(i) is not FrameworkElement container || container.ActualHeight <= 0)
+            {
+                continue;
+            }
+
+            var point = container.TransformToVisual(PathsSurface).TransformPoint(new Windows.Foundation.Point(-3, container.ActualHeight / 2));
+            var position = new Vector2((float)point.X, (float)point.Y);
+            var id = group.TargetOptions[i].Id.Id;
+            formats.Add(new TargetFormatAnchor(id, position));
+            Append(key, i, position, id, false);
+        }
+
+        var signature = key.ToString();
+        if (signature == _reportedAnchors)
+        {
+            return;
+        }
+
+        _reportedAnchors = signature;
+        ViewModel.PathsScene.Enqueue(new SetTargetAnchors(files, formats, group.RecommendedId));
+    }
+
+    private static void Append(StringBuilder key, int index, Vector2 position, string? id, bool flag)
+    {
+        key.Append(index).Append(':').Append(id).Append(':').Append(flag ? '1' : '0').Append(':')
+            .Append(Math.Round(position.X).ToString(CultureInfo.InvariantCulture)).Append(',')
+            .Append(Math.Round(position.Y).ToString(CultureInfo.InvariantCulture)).Append(';');
     }
 
     private void ApplyContrast()
@@ -145,6 +326,7 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
             Place(MiddlePanel, 2);
             Place(RightPanel, 3);
             KindsList.HorizontalAlignment = HorizontalAlignment.Center;
+            MiddlePanel.MinHeight = StackedSurfaceHeight;
             BodyScroller.VerticalScrollMode = ScrollMode.Enabled;
             BodyScroller.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
         }
@@ -164,6 +346,7 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
                 Grid.SetRow(element, 0);
             }
             KindsList.HorizontalAlignment = HorizontalAlignment.Stretch;
+            MiddlePanel.MinHeight = 0;
             BodyScroller.VerticalScrollMode = ScrollMode.Disabled;
             BodyScroller.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
         }
@@ -408,8 +591,9 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
     // ---- Transition anchors (ADR-023) -----------------------------------------------------------------------
 
     /// <summary>
-    /// One anchor per kind, on the core of its universe in the list, and the hole in the middle of the paths
-    /// panel, radius 12, until the drawing layer of step 2 exists.
+    /// One anchor per kind, on the core of its universe in the list, and the hole of the drawn middle (radius 12,
+    /// from the pure layout, so it is right while the loop is paused during the flight); without a surface the
+    /// middle of the panel stands in.
     /// </summary>
     public TransitionAnchorSet? MeasureAnchors(UIElement reference)
     {
@@ -431,7 +615,11 @@ public sealed partial class TargetPage : Page, ITransitionAnchors
             }
         }
 
-        if (TransitionMeasure.Of(MiddlePanel, reference, TransitionAnchorKind.Hole, holeRadius: TransitionPlanner.PageHoleRadius) is { } hole)
+        if (_canvas is { } canvas && canvas.TryGetHole(reference, out var centre, out var radius))
+        {
+            anchors.Add(new TransitionAnchor(TransitionAnchorKind.Hole, null, centre, Vector2.Zero, radius));
+        }
+        else if (TransitionMeasure.Of(MiddlePanel, reference, TransitionAnchorKind.Hole, holeRadius: TransitionPlanner.PageHoleRadius) is { } hole)
         {
             anchors.Add(hole);
         }

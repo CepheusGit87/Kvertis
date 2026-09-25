@@ -58,6 +58,12 @@ public sealed partial class TargetPageViewModel : ObservableObject, IDisposable
 
     public ObservableCollection<KindGroupViewModel> Kinds { get; } = [];
 
+    /// <summary>
+    /// The drawn middle of the page (ADR-022): orbit, hole and ways. Owned here so it survives the drawing
+    /// surface being torn down and built again; the page feeds it kind, planets and anchors.
+    /// </summary>
+    public Scenes.TargetPathsScene PathsScene { get; } = new(new Scenes.TargetPathsLayout(0f, 0f));
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelection))]
     private KindGroupViewModel? selectedKind;

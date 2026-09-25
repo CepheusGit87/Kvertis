@@ -1404,11 +1404,23 @@
   <data name="Target_File_SizeFlow" xml:space="preserve">
     <value>{0} · {1} → {2}</value>
   </data>
-  <data name="Target_Format_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Target format</value>
+  <data name="Target_Format_AutomationName" xml:space="preserve">
+    <value>{0}, {1}, {2}</value>
+  </data>
+  <data name="Target_Format_AutomationName_Recommended" xml:space="preserve">
+    <value>{0}, {1}, {2}, recommended</value>
+  </data>
+  <data name="Target_Format_ItemType" xml:space="preserve">
+    <value>Radio button</value>
+  </data>
+  <data name="Target_Format_Recommended.Text" xml:space="preserve">
+    <value>RECOMMENDED</value>
   </data>
   <data name="Target_Formats_Header.Text" xml:space="preserve">
     <value>BECOMES</value>
+  </data>
+  <data name="Target_Formats_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Target format</value>
   </data>
   <data name="Target_Grade_AutomationValue" xml:space="preserve">
     <value>{0} of 100, {1}, {2}</value>

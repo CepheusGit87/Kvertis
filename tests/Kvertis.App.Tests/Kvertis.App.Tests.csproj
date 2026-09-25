@@ -45,6 +45,7 @@
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\SizeBarViewModel.cs" Link="FromApp\Target\SizeBarViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\EffectViewModel.cs" Link="FromApp\Target\EffectViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\PathRowViewModel.cs" Link="FromApp\Target\PathRowViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\TargetFormatViewModel.cs" Link="FromApp\Target\TargetFormatViewModel.cs" />
     <!-- Step 1 (ADR-022): trays, rejected card and the zoom lists carry logic and are free of WinUI. -->
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\TrayViewModel.cs" Link="FromApp\Drop\TrayViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\RejectedListViewModel.cs" Link="FromApp\Drop\RejectedListViewModel.cs" />

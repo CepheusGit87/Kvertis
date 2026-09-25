@@ -5,6 +5,7 @@ using Kvertis.App.Helpers;
 using Kvertis.App.Services;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
+using Kvertis.Engine.Tuning;
 using Microsoft.Extensions.Logging;
 
 namespace Kvertis.App.ViewModels.Target;
@@ -23,7 +24,12 @@ public enum TargetMode
 public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
 {
     private readonly ILocalizer _loc;
+    private readonly IEstimator _estimator;
+    private readonly FormatRegistry _registry;
+    private readonly ILogger _logger;
+    private CancellationTokenSource? _sizes;
     private bool _silent;
+    private bool _disposed;
 
     public KindGroupViewModel(
         MediaKind kind,
@@ -45,7 +51,9 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
         ArgumentNullException.ThrowIfNull(staged);
         ArgumentNullException.ThrowIfNull(sharedFormats);
         _loc = loc ?? throw new ArgumentNullException(nameof(loc));
-        ArgumentNullException.ThrowIfNull(registry);
+        _estimator = estimator ?? throw new ArgumentNullException(nameof(estimator));
+        _registry = registry ?? throw new ArgumentNullException(nameof(registry));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         Kind = kind;
         ColorKey = TargetPlanner.ColorKey(kind);
@@ -64,10 +72,18 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
             Paths.Add(new PathRowViewModel(vm));
         }
 
+        foreach (var option in sharedFormats)
+        {
+            TargetOptions.Add(new TargetFormatViewModel(loc, option, loc.Get("Format_" + option.Id.Id + "_Hint")));
+        }
+
         sharedFormat = sharedFormats.FirstOrDefault(f => f.IsSuggested)
             ?? (sharedFormats.Count > 0 ? sharedFormats[0] : null);
+        selectedTarget = TargetOptions.FirstOrDefault(t => t.Option == sharedFormat);
+        SyncTargetSelection();
         PushFormat();
         Tuning.SettingsChanged += OnTuningChanged;
+        Tuning.Settled += OnTuningSettled;
         Tuning.SetFiles(Files);
     }
 
@@ -85,6 +101,12 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
     public ObservableCollection<PathRowViewModel> Paths { get; } = [];
 
     public IReadOnlyList<FormatOption> SharedFormats { get; }
+
+    /// <summary>The rows of the target list "WIRD ZU", one per shared format, with a size estimate each.</summary>
+    public ObservableCollection<TargetFormatViewModel> TargetOptions { get; } = [];
+
+    /// <summary>The id of the recommended format, for the drawn ways; null when there is none.</summary>
+    public string? RecommendedId => SharedFormats.FirstOrDefault(f => f.IsSuggested)?.Id.Id;
 
     public TuningPanelViewModel Tuning { get; }
 
@@ -127,6 +149,10 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     private FormatOption? sharedFormat;
+
+    /// <summary>The chosen row of the target list; kept in step with <see cref="SharedFormat"/> both ways.</summary>
+    [ObservableProperty]
+    private TargetFormatViewModel? selectedTarget;
 
     [ObservableProperty]
     private TargetMode mode;
@@ -198,9 +224,106 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
     partial void OnSharedFormatChanged(FormatOption? value)
     {
         OnPropertyChanged(nameof(TargetLabel));
+        var target = TargetOptions.FirstOrDefault(t => t.Option == value);
+        if (!ReferenceEquals(SelectedTarget, target))
+        {
+            SelectedTarget = target;
+        }
         PushFormat();
         Tuning.Rebuild();
         Raise();
+    }
+
+    partial void OnSelectedTargetChanged(TargetFormatViewModel? value)
+    {
+        SyncTargetSelection();
+        // The list may clear its selection while it rebuilds; the group keeps its format then.
+        if (value is not null && !ReferenceEquals(SharedFormat, value.Option))
+        {
+            SharedFormat = value.Option;
+        }
+    }
+
+    private void SyncTargetSelection()
+    {
+        foreach (var option in TargetOptions)
+        {
+            option.IsSelected = ReferenceEquals(option, SelectedTarget);
+        }
+    }
+
+    private void OnTuningSettled(object? sender, EventArgs e) => RefreshTargetSizes();
+
+    /// <summary>
+    /// Estimates the group in every shared format off the UI thread, with the current grade and metadata
+    /// choice; a newer request cancels the older one, like the grade tables. The chosen format shows the
+    /// panel's own total, so the list and the ring never disagree.
+    /// </summary>
+    private void RefreshTargetSizes()
+    {
+        _sizes?.Cancel();
+        _sizes?.Dispose();
+        _sizes = null;
+        if (_disposed || TargetOptions.Count == 0 || Files.Count == 0)
+        {
+            return;
+        }
+
+        var cts = new CancellationTokenSource();
+        _sizes = cts;
+        var grade = new QualityGrade(Tuning.Grade);
+        var metadata = Tuning.StripMetadata ? MetadataPolicy.Strip : MetadataPolicy.Keep;
+        var inputs = Files.Select(f => f.Input).ToList();
+        var formats = TargetOptions.Select(t => t.Id).ToList();
+        _ = EstimateTargetsAsync(inputs, formats, grade, metadata, cts.Token);
+    }
+
+    private async Task EstimateTargetsAsync(
+        IReadOnlyList<InputInfo> inputs,
+        IReadOnlyList<FormatId> formats,
+        QualityGrade grade,
+        MetadataPolicy metadata,
+        CancellationToken token)
+    {
+        try
+        {
+            var totals = await Task.Run(
+                () =>
+                {
+                    var result = new long[formats.Count];
+                    for (var i = 0; i < formats.Count; i++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        long sum = 0;
+                        foreach (var input in inputs)
+                        {
+                            var baseline = new ConversionSettings(formats[i], Metadata: metadata);
+                            var settings = GradeMapper.Apply(grade, baseline, input, _registry);
+                            sum += _estimator.Estimate(input, settings).OutputBytes;
+                        }
+                        result[i] = sum;
+                    }
+                    return result;
+                },
+                token).ConfigureAwait(true);
+            if (token.IsCancellationRequested || _disposed)
+            {
+                return;
+            }
+            for (var i = 0; i < TargetOptions.Count && i < totals.Length; i++)
+            {
+                var option = TargetOptions[i];
+                option.SetEstimate(ReferenceEquals(option, SelectedTarget) && Tuning.TotalBytes > 0 ? Tuning.TotalBytes : totals[i]);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // A newer change won.
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException)
+        {
+            _logger.LogDebug(ex, "Estimating the target formats failed");
+        }
     }
 
     partial void OnModeChanged(TargetMode value)
@@ -278,7 +401,12 @@ public sealed partial class KindGroupViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        _disposed = true;
         Tuning.SettingsChanged -= OnTuningChanged;
+        Tuning.Settled -= OnTuningSettled;
         Tuning.Dispose();
+        _sizes?.Cancel();
+        _sizes?.Dispose();
+        _sizes = null;
     }
 }

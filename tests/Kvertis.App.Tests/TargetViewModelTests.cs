@@ -308,6 +308,48 @@ public sealed class TargetViewModelTests : IDisposable
     }
 
     [Fact]
+    public void The_target_list_mirrors_the_shared_format_both_ways()
+    {
+        var group = Group(Png("a.png"));
+
+        group.TargetOptions.Count.ShouldBe(group.SharedFormats.Count);
+        group.TargetOptions.Count(t => t.IsRecommended).ShouldBe(1);
+        group.SelectedTarget.ShouldNotBeNull();
+        group.SelectedTarget!.Option.ShouldBeSameAs(group.SharedFormat);
+        group.SelectedTarget.IsSelected.ShouldBeTrue();
+        group.RecommendedId.ShouldBe(group.SharedFormats.Single(f => f.IsSuggested).Id.Id);
+
+        // Choosing a row (keyboard or click) sets the group's format.
+        var other = group.TargetOptions.First(t => !t.IsSelected);
+        group.SelectedTarget = other;
+        group.SharedFormat.ShouldBeSameAs(other.Option);
+        group.TargetOptions.Count(t => t.IsSelected).ShouldBe(1);
+        other.IsSelected.ShouldBeTrue();
+
+        // Taking over a history entry sets the format; the row follows.
+        var previous = group.SharedFormats.First(f => f.IsSuggested);
+        group.SharedFormat = previous;
+        group.SelectedTarget!.Option.ShouldBeSameAs(previous);
+    }
+
+    [Fact]
+    public void Every_row_of_the_target_list_gets_a_size_estimate()
+    {
+        var group = Group(Png("a.png"), Png("b.png", 2_000_000));
+
+        var deadline = DateTime.UtcNow.AddSeconds(5);
+        while (group.TargetOptions.Any(t => t.EstimatedBytes == 0) && DateTime.UtcNow < deadline)
+        {
+            Thread.Sleep(10);
+        }
+
+        group.TargetOptions.ShouldAllBe(t => t.EstimatedBytes > 0);
+        group.TargetOptions.ShouldAllBe(t => t.SizeText.Length > 0);
+        group.SelectedTarget!.EstimatedBytes.ShouldBe(group.Tuning.TotalBytes);
+        group.SelectedTarget.AutomationName.ShouldContain(group.SelectedTarget.Label);
+    }
+
+    [Fact]
     public void A_fixed_zone_is_marked_as_not_adjustable()
     {
         var zone = new ZoneViewModel(

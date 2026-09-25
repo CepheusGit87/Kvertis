@@ -252,6 +252,96 @@
       </Border>
     </DataTemplate>
 
+    <!-- .zr: one row of the target list "WIRD ZU". Grid 58 | 1fr | auto, gap 10, padding 7/10, radius 12, line on
+         panel 85 %; chosen: mint frame on mint surface, format in mint. The radio dot on the right reads the
+         selection for the eye; the ListView itself is the radio group for keyboard and screen reader. -->
+    <DataTemplate x:Key="TargetFormatTemplate" x:DataType="target:TargetFormatViewModel">
+      <Border
+        Padding="10,7"
+        AutomationProperties.ItemType="{x:Bind ItemTypeText}"
+        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+        Background="{x:Bind helpers:Ui.BrushIf(IsSelected, 'KvMintSurfaceBrush', 'KvPanel85Brush'), Mode=OneWay}"
+        BorderBrush="{x:Bind helpers:Ui.BrushIf(IsSelected, 'KvMintBrush', 'KvLineBrush'), Mode=OneWay}"
+        BorderThickness="1"
+        CornerRadius="12">
+        <Grid ColumnSpacing="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="58" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock
+            VerticalAlignment="Center"
+            FontSize="15"
+            FontWeight="Bold"
+            Foreground="{x:Bind helpers:Ui.BrushIf(IsSelected, 'KvMintBrush', 'KvInkBrush'), Mode=OneWay}"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind Label}" />
+          <StackPanel
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Spacing="2">
+            <TextBlock
+              FontSize="12"
+              MaxLines="2"
+              Style="{StaticResource KvSmallTextStyle}"
+              Text="{x:Bind Hint}"
+              TextTrimming="CharacterEllipsis"
+              TextWrapping="Wrap" />
+            <!-- .emp / .empf-tag: mint pill, 9.5 mono SemiBold on mint -->
+            <Border
+              Padding="6,1"
+              HorizontalAlignment="Left"
+              Background="{ThemeResource KvMintBrush}"
+              CornerRadius="999"
+              Visibility="{x:Bind helpers:Ui.Show(IsRecommended)}">
+              <TextBlock
+                x:Uid="Target_Format_Recommended"
+                CharacterSpacing="60"
+                FontSize="9.5"
+                FontWeight="SemiBold"
+                Foreground="{ThemeResource KvOnMintBrush}"
+                Style="{StaticResource KvMonoTextStyle}" />
+            </Border>
+          </StackPanel>
+          <StackPanel
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="8">
+            <Grid Width="16" Height="16">
+              <Ellipse Stroke="{x:Bind helpers:Ui.BrushIf(IsSelected, 'KvMintBrush', 'KvLineStrongBrush'), Mode=OneWay}" StrokeThickness="1.5" />
+              <Ellipse
+                Width="10"
+                Height="10"
+                Fill="{ThemeResource KvMintBrush}"
+                Visibility="{x:Bind helpers:Ui.Show(IsSelected), Mode=OneWay}" />
+            </Grid>
+            <TextBlock
+              MinWidth="40"
+              VerticalAlignment="Center"
+              FontSize="11"
+              FontWeight="SemiBold"
+              Foreground="{ThemeResource KvMintBrush}"
+              Style="{StaticResource KvMonoTextStyle}"
+              Text="{x:Bind SizeText, Mode=OneWay}"
+              TextAlignment="Right" />
+          </StackPanel>
+        </Grid>
+      </Border>
+    </DataTemplate>
+
+    <Style x:Key="TargetFormatContainerStyle" TargetType="ListViewItem">
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Margin" Value="0,0,0,4" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="CornerRadius" Value="12" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="UseSystemFocusVisuals" Value="True" />
+      <Setter Property="FocusVisualMargin" Value="-2" />
+    </Style>
+
     <!-- .folgen li: symbol circle 18 (mint surface, neutral or amber) and the text. -->
     <DataTemplate x:Key="EffectTemplate" x:DataType="target:EffectViewModel">
       <Grid ColumnSpacing="7">
@@ -356,7 +446,8 @@
           Grid.Column="3"
           Padding="0,14,0,14"
           HorizontalScrollMode="Disabled"
-          VerticalScrollBarVisibility="Auto">
+          VerticalScrollBarVisibility="Auto"
+          ViewChanged="OnPanelViewChanged">
           <StackPanel DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}" Spacing="7">
             <TextBlock
               x:Uid="Target_Empty_Text"
@@ -439,7 +530,10 @@
               </Grid>
             </Border>
 
-            <ItemsControl ItemTemplate="{StaticResource TargetFileTemplate}" ItemsSource="{Binding Files}">
+            <ItemsControl
+              x:Name="FilesList"
+              ItemTemplate="{StaticResource TargetFileTemplate}"
+              ItemsSource="{Binding Files}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                   <StackPanel Spacing="7" />
@@ -449,8 +543,10 @@
           </StackPanel>
         </ScrollViewer>
 
-        <!-- Middle: title and one card per file, "source -> target, approximate size". The drawn orbit and the hole
-             follow with the drawing layer; until then this panel is the hole anchor of the transitions. -->
+        <!-- Middle: the drawn orbit with the hole and the ways (Rendering/TargetPathsCanvas, put in by the
+             code-behind) under the title. With reduced motion or high contrast there is no surface; the plain
+             list "source -> target, approximate size" stands in its place. The hole of the surface is the hole
+             anchor of the transitions (ADR-023). -->
         <Grid
           x:Name="MiddlePanel"
           Grid.Column="4"
@@ -459,9 +555,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
           </Grid.RowDefinitions>
+          <Grid
+            x:Name="PathsSurface"
+            Grid.RowSpan="2"
+            AutomationProperties.AccessibilityView="Raw"
+            IsHitTestVisible="False" />
           <StackPanel
             Margin="16,12,16,0"
             HorizontalAlignment="Center"
+            IsHitTestVisible="False"
             Spacing="1"
             Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
             <TextBlock
@@ -481,10 +583,12 @@
             </TextBlock>
           </StackPanel>
           <ScrollViewer
+            x:Name="PathsStaticList"
             Grid.Row="1"
             HorizontalScrollMode="Disabled"
             HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
+            VerticalScrollBarVisibility="Auto"
+            Visibility="Collapsed">
             <Grid Padding="16,24,16,14">
               <ItemsControl
                 MaxWidth="440"
@@ -506,7 +610,8 @@
           Grid.Column="5"
           Padding="2,16,4,14"
           HorizontalScrollMode="Disabled"
-          VerticalScrollBarVisibility="Auto">
+          VerticalScrollBarVisibility="Auto"
+          ViewChanged="OnPanelViewChanged">
           <StackPanel DataContext="{x:Bind ViewModel.SelectedKind, Mode=OneWay}" Spacing="7">
 
             <!-- .damals-hinweis -->
@@ -570,19 +675,37 @@
               </StackPanel>
             </Border>
 
-            <!-- .ueber.m "wird zu"; the target format stays a ComboBox (3.4, accessibility) -->
+            <!-- .ueber.m "wird zu" and the target list (.zr rows): a single-selection ListView that behaves like a
+                 radio group (arrow keys move the choice, each row announces itself as an option). -->
             <TextBlock
               x:Uid="Target_Formats_Header"
               Foreground="{ThemeResource KvMintBrush}"
               Style="{StaticResource KvOverlineTextStyle}"
               Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}" />
-            <ComboBox
-              x:Uid="Target_Format_ComboBox"
-              HorizontalAlignment="Stretch"
-              DisplayMemberPath="Label"
-              ItemsSource="{Binding SharedFormats}"
-              SelectedItem="{Binding SharedFormat, Mode=TwoWay}"
-              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}" />
+            <ListView
+              x:Name="TargetsList"
+              x:Uid="Target_Formats_List"
+              Padding="0"
+              IsItemClickEnabled="False"
+              ItemContainerStyle="{StaticResource TargetFormatContainerStyle}"
+              ItemTemplate="{StaticResource TargetFormatTemplate}"
+              ItemsSource="{Binding TargetOptions}"
+              ScrollViewer.VerticalScrollBarVisibility="Disabled"
+              ScrollViewer.VerticalScrollMode="Disabled"
+              SelectedItem="{Binding SelectedTarget, Mode=TwoWay}"
+              SelectionMode="Single"
+              SingleSelectionFollowsFocus="True"
+              Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSelection), Mode=OneWay}">
+              <ListView.Resources>
+                <!-- The chosen row carries its own frame and surface; no selection fill, no indicator bar. -->
+                <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ListViewItemBackgroundPressed" Color="Transparent" />
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPressed" Color="Transparent" />
+                <x:Boolean x:Key="ListViewItemSelectionIndicatorVisualEnabled">False</x:Boolean>
+              </ListView.Resources>
+            </ListView>
 
             <!-- .ein-k: the settings card -->
             <Border
