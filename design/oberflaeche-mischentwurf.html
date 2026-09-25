@@ -4440,13 +4440,16 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
   const blattDaten = d => ({ key: [d.name, d.fmt, zielFmt(d), d.kat].join('|'), von: d.fmt, nach: zielFmt(d), k: d.kat, altName: d.name, neuName: zielName(d) });
 
   /* Zeichnen */
-  function pixel(ctx, P, fn, size) {
-    ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over';
+  // tint: RGB der Dateiart; r.f = wie stark die Pixel diese Farbe annehmen (0..1)
+  function pixel(ctx, P, fn, size, tint) {
     for (const p of P) {
       const r = fn(p), k = r.k;
       let R = lerp(p.c0[0], p.c1[0], k), G = lerp(p.c0[1], p.c1[1], k), B = lerp(p.c0[2], p.c1[2], k);
       const A = Math.max(.35, lerp(p.c0[3], p.c1[3], k));
       if (r.o) { R = lerp(R, F.mintRgb[0], r.o); G = lerp(G, F.mintRgb[1], r.o); B = lerp(B, F.mintRgb[2], r.o); }
+      if (tint && r.f) { R = lerp(R, tint[0], r.f); G = lerp(G, tint[1], r.f); B = lerp(B, tint[2], r.f); }
+      // nur ungefärbte Pixel addieren sich im Dunkeln zum Leuchten; gefärbte bleiben in ihrer Farbe
+      ctx.globalCompositeOperation = F.dunkel && !(tint && r.f > .3) ? 'lighter' : 'source-over';
       const col = `rgba(${R | 0},${G | 0},${B | 0},${A})`;
       ctx.fillStyle = col; ctx.fillRect(r.x, r.y, size, size);
       if (p.px != null) {
@@ -4493,14 +4496,15 @@ code, .mono { font-family: var(--mono); font-size: .92em; }
       const ein = clamp((T - tIn) / .95), aus = tOut ? clamp((T - tOut) / .95) : 0;
       if (aus >= 1) { if (it.st === 'fehler') bildAt(ctx, d.alt, q); return; }
       if (ein <= 0) { bildAt(ctx, d.alt, q); return; }
-      const z = ziel5(it);
+      const z = ziel5(it), tint = hexRgb(F[KF[it.d.kat]] || F.mint);
+      // Pixel nehmen im Wirbel die Farbe ihrer Dateiart an und behalten sie bis ins Ziel
       pixel(ctx, d.P, p => {
         const w = p.r1 * 6.283 + (T - tIn) * (0.5 + 1.6 * (1 - p.r2)), rad = 14 + p.r2 * S5.R;
         const ox = S5.cx + Math.cos(w) * rad, oy = S5.cy + Math.sin(w) * rad * S5.fl + (p.r3 - .5) * 12;
-        if (aus > 0) { const [dx, dy] = pt(z, p), e = ease(aus); return { x: lerp(ox, dx, e), y: lerp(oy, dy, e), k: e, o: 0 }; }
+        if (aus > 0) { const [dx, dy] = pt(z, p), e = ease(aus); return { x: lerp(ox, dx, e), y: lerp(oy, dy, e), k: e, o: 0, f: .95 }; }
         const [sx, sy] = pt(q, p), e = ease(ein);
-        return { x: lerp(sx, ox, e), y: lerp(sy, oy, e), k: it.p * .7, o: it.p * .5 };
-      }, 2);
+        return { x: lerp(sx, ox, e), y: lerp(sy, oy, e), k: it.p * .7, o: 0, f: .95 * e };
+      }, 2, tint);
     });
     s5Loch();
   }
