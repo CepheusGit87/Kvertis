@@ -158,7 +158,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
   // Reihenfolge wie ein echter Auftrag: gemischt
   const AUFTRAG = ['bild', 'audio', 'bild', 'bild', 'video', 'bild', 'dok', 'audio', 'bild'];
   const N = AUFTRAG.length, PPD = 64, TAU = Math.PI * 2;
-  const TAKT = .6, EIN = .8, KREIS = 2.0, AUS = .9, ENDE = (N - 1) * TAKT + KREIS + AUS, SCHLEIFE = ENDE + 3;
+  const TAKT = .6, EIN = .8, KREIS = 2.0, AUS = .9, ENDE = (N - 1) * TAKT + EIN + KREIS + AUS, SCHLEIFE = ENDE + 3;
   const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const lerp = (a, b, t) => a + (b - a) * t, clamp = t => Math.max(0, Math.min(1, t));
   const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
