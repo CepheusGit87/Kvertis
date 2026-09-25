@@ -2,6 +2,17 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-24 – Oberflächenentwurf Übergänge und Abschluss
+
+**Geändert (nur Entwurf und Doku)**
+
+- Mischentwurf (`design/oberflaeche-mischentwurf.html`): Übergänge zwischen den Schritten als Überlagerung, die Seiten bleiben unverändert. Festgehalten: „Wurmloch“ (das Loch saugt die Fächer ein und gibt sie links als Artwahl frei, dann die Dateien als Blätter an den Eingangsstapel) und als Abschluss „Häkchen im Loch“ mit Ergebnis und Fehlern. Zum Zeigen lässt sich eine fehlerhafte Datei einschalten; sie landet wieder im Eingang und die Zeile zeigt den Fehler.
+- Skizzen der fünf Konzepte in `design/uebergaenge-konzepte.html`. Entscheidung in `design/ENTSCHEIDUNGEN.md`, Kurzfassung in `06-design.md`.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-24 – Oberflächenentwurf Schritt 2
 
 **Geändert (nur Entwurf und Doku)**
