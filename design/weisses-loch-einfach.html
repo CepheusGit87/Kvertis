@@ -125,7 +125,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
   <header class="kopf">
     <span class="augenbraue">Schritt 3 · Abschluss · einfach</span>
     <h1>Schneller, dann umeinander, dann der Knall</h1>
-    <p class="lead">Ein einziger, schlichter Ablauf. Erst werden die Planeten um das weiße Loch immer schneller. Kurz danach beginnen weißes und schwarzes Loch um ihren gemeinsamen Mittelpunkt zu kreisen, die Kreise werden enger und schneller, dann verschmelzen sie und explodieren. Kein Kippen, keine Wellen. Damit das System nicht wie ein Bild wirkt, das gedreht und verschoben wird, gilt dreierlei: Das weiße Loch ist schwerer und bewegt sich nur wenig, das schwarze Loch zieht den großen Kreis. Die Planeten drehen bis zum Siebenfachen hoch, innen schneller als außen. Und jeder Planet hat seine eigene Trägheit: Er wird vom Loch mitgezogen, bleibt beim Beschleunigen etwas zurück und schwingt nach.</p>
+    <p class="lead">Ein einziger, schlichter Ablauf. Erst werden die Planeten um das weiße Loch immer schneller. Kurz danach beginnen weißes und schwarzes Loch um ihren gemeinsamen Mittelpunkt zu kreisen, die Kreise werden enger und schneller, dann verschmelzen sie und explodieren. Kein Kippen, keine Wellen. Damit das System nicht wie ein Bild wirkt, das gedreht und verschoben wird, gilt dreierlei: Beide Löcher kreisen gleichberechtigt um einen gemeinsamen Mittelpunkt, der in die Mitte der Fläche wandert. Die Planeten drehen bis zum Siebenfachen hoch, innen schneller als außen. Und jeder Planet hat seine eigene Trägheit: Er wird vom Loch mitgezogen, bleibt beim Beschleunigen etwas zurück und schwingt nach.</p>
   </header>
 
   <div class="steuer" role="group" aria-label="Beispiel einstellen">
@@ -139,8 +139,8 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
     <div class="k-titel"><span class="k-nr">Neu</span><h2>Planeten mit eigener Trägheit</h2></div>
     <div class="fenster"><div class="faden" aria-hidden="true"><span class="kn ok"><i>✓</i><b>Dateien</b></span><span class="sg"></span><span class="kn ok"><i>✓</i><b>Ziel</b></span><span class="sg"></span><span class="kn an"><i>3</i><b>Umwandeln</b></span></div><div class="buehne"></div><div class="liste"></div></div>
     <div class="punkte">
-      <div><small>1 · Schneller</small><p>1,3 Sekunden lang drehen nur die Planeten hoch, am Ende viermal so schnell, im Tanz bis zum Siebenfachen. Die Bahnlinien verblassen dabei, sichtbar bleiben die Planeten mit ihren länger werdenden Schweifen.</p></div>
-      <div><small>2 · Umeinander</small><p>Kurz danach setzen sich beide Löcher in Bewegung und kreisen auf Abstand um ihren gemeinsamen Mittelpunkt. Das schwarze Loch zieht den großen Kreis, das weiße Loch mit seinen Planeten wandert nur langsam zur Mitte der Fläche. Die Planeten schwingen der Bewegung nach, die äußeren stärker als die inneren.</p></div>
+      <div><small>1 · Schneller</small><p>Gut eine Sekunde lang drehen nur die Planeten hoch, erst langsam, dann zügig auf das Vierfache, im Tanz bis zum Siebenfachen. Die Bahnlinien verblassen dabei, sichtbar bleiben die Planeten mit ihren länger werdenden Schweifen.</p></div>
+      <div><small>2 · Umeinander</small><p>Kurz danach setzen sich beide Löcher in Bewegung und kreisen auf Abstand um ihren gemeinsamen Mittelpunkt. Dieser Mittelpunkt wandert dabei in die Mitte der Fläche, beide Löcher kreisen gleich weit um ihn. Die Planeten schwingen der Bewegung nach, die äußeren stärker als die inneren.</p></div>
       <div><small>3 · Knall</small><p>Die Kreise werden enger und schneller, die Planeten werden eingesogen, die Löcher verschmelzen. Kurze Stille, dann die Explosion. Danach Ring, Häkchen und Bericht in der Mitte.</p></div>
     </div>
   </section>
@@ -299,32 +299,37 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
      1) 0 … PH1: nur die Planeten werden langsam schneller, das weiße Loch steht.
      2) PH1 … ANL: das ganze System beginnt sich zu drehen (je Version anders).
      3) ab ANL: Tanz zum schwarzen Loch (fd = f - ANL), Verschmelzung bei fd = M, nach STILL die Detonation. */
-  const ANK = .9, PH1 = 1.3, PH2 = .8, ANL = PH1 + PH2, M = 2.5, RUNDEN = 4, FLt = .45, STILL = .28;
+  const ANK = .9, PH1 = 1.1, PH2 = .9, ANL = PH1 + PH2, M = 2.5, RUNDEN = 4, FLt = .45, STILL = .28;
   const DET = ANL + M + STILL;
   const rotV = (v, a) => ({ x: v.x * Math.cos(a) - v.y * Math.sin(a), y: v.x * Math.sin(a) + v.y * Math.cos(a) });
 
-  // Tanz um den gemeinsamen Schwerpunkt (Kepler-Tempo, im Uhrzeigersinn) und die Planetenuhr
+  // Beide Löcher kreisen um ihren gemeinsamen Mittelpunkt; er wandert beim Losgehen in die Mitte der Fläche.
+  // Tempo nach Kepler, aber gedeckelt: höchstens 16 Grad pro Bild, sonst wirkt es kurz vor dem Knall abgehackt.
+  const MAXW = 16 / 180 * Math.PI * 60;
   function tanzTabelle(S) {
-    // auf weitem Abstand ist die Bahn flacher, damit beide Löcher in der Fläche bleiben
     const fl0 = FLt * .55, v = { x: S.H.x - S.T.x, y: (S.H.y - S.T.y) / fl0 }, d0 = Math.hypot(v.x, v.y), phi0 = Math.atan2(v.y, v.x);
     const dt = .002, n = Math.ceil(M / dt) + 1, D = new Float32Array(n), W = new Float32Array(n);
     const abstand = f => d0 * lerp(1, .36, ease(phase(f, 0, 1.1))) * Math.pow(Math.max(0, M - f) / M, .25);
-    let summe = 0;
-    for (let i = 0; i < n; i++) { D[i] = abstand(i * dt); if (i) summe += Math.pow(Math.max(D[i], d0 * .02) / d0, -1.5) * dt; W[i] = summe; }
-    const k = RUNDEN * TAU / summe, w0 = (W[1] - W[0]) / dt * k;
-    // Version „Umlauf“: beide Löcher kreisen schon im Schritt 2 auf Abstand, Tempo steigt linear auf das Anfangstempo des Tanzes
+    const tempo = f => Math.pow(Math.max(abstand(f), d0 * .02) / d0, -1.5);
+    let summe = 0; for (let i = 1; i < n; i++) summe += tempo(i * dt) * dt;
+    let k = RUNDEN * TAU / summe;
+    const w0 = tempo(0) * k;
+    let w = 0; for (let i = 0; i < n; i++) { D[i] = abstand(i * dt); if (i) w += Math.min(tempo(i * dt) * k, MAXW) * dt; W[i] = w; }
+    // im Schritt 2 steigt das Kreisen linear auf genau das Anfangstempo des Tanzes
     const vorab = -w0 * PH2 / 2;
-    for (let i = 0; i < n; i++) W[i] = phi0 + vorab - W[i] * k;
+    for (let i = 0; i < n; i++) W[i] = phi0 + vorab - W[i];
+    // Planetenuhr: sanft anfahren, in PH1 auf das Vierfache, dann weiter bis zum Siebenfachen
     const n2 = Math.ceil((DET + 3) / dt), Z = new Float32Array(n2);
-    let z = 0; for (let i = 0; i < n2; i++) { const f = i * dt; if (i) z += (1 + 3 * Math.pow(phase(f, 0, PH1), 2) + 1.2 * phase(f, PH1, ANL) + 1.8 * phase(f, ANL, ANL + M)) * dt; Z[i] = z; }
-    return { D, W, Z, dt, n, n2, d0, w0, fl0, s0: { x: S.H.x * .25 + S.T.x * .75, y: S.H.y * .25 + S.T.y * .75 } };
+    let z = 0; for (let i = 0; i < n2; i++) { const f = i * dt; if (i) z += (1 + 3 * ease(phase(f, 0, PH1)) + 1.2 * phase(f, PH1, ANL) + 1.8 * phase(f, ANL, ANL + M)) * dt; Z[i] = z; }
+    return { D, W, Z, dt, n, n2, d0, w0, fl0, s0: { x: (S.H.x + S.T.x) / 2, y: (S.H.y + S.T.y) / 2 } };
   }
+  // Mittelpunkt: startet zwischen den Löchern und wandert, sobald sie zu kreisen beginnen, in die Mitte der Fläche
+  const mitteBei = (S, f) => P2(S.tanz.s0, S.C, ease(phase(f, PH1, ANL + 1.2)));
   function tanzLage(S, fd) {
     const T = S.tanz, i = Math.max(0, Math.min(T.n - 1, Math.round(fd / T.dt))), d = T.D[i], phi = T.W[i];
-    // das weiße Loch trägt das Universum und ist deutlich schwerer: es bewegt sich wenig, das schwarze Loch zieht den großen Kreis
-    const m = P2(T.s0, S.C, ease(phase(fd, 0, M * .9))), fl = FLt * (.55 + .45 * clamp(1 - d / T.d0));
-    const b = { x: m.x + Math.cos(phi) * d * .75, y: m.y + Math.sin(phi) * d * .75 * fl };
-    const wv = { x: m.x - Math.cos(phi) * d * .25, y: m.y - Math.sin(phi) * d * .25 * fl };
+    const m = mitteBei(S, fd + ANL), fl = FLt * (.55 + .45 * clamp(1 - d / T.d0));
+    const b = { x: m.x + Math.cos(phi) * d * .5, y: m.y + Math.sin(phi) * d * .5 * fl };
+    const wv = { x: m.x - Math.cos(phi) * d * .5, y: m.y - Math.sin(phi) * d * .5 * fl };
     return { schwarz: b, weiss: wv, mitte: m, d, nah: clamp(1 - d / (T.d0 * .36)), phi };
   }
   const uhr = (S, f) => { const T = S.tanz; return VOR + (f <= 0 ? f : T.Z[Math.min(T.n2 - 1, Math.round(f / T.dt))]); };
@@ -336,7 +341,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
   function loecher(S, art, f) {
     if (f >= ANL) return tanzLage(S, f - ANL);
     const T = S.tanz, u = phase(f, PH1, ANL), a = -T.w0 * PH2 * u * u / 2;
-    const lage = p => { const v = rotV({ x: p.x - T.s0.x, y: (p.y - T.s0.y) / T.fl0 }, a); return { x: T.s0.x + v.x, y: T.s0.y + v.y * T.fl0 }; };
+    const m = mitteBei(S, f), lage = p => { const v = rotV({ x: p.x - T.s0.x, y: (p.y - T.s0.y) / T.fl0 }, a); return { x: m.x + v.x, y: m.y + v.y * T.fl0 }; };
     return { weiss: lage(S.T), schwarz: lage(S.H), nah: 0 };
   }
 
@@ -353,7 +358,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
     const h = 1 / 240, N = S.N;
     let Z = S.sim;
     if (!Z || Z.f > f + 1e-6 || Z.N !== N) {
-      Z = S.sim = { f: 0, N, n: 0, P: Array.from({ length: N }, (_, k) => { const a = ziel(S, U, k, 0), b = ziel(S, U, k, -h); return { x: a.x, y: a.y, vx: (a.x - b.x) / h, vy: (a.y - b.y) / h, spur: [] }; }) };
+      Z = S.sim = { f: 0, N, n: 0, P: Array.from({ length: N }, (_, k) => { const a = ziel(S, U, k, 0), b = ziel(S, U, k, -h); return { x: a.x, y: a.y, vx: (a.x - b.x) / h, vy: (a.y - b.y) / h, spur: Array.from({ length: 14 }, (_, i) => { const q = ziel(S, U, k, -(i + 1) * 4 * h); return { x: q.x - S.T.x, y: q.y - S.T.y }; }) }; }) };
     }
     while (Z.f + h <= f) {
       Z.f += h; Z.n++;
@@ -366,8 +371,8 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
           const tvx = (a.x - b.x) / h, tvy = (a.y - b.y) / h;
           p.vx += (kf * (a.x - p.x) + c * (tvx - p.vx)) * h; p.vy += (kf * (a.y - p.y) + c * (tvy - p.vy)) * h;
           p.x += p.vx * h; p.y += p.vy * h;
-          // nie weiter als 28 px vom Platz weg
-          const dx = p.x - a.x, dy = p.y - a.y, l = Math.hypot(dx, dy); if (l > 28) { p.x = a.x + dx / l * 28; p.y = a.y + dy / l * 28; }
+          // weich begrenzt: höchstens rund 28 px vom Platz weg, ohne Knick
+          const dx = p.x - a.x, dy = p.y - a.y, l = Math.hypot(dx, dy); if (l > 1) { const g = 28 * Math.tanh(l / 28) / l; p.x = a.x + dx * g; p.y = a.y + dy * g; }
         }
         // Schweif relativ zum weißen Loch: er zeigt das Kreisen, nicht die Fahrt des ganzen Systems
         if (Z.n % 4 === 0) { const m = loecher(S, 0, Z.f).weiss; p.spur.unshift({ x: p.x - m.x, y: p.y - m.y }); if (p.spur.length > 14) p.spur.pop(); }
@@ -452,8 +457,8 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
         const hoch = phase(f, 0, PH1), aus = 1 - phase(fd, M - .3, M);
         // die Bahnlinien verblassen, während die Planeten schneller werden: sichtbar bleiben die Planeten selbst
         U.bahnen(ctx, 1 - phase(f, .3, PH1 + .3), L.weiss, skalVon(f));
-        hell(ctx); glow(ctx, L.weiss.x, L.weiss.y, 50 + 40 * hoch, F.mint, .1 + .12 * hoch * (1 - phase(fd, 0, 1))); normal(ctx);
-        const lang = Math.round(4 + 10 * hoch);
+        hell(ctx); glow(ctx, L.weiss.x, L.weiss.y, 50 + 40 * hoch, F.mint, .22 * hoch * (1 - phase(fd, 0, 1))); normal(ctx);
+        const lang = Math.round(8 + 6 * hoch);
         P.forEach((p, k) => {
           const s = S.slots[k], c = s.fehl ? F.coral : F[s.art];
           if (!s.fehl) { hell(ctx); p.spur.slice(0, lang).forEach((q, i) => { ctx.globalAlpha = aus * .42 * (1 - (i + 1) / (lang + 1)); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(L.weiss.x + q.x, L.weiss.y + q.y, U.g * (1 - (i + 1) / (lang + 4)), 0, TAU); ctx.fill(); }); normal(ctx); ctx.globalAlpha = 1; }
@@ -461,7 +466,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
         });
         if (f > PH1) { hell(ctx); spur(ctx, S, 0, f, 10, 'schwarz', F.violet, 3, .6 * phase(f, PH1, ANL)); spur(ctx, S, 0, f, 10, 'weiss', F.mint, 3, .6 * phase(f, PH1, ANL)); normal(ctx); }
         hell(ctx); glow(ctx, C.x, C.y, 40 + 80 * L.nah, weiss(), .35 * L.nah * L.nah); normal(ctx);
-        kern(ctx, L.weiss.x, L.weiss.y, t, 1 + .2 * L.nah + .1 * hoch, 1, 1);
+        kern(ctx, L.weiss.x, L.weiss.y, t, 1 + .2 * L.nah + .1 * hoch, 1, lerp((S.fertig - 1) / S.N, 1, phase(f, 0, .6)));
         schwarz(ctx, L.schwarz.x, L.schwarz.y, 1 - .25 * L.nah);
       }
       nova(ctx, S, e);
