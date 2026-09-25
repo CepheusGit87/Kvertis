@@ -115,6 +115,9 @@ public struct GalaxyParticle
     /// <summary>Index into <see cref="GalaxyScene.Bodies"/>, or -1 for the dust of an orbit.</summary>
     public int BodyIndex { get; set; }
 
+    /// <summary>Index into <see cref="GalaxyScene.Planets"/> for the halo of a self-formed planet, else -1.</summary>
+    public int PlanetIndex { get; set; }
+
     /// <summary>Fixed random angle share, 0..1.</summary>
     public float R1 { get; set; }
 
@@ -135,13 +138,18 @@ public struct GalaxyParticle
     public SceneColor Color { get; set; }
 }
 
-/// <summary>Particle limits (worksheet "Leistung"). The maximum is hard: beyond it a body gets no halo.</summary>
+/// <summary>
+/// Particle limits (worksheet "Leistung"). The maximum is hard: beyond it a body gets no halo and no planet is
+/// formed. <see cref="HaloPerPlanet"/> and <see cref="MaxPlanets"/> belong to the whirl gimmick (draft: 44).
+/// </summary>
 public sealed record GalaxyBudget(
     int DustPerOrbit = 160,
     int HaloPerBody = 34,
     int HaloPerBodyManyFiles = 12,
     int ManyFilesFrom = 30,
-    int MaxParticles = 4000);
+    int MaxParticles = 4000,
+    int HaloPerPlanet = 44,
+    int MaxPlanets = 12);
 
 /// <summary>How long the pointer has rested on the same orbit or on the hole; the later gimmicks read it.</summary>
 public readonly record struct PointerDwell(int? Orbit, bool OnHole, TimeSpan Duration);

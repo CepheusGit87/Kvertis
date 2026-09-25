@@ -16,7 +16,7 @@ namespace Kvertis.App.Scenes;
 /// of the <see cref="TimeSpan"/>s handed to <see cref="Update"/>; randomness only ever comes from the
 /// injected <see cref="Random"/>, so two scenes with the same seed and the same commands stay identical.
 /// </remarks>
-public sealed class GalaxyScene
+public sealed partial class GalaxyScene
 {
     /// <summary>A step longer than this is clamped, so nothing jumps after a pause.</summary>
     public static readonly TimeSpan MaxStep = TimeSpan.FromSeconds(0.1);
@@ -194,9 +194,10 @@ public sealed class GalaxyScene
         UpdateDragOver(dt);
         UpdateCamera(dt);
         UpdateOrbits(dt);
+        UpdateDwell(elapsed);
+        UpdateGimmicks(dt);
         UpdateBodies();
         UpdateParticles();
-        UpdateDwell(elapsed);
         UpdatePaths();
         PublishSnapshot();
     }
@@ -291,6 +292,9 @@ public sealed class GalaxyScene
                     break;
                 case Clear:
                     ApplyClear();
+                    break;
+                case SetGimmicksEnabled gimmicks:
+                    _gimmicksEnabled = gimmicks.Enabled;
                     break;
             }
         }
@@ -581,20 +585,32 @@ public sealed class GalaxyScene
         var seconds = (float)_time.TotalSeconds;
         var scale = Layout.Scale;
 
+        // Only when the hole charges or the universe is reborn are the dust and halos displaced at all.
+        var bang = _bang != BangPhase.Idle;
+        var suction = bang || _holeCharge > 0f;
+
         for (var i = 0; i < span.Length; i++)
         {
             ref var particle = ref span[i];
             var orbit = particle.Orbit;
             var particleScale = ParticleScale(orbit);
 
+            if (particle.PlanetIndex >= 0)
+            {
+                UpdatePlanetParticle(ref particle, particleScale, seconds, scale, bang);
+                continue;
+            }
+
             if (particle.BodyIndex < 0)
             {
                 var angle = _orbitPhase[orbit] + particle.R1 * TwoPi;
                 var radial = (particle.R2 - 0.5f) * 14f * scale;
-                var position = OrbitPoint(orbit, angle, radial);
-                particle.Position = WithForces(position, orbit, particle.R2);
-                particle.Size = 1.6f * particleScale;
-                particle.Alpha = 0.55f * _orbitAlpha[orbit];
+                var dust = WithForces(OrbitPoint(orbit, angle, radial), orbit, particle.R2);
+                var dustDepth = WhirlDisplace(ref dust, particle.R2);
+                var dustAlpha = suction ? BangDisplace(ref dust, particle.R1, particle.R2, particle.R3) : 1f;
+                particle.Position = dust;
+                particle.Size = 1.6f * particleScale * dustDepth;
+                particle.Alpha = 0.55f * _orbitAlpha[orbit] * dustAlpha;
                 particle.Color = Palette.For(GalaxyLayout.KindOf(orbit));
                 continue;
             }
@@ -619,17 +635,46 @@ public sealed class GalaxyScene
             }
 
             var hoverOrbit = body.Orbit < 0 ? 0 : body.Orbit;
-            particle.Position = WithForces(halo, hoverOrbit, particle.R2);
-            particle.Size = 2.4f * particleScale;
-            particle.Alpha = 0.95f * (body.Orbit < 0 ? 1f : _orbitAlpha[body.Orbit]);
+            halo = WithForces(halo, hoverOrbit, particle.R2);
+            var haloDepth = WhirlDisplace(ref halo, particle.R2);
+            var haloAlpha = suction ? BangDisplace(ref halo, particle.R1, particle.R2, particle.R3) : 1f;
+            particle.Position = halo;
+            particle.Size = 2.4f * particleScale * haloDepth;
+            particle.Alpha = 0.95f * (body.Orbit < 0 ? 1f : _orbitAlpha[body.Orbit]) * haloAlpha;
             particle.Color = body.IsRejected ? Palette.Error : Palette.For(body.Kind);
         }
+    }
+
+    /// <summary>The halo of a self-formed planet: a flat ring of 44 particles that scatters in at the birth.</summary>
+    private void UpdatePlanetParticle(ref GalaxyParticle particle, float particleScale, float seconds, float scale, bool bang)
+    {
+        var planet = _planets[particle.PlanetIndex];
+        var angle = particle.R1 * TwoPi + seconds * (1.2f + particle.R3);
+        var radius = planet.Radius * particleScale * (1.4f + particle.R2 * 1.4f) * planet.Shrink;
+        var position = planet.Position + new Vector2(MathF.Cos(angle) * radius, MathF.Sin(angle) * radius * 0.35f);
+
+        var since = seconds - (float)planet.BornAt.TotalSeconds;
+        var t = Math.Clamp(since / 0.8f, 0f, 1f);
+        if (t < 1f)
+        {
+            var w = particle.R1 * TwoPi * 3f;
+            var far = (1f - GalaxyMotion.EaseOut(t)) * (30f + particle.R2 * 60f) * scale;
+            position += new Vector2(MathF.Cos(w) * far, MathF.Sin(w) * far * 0.45f);
+        }
+
+        var settle = float.Lerp(1f, 0.3f, Math.Clamp((since - 0.8f) / 1.5f, 0f, 1f));
+        var alpha = bang ? BangDisplace(ref position, particle.R1, particle.R2, particle.R3) : 1f;
+        particle.Position = position;
+        particle.Size = 1.3f * particleScale;
+        particle.Alpha = 0.95f * _orbitAlpha[planet.Orbit] * settle * alpha;
+        particle.Color = planet.Primary;
     }
 
     private void UpdateDwell(TimeSpan elapsed)
     {
         if (_pointer is not { } p)
         {
+            _dwellReset = _dwellDuration > TimeSpan.Zero;
             _dwellDuration = TimeSpan.Zero;
             Dwell = new PointerDwell(null, false, TimeSpan.Zero);
             return;
@@ -639,7 +684,8 @@ public sealed class GalaxyScene
         var onHole = Vector2.Distance(p, Layout.Center) < HoleRadius + 12f * Layout.Scale;
         var moved = Vector2.Distance(p, _dwellAnchor) >= DwellTolerance * Layout.Scale;
 
-        if (moved || orbit != Dwell.Orbit || onHole != Dwell.OnHole)
+        _dwellReset = moved || orbit != Dwell.Orbit || onHole != Dwell.OnHole;
+        if (_dwellReset)
         {
             _dwellAnchor = p;
             _dwellDuration = TimeSpan.Zero;
@@ -713,7 +759,12 @@ public sealed class GalaxyScene
             ZoomProgress,
             _hoveredOrbit,
             new ReadOnlyDictionary<Guid, Vector2>(positions),
-            _time);
+            _time,
+            Gimmick,
+            SurfaceSuction,
+            SurfaceOpacity,
+            SurfaceJitter,
+            Layout.Center);
     }
 
     // ----- helpers ----------------------------------------------------------------------------------
@@ -795,6 +846,7 @@ public sealed class GalaxyScene
                 {
                     Orbit = k,
                     BodyIndex = -1,
+                    PlanetIndex = -1,
                     R1 = _random.NextSingle(),
                     R2 = _random.NextSingle(),
                     R3 = _random.NextSingle(),
@@ -831,6 +883,7 @@ public sealed class GalaxyScene
             {
                 Orbit = orbit,
                 BodyIndex = bodyIndex,
+                PlanetIndex = -1,
                 R1 = _random.NextSingle(),
                 R2 = _random.NextSingle(),
                 R3 = _random.NextSingle(),

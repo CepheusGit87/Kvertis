@@ -7,6 +7,7 @@ using Kvertis.Engine.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 
 namespace Kvertis.App.Views;
 
@@ -26,6 +27,11 @@ public sealed partial class GalaxyHost : UserControl
     private bool _paused;
     private bool _built;
     private bool _dragOver;
+
+    // The big bang gimmick: the XAML surface is pulled into the hole (worksheet "Spielereien", draft uiSog).
+    private readonly List<SuckedElement> _sucked = [];
+    private readonly Random _jitter = new();
+    private bool _suctionRunning;
 
     public GalaxyHost()
     {
@@ -118,7 +124,14 @@ public sealed partial class GalaxyHost : UserControl
     {
         if (_canvas is not null)
         {
-            _canvas.Paused = _paused || _suspended;
+            var paused = _paused || _suspended;
+            _canvas.Paused = paused;
+            if (paused)
+            {
+                // No pointer while paused: a charge or whirl must not continue where it was when the page returns.
+                ViewModel.Scene.Enqueue(new SetPointer(null));
+                StopSuction();
+            }
         }
     }
 
@@ -166,9 +179,12 @@ public sealed partial class GalaxyHost : UserControl
                 var canvas = new GalaxyCanvas { Scene = ViewModel.Scene };
                 canvas.ZoomRequested += OnCanvasZoomRequested;
                 canvas.DrawFailed += OnCanvasDrawFailed;
+                canvas.SurfaceEffectChanged += OnSurfaceEffectChanged;
                 _canvas = canvas;
                 ApplyPaused();
                 SurfaceLayer.Children.Add(canvas);
+                // The gimmicks (whirl, big bang) exist only on the moving surface: never with reduced motion or high contrast.
+                ViewModel.Scene.Enqueue(new SetGimmicksEnabled(true));
                 break;
             case 2:
                 var still = new GalaxyStaticView { ViewModel = ViewModel };
@@ -180,10 +196,13 @@ public sealed partial class GalaxyHost : UserControl
 
     private void DropSurface()
     {
+        StopSuction();
+        ViewModel.Scene.Enqueue(new SetGimmicksEnabled(false));
         if (_canvas is { } canvas)
         {
             canvas.ZoomRequested -= OnCanvasZoomRequested;
             canvas.DrawFailed -= OnCanvasDrawFailed;
+            canvas.SurfaceEffectChanged -= OnSurfaceEffectChanged;
             canvas.IsHitTestVisible = false;
             _canvas = null;
             _ = RetireAsync(canvas);
@@ -214,6 +233,150 @@ public sealed partial class GalaxyHost : UserControl
         // Once drawing failed the app never tries again in this session; the still picture shows the same files.
         _drawingFailed = true;
         Rebuild();
+    }
+
+    // ---- big bang: the XAML surface is swallowed ----------------------------------------------------
+
+    /// <summary>One element pulled into the hole: its resting centre in host coordinates and a fixed spin direction.</summary>
+    private sealed record SuckedElement(FrameworkElement Element, Vector2 Rest, float Direction);
+
+    private void OnSurfaceEffectChanged(object? sender, bool active)
+    {
+        if (active)
+        {
+            StartSuction();
+        }
+        else
+        {
+            StopSuction();
+        }
+    }
+
+    /// <summary>
+    /// Collects the trays of the page and the cards of this host and remembers their resting places before
+    /// anything moves. The trays are found in the visual tree: the host never talks to the page directly.
+    /// </summary>
+    private void StartSuction()
+    {
+        if (_suctionRunning)
+        {
+            return;
+        }
+
+        _sucked.Clear();
+        foreach (var element in SuckedElements())
+        {
+            if (element.ActualWidth <= 0 || element.ActualHeight <= 0 || element.Visibility != Visibility.Visible)
+            {
+                continue;
+            }
+
+            var half = new Windows.Foundation.Point(element.ActualWidth / 2, element.ActualHeight / 2);
+            var centre = element.TransformToVisual(HostRoot).TransformPoint(half);
+            element.CenterPoint = new Vector3((float)half.X, (float)half.Y, 0f);
+            _sucked.Add(new SuckedElement(element, new Vector2((float)centre.X, (float)centre.Y), _jitter.NextSingle() * 2f - 1f));
+        }
+
+        _suctionRunning = true;
+        CompositionTarget.Rendering += OnSuctionFrame;
+    }
+
+    private IEnumerable<FrameworkElement> SuckedElements()
+    {
+        yield return Summary;
+        yield return EntryCard;
+        yield return RejectedCard;
+        yield return ZoomHintHost;
+
+        DependencyObject? root = this;
+        for (var parent = VisualTreeHelper.GetParent(this); parent is not null; parent = VisualTreeHelper.GetParent(parent))
+        {
+            root = parent;
+            if (parent is Page)
+            {
+                break;
+            }
+        }
+
+        foreach (var tray in Descendants<TrayControl>(root))
+        {
+            yield return tray;
+        }
+    }
+
+    private static IEnumerable<T> Descendants<T>(DependencyObject? root)
+        where T : DependencyObject
+    {
+        if (root is null)
+        {
+            yield break;
+        }
+
+        var count = VisualTreeHelper.GetChildrenCount(root);
+        for (var i = 0; i < count; i++)
+        {
+            var child = VisualTreeHelper.GetChild(root, i);
+            if (child is T match)
+            {
+                yield return match;
+                continue;
+            }
+
+            foreach (var inner in Descendants<T>(child))
+            {
+                yield return inner;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draft uiSog per frame: every element slides towards the hole by the suction share, turns up to 50°,
+    /// shrinks to at least 4 % and fades; a random jitter shakes it. Pure Composition properties, nothing is
+    /// drawn on the canvas.
+    /// </summary>
+    private void OnSuctionFrame(object? sender, object e)
+    {
+        var snapshot = ViewModel.Scene.Snapshot;
+        if (!snapshot.SurfaceAffected)
+        {
+            StopSuction();
+            return;
+        }
+
+        var s = snapshot.SurfaceSuction;
+        var j = snapshot.SurfaceJitter;
+        var hole = snapshot.HoleCenter;
+        var scale = Math.Max(0.04f, 1f - 0.92f * s);
+        foreach (var (element, rest, direction) in _sucked)
+        {
+            var jx = (_jitter.NextSingle() - 0.5f) * j;
+            var jy = (_jitter.NextSingle() - 0.5f) * j;
+            element.Translation = new Vector3((hole.X - rest.X) * s + jx, (hole.Y - rest.Y) * s + jy, 0f);
+            element.Rotation = direction * s * 50f + (_jitter.NextSingle() - 0.5f) * j * 0.6f;
+            element.Scale = new Vector3(scale, scale, 1f);
+            element.Opacity = Math.Clamp(snapshot.SurfaceOpacity, 0f, 1f);
+        }
+    }
+
+    /// <summary>Puts every element back exactly where it was; the scene has restored the planets by then.</summary>
+    private void StopSuction()
+    {
+        if (!_suctionRunning)
+        {
+            return;
+        }
+
+        _suctionRunning = false;
+        CompositionTarget.Rendering -= OnSuctionFrame;
+        foreach (var (element, _, _) in _sucked)
+        {
+            element.Translation = Vector3.Zero;
+            element.Rotation = 0f;
+            element.Scale = Vector3.One;
+            element.Opacity = 1.0;
+        }
+
+        _sucked.Clear();
     }
 
     /// <summary>Tells the scene where rejected files have to fly to.</summary>

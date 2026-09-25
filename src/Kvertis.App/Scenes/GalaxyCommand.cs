@@ -49,3 +49,9 @@ public sealed record Resize(float Width, float Height) : GalaxyCommand;
 
 /// <summary>"Neue Runde": all bodies leave, the running number starts at zero again.</summary>
 public sealed record Clear : GalaxyCommand;
+
+/// <summary>
+/// Whether the gimmicks (whirl, big bang) may run at all. The host sends true only for the moving surface,
+/// never with "Animationen reduzieren" or high contrast; the default of a new scene is off.
+/// </summary>
+public sealed record SetGimmicksEnabled(bool Enabled) : GalaxyCommand;

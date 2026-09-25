@@ -37,6 +37,7 @@ public sealed partial class GalaxyCanvas : UserControl, IDisposable
     private GalaxyRenderer? _renderer;
     private bool _paused;
     private bool _drawFailed;
+    private bool _surfaceAffected;
 
     public GalaxyCanvas()
     {
@@ -52,6 +53,12 @@ public sealed partial class GalaxyCanvas : UserControl, IDisposable
 
     /// <summary>Raised on the UI thread after a drawing error; the host then switches to the static view.</summary>
     public event EventHandler? DrawFailed;
+
+    /// <summary>
+    /// Raised on the UI thread when the scene starts (true) or stops (false) pulling the XAML surface into the
+    /// hole (big bang gimmick). The host then moves trays and cards with Composition properties from the snapshot.
+    /// </summary>
+    public event EventHandler<bool>? SurfaceEffectChanged;
 
     /// <summary>The scene to draw. Set once by the host; changing it while running is allowed.</summary>
     public GalaxyScene? Scene { get; set; }
@@ -268,6 +275,12 @@ public sealed partial class GalaxyCanvas : UserControl, IDisposable
         try
         {
             scene.Update(args.Timing.ElapsedTime);
+            var affected = scene.Snapshot.SurfaceAffected;
+            if (affected != _surfaceAffected)
+            {
+                _surfaceAffected = affected;
+                DispatcherQueue.TryEnqueue(() => SurfaceEffectChanged?.Invoke(this, affected));
+            }
         }
         catch (Exception ex)
         {
