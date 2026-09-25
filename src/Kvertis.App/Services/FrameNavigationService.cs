@@ -59,7 +59,13 @@ public sealed class FrameNavigationService : INavigationService
         _frame.Navigated += OnFrameNavigated;
     }
 
-    public void Navigate(AppPage page, bool keepBackStack = true)
+    public void Navigate(AppPage page, bool keepBackStack = true) => Navigate(page, keepBackStack, suppressTransition: false);
+
+    /// <summary>
+    /// <paramref name="suppressTransition"/> exchanges the pages at once, without the Fluent transition: the
+    /// drawn overlay of ADR-023 flies while the new page is already in the frame.
+    /// </summary>
+    public void Navigate(AppPage page, bool keepBackStack, bool suppressTransition)
     {
         if (_frame is null)
         {
@@ -71,7 +77,7 @@ public sealed class FrameNavigationService : INavigationService
             return;
         }
         // With "reduce animations" or high contrast the pages are exchanged without a transition (ADR-018).
-        NavigationTransitionInfo transition = _motion.ReducedMotion
+        NavigationTransitionInfo transition = _motion.ReducedMotion || suppressTransition
             ? new SuppressNavigationTransitionInfo()
             : new DrillInNavigationTransitionInfo();
         _dropNextBackEntry = !keepBackStack;

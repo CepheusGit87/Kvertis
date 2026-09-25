@@ -14,7 +14,7 @@ namespace Kvertis.App.Views;
 /// Step 1 "Hineinwerfen". Code-behind only handles drag-and-drop, the keyboard and the lifetime of the
 /// drawing surface; everything else is in the view model (ADR-022).
 /// </summary>
-public sealed partial class MainPage : Page
+public sealed partial class MainPage : Page, ITransitionAnchors
 {
     /// <summary>Below this window width the trays get fixed columns and scroll sideways.</summary>
     private const double NarrowWidth = 900;
@@ -26,6 +26,7 @@ public sealed partial class MainPage : Page
     private const double GalaxyMaxHeight = 520;
 
     private readonly ILocalizer _loc;
+    private readonly ITransitionService _transitions;
 
     private bool _narrow;
     private bool _widthApplied;
@@ -36,6 +37,7 @@ public sealed partial class MainPage : Page
         ViewModel = App.Services.GetRequiredService<MainViewModel>();
         History = App.Services.GetRequiredService<HistoryViewModel>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
+        _transitions = App.Services.GetRequiredService<ITransitionService>();
         InitializeComponent();
         Galaxy.ViewModel = ViewModel;
         // Set in code: x:Bind cannot index an IReadOnlyList in a path.
@@ -50,6 +52,8 @@ public sealed partial class MainPage : Page
         Galaxy.SurfaceVisibilityChanged += OnSurfaceVisibilityChanged;
         ViewModel.PropertyChanged += OnViewModelPropertyChanged;
         ApplySurfaceVisibility();
+        // Only one drawing loop runs at a time (ADR-023): the galaxy stands still while the overlay flies.
+        _transitions.Changed += (_, _) => UpdatePaused();
 
         // A minimised or hidden window must not keep the drawing thread busy (ADR-018).
         if (App.Services.GetRequiredService<IWindowContext>().Window is { } window)
@@ -105,7 +109,49 @@ public sealed partial class MainPage : Page
     /// The galaxy only runs while the window is visible, the page is the current step and the history pane is
     /// closed; all three reasons meet here.
     /// </summary>
-    private void UpdatePaused() => Galaxy.SetPaused(!_windowVisible || HistorySplitView.IsPaneOpen);
+    private void UpdatePaused() => Galaxy.SetPaused(!_windowVisible || HistorySplitView.IsPaneOpen || _transitions.IsTransitioning);
+
+    // ---- Transition anchors (ADR-023) ---------------------------------------------------------------
+
+    private IEnumerable<TrayControl> Trays => [Tray0, Tray1, Tray2, Tray3, Tray4];
+
+    /// <summary>The heads of the trays with files and the hole of the galaxy; the overlay flies stand-ins of them.</summary>
+    public TransitionAnchorSet? MeasureAnchors(UIElement reference)
+    {
+        if (!IsLoaded)
+        {
+            return null;
+        }
+
+        var anchors = new List<TransitionAnchor>();
+        foreach (var tray in Trays)
+        {
+            if (tray.Tray is { Count: > 0 } vm && TransitionMeasure.Of(tray.Head, reference, TransitionAnchorKind.Tray, vm.Kind) is { } anchor)
+            {
+                anchors.Add(anchor);
+            }
+        }
+
+        if (Galaxy.TryGetHole(reference, out var centre, out var radius))
+        {
+            anchors.Add(new TransitionAnchor(TransitionAnchorKind.Hole, null, centre, System.Numerics.Vector2.Zero, radius));
+        }
+
+        return new TransitionAnchorSet(WorkflowStep.Drop, anchors);
+    }
+
+    /// <summary>The heads of the kinds in flight vanish; the galaxy is paused by <see cref="UpdatePaused"/>, the overlay draws its hole.</summary>
+    public void SetFlightVisibility(bool visible, IReadOnlySet<MediaKind> kinds)
+    {
+        ArgumentNullException.ThrowIfNull(kinds);
+        foreach (var tray in Trays)
+        {
+            if (tray.Tray is { } vm && kinds.Contains(vm.Kind))
+            {
+                tray.SetHeadVisible(visible);
+            }
+        }
+    }
 
     private void ApplySurfaceVisibility()
     {
@@ -205,6 +251,11 @@ public sealed partial class MainPage : Page
     private void OnOpenAcceleratorInvoked(KeyboardAccelerator sender, KeyboardAcceleratorInvokedEventArgs args)
     {
         args.Handled = true;
+        // While the overlay flies, the page is not yet the user's: the shortcut does nothing (ADR-023).
+        if (_transitions.IsTransitioning)
+        {
+            return;
+        }
         ViewModel.AddFilesCommand.Execute(null);
     }
 
@@ -216,6 +267,10 @@ public sealed partial class MainPage : Page
             return;
         }
         args.Handled = true;
+        if (_transitions.IsTransitioning)
+        {
+            return;
+        }
         ViewModel.PasteCommand.Execute(null);
     }
 

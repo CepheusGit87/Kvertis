@@ -9,6 +9,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:convert="using:Kvertis.App.ViewModels.Convert"
   xmlns:helpers="using:Kvertis.App.Helpers"
+  xmlns:views="using:Kvertis.App.Views"
   NavigationCacheMode="Required">
 
   <Page.Resources>
@@ -41,38 +42,6 @@
           Style="{StaticResource SecondaryCaptionTextStyle}"
           Text="{x:Bind StateText, Mode=OneWay}" />
       </Grid>
-    </DataTemplate>
-
-    <!-- Middle: a running file with its progress -->
-    <DataTemplate x:Key="SwirlRowTemplate" x:DataType="convert:ConvertRowViewModel">
-      <Border
-        Background="{ThemeResource KvPanel2Brush}"
-        BorderBrush="{ThemeResource KvLineBrush}"
-        BorderThickness="1"
-        CornerRadius="8"
-        Margin="0,0,0,8"
-        Padding="12">
-        <StackPanel AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}" Spacing="6">
-          <TextBlock
-            Style="{StaticResource BodyStrongTextBlockStyle}"
-            Text="{x:Bind FileName}"
-            TextTrimming="CharacterEllipsis" />
-          <TextBlock
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind FormatsText}" />
-          <ProgressBar
-            AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-            Foreground="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
-            IsIndeterminate="False"
-            Maximum="100"
-            Minimum="0"
-            Value="{x:Bind ProgressValue, Mode=OneWay}" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind PercentText, Mode=OneWay}" />
-            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind RemainingText, Mode=OneWay}" />
-          </StackPanel>
-        </StackPanel>
-      </Border>
     </DataTemplate>
 
     <!-- Right: a finished file -->
@@ -278,7 +247,12 @@
     </VisualStateManager.VisualStateGroups>
 
     <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
-      <Grid Padding="24" ColumnSpacing="20" RowSpacing="20">
+      <Grid
+        x:Name="PageRoot"
+        Padding="24"
+        ColumnSpacing="20"
+        RowSpacing="20"
+        SizeChanged="OnBagSizeChanged">
         <Grid.ColumnDefinitions>
           <ColumnDefinition x:Name="LeftColumn" Width="300" />
           <ColumnDefinition x:Name="MiddleColumn" Width="*" />
@@ -347,53 +321,10 @@
           </Border>
         </StackPanel>
 
-        <!-- Middle: the surface for the later drawing layer, with the running files and the report -->
+        <!-- Middle: the swirl surface (ADR-023) with the running files and the report as XAML above it -->
         <StackPanel x:Name="MiddlePanel" Grid.Column="1" Spacing="8">
           <TextBlock x:Uid="Convert_Swirl_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <Grid
-            x:Name="SwirlHost"
-            MinHeight="220"
-            Background="{ThemeResource KvDeepBrush}"
-            CornerRadius="8"
-            Padding="16">
-            <StackPanel Spacing="8">
-              <TextBlock
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{x:Bind ViewModel.SwirlHintText, Mode=OneWay}"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowSwirlHint), Mode=OneWay}" />
-              <ItemsRepeater ItemTemplate="{StaticResource SwirlRowTemplate}" ItemsSource="{x:Bind ViewModel.Swirl}" />
-              <TextBlock
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{x:Bind ViewModel.SwirlMoreText, Mode=OneWay}"
-                Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.SwirlMoreText), Mode=OneWay}" />
-
-              <!-- Closing report -->
-              <StackPanel
-                DataContext="{x:Bind ViewModel.Report, Mode=OneWay}"
-                Spacing="8"
-                Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasReport), Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <FontIcon
-                    FontSize="20"
-                    Foreground="{Binding GlyphBrushKey, Converter={StaticResource BrushKeyConverter}}"
-                    Glyph="{Binding Glyph}" />
-                  <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource SubtitleTextBlockStyle}"
-                    Text="{Binding TitleText}"
-                    TextWrapping="Wrap" />
-                </StackPanel>
-                <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{Binding SummaryText}" />
-                <ItemsControl ItemTemplate="{StaticResource TextLineTemplate}" ItemsSource="{Binding Failures}" />
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <Button
-                    x:Uid="Convert_Report_OpenFolder_Button"
-                    Command="{Binding OpenFolderCommand}"
-                    IsEnabled="{Binding CanOpenFolder}" />
-                </StackPanel>
-              </StackPanel>
-            </StackPanel>
-          </Grid>
+          <views:SwirlHost x:Name="SwirlHost" ShakeRequested="OnSwirlShakeRequested" />
         </StackPanel>
 
         <!-- Right: what is finished, then the output location -->
@@ -455,8 +386,10 @@
                   </DropDownButton.Flyout>
                 </DropDownButton>
                 <DropDownButton
+                  x:Name="BagButton"
                   AutomationProperties.Name="{x:Bind ViewModel.BagText, Mode=OneWay}"
                   Content="{x:Bind ViewModel.BagText, Mode=OneWay}"
+                  SizeChanged="OnBagSizeChanged"
                   Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasBagEntries), Mode=OneWay}">
                   <DropDownButton.Flyout>
                     <Flyout Placement="Bottom">
@@ -483,7 +416,10 @@
             Style="{StaticResource SecondaryCaptionTextStyle}"
             Text="{x:Bind ViewModel.ListSummaryText, Mode=OneWay}" />
           <Border Style="{StaticResource CardBorderStyle}" Padding="16,0">
-            <ItemsControl ItemTemplate="{StaticResource ListRowTemplate}" ItemsSource="{x:Bind ViewModel.Rows}" />
+            <ItemsControl
+              x:Name="RowsList"
+              ItemTemplate="{StaticResource ListRowTemplate}"
+              ItemsSource="{x:Bind ViewModel.Rows}" />
           </Border>
         </StackPanel>
 

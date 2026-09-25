@@ -1,15 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- The Win2D surface of step 1 (ADR-022). Decorative only: it is not in the tab order and screen readers
-     never see it; every piece of information it shows also stands in the trays next to it. -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The window-wide Win2D surface of the step transitions (ADR-023). It lies over the step header and the
+     frame, never takes input and is invisible to assistive technology; every piece of information it flies
+     stands as XAML on the pages before and after the flight. -->
 <UserControl
-  x:Class="Kvertis.App.Rendering.GalaxyCanvas"
+  x:Class="Kvertis.App.Rendering.TransitionOverlay"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  x:Uid="Transition_Overlay"
   AutomationProperties.AccessibilityView="Raw"
-  IsTabStop="False">
+  IsHitTestVisible="False"
+  IsTabStop="False"
+  Opacity="0">
 
-  <!-- The scene only knows plain RGB values. These brushes carry the theme's Kv* colours to
-       ScenePaletteReader, which re-reads them whenever ActualTheme changes. -->
+  <!-- The scene only knows plain RGB values; these brushes carry the theme's Kv* colours to the palette
+       reader, which re-reads them on every transition. -->
   <UserControl.Resources>
     <SolidColorBrush x:Key="SceneColor_Image" Color="{ThemeResource KvImageColor}" />
     <SolidColorBrush x:Key="SceneColor_Audio" Color="{ThemeResource KvAudioColor}" />
@@ -26,13 +30,13 @@
     <SolidColorBrush x:Key="SceneColor_PaperLine" Color="{ThemeResource KvPaperLineColor}" />
     <SolidColorBrush x:Key="SceneColor_OnMint" Color="{ThemeResource KvOnMintColor}" />
     <SolidColorBrush x:Key="SceneColor_Shadow" Color="{ThemeResource KvShadowColor}" />
+    <SolidColorBrush x:Key="SceneColor_Panel" Color="{ThemeResource KvPanelColor}" />
+    <SolidColorBrush x:Key="SceneColor_Line" Color="{ThemeResource KvLineColor}" />
   </UserControl.Resources>
 
   <Grid
     x:Name="SurfaceHost"
     Background="Transparent"
-    PointerExited="OnPointerExited"
-    PointerMoved="OnPointerMoved"
-    SizeChanged="OnSurfaceSizeChanged"
-    Tapped="OnSurfaceTapped" />
+    IsHitTestVisible="False"
+    SizeChanged="OnSurfaceSizeChanged" />
 </UserControl>

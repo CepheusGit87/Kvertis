@@ -3,6 +3,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kvertis.App.Helpers;
+using Kvertis.App.Scenes;
 using Kvertis.App.Services;
 using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
@@ -25,6 +26,27 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
 
     /// <summary>The narrator hears the overall line again at most this often (unless the counter moved).</summary>
     private static readonly TimeSpan AnnounceInterval = TimeSpan.FromSeconds(5);
+
+    /// <summary>
+    /// The dark tokens of <c>Themes/KvertisColors.xaml</c> as the scene's palette until the surface reads the
+    /// real theme (<c>ScenePaletteReader</c>); the view model itself never touches a WinUI colour (ADR-022).
+    /// </summary>
+    private static readonly ScenePalette DefaultPalette = new(
+        Image: SceneColor.FromHex(0x6BA7FF),
+        Audio: SceneColor.FromHex(0xB28CFF),
+        Video: SceneColor.FromHex(0xF2B45A),
+        Document: SceneColor.FromHex(0x4FC3E8),
+        Model3D: SceneColor.FromHex(0xF08FD0),
+        Mint: SceneColor.FromHex(0x6FE0BF),
+        Error: SceneColor.FromHex(0xF07A6A),
+        Ink: SceneColor.FromHex(0xE7ECEE),
+        Background: SceneColor.FromHex(0x0C0F11),
+        Muted: SceneColor.FromHex(0x8B959C),
+        IsDark: true);
+
+    /// <summary>Size of the surface before the first resize arrives (the middle column at 1280 px width).</summary>
+    private const float InitialSurfaceWidth = 560f;
+    private const float InitialSurfaceHeight = 300f;
 
     private readonly IWorkflowSession _session;
     private readonly IConversionCoordinator _coordinator;
@@ -50,6 +72,8 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
     private long _lastAnnounceTicks;
     private int _lastAnnouncedDone = -1;
     private bool _reportAnnounced;
+    private bool _animatedFinale;
+    private List<SwirlFileSpec> _sceneSpecs = [];
 
     public ConvertPageViewModel(
         IWorkflowSession session,
@@ -87,8 +111,49 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
 
         Location = new LocationCardViewModel(_loc, ApplySharedLocationAsync);
         PauseLabel = _loc.Get("Convert_Pause_Label");
+        // The scene belongs to the view model and survives the drawing surface being torn down (ADR-022).
+        Scene = new SwirlScene(InitialSurfaceWidth, InitialSurfaceHeight, DefaultPalette, Random.Shared, new SwirlBudget());
+        Feed = new SwirlFeed(Scene, _time);
         _coordinator.Changed += OnRoundChanged;
         _license.StatusChanged += OnLicenseChanged;
+    }
+
+    /// <summary>The pixel swirl, the white hole and the finale of this round (ADR-023).</summary>
+    public SwirlScene Scene { get; }
+
+    /// <summary>Turns the round's events into scene commands; the host only reads and draws.</summary>
+    public SwirlFeed Feed { get; }
+
+    /// <summary>
+    /// Set by the host: true while a drawing surface shows the swirl, so the finale animates and the report
+    /// card waits for it (e ≥ 1.2 s). False for reduced motion, high contrast or after a drawing error: the
+    /// report shows at once.
+    /// </summary>
+    public bool AnimatedFinale
+    {
+        get => _animatedFinale;
+        set
+        {
+            if (_animatedFinale == value)
+            {
+                return;
+            }
+            _animatedFinale = value;
+            if (!value && HasReport)
+            {
+                ShowReportCard = true;
+            }
+            IsFinaleShowing = value && Feed.IsFinalePending;
+        }
+    }
+
+    /// <summary>The surface reported that the finale reached the report (e ≥ 1.2 s).</summary>
+    public void OnFinaleReportReached()
+    {
+        if (HasReport)
+        {
+            ShowReportCard = true;
+        }
     }
 
     public ObservableCollection<ConvertRowViewModel> Rows { get; } = [];
@@ -177,6 +242,14 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
     [NotifyPropertyChangedFor(nameof(HasReport))]
     private RoundReportViewModel? report;
 
+    /// <summary>The report card is visible: at once without an animated finale, otherwise when the finale asks.</summary>
+    [ObservableProperty]
+    private bool showReportCard;
+
+    /// <summary>The animated finale runs: the page hides the inbox and the location card until "Neue Runde".</summary>
+    [ObservableProperty]
+    private bool isFinaleShowing;
+
     /// <summary>Assertive live region: one finished or failed file, and once the report.</summary>
     [ObservableProperty]
     private string announcement = string.Empty;
@@ -248,9 +321,64 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
             }
             _builtFrom = plan;
             BuildRows(plan);
+            Feed.Clear();
+            _sceneSpecs = [];
+            ShowReportCard = false;
+            IsFinaleShowing = false;
         }
         RefreshPreviews();
         RefreshFromCoordinator();
+    }
+
+    // ---- Scene ------------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Hands the plan to the scene (stack and capacity of the white hole). Only while the round is ready:
+    /// afterwards the own-target flags cannot change any more, and a new plan replaces everything anyway.
+    /// </summary>
+    private void SyncPlanToScene()
+    {
+        if (_coordinator.State != RoundState.Ready)
+        {
+            return;
+        }
+        var specs = Rows.Select(r => new SwirlFileSpec(
+            Guid.Empty,
+            r.Item.Input.Kind,
+            r.SourceLabel,
+            r.TargetLabel,
+            r.FileName,
+            r.IsOwnLocation)).ToList();
+        if (specs.Count == _sceneSpecs.Count && specs.Zip(_sceneSpecs).All(p => SameSpec(p.First, p.Second)))
+        {
+            return;
+        }
+        for (var i = 0; i < specs.Count; i++)
+        {
+            specs[i] = specs[i] with { Id = Guid.NewGuid() };
+        }
+        _sceneSpecs = specs;
+        Feed.SetPlan(specs);
+    }
+
+    private static bool SameSpec(SwirlFileSpec a, SwirlFileSpec b) =>
+        a.Kind == b.Kind && a.HasOwnLocation == b.HasOwnLocation
+        && string.Equals(a.FileName, b.FileName, StringComparison.Ordinal)
+        && string.Equals(a.FormatFrom, b.FormatFrom, StringComparison.Ordinal)
+        && string.Equals(a.FormatTo, b.FormatTo, StringComparison.Ordinal);
+
+    private void SyncJobsToScene(IReadOnlyList<ConversionJob> jobs)
+    {
+        if (jobs.Count == 0 || _sceneSpecs.Count == 0)
+        {
+            return;
+        }
+        var views = new SwirlJobView[Math.Min(jobs.Count, _sceneSpecs.Count)];
+        for (var i = 0; i < views.Length; i++)
+        {
+            views[i] = new SwirlJobView(jobs[i].State, (float)jobs[i].Progress.Fraction);
+        }
+        Feed.Apply(views);
     }
 
     private async Task<OutputLocation> ResolveDefaultLocationAsync()
@@ -342,6 +470,7 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
             _coordinator.RelocateWaiting(_previews);
         }
         UpdateAggregates();
+        SyncPlanToScene();
     }
 
     /// <summary>
@@ -374,6 +503,7 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
         }
         State = _coordinator.State;
         PauseLabel = _loc.Get(State == RoundState.Paused ? "Convert_Resume_Label" : "Convert_Pause_Label");
+        SyncJobsToScene(jobs);
         UpdateReport();
         UpdateAggregates();
     }
@@ -400,6 +530,7 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
         if (_coordinator.State != RoundState.Finished || _coordinator.Report is not { } report)
         {
             Report = null;
+            ShowReportCard = false;
             _reportAnnounced = false;
             return;
         }
@@ -411,6 +542,11 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
         Report = new RoundReportViewModel(
             report, _loc, _errors, () => _shell.OpenFolderAsync(Path.GetDirectoryName(folder ?? string.Empty) ?? string.Empty),
             folder is not null);
+        // A cancelled round gets no finale; otherwise the finale starts 1.05 s later, and with a drawing
+        // surface the report card waits for it (worksheet "Abschluss", e ≥ 1.2 s).
+        var finale = Feed.RoundFinished(report.Completed, report.Failed, report.Cancelled, AnimatedFinale);
+        IsFinaleShowing = finale;
+        ShowReportCard = !finale;
         if (!_reportAnnounced)
         {
             _reportAnnounced = true;
@@ -711,6 +847,10 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
         HasSkipped = false;
         ShowProCard = false;
         Report = null;
+        ShowReportCard = false;
+        IsFinaleShowing = false;
+        Feed.Clear();
+        _sceneSpecs = [];
         Announcement = string.Empty;
         ErrorText = string.Empty;
         BagEntries.Clear();
@@ -734,5 +874,6 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
     {
         _coordinator.Changed -= OnRoundChanged;
         _license.StatusChanged -= OnLicenseChanged;
+        Feed.Dispose();
     }
 }

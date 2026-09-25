@@ -47,6 +47,27 @@ public sealed partial class GalaxyHost : UserControl
     public bool SurfaceVisible => !_motion.IsHighContrast;
 
     /// <summary>
+    /// The hole of the moving surface in the coordinates of <paramref name="reference"/>, for the transition
+    /// overlay (ADR-023). False without a moving surface (still picture, high contrast, not laid out).
+    /// </summary>
+    public bool TryGetHole(UIElement reference, out Vector2 centre, out float radius)
+    {
+        ArgumentNullException.ThrowIfNull(reference);
+        centre = default;
+        radius = 0f;
+        if (_canvas is not { ActualWidth: > 0 } canvas)
+        {
+            return false;
+        }
+
+        var scene = ViewModel.Scene;
+        var point = canvas.TransformToVisual(reference).TransformPoint(new Windows.Foundation.Point(scene.Layout.Center.X, scene.Layout.Center.Y));
+        centre = new Vector2((float)point.X, (float)point.Y);
+        radius = scene.HoleRadius;
+        return true;
+    }
+
+    /// <summary>
     /// Starts the drawing loop (page entered, host loaded). Idempotent: both the page's navigation and the
     /// host's Loaded call it, and only the first builds anything.
     /// </summary>

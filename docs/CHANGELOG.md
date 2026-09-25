@@ -2,6 +2,19 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Übergänge und Abschluss, Teile B–E: Wurmloch, Wirbel, weißes Loch, Supernova
+
+**Geändert**
+
+- Fensterweite Überlagerung `Rendering/TransitionOverlay` (ein Win2D-Control über Schrittleiste und Inhalt, im Leerlauf pausiert): Wurmloch 1→2 (Fächer werden nacheinander eingesaugt, springen links als Artwahl heraus, Loch fährt in die Mitte), Andocken 2→1 als Bogen, Blätter 2→3 an den Eingangsstapel; 3→2 nur Überblenden. Seiten melden Anker über `ITransitionAnchors`, `TransitionService` sperrt Eingaben und bricht bei Größenänderung, Themenwechsel oder Zeichenfehler mit dem Endzustand ab. Reduced Motion: schlichter Wechsel; Hoher Kontrast: keine Überlagerung.
+- Schritt 3 mit Zeichenschicht (`Rendering/SwirlCanvas`, `SwirlRenderer`, `FinaleRenderer`, `Views/SwirlHost`): Pixelwirbel um das schwarze Loch mit zwei Dateien zugleich in der Farbe ihrer Dateiart, weißes Loch mit gebündelten Bahnen, Planeten mit Schweif, Ankunftsring, Zähler „n von N“; Abschluss mit Anlauf, Tanz der beiden Löcher (höchstens 16° je Bild), Sog-Staub, Stille, Supernova mit Lichtstreifen, 320 Funken und drei Schockwellen, Beben von Fenster und Zeilen (nur XAML), danach Ring aus Planeten mit Häkchen und Bericht. Kein Finale bei Abbruch. `SwirlFeed` speist die Szene aus den Job-Ereignissen. Bei Reduced Motion statischer Ring mit Bericht als Text.
+- Immer nur ein Zeichen-Control aktiv: Galaxie und Wirbel pausieren während eines Übergangs.
+- Tests: 41 neu (App 242), gesamt 1012. Reviewer-Befunde behoben (Schrittwechsel bei Abbruch in der Haltephase, Tastatursperre, Zielanker-Prüfung). Echter Durchlauf mit vier Dateien, alle Übergänge ohne Absturz.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Übergänge und Abschluss, Teil A: Szene-Modelle (ADR-023)
 
 **Geändert**

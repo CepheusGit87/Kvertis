@@ -39,6 +39,12 @@ public sealed partial class TrayControl : UserControl
         set => SetValue(TrayProperty, value);
     }
 
+    /// <summary>The head of the tray: what the transition overlay measures and stands in for (ADR-023).</summary>
+    public FrameworkElement Head => HeadButton;
+
+    /// <summary>Hides or shows the head while the overlay draws its ghost. The head keeps its place and its focus.</summary>
+    public void SetHeadVisible(bool visible) => HeadButton.Opacity = visible ? 1 : 0;
+
     private static void OnTrayChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args) =>
         ((TrayControl)sender).Attach(args.NewValue as TrayViewModel);
 

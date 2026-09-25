@@ -201,6 +201,7 @@
             Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
           <TextBlock x:Uid="Target_Kinds_Header" Style="{StaticResource SectionHeaderTextStyle}" />
           <ListView
+            x:Name="KindsList"
             x:Uid="Target_Kinds_List"
             ItemTemplate="{StaticResource KindItemTemplate}"
             ItemsSource="{x:Bind ViewModel.Kinds}"

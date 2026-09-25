@@ -35,14 +35,19 @@ public sealed class StepNavigationService : IStepNavigationService
     };
 
     private readonly INavigationService _navigation;
+    private readonly ITransitionService _transitions;
     private WorkflowStep? _currentStep;
 
-    public StepNavigationService(INavigationService navigation)
+    public StepNavigationService(INavigationService navigation, ITransitionService transitions)
     {
         _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
+        _transitions = transitions ?? throw new ArgumentNullException(nameof(transitions));
         _navigation.Navigated += OnNavigated;
         Update();
     }
+
+    /// <summary>The page that shows <paramref name="step"/>.</summary>
+    public static AppPage PageOf(WorkflowStep step) => StepPages[step];
 
     public WorkflowStep? CurrentStep => _currentStep;
 
@@ -50,11 +55,19 @@ public sealed class StepNavigationService : IStepNavigationService
 
     public void GoTo(WorkflowStep step)
     {
-        if (StepPages.TryGetValue(step, out var page))
+        if (!StepPages.TryGetValue(step, out var page))
         {
-            // A step change is not a detour: it leaves no entry in the back stack.
-            _navigation.Navigate(page, keepBackStack: false);
+            return;
         }
+
+        // The drawn transitions (ADR-023) navigate themselves; everything else is the plain switch.
+        if (_currentStep is { } from && _transitions.TryBegin(from, step))
+        {
+            return;
+        }
+
+        // A step change is not a detour: it leaves no entry in the back stack.
+        _navigation.Navigate(page, keepBackStack: false);
     }
 
     private void OnNavigated(object? sender, EventArgs e) => Update();

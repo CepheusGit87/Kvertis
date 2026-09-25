@@ -16,11 +16,13 @@ public sealed partial class StepHeader : UserControl
     private readonly IMotionSettings _motion;
     private readonly IWorkflowSession _session;
     private readonly IConversionCoordinator _coordinator;
+    private readonly ITransitionService _transitions;
     private readonly ILocalizer _loc;
 
     public StepHeader()
     {
         _steps = App.Services.GetRequiredService<IStepNavigationService>();
+        _transitions = App.Services.GetRequiredService<ITransitionService>();
         _motion = App.Services.GetRequiredService<IMotionSettings>();
         _session = App.Services.GetRequiredService<IWorkflowSession>();
         _coordinator = App.Services.GetRequiredService<IConversionCoordinator>();
@@ -39,10 +41,12 @@ public sealed partial class StepHeader : UserControl
         _motion.Changed -= OnMotionChanged;
         _session.Changed -= OnSessionChanged;
         _coordinator.Changed -= OnRoundChanged;
+        _transitions.Changed -= OnTransitionChanged;
         _steps.StepChanged += OnStepChanged;
         _motion.Changed += OnMotionChanged;
         _session.Changed += OnSessionChanged;
         _coordinator.Changed += OnRoundChanged;
+        _transitions.Changed += OnTransitionChanged;
         Update();
     }
 
@@ -52,7 +56,10 @@ public sealed partial class StepHeader : UserControl
         _motion.Changed -= OnMotionChanged;
         _session.Changed -= OnSessionChanged;
         _coordinator.Changed -= OnRoundChanged;
+        _transitions.Changed -= OnTransitionChanged;
     }
+
+    private void OnTransitionChanged(object? sender, EventArgs e) => Update();
 
     private void OnStepChanged(object? sender, EventArgs e) => Update();
 
@@ -113,7 +120,8 @@ public sealed partial class StepHeader : UserControl
         }
         VisualStateManager.GoToState(this, prefix + state, animate);
         AutomationProperties.SetItemStatus(button, status);
-        button.IsEnabled = !locked && (step <= current || IsReachable(step));
+        // During a drawn transition the header takes no clicks and no keys (ADR-023); the state stays as it is.
+        button.IsEnabled = !locked && !_transitions.IsTransitioning && (step <= current || IsReachable(step));
     }
 
     private bool IsLocked => _coordinator.State is RoundState.Running or RoundState.Paused;

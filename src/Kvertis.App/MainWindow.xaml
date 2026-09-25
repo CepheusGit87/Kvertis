@@ -3,6 +3,7 @@
   x:Class="Kvertis.App.MainWindow"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:rendering="using:Kvertis.App.Rendering"
   xmlns:views="using:Kvertis.App.Views">
 
   <Grid x:Name="RootGrid">
@@ -81,5 +82,12 @@
     <views:StepHeader x:Name="StepHeaderControl" Grid.Row="1" />
 
     <Frame x:Name="ContentFrame" Grid.Row="2" />
+
+    <!-- The drawn step transitions (ADR-023) fly over the step header and the frame. Transparent and paused
+         while idle, never a target for input or the narrator. -->
+    <rendering:TransitionOverlay
+      x:Name="TransitionOverlayControl"
+      Grid.Row="1"
+      Grid.RowSpan="2" />
   </Grid>
 </Window>

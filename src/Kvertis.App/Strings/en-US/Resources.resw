@@ -1455,6 +1455,9 @@
   <data name="Target_Zone_Fixed_Text.Text" xml:space="preserve">
     <value>Fixed by the format; it cannot be changed here.</value>
   </data>
+  <data name="Transition_Overlay.AutomationProperties.Name" xml:space="preserve">
+    <value>Transition animation between the steps</value>
+  </data>
   <data name="Tray_AutomationName" xml:space="preserve">
     <value>{0}, {1} files</value>
   </data>
@@ -1535,5 +1538,14 @@
   </data>
   <data name="Zone_Sound_Name" xml:space="preserve">
     <value>Sound</value>
+  </data>
+  <data name="Swirl_Counter_Of" xml:space="preserve">
+    <value>of {0}</value>
+  </data>
+  <data name="Finale_Ring_AutomationName" xml:space="preserve">
+    <value>Result: {0} of {1} files</value>
+  </data>
+  <data name="Finale_Check_AutomationName" xml:space="preserve">
+    <value>Round finished</value>
   </data>
 </root>

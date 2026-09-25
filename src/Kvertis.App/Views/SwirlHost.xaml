@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The middle of step 3 (ADR-023): the swirl surface plus everything that lies on top of it as XAML. The
+     single place that decides what is drawn at all - moving surface, static ring after the round, or only the
+     cards in high contrast. The report card and the progress cards are XAML in every mode. -->
+<UserControl
+  x:Class="Kvertis.App.Views.SwirlHost"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:convert="using:Kvertis.App.ViewModels.Convert"
+  xmlns:helpers="using:Kvertis.App.Helpers">
+
+  <UserControl.Resources>
+    <!-- A running file with its progress; horizontal and compact under the swirl, vertical in the static view -->
+    <DataTemplate x:Key="SwirlRowTemplate" x:DataType="convert:ConvertRowViewModel">
+      <Border
+        MinWidth="160"
+        MaxWidth="240"
+        Margin="0,0,8,0"
+        Padding="10,8"
+        Background="{ThemeResource KvGlasBrush}"
+        BorderBrush="{ThemeResource KvLineBrush}"
+        BorderThickness="1"
+        CornerRadius="8">
+        <StackPanel AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}" Spacing="4">
+          <TextBlock
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="{x:Bind FileName}"
+            TextTrimming="CharacterEllipsis" />
+          <ProgressBar
+            AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+            Foreground="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
+            IsIndeterminate="False"
+            Maximum="100"
+            Minimum="0"
+            Value="{x:Bind ProgressValue, Mode=OneWay}" />
+          <StackPanel Orientation="Horizontal" Spacing="8">
+            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind FormatsText}" />
+            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind PercentText, Mode=OneWay}" />
+            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind RemainingText, Mode=OneWay}" />
+          </StackPanel>
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="TextLineTemplate" x:DataType="x:String">
+      <TextBlock
+        Padding="0,2"
+        HorizontalAlignment="Center"
+        Style="{StaticResource SecondaryCaptionTextStyle}"
+        Text="{x:Bind}"
+        TextWrapping="Wrap" />
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Grid
+    x:Name="Root"
+    MinHeight="300"
+    Background="{ThemeResource KvDeepBrush}"
+    CornerRadius="8">
+    <!-- The drawing surface (or the static ring) is put in here by the code behind. -->
+    <Grid x:Name="SurfaceLayer" AutomationProperties.AccessibilityView="Raw" />
+
+    <!-- Before the start: what will happen -->
+    <TextBlock
+      Margin="16"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Bottom"
+      Style="{StaticResource SecondaryCaptionTextStyle}"
+      Text="{x:Bind ViewModel.SwirlHintText, Mode=OneWay}"
+      TextAlignment="Center"
+      Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowSwirlHint), Mode=OneWay}" />
+
+    <!-- Running files: at most two cards, plus "und n weitere laufen" -->
+    <StackPanel
+      x:Name="StatusStack"
+      Margin="16,12"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Bottom"
+      Spacing="6">
+      <ItemsRepeater x:Name="RowsRepeater" ItemTemplate="{StaticResource SwirlRowTemplate}" ItemsSource="{x:Bind ViewModel.Swirl}">
+        <ItemsRepeater.Layout>
+          <StackLayout x:Name="RowsLayout" Orientation="Horizontal" Spacing="0" />
+        </ItemsRepeater.Layout>
+      </ItemsRepeater>
+      <TextBlock
+        HorizontalAlignment="Center"
+        Style="{StaticResource SecondaryCaptionTextStyle}"
+        Text="{x:Bind ViewModel.SwirlMoreText, Mode=OneWay}"
+        Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.SwirlMoreText), Mode=OneWay}" />
+    </StackPanel>
+
+    <!-- Closing report: centred inside the ring (draft: #w5-bericht, top 128, width min(440, 90 %)) -->
+    <StackPanel
+      x:Name="ReportCard"
+      MaxWidth="440"
+      Margin="24,128,24,12"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Top"
+      DataContext="{x:Bind ViewModel.Report, Mode=OneWay}"
+      Spacing="3"
+      Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowReportCard), Mode=OneWay}">
+      <TextBlock
+        HorizontalAlignment="Center"
+        AutomationProperties.LiveSetting="Assertive"
+        Style="{StaticResource SubtitleTextBlockStyle}"
+        Text="{Binding TitleText}"
+        TextAlignment="Center"
+        TextWrapping="Wrap" />
+      <TextBlock
+        HorizontalAlignment="Center"
+        Style="{StaticResource SecondaryCaptionTextStyle}"
+        Text="{Binding SummaryText}"
+        TextAlignment="Center" />
+      <ItemsControl HorizontalAlignment="Center" ItemTemplate="{StaticResource TextLineTemplate}" ItemsSource="{Binding Failures}" />
+      <StackPanel
+        Margin="0,8,0,0"
+        HorizontalAlignment="Center"
+        Orientation="Horizontal"
+        Spacing="8">
+        <Button
+          x:Uid="Convert_Report_OpenFolder_Button"
+          Command="{Binding OpenFolderCommand}"
+          IsEnabled="{Binding CanOpenFolder}"
+          Style="{StaticResource AccentButtonStyle}" />
+        <Button x:Uid="Convert_NewRound_Button" Command="{x:Bind ViewModel.NewRoundCommand}" />
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

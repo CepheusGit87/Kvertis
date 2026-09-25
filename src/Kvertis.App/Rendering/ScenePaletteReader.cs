@@ -26,7 +26,7 @@ public static class ScenePaletteReader
     {
         ArgumentNullException.ThrowIfNull(host);
         var isDark = host.ActualTheme == ElementTheme.Dark;
-        return new ScenePalette(
+        var palette = new ScenePalette(
             Read(host, "Image"),
             Read(host, "Audio"),
             Read(host, "Video"),
@@ -38,9 +38,23 @@ public static class ScenePaletteReader
             Read(host, "Background"),
             Read(host, "Muted"),
             isDark);
+
+        // The tokens of the swirl and the finale (worksheet "Übergänge", section "Farben"). A host that does
+        // not declare one of them keeps the palette's own fallback for its theme.
+        return palette with
+        {
+            LineStrong = TryRead(host, "LineStrong") ?? palette.LineStrong,
+            Paper = TryRead(host, "Paper") ?? palette.Paper,
+            PaperLine = TryRead(host, "PaperLine") ?? palette.PaperLine,
+            OnMint = TryRead(host, "OnMint") ?? palette.OnMint,
+            Shadow = TryRead(host, "Shadow") ?? palette.Shadow,
+        };
     }
 
-    private static SceneColor Read(FrameworkElement host, string token)
+    private static SceneColor Read(FrameworkElement host, string token) =>
+        TryRead(host, token) ?? new SceneColor(128, 128, 128);
+
+    private static SceneColor? TryRead(FrameworkElement host, string token)
     {
         var key = KeyPrefix + token;
         if (host.Resources.TryGetValue(key, out var own) && Convert(own) is { } fromHost)
@@ -54,7 +68,7 @@ public static class ScenePaletteReader
             return fromApp;
         }
 
-        return new SceneColor(128, 128, 128);
+        return null;
     }
 
     private static SceneColor? Convert(object? value) => value switch

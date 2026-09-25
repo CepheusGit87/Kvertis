@@ -30,7 +30,7 @@ public readonly record struct SceneColor(byte R, byte G, byte B)
 /// renderer turns them into Win2D brushes and throws them away on a theme change.
 /// </summary>
 /// <remarks>
-/// <see cref="LineStrong"/>, <see cref="Paper"/>, <see cref="PaperLine"/>, <see cref="OnMint"/> and
+/// <see cref="Panel"/>, <see cref="Line"/>, <see cref="LineStrong"/>, <see cref="Paper"/>, <see cref="PaperLine"/>, <see cref="OnMint"/> and
 /// <see cref="Shadow"/> (worksheet "Übergänge", section "Farben") are init properties so the existing
 /// positional construction keeps compiling. Until the palette reader sets them from the <c>Kv*Color</c>
 /// resources they fall back to the same values as <c>Themes/KvertisColors.xaml</c> for the theme in
@@ -49,6 +49,12 @@ public sealed record ScenePalette(
     SceneColor Muted,
     bool IsDark)
 {
+    /// <summary>KvPanel: the card of a drawn tray head (overlay ghosts).</summary>
+    public SceneColor Panel { get; init; } = IsDark ? SceneColor.FromHex(0x14181B) : SceneColor.FromHex(0xFFFFFF);
+
+    /// <summary>KvLine: the 1 px border of a drawn tray head.</summary>
+    public SceneColor Line { get; init; } = IsDark ? SceneColor.FromHex(0x262D32) : SceneColor.FromHex(0xDDE1E4);
+
     /// <summary>KvLineStrong: empty orbits, empty places, stars in the light theme, the dashed swirl orbit.</summary>
     public SceneColor LineStrong { get; init; } = IsDark ? SceneColor.FromHex(0x3A454B) : SceneColor.FromHex(0xB6BEC4);
 

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The still finale for "reduce animations" (ADR-023): one dot per file of the round on an ellipse around the
+     report, a check mark above it, nothing moves. Empty before the round is over. -->
+<UserControl
+  x:Class="Kvertis.App.Views.FinaleStaticView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  IsTabStop="False">
+
+  <Grid
+    x:Name="Root"
+    Background="Transparent"
+    SizeChanged="OnRootSizeChanged">
+    <Canvas x:Name="Surface" AutomationProperties.AccessibilityView="Raw" />
+    <Border
+      x:Name="CheckBadge"
+      Width="32"
+      Height="32"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Top"
+      Background="{ThemeResource KvMintBrush}"
+      CornerRadius="16"
+      Visibility="Collapsed">
+      <FontIcon
+        FontSize="14"
+        Foreground="{ThemeResource KvOnMintBrush}"
+        Glyph="&#xE73E;" />
+    </Border>
+  </Grid>
+</UserControl>

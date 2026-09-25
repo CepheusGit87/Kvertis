@@ -20,6 +20,8 @@ public sealed partial class MainWindow : Window
     private readonly FrameNavigationService _navigation;
     private readonly HistoryViewModel _history;
     private readonly ProViewModel _pro;
+    private readonly TransitionService _transitions;
+    private readonly TransitionStage _stage;
 
     /// <summary>Last bounds seen while the window was neither maximized nor minimized, in physical pixels.</summary>
     private RectInt32 _restoredBounds;
@@ -66,6 +68,30 @@ public sealed partial class MainWindow : Window
 
         _navigation.Attach(ContentFrame);
         _navigation.Navigated += (_, _) => BackButton.Visibility = _navigation.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+
+        // The drawn step transitions (ADR-023): the overlay lies over the header and the frame; a resize, a
+        // hidden window or a theme change ends a running flight with its end state at once.
+        _transitions = App.Services.GetRequiredService<TransitionService>();
+        _stage = new TransitionStage(ContentFrame, TransitionOverlayControl, StepHeaderControl, _navigation, _history);
+        _transitions.Attach(_stage);
+        RootGrid.SizeChanged += (_, _) => _transitions.Finish();
+        RootGrid.ActualThemeChanged += (_, _) => _transitions.Finish();
+        VisibilityChanged += (_, args) =>
+        {
+            _stage.SetWindowVisible(args.Visible);
+            if (!args.Visible)
+            {
+                _transitions.Finish();
+            }
+        };
+        // The keyboard waits like the pointer: no key and no accelerator reaches the pages during a flight.
+        RootGrid.PreviewKeyDown += (_, args) => args.Handled = _transitions.IsTransitioning || args.Handled;
+        RootGrid.ProcessKeyboardAccelerators += (_, args) => args.Handled = _transitions.IsTransitioning || args.Handled;
+        Closed += (_, _) =>
+        {
+            _transitions.Finish();
+            TransitionOverlayControl.Dispose();
+        };
         _pro.PropertyChanged += (_, e) =>
         {
             if (e.PropertyName == nameof(ProViewModel.StatusText))
@@ -74,7 +100,12 @@ public sealed partial class MainWindow : Window
             }
         };
         ProStatusText.Text = _pro.StatusText;
-        RootGrid.Loaded += (_, _) => UpdateCaptionInset();
+        RootGrid.Loaded += (_, _) =>
+        {
+            UpdateCaptionInset();
+            // The overlay's device is built now, so the first transition does not wait for it.
+            TransitionOverlayControl.Prepare();
+        };
         _navigation.Navigate(AppPage.Main);
     }
 
@@ -110,15 +141,38 @@ public sealed partial class MainWindow : Window
         }
     }
 
-    private void OnBackClick(object sender, RoutedEventArgs e) => _navigation.GoBack();
+    private void OnBackClick(object sender, RoutedEventArgs e)
+    {
+        if (!_transitions.IsTransitioning)
+        {
+            _navigation.GoBack();
+        }
+    }
 
     private void OnHistoryClick(object sender, RoutedEventArgs e)
     {
+        // A flight owns the frame until it ends; the title bar waits like everything else (ADR-023).
+        if (_transitions.IsTransitioning)
+        {
+            return;
+        }
         _navigation.Navigate(AppPage.Main);
         _history.IsOpen = !_history.IsOpen;
     }
 
-    private void OnSettingsClick(object sender, RoutedEventArgs e) => _navigation.Navigate(AppPage.Settings);
+    private void OnSettingsClick(object sender, RoutedEventArgs e)
+    {
+        if (!_transitions.IsTransitioning)
+        {
+            _navigation.Navigate(AppPage.Settings);
+        }
+    }
 
-    private void OnProClick(object sender, RoutedEventArgs e) => _navigation.Navigate(AppPage.Pro);
+    private void OnProClick(object sender, RoutedEventArgs e)
+    {
+        if (!_transitions.IsTransitioning)
+        {
+            _navigation.Navigate(AppPage.Pro);
+        }
+    }
 }

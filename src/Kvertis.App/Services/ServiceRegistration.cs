@@ -52,6 +52,9 @@ public static class ServiceRegistration
         services.AddSingleton(state.Dispatcher);
         services.AddSingleton<FrameNavigationService>();
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<FrameNavigationService>());
+        // The drawn step transitions (ADR-023); the window attaches the overlay once its content exists.
+        services.AddSingleton<TransitionService>();
+        services.AddSingleton<ITransitionService>(sp => sp.GetRequiredService<TransitionService>());
         services.AddSingleton<IStepNavigationService, StepNavigationService>();
         // State of the three steps (ADR-020): staged files, target plan, output location, history entry.
         services.AddSingleton<IWorkflowSession, WorkflowSession>();

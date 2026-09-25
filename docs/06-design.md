@@ -339,3 +339,26 @@ Grundlage: `docs/entwuerfe/schritt-1-galaxie.md`. Abweichungen und ihr Grund:
   `CardAnimations.CountHop`.
 - **Entwicklungshilfe:** `KVERTIS_REDUCED_MOTION=1` erzwingt in Debug-Builds die ruhige Ansicht
   (`SystemMotionSettings`), damit sie ohne Änderung einer Windows-Einstellung geprüft werden kann.
+
+## Umsetzungsstand Übergänge und Abschluss, Teile B–E (2026-09-25)
+
+Grundlage: `docs/entwuerfe/uebergaenge.md` und ADR-023. Bewusste Abweichungen vom Arbeitsblatt, jeweils mit Grund:
+
+**Wirbel und Abschluss (Teile D und E):**
+
+- **Zeilen beben einzeln.** Das Blatt strich das Beben je Zeile; umgesetzt ist es wie im Mischentwurf (`beben`): Kopfleiste und die Zeilen der Liste schwingen nacheinander aus (40 ms + 70 ms je Zeile, wechselndes Vorzeichen, Deckel 12 Zeilen), der Fensterinhalt ruckt einmal. Grund: größtmögliche Nähe zum Entwurf, die Zeilen sind `ItemsControl`-Container und lassen sich ohne eigene Vorlage bewegen.
+- **Zähler „n von N“ auch in der Zeichenfläche.** Das Blatt wollte nur den XAML-`DoneText`; der Renderer zeichnet den Zähler zusätzlich unter dem weißen Loch (Text aus `Swirl_Counter_Of`, Zahl 15 pt, Zusatz 11 pt). Grund: der Entwurf zeigt ihn dort; die Information bleibt im XAML-Text mit `LiveSetting=Polite`.
+- **Fortschrittskarten als Streifen am unteren Rand.** Die zwei Karten der laufenden Dateien liegen kompakt und waagerecht unten in der Fläche statt in der Mitte, damit sie Stapel, Wirbel und weißes Loch nicht verdecken; ohne Zeichenfläche (Reduced Motion) stehen sie senkrecht wie bisher.
+- **„Neue Runde“ auch in der Berichtskarte.** Neben „Ordner öffnen“ steht ein zweiter „Neue Runde“-Knopf in der Karte (wie `w5-bericht` im Entwurf); der Knopf der Fußleiste bleibt.
+- **Blattschrift Consolas.** Die Blatt-Attrappen (Reiter, Formatkürzel, Dateiname) und der Zähler nutzen Consolas statt der Mono-Schrift des Entwurfs, weil Consolas auf jedem Windows vorhanden ist und keine Schrift mitgeliefert wird.
+- **Bag-Anker außerhalb der Fläche.** Die Tasche liegt in der rechten Spalte; die Pixel einer Datei mit eigenem Ziel fliegen zum gemessenen Knopf und verlassen dabei die Zeichenfläche. Der Entwurf hatte die Tasche innerhalb der Bühne.
+- **Reduced Motion ohne Finale-Timer.** `SwirlFeed.RoundFinished(…, animated:false)` startet keinen Timer, der Bericht erscheint sofort; Eingang und Speicherort werden nach dem Ausblenden auch für Tastatur und Erzähler entfernt (`Visibility=Collapsed` nach 300 ms) und vor dem Einblenden zurückgeholt.
+
+**Überlagerung (Teile B und C):**
+
+- **Overlay `IsHitTestVisible=false`, Sperre über die Stage.** Die Überlagerung schluckt keine Zeiger selbst; `ITransitionStage.SetInputLocked` sperrt Schrittleiste und Frame. Grund: ein durchsichtiges Steuerelement über allem würde auch nach dem Flug Klicks fangen, wenn ein Aufräumen ausbleibt.
+- **Overlay sichtbar mit Deckkraft 0 statt `Collapsed`.** Die Swapchain von `CanvasAnimatedControl` wird bei `Collapsed` verworfen und neu aufgebaut; mit Deckkraft 0 bleibt sie erhalten, der erste Flug startet ohne Verzögerung.
+- **Haltephase mit erstem Bild vor dem Seitenwechsel.** `HoldAsync` zeichnet das erste Bild der Szene und hält es, erst dann verlässt die alte Seite den Frame. Grund: sonst ein leeres Bild zwischen alter Seite und Overlay.
+- **Zielelemente ab `FlightsEnded` sichtbar.** Die Seite zeigt ihre echten Elemente, sobald die Flüge enden, nicht erst nach dem Ausblenden des Lochs; so gibt es keinen Sprung zwischen Geist und Element.
+- **3→2 als Überblenden (240 ms).** Statt eines schlichten Seitenwechsels blendet `NavigateFaded` die Zielseite ein; kein Geisterflug, aber kein harter Schnitt.
+- **Galaxiepause über `ITransitionService.Changed`.** `MainPage` und `ConvertPage` pausieren ihre Fläche selbst, wenn `IsTransitioning` wechselt; der Dienst kennt die Hosts nicht. Ergebnis wie im Blatt: höchstens eine Zeichenschleife zur Zeit.

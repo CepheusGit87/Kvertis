@@ -1,11 +1,13 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- The Win2D surface of step 1 (ADR-022). Decorative only: it is not in the tab order and screen readers
-     never see it; every piece of information it shows also stands in the trays next to it. -->
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The Win2D surface of step 3 (ADR-023): pixel swirl, white hole and finale. Decorative only: it is not in
+     the tab order and screen readers never see it; every piece of information it shows also stands in the
+     cards and the list next to it. -->
 <UserControl
-  x:Class="Kvertis.App.Rendering.GalaxyCanvas"
+  x:Class="Kvertis.App.Rendering.SwirlCanvas"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   AutomationProperties.AccessibilityView="Raw"
+  IsHitTestVisible="False"
   IsTabStop="False">
 
   <!-- The scene only knows plain RGB values. These brushes carry the theme's Kv* colours to
@@ -19,7 +21,7 @@
     <SolidColorBrush x:Key="SceneColor_Mint" Color="{ThemeResource KvMintColor}" />
     <SolidColorBrush x:Key="SceneColor_Error" Color="{ThemeResource KvErrorColor}" />
     <SolidColorBrush x:Key="SceneColor_Ink" Color="{ThemeResource KvInkColor}" />
-    <SolidColorBrush x:Key="SceneColor_Background" Color="{ThemeResource KvBackgroundColor}" />
+    <SolidColorBrush x:Key="SceneColor_Background" Color="{ThemeResource KvDeepColor}" />
     <SolidColorBrush x:Key="SceneColor_Muted" Color="{ThemeResource KvMutedColor}" />
     <SolidColorBrush x:Key="SceneColor_LineStrong" Color="{ThemeResource KvLineStrongColor}" />
     <SolidColorBrush x:Key="SceneColor_Paper" Color="{ThemeResource KvPaperColor}" />
@@ -31,8 +33,5 @@
   <Grid
     x:Name="SurfaceHost"
     Background="Transparent"
-    PointerExited="OnPointerExited"
-    PointerMoved="OnPointerMoved"
-    SizeChanged="OnSurfaceSizeChanged"
-    Tapped="OnSurfaceTapped" />
+    SizeChanged="OnSurfaceSizeChanged" />
 </UserControl>

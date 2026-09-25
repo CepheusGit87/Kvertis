@@ -194,6 +194,131 @@ public static class CardAnimations
         visual.StartAnimation("Scale", pop);
     }
 
+    // ---- Step 3: finale (docs/entwuerfe/uebergaenge.md, "Abschluss") ------------------------------------
+
+    /// <summary>Length of <see cref="FadeOut"/> and <see cref="FadeIn"/>; the page collapses a faded card after it.</summary>
+    public static readonly TimeSpan CardFadeDuration = TimeSpan.FromMilliseconds(300);
+    private static readonly TimeSpan ReportFadeDuration = TimeSpan.FromMilliseconds(600);
+    private static readonly TimeSpan ContentShakeDuration = TimeSpan.FromMilliseconds(520);
+    private static readonly TimeSpan HeaderShakeDuration = TimeSpan.FromMilliseconds(700);
+    private static readonly TimeSpan HeaderShakeDelay = TimeSpan.FromMilliseconds(40);
+    private static readonly TimeSpan RowShakeStagger = TimeSpan.FromMilliseconds(70);
+    private const int MaxShakenRows = 12;
+
+    /// <summary>The inbox and the location card leave while the finale runs (300 ms). A fade is fine with reduced motion.</summary>
+    public static void FadeOut(UIElement element)
+    {
+        ArgumentNullException.ThrowIfNull(element);
+        var visual = ElementCompositionPreview.GetElementVisual(element);
+        Fade(visual, 0f, CardFadeDuration);
+    }
+
+    /// <summary>The inbox and the location card come back for the next round (300 ms).</summary>
+    public static void FadeIn(UIElement element)
+    {
+        ArgumentNullException.ThrowIfNull(element);
+        var visual = ElementCompositionPreview.GetElementVisual(element);
+        Fade(visual, 1f, CardFadeDuration);
+    }
+
+    /// <summary>The report card appears at e ≥ 1.2 s: opacity 0 → 1 and 8 px upward over 600 ms (draft: .w5-bericht.an).</summary>
+    public static void ReportEntrance(UIElement element)
+    {
+        ArgumentNullException.ThrowIfNull(element);
+        var visual = ElementCompositionPreview.GetElementVisual(element);
+        var compositor = visual.Compositor;
+        var fade = compositor.CreateScalarKeyFrameAnimation();
+        fade.InsertKeyFrame(0f, 0f);
+        fade.InsertKeyFrame(1f, 1f);
+        fade.Duration = ReportFadeDuration;
+        visual.StartAnimation("Opacity", fade);
+        if (!AnimationsEnabled)
+        {
+            return;
+        }
+        ElementCompositionPreview.SetIsTranslationEnabled(element, true);
+        var slide = compositor.CreateVector3KeyFrameAnimation();
+        slide.InsertKeyFrame(0f, new Vector3(0f, 8f, 0f));
+        slide.InsertKeyFrame(1f, Vector3.Zero, compositor.CreateCubicBezierEasingFunction(new Vector2(0.2f, 0.8f), new Vector2(0.2f, 1f)));
+        slide.Duration = ReportFadeDuration;
+        visual.StartAnimation("Translation", slide);
+    }
+
+    /// <summary>
+    /// The supernova shakes the window once (draft: <c>beben</c>): <paramref name="content"/> jolts
+    /// (−6, 4) → (5, −3) → (−3, 2) → (1.5, −1) → 0 over 520 ms with ease-out; <paramref name="header"/> and the
+    /// <paramref name="rows"/> swing out one after the other: (5, 3) with 0.4° → (−5, 0) → (3, 0) → (−1.5, 0) → 0
+    /// over 700 ms, 40 ms + 70 ms per row later, cubic-bezier(.3, .7, .4, 1), sign alternating per element.
+    /// Never with reduced motion; the drawing surface itself is never moved by XAML.
+    /// </summary>
+    public static void PageShake(UIElement content, UIElement? header, IReadOnlyList<UIElement> rows)
+    {
+        ArgumentNullException.ThrowIfNull(content);
+        ArgumentNullException.ThrowIfNull(rows);
+        if (!AnimationsEnabled)
+        {
+            return;
+        }
+
+        var contentVisual = ElementCompositionPreview.GetElementVisual(content);
+        var compositor = contentVisual.Compositor;
+        ElementCompositionPreview.SetIsTranslationEnabled(content, true);
+        var easeOut = compositor.CreateCubicBezierEasingFunction(new Vector2(0f, 0f), new Vector2(0.58f, 1f));
+        var jolt = compositor.CreateVector3KeyFrameAnimation();
+        jolt.InsertKeyFrame(0f, Vector3.Zero);
+        jolt.InsertKeyFrame(0.2f, new Vector3(-6f, 4f, 0f), easeOut);
+        jolt.InsertKeyFrame(0.4f, new Vector3(5f, -3f, 0f), easeOut);
+        jolt.InsertKeyFrame(0.6f, new Vector3(-3f, 2f, 0f), easeOut);
+        jolt.InsertKeyFrame(0.8f, new Vector3(1.5f, -1f, 0f), easeOut);
+        jolt.InsertKeyFrame(1f, Vector3.Zero, easeOut);
+        jolt.Duration = ContentShakeDuration;
+        contentVisual.StartAnimation("Translation", jolt);
+
+        var index = 0;
+        if (header is not null)
+        {
+            SwingOut(header, index++);
+        }
+        for (var i = 0; i < rows.Count && i < MaxShakenRows; i++)
+        {
+            SwingOut(rows[i], index++);
+        }
+    }
+
+    private static void SwingOut(UIElement element, int index)
+    {
+        var visual = ElementCompositionPreview.GetElementVisual(element);
+        var compositor = visual.Compositor;
+        var sign = index % 2 == 0 ? -1f : 1f;
+        var delay = HeaderShakeDelay + TimeSpan.FromTicks(RowShakeStagger.Ticks * index);
+        var easing = compositor.CreateCubicBezierEasingFunction(new Vector2(0.3f, 0.7f), new Vector2(0.4f, 1f));
+        ElementCompositionPreview.SetIsTranslationEnabled(element, true);
+        CenterOn(element, visual);
+
+        var swing = compositor.CreateVector3KeyFrameAnimation();
+        swing.InsertKeyFrame(0f, Vector3.Zero);
+        swing.InsertKeyFrame(0.2f, new Vector3(5f * sign, 3f, 0f), easing);
+        swing.InsertKeyFrame(0.4f, new Vector3(-5f * sign, 0f, 0f), easing);
+        swing.InsertKeyFrame(0.6f, new Vector3(3f * sign, 0f, 0f), easing);
+        swing.InsertKeyFrame(0.8f, new Vector3(-1.5f * sign, 0f, 0f), easing);
+        swing.InsertKeyFrame(1f, Vector3.Zero, easing);
+        swing.Duration = HeaderShakeDuration;
+        swing.DelayTime = delay;
+        swing.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+        visual.StartAnimation("Translation", swing);
+
+        visual.RotationAxis = new Vector3(0f, 0f, 1f);
+        var tilt = compositor.CreateScalarKeyFrameAnimation();
+        tilt.InsertKeyFrame(0f, 0f);
+        tilt.InsertKeyFrame(0.2f, 0.4f * sign, easing);
+        tilt.InsertKeyFrame(0.4f, 0f, easing);
+        tilt.InsertKeyFrame(1f, 0f, easing);
+        tilt.Duration = HeaderShakeDuration;
+        tilt.DelayTime = delay;
+        tilt.DelayBehavior = AnimationDelayBehavior.SetInitialValueBeforeDelay;
+        visual.StartAnimation("RotationAngleInDegrees", tilt);
+    }
+
     private static void CenterOn(UIElement element, Visual visual)
     {
         var size = element.ActualSize;

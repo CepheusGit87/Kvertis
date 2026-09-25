@@ -49,6 +49,18 @@
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\TrayViewModel.cs" Link="FromApp\Drop\TrayViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\RejectedListViewModel.cs" Link="FromApp\Drop\RejectedListViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Drop\PathsViewModel.cs" Link="FromApp\Drop\PathsViewModel.cs" />
+    <!-- Step 3 (ADR-023): the wiring from the round to the swirl scene is free of WinUI. -->
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Convert\SwirlFeed.cs" Link="FromApp\Convert\SwirlFeed.cs" />
+    <!-- Transitions (ADR-023): decision, anchors, plan building and the step navigation are free of WinUI;
+         the window side is behind ITransitionStage. -->
+    <Compile Include="..\..\src\Kvertis.App\Services\MotionSettings.cs" Link="FromApp\MotionSettings.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\NavigationService.cs" Link="FromApp\NavigationService.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\StepNavigationService.cs" Link="FromApp\StepNavigationService.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\TransitionAnchor.cs" Link="FromApp\TransitionAnchor.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\ITransitionService.cs" Link="FromApp\ITransitionService.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\ITransitionStage.cs" Link="FromApp\ITransitionStage.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\TransitionPlanner.cs" Link="FromApp\TransitionPlanner.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\TransitionService.cs" Link="FromApp\TransitionService.cs" />
   </ItemGroup>
 
   <!-- The scene models of the drawing layer (ADR-022) are free of WinUI and Win2D by definition, so the
