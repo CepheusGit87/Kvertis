@@ -2,6 +2,16 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Fensterposition merken
+
+**Geändert**
+
+- Die App merkt sich Position, Größe und Maximiert-Zustand des Hauptfensters (`WindowPlacement` in den Einstellungen, `Helpers/WindowPlacementHelper.cs`) und öffnet beim nächsten Start wieder dort, sofern der Bildschirm noch vorhanden ist und mindestens 200×200 Pixel im Arbeitsbereich liegen; sonst Standardlage.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Schritt 3 „Umwandeln“: Umwandeln-Seite, Koordinator, alter Start-Weg entfernt (ADR-021)
 
 **Geändert**

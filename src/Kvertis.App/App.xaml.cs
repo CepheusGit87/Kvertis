@@ -16,6 +16,7 @@ public partial class App : Application
 {
     private MainWindow? _window;
     private ServiceProvider? _services;
+    private JsonSettingsService? _settings;
 
     public App()
     {
@@ -33,6 +34,7 @@ public partial class App : Application
         try
         {
             var settings = await JsonSettingsService.LoadAsync(AppPaths.SettingsFile);
+            _settings = settings;
             ThemeHelper.ApplyLanguage(settings.Current.Language);
 
             var speedStore = new JsonFileSpeedProfileStore(AppPaths.SpeedProfileFile);
@@ -100,6 +102,7 @@ public partial class App : Application
 
     private async void OnWindowClosed(object sender, WindowEventArgs args)
     {
+        SaveWindowPlacement();
         if (_services is null)
         {
             return;
@@ -113,6 +116,30 @@ public partial class App : Application
         catch (Exception ex)
         {
             Log(ex, "Shutdown cleanup failed");
+        }
+    }
+
+    /// <summary>
+    /// Stores position, size and maximized state so the next start reopens in the same place.
+    /// Written synchronously: the process may end before an awaited save would finish.
+    /// </summary>
+    private void SaveWindowPlacement()
+    {
+        if (_window is null || _settings is null)
+        {
+            return;
+        }
+        try
+        {
+            var placement = _window.CurrentPlacement;
+            if (placement is not null)
+            {
+                _settings.UpdateNow(s => s.WindowPlacement = placement);
+            }
+        }
+        catch (Exception ex)
+        {
+            Log(ex, "Storing the window placement failed");
         }
     }
 

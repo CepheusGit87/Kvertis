@@ -18,6 +18,12 @@ public enum OutputLocationKind
     Custom,
 }
 
+/// <summary>
+/// Last position, size and state of the main window, in physical pixels of the virtual desktop.
+/// Null while the app has never been closed normally.
+/// </summary>
+public sealed record WindowPlacement(int X, int Y, int Width, int Height, bool IsMaximized);
+
 /// <summary>User settings, stored as JSON in the local app data folder (ADR-008). Never leaves the device.</summary>
 public sealed class AppSettings
 {
@@ -50,6 +56,9 @@ public sealed class AppSettings
 
     /// <summary>Last license status seen from the Store; used when the Store cannot be reached.</summary>
     public bool LastKnownPro { get; set; }
+
+    /// <summary>Where the main window stood when it was last closed. Null = open with the default size.</summary>
+    public WindowPlacement? WindowPlacement { get; set; }
 
     public AppSettings Clone() => (AppSettings)MemberwiseClone();
 }
@@ -120,6 +129,28 @@ public sealed class JsonSettingsService : ISettingsService, IDisposable
         await SaveAsync(copy).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Applies a change and writes the file right away on the calling thread. Used while the window is closing,
+    /// where an awaited save is not guaranteed to run to the end before the process exits.
+    /// </summary>
+    public void UpdateNow(Action<AppSettings> change)
+    {
+        ArgumentNullException.ThrowIfNull(change);
+        var copy = Current.Clone();
+        change(copy);
+        Current = copy;
+        Changed?.Invoke(this, EventArgs.Empty);
+        _saveLock.Wait(); // SemaphoreSlim, not a Task: nothing is being blocked on here.
+        try
+        {
+            WriteFile(copy);
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+    }
+
     public void Dispose() => _saveLock.Dispose();
 
     private async Task SaveAsync(AppSettings settings)
@@ -143,6 +174,25 @@ public sealed class JsonSettingsService : ISettingsService, IDisposable
         finally
         {
             _saveLock.Release();
+        }
+    }
+
+    private void WriteFile(AppSettings settings)
+    {
+        try
+        {
+            var directory = Path.GetDirectoryName(_path);
+            if (!string.IsNullOrEmpty(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            var temp = _path + ".tmp";
+            File.WriteAllText(temp, JsonSerializer.Serialize(settings, Options));
+            File.Move(temp, _path, overwrite: true);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            // Settings stay in memory for this session; the next change tries again.
         }
     }
 }
