@@ -76,7 +76,8 @@ public partial class App : Application
 
 #if DEBUG
     /// <summary>
-    /// Development aid: KVERTIS_STAGE_FILES holds paths separated by ";". They are staged like dropped files
+    /// Development aid: KVERTIS_STAGE_FILES holds paths separated by ";", or "@list.txt" for a text file with
+    /// one path per line (hundreds of files exceed the environment block). They are staged like dropped files
     /// and step 2 opens right away, so the target page can be looked at without clicking through step 1.
     /// Debug builds only; the shipped app never reads an environment variable.
     /// </summary>
@@ -87,9 +88,23 @@ public partial class App : Application
         {
             return;
         }
-        var paths = value
-            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(File.Exists)
+        IEnumerable<string> entries;
+        if (value.StartsWith('@'))
+        {
+            var list = value[1..].Trim();
+            if (!File.Exists(list))
+            {
+                return;
+            }
+            entries = await File.ReadAllLinesAsync(list);
+        }
+        else
+        {
+            entries = value.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        }
+        var paths = entries
+            .Select(p => p.Trim())
+            .Where(p => p.Length > 0 && File.Exists(p))
             .ToList();
         if (paths.Count == 0)
         {

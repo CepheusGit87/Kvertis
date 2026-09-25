@@ -218,6 +218,27 @@ public sealed class SwirlRenderer : IDisposable
         }
 
         DrawStars(session, hole.Stars);
+        if (hole.Mode == WhiteHoleMode.Dust)
+        {
+            DrawDustRings(session, hole, hole.Centre, 1f, 1f, palette);
+            DrawCore(session, hole.Centre, t, 1f, hole.Share, hole.Pulse, palette);
+            foreach (var pulse in hole.Pulses)
+            {
+                if (pulse.Alpha > 0.01f)
+                {
+                    session.DrawEllipse(hole.Centre, pulse.RadiusX, pulse.RadiusY, SceneBrushes.Argb(pulse.Color, pulse.Alpha), 1.6f);
+                }
+            }
+
+            foreach (var planet in hole.Planets)
+            {
+                DrawPlanet(session, planet.Position, planet.Radius, planet.Color, planet.Failed, 1f, palette);
+            }
+
+            DrawCounter(session, hole, palette, counterAlpha);
+            return;
+        }
+
         foreach (var orbit in hole.OrbitLines)
         {
             DrawOrbitLine(session, hole.Centre, orbit, 1f, 1f);
@@ -241,6 +262,50 @@ public sealed class SwirlRenderer : IDisposable
         }
 
         DrawCounter(session, hole, palette, counterAlpha);
+    }
+
+    /// <summary>
+    /// The dust rings (draft 2 "Staubringe"): a dashed ring per kind, a soft band in the kind colour that grows with
+    /// the fill, and the lit grains (1.7 DIP squares, additive in the dark). Drawn around <paramref name="centre"/>
+    /// with <paramref name="scale"/> and <paramref name="alphaFactor"/> so the finale can contract and fade them.
+    /// </summary>
+    internal void DrawDustRings(CanvasDrawingSession session, WhiteHoleScene hole, Vector2 centre, float scale, float alphaFactor, ScenePalette palette)
+    {
+        if (alphaFactor <= 0.01f || scale <= 0f)
+        {
+            return;
+        }
+
+        var dashed = SceneBrushes.Argb(palette.LineStrong, 0.55f * alphaFactor);
+        foreach (var ring in hole.Rings)
+        {
+            if (_brushes.Dash25 is { } dash)
+            {
+                session.DrawEllipse(centre, ring.RadiusX * scale, ring.RadiusY * scale, dashed, 1f, dash);
+            }
+            else
+            {
+                session.DrawEllipse(centre, ring.RadiusX * scale, ring.RadiusY * scale, dashed, 1f);
+            }
+        }
+
+        var previous = session.Blend;
+        session.Blend = palette.IsDark ? CanvasBlend.Add : CanvasBlend.SourceOver;
+        foreach (var ring in hole.Rings)
+        {
+            if (ring.GlowAlpha > 0f)
+            {
+                session.DrawEllipse(centre, ring.RadiusX * scale, ring.RadiusY * scale, SceneBrushes.Argb(ring.Color, ring.GlowAlpha * alphaFactor), ring.GlowWidth * scale);
+            }
+        }
+
+        foreach (var grain in hole.Grains)
+        {
+            var p = centre + grain.Offset * scale;
+            session.FillRectangle(p.X - 0.8f, p.Y - 0.8f, 1.7f, 1.7f, SceneBrushes.Argb(grain.Color, grain.Alpha * alphaFactor));
+        }
+
+        session.Blend = previous;
     }
 
     internal static void DrawStars(CanvasDrawingSession session, IReadOnlyList<SceneStar> stars)
@@ -341,23 +406,27 @@ public sealed class SwirlRenderer : IDisposable
             return;
         }
 
-        var arrived = 0;
-        foreach (var planet in hole.Planets)
-        {
-            if (!planet.Failed)
-            {
-                arrived++;
-            }
-        }
-
-        var big = arrived.ToString(CultureInfo.CurrentCulture);
+        var big = hole.Arrived.ToString(CultureInfo.CurrentCulture);
         var small = " " + string.Format(CultureInfo.CurrentCulture, CounterSuffixFormat, hole.N);
         var w1 = _brushes.Measure(_brushes.Creator, big, _brushes.CounterBig);
         var w2 = _brushes.Measure(_brushes.Creator, small, _brushes.CounterSmall);
-        var y = hole.Centre.Y + hole.OrbitRadius(hole.Orbits - 1) * WhiteHoleScene.Flatten + 22f;
+        var y = hole.CounterY;
         var x0 = hole.Centre.X - (w1 + w2) / 2f;
         session.DrawText(big, new Vector2(x0, y - 10f), SceneBrushes.Argb(palette.Ink, alpha), _brushes.CounterBig);
         session.DrawText(small, new Vector2(x0 + w1, y - 6f), SceneBrushes.Argb(palette.Muted, alpha), _brushes.CounterSmall);
+    }
+
+    /// <summary>A number centred under a collective planet of the finale ring (dust mode).</summary>
+    internal void DrawPlanetCount(CanvasDrawingSession session, Vector2 position, float radius, int count, ScenePalette palette, float alpha)
+    {
+        if (alpha <= 0.01f || count <= 0 || _brushes.CounterSmall is null || _brushes.Creator is null)
+        {
+            return;
+        }
+
+        var text = count.ToString(CultureInfo.CurrentCulture);
+        var w = _brushes.Measure(_brushes.Creator, text, _brushes.CounterSmall);
+        session.DrawText(text, new Vector2(position.X - w / 2f, position.Y + radius + 4f), SceneBrushes.Argb(palette.Ink, alpha), _brushes.CounterSmall);
     }
 
     // ----- sheets ------------------------------------------------------------------------------------

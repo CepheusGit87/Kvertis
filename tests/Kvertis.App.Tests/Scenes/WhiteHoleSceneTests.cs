@@ -93,10 +93,14 @@ public class WhiteHoleSceneTests
     }
 
     [Fact]
-    public void Empty_places_are_capped_at_150()
+    public void Empty_places_are_capped_by_the_budget()
     {
-        var scene = WithPlan(400);
-        scene.WhiteHole.EmptyPlaces.Count.ShouldBe(150);
+        // Below 150 files the places are drawn; the budget caps how many (the default 150 never bites there).
+        var scene = SceneTestTime.NewSwirl(budget: new SwirlBudget(MaxEmptyPlaces: 100));
+        scene.Enqueue(new SetPlan(SceneTestTime.Files(149)));
+        scene.Update(TimeSpan.Zero);
+        scene.WhiteHole.EmptyPlaces.Count.ShouldBe(100);
+        WithPlan(149).WhiteHole.EmptyPlaces.Count.ShouldBe(149);
         scene.WhiteHole.Stars.Count.ShouldBe(70);
     }
 

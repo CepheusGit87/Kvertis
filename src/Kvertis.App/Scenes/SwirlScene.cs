@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Numerics;
+using Kvertis.Engine.Abstractions;
 
 namespace Kvertis.App.Scenes;
 
@@ -311,9 +312,6 @@ public sealed class SwirlScene
 
         UpdateFiles();
         Finale?.Update(elapsed);
-        WhiteHole.Update(Time, Finale?.NearStarsFactor ?? 1f);
-        UpdateStack();
-        UpdateHalo();
 
         var pixels = 0;
         foreach (var file in _files)
@@ -324,7 +322,16 @@ public sealed class SwirlScene
             }
         }
 
-        ParticleCount = pixels + (Finale?.ParticleCount ?? 0);
+        // The dust rings take what pixels, finale dust and sparks leave of the hard particle cap; once the
+        // finale has faded the rings out they need no grains at all.
+        var finaleParticles = Finale?.ParticleCount ?? 0;
+        var ringsVisible = Finale is null || Finale.OrbitAlpha > 0.01f;
+        var allowedGrains = ringsVisible ? Math.Max(0, _budget.MaxParticles - pixels - finaleParticles) : 0;
+        WhiteHole.Update(Time, Finale?.NearStarsFactor ?? 1f, allowedGrains);
+        UpdateStack();
+        UpdateHalo();
+
+        ParticleCount = pixels + finaleParticles + WhiteHole.GrainCount;
         PublishSnapshot();
     }
 
@@ -378,7 +385,7 @@ public sealed class SwirlScene
         _files.Clear();
         _byId.Clear();
         Finale = null;
-        var n = 0;
+        var kinds = new List<MediaKind>(plan.Files.Count);
         foreach (var spec in plan.Files)
         {
             if (_byId.ContainsKey(spec.Id))
@@ -391,11 +398,11 @@ public sealed class SwirlScene
             _byId[spec.Id] = file;
             if (!spec.HasOwnLocation)
             {
-                n++;
+                kinds.Add(spec.Kind);
             }
         }
 
-        WhiteHole.SetPlan(n);
+        WhiteHole.SetPlan(kinds);
     }
 
     private void ApplyBegin(BeginFile begin)

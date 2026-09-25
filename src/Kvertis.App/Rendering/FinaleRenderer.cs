@@ -72,6 +72,12 @@ internal sealed class FinaleRenderer : IDisposable
                 _swirl.DrawOrbitLine(session, holes.White, orbits[j], finale.OrbitScale, finale.OrbitAlpha);
             }
 
+            if (finale.IsDust)
+            {
+                // The dust rings contract with the orbits and fade with them; their grains ride along.
+                _swirl.DrawDustRings(session, hole, holes.White, finale.OrbitScale, finale.OrbitAlpha, palette);
+            }
+
             if (finale.Dust.Count > 0)
             {
                 session.Blend = additive;
@@ -95,7 +101,7 @@ internal sealed class FinaleRenderer : IDisposable
             session.Blend = CanvasBlend.SourceOver;
 
             var drawn = finale.TrailDrawn;
-            var radius = hole.PlanetRadius;
+            var radius = finale.PlanetRadius;
             foreach (var planet in finale.Planets)
             {
                 if (!planet.Failed && planet.Alpha > 0.01f)
@@ -146,7 +152,12 @@ internal sealed class FinaleRenderer : IDisposable
 
         foreach (var planet in finale.Planets)
         {
-            _swirl.DrawPlanet(session, planet.RingPosition, hole.PlanetRadius, planet.Color, planet.Failed, planet.RingAlpha, palette);
+            _swirl.DrawPlanet(session, planet.RingPosition, finale.PlanetRadius, planet.Color, planet.Failed, planet.RingAlpha, palette);
+            if (planet.Count > 0)
+            {
+                // Dust mode: the collective planet carries the number of its files once it sits on the ring.
+                _swirl.DrawPlanetCount(session, planet.RingPosition, finale.PlanetRadius, planet.Count, palette, planet.RingAlpha * finale.RingLineAlpha / 0.22f);
+            }
         }
 
         session.Transform = previousTransform;

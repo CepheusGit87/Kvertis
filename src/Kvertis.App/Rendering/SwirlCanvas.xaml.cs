@@ -37,6 +37,19 @@ public sealed partial class SwirlCanvas : UserControl, IDisposable
     private int _shakesRaised;
     private bool _reportRaised;
 
+#if DEBUG
+    // Frame statistics (KVERTIS_GALAXY_STATS=1, Debug builds only): the time between consecutive Draw calls,
+    // the mean over the last 60 consecutive draws and the worst frame, written every 5 s to logs/stats.log.
+    private static readonly bool StatsEnabled = Environment.GetEnvironmentVariable("KVERTIS_GALAXY_STATS") == "1";
+    private static readonly TimeSpan StatsInterval = TimeSpan.FromSeconds(5);
+    private readonly double[] _statsWindow = new double[60];
+    private long _statsLastDraw;
+    private long _statsLastLog;
+    private int _statsFrames;
+    private double _statsSum;
+    private double _statsMax;
+#endif
+
     public SwirlCanvas()
     {
         InitializeComponent();
@@ -290,12 +303,81 @@ public sealed partial class SwirlCanvas : UserControl, IDisposable
         try
         {
             renderer.Draw(args.DrawingSession, scene);
+#if DEBUG
+            if (StatsEnabled)
+            {
+                RecordFrame(scene);
+            }
+#endif
         }
         catch (Exception ex)
         {
             Fail(sender, ex, "Drawing the swirl failed");
         }
     }
+
+#if DEBUG
+    private void RecordFrame(SwirlScene scene)
+    {
+        var now = System.Diagnostics.Stopwatch.GetTimestamp();
+        if (_statsLastDraw != 0)
+        {
+            var ms = (now - _statsLastDraw) * 1000d / System.Diagnostics.Stopwatch.Frequency;
+            // A gap over a second is a pause, not a frame.
+            if (ms < 1000d)
+            {
+                _statsWindow[_statsFrames % _statsWindow.Length] = ms;
+                _statsFrames++;
+                _statsSum += ms;
+                _statsMax = Math.Max(_statsMax, ms);
+            }
+        }
+
+        _statsLastDraw = now;
+        if (_statsLastLog == 0)
+        {
+            _statsLastLog = now;
+            return;
+        }
+
+        if (TimeSpan.FromSeconds((now - _statsLastLog) / (double)System.Diagnostics.Stopwatch.Frequency) < StatsInterval || _statsFrames == 0)
+        {
+            return;
+        }
+
+        var window = Math.Min(_statsFrames, _statsWindow.Length);
+        var windowSum = 0d;
+        for (var i = 0; i < window; i++)
+        {
+            windowSum += _statsWindow[i];
+        }
+
+        var line = string.Format(
+            System.Globalization.CultureInfo.InvariantCulture,
+            "{0:yyyy-MM-dd HH:mm:ss.fff} swirl frames={1} ms/frame mean={2:F2} last60={3:F2} max={4:F2} particles={5} finale={6}",
+            DateTime.Now,
+            _statsFrames,
+            _statsSum / _statsFrames,
+            windowSum / window,
+            _statsMax,
+            scene.ParticleCount,
+            scene.Snapshot.FinalePhase?.ToString() ?? "-");
+        try
+        {
+            Directory.CreateDirectory(Services.AppPaths.LogsFolder);
+            File.AppendAllText(Path.Combine(Services.AppPaths.LogsFolder, "stats.log"), line + Environment.NewLine);
+        }
+        catch (Exception ex)
+        {
+            _logger?.LogDebug(ex, "Writing the frame statistics failed");
+        }
+
+        _statsLastLog = now;
+        _statsFrames = 0;
+        _statsSum = 0d;
+        _statsMax = 0d;
+    }
+#endif
 
     /// <summary>An error on the game loop thread must never take the app down: the host shows the XAML view.</summary>
     private void Fail(ICanvasAnimatedControl sender, Exception exception, string message)

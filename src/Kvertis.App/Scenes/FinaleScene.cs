@@ -34,16 +34,23 @@ public sealed class FinalePlanet
 
     private readonly Vector2[] _trail = new Vector2[TrailCapacity];
 
-    internal FinalePlanet(int slot, MediaKind kind, bool failed, SceneColor color)
+    internal FinalePlanet(int slot, MediaKind kind, bool failed, SceneColor color, int count = 0)
     {
         Slot = slot;
         Kind = kind;
         Failed = failed;
         Color = color;
+        Count = count;
     }
 
     /// <summary>The place on the white hole this planet came from.</summary>
     public int Slot { get; }
+
+    /// <summary>
+    /// Dust mode: how many files this collective planet stands for (the renderer writes the number next to it on
+    /// the ring); 0 for a planet of a single file.
+    /// </summary>
+    public int Count { get; }
 
     public MediaKind Kind { get; }
 
@@ -164,6 +171,7 @@ public sealed class FinaleScene
     private readonly Vector2 _s0;
     private readonly float _startTime;
     private readonly int _orbits;
+    private readonly bool _dustMode;
 
     private long _simSteps;
     private bool _completed;
@@ -193,7 +201,8 @@ public sealed class FinaleScene
         Failed = failed;
         _whiteHole = whiteHole;
         _startTime = startTime;
-        _orbits = whiteHole.Orbits;
+        _dustMode = whiteHole.Mode == WhiteHoleMode.Dust;
+        _orbits = _dustMode ? Math.Max(1, whiteHole.RingCount) : whiteHole.Orbits;
 
         BlackStart = blackHole;
         WhiteStart = whiteHole.Centre;
@@ -246,14 +255,54 @@ public sealed class FinaleScene
 
         // ---- planets, dust, sparks, stars ---------------------------------------------------------
         var slots = whiteHole.Slots;
-        for (var s = 0; s < slots.Count; s++)
+        if (_dustMode)
         {
-            _planets.Add(new FinalePlanet(s, slots[s].Kind, slots[s].Failed, whiteHole.ColourOf(slots[s])));
+            // Dust rings: one collective planet per kind (and one coral one per kind with failures), numbered.
+            for (var j = 0; j < whiteHole.RingCount; j++)
+            {
+                var kind = whiteHole.Kinds[j];
+                var completedOfKind = 0;
+                var failedOfKind = 0;
+                foreach (var slot in slots)
+                {
+                    if (slot.Kind != kind)
+                    {
+                        continue;
+                    }
+
+                    if (slot.Failed)
+                    {
+                        failedOfKind++;
+                    }
+                    else
+                    {
+                        completedOfKind++;
+                    }
+                }
+
+                if (completedOfKind > 0)
+                {
+                    _planets.Add(new FinalePlanet(j, kind, false, palette.For(kind), completedOfKind));
+                }
+
+                if (failedOfKind > 0)
+                {
+                    _planets.Add(new FinalePlanet(j + whiteHole.RingCount, kind, true, palette.Error, failedOfKind));
+                }
+            }
+        }
+        else
+        {
+            for (var s = 0; s < slots.Count; s++)
+            {
+                _planets.Add(new FinalePlanet(s, slots[s].Kind, slots[s].Failed, whiteHole.ColourOf(slots[s])));
+            }
         }
 
         var order = _planets
             .OrderBy(p => KindRank(p.Kind))
             .ThenBy(p => p.Slot)
+            .ThenBy(p => p.Failed)
             .ToList();
         for (var o = 0; o < order.Count; o++)
         {
@@ -311,6 +360,12 @@ public sealed class FinaleScene
     public ScenePalette Palette { get; set; }
 
     public int Completed { get; }
+
+    /// <summary>True when the white hole showed dust rings: the planets are one per kind, with a number.</summary>
+    public bool IsDust => _dustMode;
+
+    /// <summary>Radius of the planets: the collective planets of dust mode are larger (4.5), else the white hole radius.</summary>
+    public float PlanetRadius => _dustMode ? 4.5f : _whiteHole.PlanetRadius;
 
     public int Failed { get; }
 
@@ -504,9 +559,8 @@ public sealed class FinaleScene
     /// <summary>The ideal place of planet <paramref name="slot"/> (<c>zielAbschluss</c>).</summary>
     public Vector2 PlanetTarget(int slot, float f)
     {
-        var j = slot % _orbits;
         var white = Holes(f).White;
-        var r = _whiteHole.OrbitRadius(j) * OrbitScaleAt(f);
+        var r = OrbitRadiusOf(slot) * OrbitScaleAt(f);
         var w = OrbitAngle(slot, f);
         var onOrbit = white + new Vector2(MathF.Cos(w) * r, MathF.Sin(w) * r * WhiteHoleScene.Flatten);
         return Vector2.Lerp(onOrbit, white, SceneMotion.Ease(SceneMotion.Phase(f - Anl, M - 0.5f, M)));
@@ -586,7 +640,7 @@ public sealed class FinaleScene
             {
                 var a = PlanetTarget(p.Slot, f);
                 var b = PlanetTarget(p.Slot, f - h);
-                var j = p.Slot % _orbits;
+                var j = OrbitIndexOf(p.Slot);
                 var kf = float.Lerp(150f, 45f, (float)j / Math.Max(1, _orbits - 1)) * (1f + 12f * near * near);
                 var c = MathF.Sqrt(kf);
                 var velocity = p.Velocity + (kf * (a - p.Position) + c * ((a - b) / h - p.Velocity)) * h;
@@ -636,7 +690,8 @@ public sealed class FinaleScene
         WhiteHalo = new SceneGlow(holes.White, 50f + 40f * Rise, Palette.Mint, 0.22f * Rise * (1f - SceneMotion.Phase(fd, 0f, 1f)));
         MergeGlow = new SceneGlow(EndCentre, 40f + 80f * holes.Near, Palette.Glow, PlanetsVisible ? 0.35f * holes.Near * holes.Near : 0f);
 
-        var fade = 1f - SceneMotion.Phase(fd, M - 0.3f, M);
+        // Dust mode: the collective planets did not exist during the round, they fade in over 0.35 s.
+        var fade = (1f - SceneMotion.Phase(fd, M - 0.3f, M)) * (_dustMode ? SceneMotion.Phase(f, 0f, 0.35f) : 1f);
         foreach (var p in _planets)
         {
             p.Alpha = PlanetsVisible ? fade : 0f;
@@ -701,7 +756,7 @@ public sealed class FinaleScene
                 continue;
             }
 
-            var r0 = _whiteHole.OrbitRadius(planet.Slot % _orbits) * OrbitScaleAt(fr);
+            var r0 = OrbitRadiusOf(planet.Slot) * OrbitScaleAt(fr);
             var w0 = OrbitAngle(planet.Slot, fr);
             var head = DustAt(f, fr, r0, w0, planet.Slot, q.Scatter, white);
             var tail = DustAt(MathF.Max(fr, f - 0.045f), fr, r0, w0, planet.Slot, q.Scatter, white);
@@ -830,7 +885,18 @@ public sealed class FinaleScene
     // ----- helpers ----------------------------------------------------------------------------------
 
     private float OrbitAngle(int slot, float f) =>
-        _whiteHole.Angle(slot, _startTime + f) + 0.9f * MathF.Pow(24f / _whiteHole.OrbitRadius(slot % _orbits), 0.7f) * Boost(f);
+        BaseAngle(slot, _startTime + f) + 0.9f * MathF.Pow(24f / OrbitRadiusOf(slot), 0.7f) * Boost(f);
+
+    /// <summary>Orbit of a slot: the ring of the kind in dust mode, else <c>k mod B</c>.</summary>
+    private int OrbitIndexOf(int slot) => slot % _orbits;
+
+    private float OrbitRadiusOf(int slot) => _dustMode ? _whiteHole.RingRadius(OrbitIndexOf(slot)) : _whiteHole.OrbitRadius(OrbitIndexOf(slot));
+
+    // Dust mode: the collective planet rides its ring at the ring rotation, offset per ring so the planets
+    // never line up, the coral planet of the failures (slot + rings) opposite; ring mode: the place angle.
+    private float BaseAngle(int slot, float t) => _dustMode
+        ? _whiteHole.RingRotation(OrbitIndexOf(slot), t) + OrbitIndexOf(slot) * 2.39f + (slot / _orbits) * MathF.PI
+        : _whiteHole.Angle(slot, t);
 
     private float Boost(float f) => f <= 0f ? 0f : Sample(_boost, f);
 
