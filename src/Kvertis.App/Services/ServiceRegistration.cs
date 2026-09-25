@@ -160,6 +160,7 @@ public static class ServiceRegistration
         services.AddSingleton<MainViewModel>();
         services.AddSingleton<Kvertis.App.ViewModels.Target.TargetPageViewModel>();
         services.AddSingleton<Kvertis.App.ViewModels.Convert.ConvertPageViewModel>();
+        services.AddSingleton<IHistoryActions, HistoryActions>();
         services.AddSingleton<HistoryViewModel>();
         services.AddSingleton<ProViewModel>();
         services.AddTransient<SettingsViewModel>();

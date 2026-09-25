@@ -62,6 +62,10 @@
     <Compile Include="..\..\src\Kvertis.App\Services\ITransitionStage.cs" Link="FromApp\ITransitionStage.cs" />
     <Compile Include="..\..\src\Kvertis.App\Services\TransitionPlanner.cs" Link="FromApp\TransitionPlanner.cs" />
     <Compile Include="..\..\src\Kvertis.App\Services\TransitionService.cs" Link="FromApp\TransitionService.cs" />
+    <!-- The history overlay: filter, search, selection and the detail texts are free of WinUI; the side effects
+         sit behind IHistoryActions. -->
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\HistoryViewModel.cs" Link="FromApp\HistoryViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\ErrorMessageMapper.cs" Link="FromApp\ErrorMessageMapper.cs" />
   </ItemGroup>
 
   <!-- The scene models of the drawing layer (ADR-022) are free of WinUI and Win2D by definition, so the

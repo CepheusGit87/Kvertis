@@ -37,6 +37,7 @@ public sealed partial class MainPage : Page, ITransitionAnchors
 
     private readonly ILocalizer _loc;
     private readonly ITransitionService _transitions;
+    private readonly HistoryViewModel _history;
 
     private bool _narrow;
     private bool _low;
@@ -46,7 +47,7 @@ public sealed partial class MainPage : Page, ITransitionAnchors
     public MainPage()
     {
         ViewModel = App.Services.GetRequiredService<MainViewModel>();
-        History = App.Services.GetRequiredService<HistoryViewModel>();
+        _history = App.Services.GetRequiredService<HistoryViewModel>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
         _transitions = App.Services.GetRequiredService<ITransitionService>();
         InitializeComponent();
@@ -65,6 +66,14 @@ public sealed partial class MainPage : Page, ITransitionAnchors
         ApplySurfaceVisibility();
         // Only one drawing loop runs at a time (ADR-023): the galaxy stands still while the overlay flies.
         _transitions.Changed += (_, _) => UpdatePaused();
+        // The history overlay covers the whole window: the galaxy stands still behind it.
+        _history.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(HistoryViewModel.IsOpen))
+            {
+                UpdatePaused();
+            }
+        };
 
         // A minimised or hidden window must not keep the drawing thread busy (ADR-018).
         if (App.Services.GetRequiredService<IWindowContext>().Window is { } window)
@@ -81,8 +90,6 @@ public sealed partial class MainPage : Page, ITransitionAnchors
 
     public MainViewModel ViewModel { get; }
 
-    public HistoryViewModel History { get; }
-
     // ---- Page lifetime ------------------------------------------------------------------------------
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -97,9 +104,6 @@ public sealed partial class MainPage : Page, ITransitionAnchors
         base.OnNavigatedFrom(e);
         Galaxy.Suspend();
     }
-
-    /// <summary>The history pane covers the galaxy: pausing is enough, the surface may stay.</summary>
-    private void OnHistoryPaneChanged(SplitView sender, object args) => UpdatePaused();
 
     private void OnSurfaceVisibilityChanged(object? sender, EventArgs e) => ApplySurfaceVisibility();
 
@@ -117,10 +121,10 @@ public sealed partial class MainPage : Page, ITransitionAnchors
     }
 
     /// <summary>
-    /// The galaxy only runs while the window is visible, the page is the current step and the history pane is
-    /// closed; all three reasons meet here.
+    /// The galaxy only runs while the window is visible, the page is the current step and the history overlay
+    /// is closed; all three reasons meet here (the overlay only pauses, the surface may stay).
     /// </summary>
-    private void UpdatePaused() => Galaxy.SetPaused(!_windowVisible || HistorySplitView.IsPaneOpen || _transitions.IsTransitioning);
+    private void UpdatePaused() => Galaxy.SetPaused(!_windowVisible || _history.IsOpen || _transitions.IsTransitioning);
 
     // ---- Transition anchors (ADR-023) ---------------------------------------------------------------
 

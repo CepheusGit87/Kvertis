@@ -94,6 +94,13 @@
 
     <Frame x:Name="ContentFrame" Grid.Row="2" />
 
+    <!-- The history as a full-window layer under the title bar (draft .verlauf, inset 42 0 0 0). It covers the
+         step header and the frame and lies below the transition overlay. -->
+    <views:HistoryOverlay
+      x:Name="HistoryOverlayControl"
+      Grid.Row="1"
+      Grid.RowSpan="2" />
+
     <!-- The drawn step transitions (ADR-023) fly over the step header and the frame. Transparent and paused
          while idle, never a target for input or the narrator. -->
     <rendering:TransitionOverlay

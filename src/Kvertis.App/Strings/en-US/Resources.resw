@@ -775,16 +775,16 @@
     <value>Again with the same settings</value>
   </data>
   <data name="History_Again_Text.Text" xml:space="preserve">
-    <value>Again</value>
+    <value>Again with the same settings</value>
   </data>
   <data name="History_Clear_Body" xml:space="preserve">
     <value>The list of recent conversions is deleted. Your files are not touched.</value>
   </data>
   <data name="History_Clear_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Clear</value>
+    <value>Clear history</value>
   </data>
   <data name="History_Clear_Button.Content" xml:space="preserve">
-    <value>Clear</value>
+    <value>Clear history</value>
   </data>
   <data name="History_Clear_Confirm" xml:space="preserve">
     <value>Clear</value>
@@ -839,6 +839,114 @@
   </data>
   <data name="History_Title.Text" xml:space="preserve">
     <value>History</value>
+  </data>
+  <data name="History_Overlay.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>History</value>
+  </data>
+  <data name="History_Close_Text.Text" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="History_Filters.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Filter by file type</value>
+  </data>
+  <data name="History_Filter_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="History_Filter_Image" xml:space="preserve">
+    <value>Images</value>
+  </data>
+  <data name="History_Filter_Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="History_Filter_Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="History_Filter_Document" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="History_Filter_Model" xml:space="preserve">
+    <value>3D</value>
+  </data>
+  <data name="History_Filter_Failed" xml:space="preserve">
+    <value>Failed</value>
+  </data>
+  <data name="History_Search_Label.Text" xml:space="preserve">
+    <value>Search by file name</value>
+  </data>
+  <data name="History_Search_Box.PlaceholderText" xml:space="preserve">
+    <value>e.g. IMG_19, podcast or offer</value>
+  </data>
+  <data name="History_Match_Of" xml:space="preserve">
+    <value>of {0} conversions</value>
+  </data>
+  <data name="History_Match_One" xml:space="preserve">
+    <value>conversion</value>
+  </data>
+  <data name="History_Match_Many" xml:space="preserve">
+    <value>conversions</value>
+  </data>
+  <data name="History_NoMatch_Title.Text" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="History_NoMatch_Text.Text" xml:space="preserve">
+    <value>Try another name or another filter.</value>
+  </data>
+  <data name="History_ResetFilters_Button.Content" xml:space="preserve">
+    <value>Reset filters</value>
+  </data>
+  <data name="History_ResetFilters_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Reset filters</value>
+  </data>
+  <data name="History_Detail.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Details of the chosen conversion</value>
+  </data>
+  <data name="History_Detail_Before.Text" xml:space="preserve">
+    <value>Before</value>
+  </data>
+  <data name="History_Detail_After.Text" xml:space="preserve">
+    <value>After</value>
+  </data>
+  <data name="History_Detail_Saved.Text" xml:space="preserve">
+    <value>Saved</value>
+  </data>
+  <data name="History_Detail_Purpose.Text" xml:space="preserve">
+    <value>Purpose</value>
+  </data>
+  <data name="History_Detail_Quality.Text" xml:space="preserve">
+    <value>Quality</value>
+  </data>
+  <data name="History_Detail_Duration.Text" xml:space="preserve">
+    <value>Duration</value>
+  </data>
+  <data name="History_Detail_Metadata.Text" xml:space="preserve">
+    <value>Metadata</value>
+  </data>
+  <data name="History_Detail_Location.Text" xml:space="preserve">
+    <value>Saved to</value>
+  </data>
+  <data name="History_Detail_Files.Text" xml:space="preserve">
+    <value>FILES</value>
+  </data>
+  <data name="History_Detail_Files.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Files</value>
+  </data>
+  <data name="History_Stamp_Text" xml:space="preserve">
+    <value>{0} · {1}</value>
+  </data>
+  <data name="History_Value_None" xml:space="preserve">
+    <value>–</value>
+  </data>
+  <data name="History_Metadata_Strip" xml:space="preserve">
+    <value>removed</value>
+  </data>
+  <data name="History_Metadata_Keep" xml:space="preserve">
+    <value>kept</value>
+  </data>
+  <data name="History_ShowInFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Show in folder</value>
+  </data>
+  <data name="History_ShowInFolder_Text.Text" xml:space="preserve">
+    <value>Show in folder</value>
   </data>
   <data name="Kind_Audio_Name" xml:space="preserve">
     <value>Audio</value>

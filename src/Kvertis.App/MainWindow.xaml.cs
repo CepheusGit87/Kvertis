@@ -66,6 +66,18 @@ public sealed partial class MainWindow : Window
         }
         AppWindow.Changed += OnAppWindowChanged;
 
+        // The history overlay (docs/06-design.md, Teil E Nachtrag): the title bar button opens it; while it is
+        // open the steps below are disabled, so neither Tab nor an accelerator of a page reaches them.
+        HistoryOverlayControl.ViewModel = _history;
+        HistoryOverlayControl.FallbackFocusTarget = HistoryButton;
+        _history.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(HistoryViewModel.IsOpen))
+            {
+                ApplyHistoryOpen(_history.IsOpen);
+            }
+        };
+
         _navigation.Attach(ContentFrame);
         _navigation.Navigated += (_, _) => BackButton.Visibility = _navigation.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
 
@@ -141,10 +153,28 @@ public sealed partial class MainWindow : Window
         }
     }
 
+    private void ApplyHistoryOpen(bool open)
+    {
+        ContentFrame.IsEnabled = !open;
+        StepHeaderControl.IsEnabled = !open;
+        // .ikon.an: the button of the open layer shows mint on the mint surface.
+        if (open)
+        {
+            HistoryButton.Background = Ui.Brush("KvMintSurfaceBrush");
+            HistoryButton.Foreground = Ui.Brush("KvMintBrush");
+        }
+        else
+        {
+            HistoryButton.ClearValue(Microsoft.UI.Xaml.Controls.Control.BackgroundProperty);
+            HistoryButton.ClearValue(Microsoft.UI.Xaml.Controls.Control.ForegroundProperty);
+        }
+    }
+
     private void OnBackClick(object sender, RoutedEventArgs e)
     {
         if (!_transitions.IsTransitioning)
         {
+            _history.IsOpen = false;
             _navigation.GoBack();
         }
     }
@@ -156,7 +186,7 @@ public sealed partial class MainWindow : Window
         {
             return;
         }
-        _navigation.Navigate(AppPage.Main);
+        // The layer lies over whatever step is showing; it no longer needs step 1 below it.
         _history.IsOpen = !_history.IsOpen;
     }
 
@@ -164,6 +194,7 @@ public sealed partial class MainWindow : Window
     {
         if (!_transitions.IsTransitioning)
         {
+            _history.IsOpen = false;
             _navigation.Navigate(AppPage.Settings);
         }
     }
@@ -172,6 +203,7 @@ public sealed partial class MainWindow : Window
     {
         if (!_transitions.IsTransitioning)
         {
+            _history.IsOpen = false;
             _navigation.Navigate(AppPage.Pro);
         }
     }
