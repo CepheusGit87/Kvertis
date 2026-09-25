@@ -139,7 +139,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
     <div class="k-titel"><span class="k-nr">Neu</span><h2>Planeten mit eigener Trägheit</h2></div>
     <div class="fenster"><div class="faden" aria-hidden="true"><span class="kn ok"><i>✓</i><b>Dateien</b></span><span class="sg"></span><span class="kn ok"><i>✓</i><b>Ziel</b></span><span class="sg"></span><span class="kn an"><i>3</i><b>Umwandeln</b></span></div><div class="buehne"></div><div class="liste"></div></div>
     <div class="punkte">
-      <div><small>1 · Schneller</small><p>Gut eine Sekunde lang drehen nur die Planeten hoch, gleich zu Beginn zügig, am Ende auf das Fünffache, im Tanz bis zum Siebeneinhalbfachen. Die Bahnlinien verblassen dabei, sichtbar bleiben die Planeten mit ihren länger werdenden Schweifen.</p></div>
+      <div><small>1 · Schneller</small><p>Knapp anderthalb Sekunden lang drehen nur die Planeten hoch: Erst kaum merklich, dann immer steiler, bis auch die äußeren rasen. Dabei ziehen sich ihre Bahnen etwas zusammen. Die Bahnlinien verblassen dabei, sichtbar bleiben die Planeten mit ihren länger werdenden Schweifen.</p></div>
       <div><small>2 · Umeinander</small><p>Kurz danach setzen sich beide Löcher in Bewegung und kreisen auf Abstand um ihren gemeinsamen Mittelpunkt. Dieser Mittelpunkt wandert dabei in die Mitte der Fläche, beide Löcher kreisen gleich weit um ihn. Die Planeten schwingen der Bewegung nach, die äußeren stärker als die inneren.</p></div>
       <div><small>3 · Knall</small><p>Die Kreise werden enger und schneller, die Planeten werden eingesogen, die Löcher verschmelzen. Kurze Stille, dann die Explosion. Danach Ring, Häkchen und Bericht in der Mitte.</p></div>
     </div>
@@ -299,7 +299,7 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
      1) 0 … PH1: nur die Planeten werden langsam schneller, das weiße Loch steht.
      2) PH1 … ANL: das ganze System beginnt sich zu drehen (je Version anders).
      3) ab ANL: Tanz zum schwarzen Loch (fd = f - ANL), Verschmelzung bei fd = M, nach STILL die Detonation. */
-  const ANK = .9, PH1 = 1.1, PH2 = .9, ANL = PH1 + PH2, M = 2.5, RUNDEN = 4, FLt = .45, STILL = .28;
+  const ANK = .9, PH1 = 1.4, PH2 = .9, ANL = PH1 + PH2, M = 2.5, RUNDEN = 4, FLt = .45, STILL = .28;
   const DET = ANL + M + STILL;
   const rotV = (v, a) => ({ x: v.x * Math.cos(a) - v.y * Math.sin(a), y: v.x * Math.sin(a) + v.y * Math.cos(a) });
 
@@ -322,7 +322,10 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
     // Planetenuhr: sanft anfahren, in PH1 auf das Vierfache, dann weiter bis zum Siebenfachen
     const n2 = Math.ceil((DET + 3) / dt), Z = new Float32Array(n2);
     let z = 0; for (let i = 0; i < n2; i++) { const f = i * dt; if (i) z += (1 + 4 * (1 - Math.pow(1 - phase(f, 0, PH1), 2)) + 1 * phase(f, PH1, ANL) + 1.5 * phase(f, ANL, ANL + M)) * dt; Z[i] = z; }
-    return { D, W, Z, dt, n, n2, d0, w0, fl0, s0: { x: (S.H.x + S.T.x) / 2, y: (S.H.y + S.T.y) / 2 } };
+    // Schub für alle Bahnen: beginnt kaum merklich, steigt dann steil an (exponentiell), im Tanz noch etwas mehr
+    const X = new Float32Array(n2), E3 = Math.exp(3.2) - 1;
+    let x = 0; for (let i = 0; i < n2; i++) { const f = i * dt; if (i) x += (14 * (Math.exp(3.2 * phase(f, 0, PH1)) - 1) / E3 + 4 * phase(f, ANL, ANL + M)) * dt; X[i] = x; }
+    return { D, W, Z, X, dt, n, n2, d0, w0, fl0, s0: { x: (S.H.x + S.T.x) / 2, y: (S.H.y + S.T.y) / 2 } };
   }
   // Mittelpunkt: startet zwischen den Löchern und wandert, sobald sie zu kreisen beginnen, in die Mitte der Fläche
   const mitteBei = (S, f) => P2(S.tanz.s0, S.C, ease(phase(f, PH1, ANL + 1.2)));
@@ -350,9 +353,13 @@ h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-
      Jeder Planet hat Lage und Tempo und wird zu seinem Platz auf der Bahn gezogen.
      Kreist das System gleichmäßig, sitzt er genau auf der Bahn; wird das weiße Loch beschleunigt,
      bleibt er zurück und schwingt nach. Außen weicher als innen. So wird nichts als Bild verschoben. */
-  const skalVon = f => lerp(1, .45, ease(phase(f - ANL, 0, M)));
+  // Bahnen ziehen sich schon beim Hochdrehen etwas zusammen, im Tanz weiter bis zum Einsaugen
+  const skalVon = f => lerp(1, .74, ease(phase(f, .3, PH1 + .5))) * lerp(1, .6, ease(phase(f - ANL, 0, M)));
+  const schub = (S, f) => { const T = S.tanz; return f <= 0 ? 0 : T.X[Math.min(T.n2 - 1, Math.round(f / T.dt))]; };
   function ziel(S, U, k, f) {
-    const j = k % U.B, m = loecher(S, 0, f).weiss, w = U.winkel(k, uhr(S, f)), r = U.rx(j) * skalVon(f);
+    // Grundlauf wie immer plus gemeinsamer Schub; außen fällt er weniger ab als beim Grundlauf, damit auch die äußeren Planeten sichtbar rasen
+    const j = k % U.B, m = loecher(S, 0, f).weiss, r0 = U.rx(j), r = r0 * skalVon(f);
+    const w = U.winkel(k, VOR + f) + .9 * Math.pow(24 / r0, .7) * schub(S, f);
     return P2({ x: m.x + Math.cos(w) * r, y: m.y + Math.sin(w) * r * FL }, m, ease(phase(f - ANL, M - .5, M)));
   }
   function simulieren(S, U, f, starr) {
