@@ -2,6 +2,26 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Abgleich mit dem Mischentwurf, Teile A–F
+
+**Geändert**
+
+- Arbeitsblatt `docs/entwuerfe/abgleich-mischentwurf.md`: je Seite Tabellen Entwurf ↔ App (Maße, Abstände, Radien, Schrift, Farben), Prüfmethode mit Vergleichsbild (Entwurf links über den Design-Server, App rechts, gleiche Fensterbreite 1280).
+- Teil A Fundament: neue Tokens und Mischpinsel, `Themes/KvertisControls.xaml` mit 43 Stilen (Textstile in Segoe UI Variable und Mono, Knopf-Vorlagen mit `.btn`-Optik, Primärknopf Mint mit 4-px-Sockel, gestrichelte Box, Papier-Etikett, Fokusring); Schrittleiste 62 px mit 28-px-Quadraten, Ziffern, Sockel, Mono-Kleinzeile und füllenden Segmenten; Titelleiste mit PRO-Schild.
+- Teil B Schritt 1: Summe oben links, Ablage-Karte „Alles hier hineinwerfen“, Hinweiszeile, Fächer mit Radius 14, oberem Artrand, Beispiel-Chips, Dateizeilen mit Hover-Entfernen, Mono-Fußzeile; Zoom-Wege mit Pille, Listen und „empfohlen“.
+- Teil C Schritt 2: Artwahl als kleine Universen (Bahn öffnet sich einmal weich, danach ruhiger Hof), Dateikarten, Ring 92 mit Bogen und Daumen, Größenleiste mit Ringgriff, Zonen als Ausklapper mit Balken, Segment-Umschalter, Optionsstil.
+- Teil D Schritt 3 (inkl. Bühne): Eingang links, Wirbel Mitte, weißes Loch rechts mit Speicherort und Tasche darunter, Liste mit festen Spalten, Format-Chips mit Pfeil (`FormatArrow`), Menü- und Optionsstile, Fußleiste, Bericht.
+- Teil E Verlauf: Kopf, Tag-Gruppen, Zeitleiste, Karten mit Pille und Knöpfen, Leerzustand; danach als ganzseitige Überlagerung (`HistoryOverlay`): Zeitleiste links, Detail rechts, Suche nach Dateinamen (150 ms entprellt), Filter Alle/Bilder/Audio/Video/Dokumente/3D/Fehler, Fokusfalle, Esc; Seitenpanel entfällt.
+- Schritt 2 Mitte: Bahn in Artfarbe mit Planeten je Datei, Loch, je Datei ein Weg Karte → Loch → Ziel als Zeichenschicht (`TargetPathsScene`/`TargetPathsRenderer`), Zielwechsel biegt den Weg weich um; Zielliste „WIRD ZU“ mit Größe je Format und „EMPFOHLEN“ als Liste mit Radio-Semantik statt ComboBox; das Loch der Wurmloch-Überlagerung landet exakt auf dem Loch der Fläche.
+- Schritt 3: Staubringe je Dateiart ab 150 Dateien (Körner je Datei, Ringe je Art, Finale mit Sammelplaneten und Zahl); Debug-Statistik `KVERTIS_GALAXY_STATS` (ms je Bild, Teilchen) und `KVERTIS_STAGE_FILES=@liste.txt`. Großer Testlauf mit 210 Dateien: 57–60 Bilder je Sekunde, Teilchen nie über 4000, Fehlerzeilen mit Lösungsvorschlag, Sonderzeichen und eigenes Ziel je Datei korrekt.
+- Schritt 1 Spielereien: Maus 4 s still auf einer Bahn → Strudel, Blitz, neuer Planet (sechs Arten); 10 s auf dem Loch → Sog, Einschläge, Einsaugen von Fächern und Karten, Urknall, neues Universum; nie im Zoom, nie bei ruhiger Ansicht; Dateien bleiben erhalten.
+- Teil F Einstellungen, Pro, Über, Lizenzen: Karten, Labels, Knöpfe und Mono-Texte aus den Bausteinen von Schritt 2.
+- Bewusste Abweichungen je Teil in `06-design.md` unter „Umsetzungsstand Abgleich Mischentwurf“ (u. a. Segoe statt Geist, Mica statt Flächenfarbe, Titelleiste 48 statt 42 px, Standard-Elemente ComboBox/ToggleSwitch/Slider/ListView).
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Übergänge und Abschluss, Teile B–E: Wurmloch, Wirbel, weißes Loch, Supernova
 
 **Geändert**
