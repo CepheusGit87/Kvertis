@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Third-party licenses (look after docs/entwuerfe/abgleich-mischentwurf.md 3.8): standard ListView with the
+  resources of part A (radius 8, mint bar), license text in mono 12 on panel inside a card with radius 13.
+-->
 <Page
   x:Class="Kvertis.App.Views.LicensesPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,18 +10,27 @@
   xmlns:helpers="using:Kvertis.App.Helpers"
   xmlns:services="using:Kvertis.App.Services">
 
-  <Grid Padding="24,8,24,24" RowSpacing="12">
+  <Grid Padding="22,14,22,24" RowSpacing="12">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
     </Grid.RowDefinitions>
 
-    <TextBlock x:Uid="Licenses_Title" Grid.Row="0" Style="{StaticResource TitleTextBlockStyle}" />
-    <StackPanel Grid.Row="1" Spacing="4">
-      <TextBlock x:Uid="Licenses_Intro" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
-      <TextBlock x:Uid="Licenses_Ffmpeg_Note" Style="{StaticResource SecondaryCaptionTextStyle}" />
-      <TextBlock x:Uid="Licenses_Empty_Text" Style="{StaticResource SecondaryCaptionTextStyle}" Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
+    <TextBlock
+      x:Uid="Licenses_Title"
+      Grid.Row="0"
+      AutomationProperties.HeadingLevel="Level1"
+      Style="{StaticResource KvTitleTextStyle}" />
+    <StackPanel Grid.Row="1" MaxWidth="720" HorizontalAlignment="Left" Spacing="4">
+      <TextBlock x:Uid="Licenses_Intro" Style="{StaticResource KvBodyTextStyle}" />
+      <TextBlock x:Uid="Licenses_Ffmpeg_Note" Style="{StaticResource KvSmallTextStyle}" TextTrimming="None" TextWrapping="Wrap" />
+      <TextBlock
+        x:Uid="Licenses_Empty_Text"
+        Style="{StaticResource KvSmallTextStyle}"
+        TextTrimming="None"
+        TextWrapping="Wrap"
+        Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsEmpty), Mode=OneWay}" />
     </StackPanel>
 
     <Grid Grid.Row="2" ColumnSpacing="16">
@@ -33,14 +46,20 @@
         SelectionMode="Single">
         <ListView.ItemTemplate>
           <DataTemplate x:DataType="services:ThirdPartyLicense">
-            <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" />
+            <TextBlock VerticalAlignment="Center" Style="{StaticResource KvTextBaseStyle}" Text="{x:Bind Name}" />
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>
-      <Border Grid.Column="1" Padding="0" Style="{StaticResource CardBorderStyle}">
+      <Border
+        Grid.Column="1"
+        Padding="0"
+        Background="{ThemeResource KvPanelBrush}"
+        Style="{StaticResource KvCardStyle}">
         <ScrollViewer x:Uid="Licenses_Text_Scroller" Padding="16" IsTabStop="True">
           <TextBlock
             FontFamily="{StaticResource KvMonoFontFamily}"
+            FontSize="12"
+            Foreground="{ThemeResource KvInkBrush}"
             IsTextSelectionEnabled="True"
             Text="{x:Bind ViewModel.SelectedText, Mode=OneWay}"
             TextWrapping="Wrap" />

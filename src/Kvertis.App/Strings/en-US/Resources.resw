@@ -972,6 +972,9 @@
   <data name="Preview_Unavailable_Text" xml:space="preserve">
     <value>No preview is available for this file.</value>
   </data>
+  <data name="Pro_Badge.Text" xml:space="preserve">
+    <value>PRO</value>
+  </data>
   <data name="Pro_Busy_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Contacting the Store</value>
   </data>
@@ -1048,6 +1051,9 @@
     <value>Kvertis Pro</value>
   </data>
   <data name="Settings_About_Header.Text" xml:space="preserve">
+    <value>ABOUT</value>
+  </data>
+  <data name="Settings_About_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>About</value>
   </data>
   <data name="Settings_AboutLink_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
@@ -1057,12 +1063,21 @@
     <value>About Kvertis</value>
   </data>
   <data name="Settings_Advanced_Header.Text" xml:space="preserve">
+    <value>ADVANCED</value>
+  </data>
+  <data name="Settings_Advanced_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Advanced</value>
   </data>
   <data name="Settings_Appearance_Header.Text" xml:space="preserve">
+    <value>APPEARANCE</value>
+  </data>
+  <data name="Settings_Appearance_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Appearance</value>
   </data>
   <data name="Settings_Conversion_Header.Text" xml:space="preserve">
+    <value>CONVERSION</value>
+  </data>
+  <data name="Settings_Conversion_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Conversion</value>
   </data>
   <data name="Settings_Ffmpeg_Card.Description" xml:space="preserve">
@@ -1193,6 +1208,9 @@
   </data>
   <data name="Settings_Privacy_Card.Header" xml:space="preserve">
     <value>Privacy</value>
+  </data>
+  <data name="Settings_Pro_Badge.Text" xml:space="preserve">
+    <value>PRO</value>
   </data>
   <data name="Settings_Pro_Card.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Kvertis Pro</value>

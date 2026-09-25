@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Settings (docs/06-design.md, section 6; look after docs/entwuerfe/abgleich-mischentwurf.md 3.7).
+  The draft has no settings page: the building blocks are those of step 2 (.einst-k cards, .label headings,
+  .toggle switches, .eingabe fields, select) and the history head (17 / SemiBold title).
+-->
 <Page
   x:Class="Kvertis.App.Views.SettingsPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -6,9 +11,30 @@
   xmlns:controls="using:CommunityToolkit.WinUI.Controls"
   xmlns:helpers="using:Kvertis.App.Helpers">
 
+  <Page.Resources>
+    <!-- Card symbols 16 px like the draft's small icons (the toolkit default is 20). -->
+    <x:Double x:Key="SettingsCardHeaderIconMaxSize">16</x:Double>
+
+    <!-- .label / .ueber above each group of cards -->
+    <Style x:Key="SettingsGroupLabelStyle" TargetType="TextBlock" BasedOn="{StaticResource KvLabelTextStyle}">
+      <Setter Property="Margin" Value="0,18,0,6" />
+      <Setter Property="AutomationProperties.HeadingLevel" Value="Level2" />
+    </Style>
+
+    <!-- Card symbols in KvMuted -->
+    <Style x:Key="SettingsCardIconStyle" TargetType="FontIcon">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Foreground" Value="{ThemeResource KvMutedBrush}" />
+    </Style>
+  </Page.Resources>
+
   <ScrollViewer>
-    <StackPanel MaxWidth="900" Padding="24,8,24,24" Spacing="4">
-      <TextBlock x:Uid="Settings_Title" Margin="0,0,0,8" Style="{StaticResource TitleTextBlockStyle}" />
+    <StackPanel MaxWidth="900" Padding="22,14,22,24" Spacing="4">
+      <TextBlock
+        x:Uid="Settings_Title"
+        Margin="0,0,0,4"
+        AutomationProperties.HeadingLevel="Level1"
+        Style="{StaticResource KvTitleTextStyle}" />
 
       <InfoBar
         x:Uid="Settings_Restart_InfoBar"
@@ -17,10 +43,10 @@
         Severity="Informational" />
 
       <!-- Appearance -->
-      <TextBlock x:Uid="Settings_Appearance_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+      <TextBlock x:Uid="Settings_Appearance_Header" Style="{StaticResource SettingsGroupLabelStyle}" />
       <controls:SettingsCard x:Uid="Settings_Language_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xF2B7;" />
+          <FontIcon Glyph="&#xF2B7;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
         <ComboBox x:Uid="Settings_Language_ComboBox" MinWidth="180" SelectedIndex="{x:Bind ViewModel.LanguageIndex, Mode=TwoWay}">
           <ComboBoxItem x:Uid="Settings_Language_System" />
@@ -30,7 +56,7 @@
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Theme_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE790;" />
+          <FontIcon Glyph="&#xE790;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
         <ComboBox x:Uid="Settings_Theme_ComboBox" MinWidth="180" SelectedIndex="{x:Bind ViewModel.ThemeIndex, Mode=TwoWay}">
           <ComboBoxItem x:Uid="Settings_Theme_System" />
@@ -40,12 +66,12 @@
       </controls:SettingsCard>
 
       <!-- Conversion -->
-      <TextBlock x:Uid="Settings_Conversion_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+      <TextBlock x:Uid="Settings_Conversion_Header" Style="{StaticResource SettingsGroupLabelStyle}" />
       <controls:SettingsCard x:Uid="Settings_Parallel_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE9D9;" />
+          <FontIcon Glyph="&#xE9D9;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
-        <ToggleSwitch x:Uid="Settings_ParallelAuto_Toggle" IsOn="{x:Bind ViewModel.IsAutoParallel, Mode=TwoWay}" />
+        <ToggleSwitch x:Uid="Settings_ParallelAuto_Toggle" IsOn="{x:Bind ViewModel.IsAutoParallel, Mode=TwoWay}" Style="{StaticResource KvSwitchStyle}" />
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_ParallelCount_Card" Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsManualParallel), Mode=OneWay}">
         <StackPanel Orientation="Horizontal" Spacing="12">
@@ -56,12 +82,20 @@
             Minimum="1"
             StepFrequency="1"
             Value="{x:Bind ViewModel.MaxParallel, Mode=TwoWay}" />
-          <TextBlock VerticalAlignment="Center" Text="{x:Bind ViewModel.MaxParallelText, Mode=OneWay}" />
+          <!-- .regler b: value in mono, ink -->
+          <TextBlock
+            MinWidth="18"
+            VerticalAlignment="Center"
+            FontSize="12"
+            FontWeight="SemiBold"
+            Foreground="{ThemeResource KvInkBrush}"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind ViewModel.MaxParallelText, Mode=OneWay}" />
         </StackPanel>
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Output_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE8B7;" />
+          <FontIcon Glyph="&#xE8B7;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
         <ComboBox x:Uid="Settings_Output_ComboBox" MinWidth="220" SelectedIndex="{x:Bind ViewModel.OutputLocationIndex, Mode=TwoWay}">
           <ComboBoxItem x:Uid="Settings_Output_Same" />
@@ -71,33 +105,34 @@
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_NamePattern_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE8AC;" />
+          <FontIcon Glyph="&#xE8AC;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
         <StackPanel Spacing="4">
           <TextBox x:Uid="Settings_NamePattern_TextBox" MinWidth="220" Text="{x:Bind ViewModel.NamePattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind ViewModel.NamePreview, Mode=OneWay}" />
+          <TextBlock MaxWidth="260" Style="{StaticResource KvSmallTextStyle}" Text="{x:Bind ViewModel.NamePreview, Mode=OneWay}" />
         </StackPanel>
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Metadata_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE72E;" />
+          <FontIcon Glyph="&#xE72E;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
-        <ToggleSwitch x:Uid="Settings_Metadata_Toggle" IsOn="{x:Bind ViewModel.StripMetadata, Mode=TwoWay}" />
+        <ToggleSwitch x:Uid="Settings_Metadata_Toggle" IsOn="{x:Bind ViewModel.StripMetadata, Mode=TwoWay}" Style="{StaticResource KvSwitchStyle}" />
       </controls:SettingsCard>
 
       <!-- FFmpeg replacement (LGPL right, docs/02 §2) -->
-      <TextBlock x:Uid="Settings_Advanced_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+      <TextBlock x:Uid="Settings_Advanced_Header" Style="{StaticResource SettingsGroupLabelStyle}" />
       <controls:SettingsCard x:Uid="Settings_Ffmpeg_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE943;" />
+          <FontIcon Glyph="&#xE943;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
         <StackPanel HorizontalAlignment="Right" Spacing="6">
           <TextBlock
+            MaxWidth="320"
             HorizontalAlignment="Right"
-            Style="{StaticResource CaptionTextBlockStyle}"
+            Style="{StaticResource KvMonoTextStyle}"
             Text="{x:Bind ViewModel.FfmpegDirectory, Mode=OneWay}"
             TextTrimming="CharacterEllipsis" />
-          <TextBlock HorizontalAlignment="Right" Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind ViewModel.FfmpegStatusText, Mode=OneWay}" />
+          <TextBlock HorizontalAlignment="Right" Style="{StaticResource KvSmallTextStyle}" Text="{x:Bind ViewModel.FfmpegStatusText, Mode=OneWay}" />
           <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="8">
             <Button x:Uid="Settings_Ffmpeg_Choose" Command="{x:Bind ViewModel.PickFfmpegFolderCommand}" />
             <Button x:Uid="Settings_Ffmpeg_Reset" Command="{x:Bind ViewModel.ResetFfmpegFolderCommand}" />
@@ -106,33 +141,38 @@
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Logging_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE9F9;" />
+          <FontIcon Glyph="&#xE9F9;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
-        <ToggleSwitch x:Uid="Settings_Logging_Toggle" IsOn="{x:Bind ViewModel.LoggingEnabled, Mode=TwoWay}" />
+        <ToggleSwitch x:Uid="Settings_Logging_Toggle" IsOn="{x:Bind ViewModel.LoggingEnabled, Mode=TwoWay}" Style="{StaticResource KvSwitchStyle}" />
       </controls:SettingsCard>
 
       <!-- Pro and about -->
-      <TextBlock x:Uid="Settings_About_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+      <TextBlock x:Uid="Settings_About_Header" Style="{StaticResource SettingsGroupLabelStyle}" />
       <controls:SettingsCard x:Uid="Settings_Pro_Card" Click="OnProClick" IsClickEnabled="True">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE734;" />
+          <FontIcon Glyph="&#xE734;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
-        <TextBlock Text="{x:Bind Pro.StatusText, Mode=OneWay}" />
+        <StackPanel Orientation="Horizontal" Spacing="10">
+          <TextBlock VerticalAlignment="Center" Style="{StaticResource KvBodyTextStyle}" Text="{x:Bind Pro.StatusText, Mode=OneWay}" />
+          <Border Style="{StaticResource KvProBadgeStyle}">
+            <TextBlock x:Uid="Settings_Pro_Badge" AutomationProperties.AccessibilityView="Raw" Style="{StaticResource KvProBadgeTextStyle}" />
+          </Border>
+        </StackPanel>
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_AboutLink_Card" Click="OnAboutClick" IsClickEnabled="True">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE946;" />
+          <FontIcon Glyph="&#xE946;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
-        <TextBlock Text="{x:Bind ViewModel.VersionText}" />
+        <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind ViewModel.VersionText}" />
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Licenses_Card" Click="OnLicensesClick" IsClickEnabled="True">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE8A5;" />
+          <FontIcon Glyph="&#xE8A5;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
       </controls:SettingsCard>
       <controls:SettingsCard x:Uid="Settings_Privacy_Card">
         <controls:SettingsCard.HeaderIcon>
-          <FontIcon Glyph="&#xE72E;" />
+          <FontIcon Glyph="&#xE72E;" Style="{StaticResource SettingsCardIconStyle}" />
         </controls:SettingsCard.HeaderIcon>
       </controls:SettingsCard>
     </StackPanel>

@@ -1,29 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  About Kvertis (look after docs/entwuerfe/abgleich-mischentwurf.md 3.8): title 17 / SemiBold, version in mono,
+  body 13 / 1.45, privacy statement in a gradient card like .rk, licenses as .btn.
+-->
 <Page
   x:Class="Kvertis.App.Views.AboutPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
   <ScrollViewer>
-    <StackPanel MaxWidth="720" Padding="24,8,24,24" Spacing="16">
+    <StackPanel MaxWidth="720" Padding="22,14,22,24" Spacing="16">
       <StackPanel Orientation="Horizontal" Spacing="16">
-        <Image Width="64" Height="64" Source="ms-appx:///Assets/Square150x150Logo.png" />
-        <StackPanel VerticalAlignment="Center" Spacing="2">
-          <TextBlock x:Uid="About_Title" Style="{StaticResource TitleTextBlockStyle}" />
-          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind VersionText}" />
+        <Image
+          Width="64"
+          Height="64"
+          AutomationProperties.AccessibilityView="Raw"
+          Source="ms-appx:///Assets/Square150x150Logo.png" />
+        <StackPanel VerticalAlignment="Center" Spacing="4">
+          <TextBlock x:Uid="About_Title" AutomationProperties.HeadingLevel="Level1" Style="{StaticResource KvTitleTextStyle}" />
+          <TextBlock FontSize="11" Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind VersionText}" />
         </StackPanel>
       </StackPanel>
 
-      <TextBlock x:Uid="About_Description" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+      <TextBlock x:Uid="About_Description" Style="{StaticResource KvBodyTextStyle}" />
 
-      <Border Style="{StaticResource CardBorderStyle}">
-        <StackPanel Spacing="8">
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <FontIcon Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE72E;" />
-            <TextBlock x:Uid="About_Privacy_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
+      <!-- .rk: gradient card with the inner top edge (karton-kante) -->
+      <Border Padding="0" Style="{StaticResource KvCardStyle}">
+        <Border
+          Padding="14,12"
+          BorderBrush="{ThemeResource KvEdgeBrush}"
+          BorderThickness="0,1,0,0"
+          CornerRadius="12">
+          <StackPanel Spacing="8">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <FontIcon
+                VerticalAlignment="Center"
+                FontSize="16"
+                Foreground="{ThemeResource KvMintBrush}"
+                Glyph="&#xE72E;" />
+              <TextBlock
+                x:Uid="About_Privacy_Header"
+                VerticalAlignment="Center"
+                AutomationProperties.HeadingLevel="Level2"
+                Style="{StaticResource KvHeadTextStyle}" />
+            </StackPanel>
+            <TextBlock x:Uid="About_Privacy_Text" Style="{StaticResource KvBodyTextStyle}" />
           </StackPanel>
-          <TextBlock x:Uid="About_Privacy_Text" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
-        </StackPanel>
+        </Border>
       </Border>
 
       <Button x:Uid="About_Licenses_Button" Click="OnLicensesClick" />
