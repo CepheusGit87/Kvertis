@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- One of the five trays of step 1 (ADR-022). Always visible, also while empty: head with colour dot, name
-     and count, then the files, then "öffnet X → macht Y Formate". The head opens the zoom. -->
+     and count, then the files, then "öffnet X → macht Y Formate". The head opens the zoom.
+     Look after the draft's .fach: radius 14, 1 px line, a 3 px top edge in the kind colour (70 %, empty 30 %),
+     bg 78 % (86 % without blur, 1.4), padding 9/10/8, gap 6. -->
 <UserControl
   x:Class="Kvertis.App.Views.TrayControl"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,122 +11,191 @@
   xmlns:views="using:Kvertis.App.Views"
   xmlns:vm="using:Kvertis.App.ViewModels">
 
+  <UserControl.Resources>
+    <!-- .fach-kopf: a plain line without own background, border or checked colour; the tray around it shows
+         hover and the zoom state. Focus stays the system focus ring. -->
+    <Style x:Key="TrayHeadButtonStyle" TargetType="ToggleButton">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{ThemeResource KvInkBrush}" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="UseSystemFocusVisuals" Value="True" />
+      <Setter Property="FocusVisualMargin" Value="-3" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <ContentPresenter
+              x:Name="ContentPresenter"
+              Padding="{TemplateBinding Padding}"
+              HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+              VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+              AutomationProperties.AccessibilityView="Raw"
+              Background="{TemplateBinding Background}"
+              Content="{TemplateBinding Content}"
+              ContentTemplate="{TemplateBinding ContentTemplate}"
+              CornerRadius="8"
+              Foreground="{TemplateBinding Foreground}" />
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+
   <Grid
     x:Name="TrayRoot"
-    Padding="8"
-    Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-    BorderThickness="1"
-    CornerRadius="8"
-    RowSpacing="6">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
-
+    PointerCanceled="OnTrayPointerExited"
+    PointerEntered="OnTrayPointerEntered"
+    PointerExited="OnTrayPointerExited">
     <VisualStateManager.VisualStateGroups>
       <VisualStateGroup x:Name="ZoomStates">
         <VisualState x:Name="Overview" />
-        <!-- In the zoom the five trays shrink to a bar of heads. -->
+        <!-- In the zoom the five trays shrink to a bar of heads (.welt[data-ziel="zoom"] .fach: padding 8/10). -->
         <VisualState x:Name="Zoomed">
           <VisualState.Setters>
             <Setter Target="FileArea.Visibility" Value="Collapsed" />
             <Setter Target="FootLine.Visibility" Value="Collapsed" />
-            <Setter Target="TrayRoot.MinHeight" Value="52" />
+            <Setter Target="TrayContent.Padding" Value="11,8,11,9" />
+            <Setter Target="HeadButton.(Grid.RowSpan)" Value="3" />
           </VisualState.Setters>
         </VisualState>
       </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
 
-    <!-- Head: the whole line is the button that opens and closes the zoom (Enter, space). -->
-    <ToggleButton
-      x:Name="HeadButton"
-      Grid.Row="0"
-      MinHeight="36"
-      Padding="6,2"
-      HorizontalAlignment="Stretch"
-      HorizontalContentAlignment="Stretch"
-      AutomationProperties.Name="{x:Bind Tray.AutomationName, Mode=OneWay}"
-      Background="Transparent"
-      BorderThickness="0"
-      Click="OnHeadClick"
-      IsChecked="{x:Bind Tray.IsZoomed, Mode=OneWay}">
-      <Grid ColumnSpacing="8">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Ellipse
-          Grid.Column="0"
-          Width="10"
-          Height="10"
-          VerticalAlignment="Center"
-          Fill="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}" />
-        <TextBlock
-          Grid.Column="1"
-          VerticalAlignment="Center"
-          Style="{StaticResource BodyStrongTextBlockStyle}"
-          Text="{x:Bind Tray.Name, Mode=OneWay}"
-          TextTrimming="CharacterEllipsis" />
-        <TextBlock
-          x:Name="CountBig"
-          Grid.Column="2"
-          VerticalAlignment="Center"
-          AutomationProperties.LiveSetting="Polite"
-          Foreground="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}"
-          Style="{StaticResource SubtitleTextBlockStyle}"
-          Text="{x:Bind Tray.CountText, Mode=OneWay}"
-          Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}" />
-        <TextBlock
-          Grid.Column="2"
-          VerticalAlignment="Center"
-          AutomationProperties.LiveSetting="Polite"
-          Foreground="{ThemeResource KvMutedBrush}"
-          Style="{StaticResource CaptionTextBlockStyle}"
-          Text="{x:Bind Tray.CountText, Mode=OneWay}"
-          Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}" />
+    <!-- box-shadow 0 0 0 1px kind 25 % on hover -->
+    <Border
+      x:Name="HoverRing"
+      Margin="-1"
+      BorderBrush="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}"
+      BorderThickness="1"
+      CornerRadius="15"
+      IsHitTestVisible="False"
+      Opacity="0.25"
+      Visibility="Collapsed" />
+    <!-- Frame: 1 px line, 3 px on top; the kind colour of the top edge lies on it as a second border. -->
+    <Border
+      x:Name="Frame"
+      Background="{ThemeResource KvBg86Brush}"
+      BorderBrush="{ThemeResource KvLineBrush}"
+      BorderThickness="1,3,1,1"
+      CornerRadius="14" />
+    <Border
+      x:Name="TopEdge"
+      BorderBrush="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}"
+      BorderThickness="0,3,0,0"
+      CornerRadius="14"
+      IsHitTestVisible="False" />
+
+    <Grid
+      x:Name="TrayContent"
+      Padding="11,12,11,9"
+      RowSpacing="6">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <!-- Head: the whole line is the button that opens and closes the zoom (Enter, space). 20 px high like the
+           draft, 32 px to click (padding 6 against margin -6). -->
+      <ToggleButton
+        x:Name="HeadButton"
+        Grid.Row="0"
+        Margin="0,-6"
+        Padding="0,6"
+        VerticalAlignment="Center"
+        AutomationProperties.Name="{x:Bind Tray.AutomationName, Mode=OneWay}"
+        Click="OnHeadClick"
+        IsChecked="{x:Bind Tray.IsZoomed, Mode=OneWay}"
+        Style="{StaticResource TrayHeadButtonStyle}">
+        <Grid ColumnSpacing="7">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <!-- .fach-kopf i: dot 9 with a glow (0 0 8px kind) drawn as a second circle at 25 %. -->
+          <Grid
+            Grid.Column="0"
+            Width="17"
+            Height="17"
+            Margin="-4,0"
+            VerticalAlignment="Center">
+            <Ellipse Fill="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}" Opacity="0.25" />
+            <Ellipse
+              Width="9"
+              Height="9"
+              Fill="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}" />
+          </Grid>
+          <TextBlock
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            Style="{StaticResource KvHeadTextStyle}"
+            Text="{x:Bind Tray.Name, Mode=OneWay}" />
+          <TextBlock
+            x:Name="CountBig"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            AutomationProperties.LiveSetting="Polite"
+            Foreground="{x:Bind helpers:Ui.Brush(Tray.BrushKey), Mode=OneWay}"
+            Style="{StaticResource KvCountTextStyle}"
+            Text="{x:Bind Tray.CountText, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}" />
+          <TextBlock
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            AutomationProperties.LiveSetting="Polite"
+            FontSize="16"
+            Foreground="{ThemeResource KvQuietBrush}"
+            Style="{StaticResource KvCountTextStyle}"
+            Text="{x:Bind Tray.CountText, Mode=OneWay}"
+            Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}" />
+        </Grid>
+      </ToggleButton>
+
+      <Grid x:Name="FileArea" Grid.Row="1">
+        <!-- .fach-leer: what it would accept, as example chips (75 %). -->
+        <StackPanel Spacing="5" Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}">
+          <TextBlock
+            x:Uid="Tray_Empty_Text"
+            Foreground="{ThemeResource KvQuietBrush}"
+            Style="{StaticResource KvSmallTextStyle}" />
+          <views:ChipWrapPanel
+            x:Name="ExampleChips"
+            Opacity="0.75" />
+        </StackPanel>
+
+        <!-- .fach-dat: rows with a gap of 4; from about four files on the tray scrolls instead of growing. -->
+        <ScrollViewer
+          HorizontalScrollMode="Disabled"
+          VerticalScrollBarVisibility="Auto"
+          VerticalScrollMode="Auto"
+          Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}">
+          <ItemsControl ItemsSource="{x:Bind Tray.Files, Mode=OneWay}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:JobItemViewModel">
+                <views:TrayFileControl AcceptRequested="OnRowAccepted" Item="{x:Bind}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
       </Grid>
-    </ToggleButton>
 
-    <Grid x:Name="FileArea" Grid.Row="1">
-      <!-- Empty tray: what it would accept. -->
-      <StackPanel Spacing="4" Visibility="{x:Bind helpers:Ui.Show(Tray.IsEmpty), Mode=OneWay}">
-        <TextBlock
-          x:Uid="Tray_Empty_Text"
-          Foreground="{ThemeResource KvMutedBrush}"
-          Style="{StaticResource CaptionTextBlockStyle}"
-          TextWrapping="Wrap" />
-        <TextBlock
-          Foreground="{ThemeResource KvMutedBrush}"
-          Style="{StaticResource CaptionTextBlockStyle}"
-          Text="{x:Bind Tray.ExampleText, Mode=OneWay}"
-          TextWrapping="Wrap" />
-      </StackPanel>
-
-      <!-- From four files on the tray scrolls instead of growing. -->
-      <ScrollViewer
-        HorizontalScrollMode="Disabled"
-        VerticalScrollBarVisibility="Auto"
-        VerticalScrollMode="Auto"
-        Visibility="{x:Bind helpers:Ui.Hide(Tray.IsEmpty), Mode=OneWay}">
-        <ItemsControl ItemsSource="{x:Bind Tray.Files, Mode=OneWay}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:JobItemViewModel">
-              <views:TrayFileControl AcceptRequested="OnRowAccepted" Item="{x:Bind}" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </ScrollViewer>
+      <!-- .fach-fuss: 10 mono muted, numbers ink SemiBold, arrow mint, one line. -->
+      <TextBlock
+        x:Name="FootLine"
+        Grid.Row="2"
+        AutomationProperties.Name="{x:Bind Tray.FootText, Mode=OneWay}"
+        FontSize="10"
+        FontWeight="Normal"
+        Style="{StaticResource KvMonoTextStyle}">
+        <Run Text="{x:Bind Tray.FootOpens, Mode=OneWay}" /><Run FontWeight="SemiBold" Foreground="{ThemeResource KvInkBrush}" Text="{x:Bind Tray.ReadableCountText, Mode=OneWay}" /><Run Foreground="{ThemeResource KvMintBrush}" Text="{x:Bind Tray.FootArrow, Mode=OneWay}" /><Run Text="{x:Bind Tray.FootMakes, Mode=OneWay}" /><Run FontWeight="SemiBold" Foreground="{ThemeResource KvInkBrush}" Text="{x:Bind Tray.WritableCountText, Mode=OneWay}" /><Run Text="{x:Bind Tray.FootFormats, Mode=OneWay}" />
+      </TextBlock>
     </Grid>
-
-    <TextBlock
-      x:Name="FootLine"
-      Grid.Row="2"
-      Foreground="{ThemeResource KvMutedBrush}"
-      Style="{StaticResource CaptionTextBlockStyle}"
-      Text="{x:Bind Tray.FootText, Mode=OneWay}"
-      TextWrapping="Wrap" />
   </Grid>
 </UserControl>

@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- The zoom "Wege durchs Loch" of step 1 (ADR-022): left what Kvertis can open, right what it can become.
-     The ways themselves are drawn by the Win2D surface underneath; everything readable is XAML. -->
+     The ways themselves are drawn by the Win2D surface underneath; everything readable is XAML.
+     Placement after the draft (#gal-stil): "Übersicht" pill left 16 / top 14, title centred at top 14, both
+     lists 250 wide at top 58, 16 from the edges, rows with a gap of 8. -->
 <UserControl
   x:Class="Kvertis.App.Views.PathsOverlay"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,129 +10,262 @@
   xmlns:drop="using:Kvertis.App.ViewModels.Drop"
   xmlns:helpers="using:Kvertis.App.Helpers">
 
-  <Grid Padding="12" ColumnSpacing="12">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="260" />
-      <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="260" />
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="*" />
-    </Grid.RowDefinitions>
+  <UserControl.Resources>
+    <!-- .zurueck: pill, radius 999, line-stark on bg 80 %, padding 6/12, 12.5 ink. Values only, the WinUI
+         button template stays (hover and pressed colours from 2.1 a). -->
+    <Style x:Key="PillBackButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+      <Setter Property="Background" Value="{ThemeResource KvBg80Brush}" />
+      <Setter Property="BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+      <Setter Property="Foreground" Value="{ThemeResource KvInkBrush}" />
+      <Setter Property="CornerRadius" Value="999" />
+      <Setter Property="Padding" Value="12,6" />
+      <Setter Property="FontSize" Value="12.5" />
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
 
+    <!-- .knopf-l: the radio button is only the frame for keyboard, selection and screen reader; the row look sits
+         in its content (bound to the row's selection) and a hover layer (KvHover). -->
+    <Style x:Key="PathInputRowStyle" TargetType="RadioButton">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+      <Setter Property="UseSystemFocusVisuals" Value="True" />
+      <Setter Property="FocusVisualMargin" Value="-3" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="RadioButton">
+            <Grid Background="Transparent">
+              <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                  <VisualState x:Name="Normal" />
+                  <VisualState x:Name="PointerOver">
+                    <VisualState.Setters>
+                      <Setter Target="HoverLayer.Opacity" Value="1" />
+                    </VisualState.Setters>
+                  </VisualState>
+                  <VisualState x:Name="Pressed">
+                    <VisualState.Setters>
+                      <Setter Target="HoverLayer.Opacity" Value="1" />
+                    </VisualState.Setters>
+                  </VisualState>
+                  <VisualState x:Name="Disabled" />
+                </VisualStateGroup>
+              </VisualStateManager.VisualStateGroups>
+              <ContentPresenter
+                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                VerticalContentAlignment="Stretch"
+                AutomationProperties.AccessibilityView="Raw"
+                Content="{TemplateBinding Content}"
+                ContentTemplate="{TemplateBinding ContentTemplate}" />
+              <Border
+                x:Name="HoverLayer"
+                Background="{ThemeResource KvHoverBrush}"
+                CornerRadius="9"
+                IsHitTestVisible="False"
+                Opacity="0" />
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+
+  <Grid>
     <Button
       x:Uid="Galaxy_Back_Button"
-      Grid.Row="0"
-      Grid.Column="0"
+      Margin="16,14,0,0"
       HorizontalAlignment="Left"
-      Click="OnBackClick">
+      VerticalAlignment="Top"
+      Click="OnBackClick"
+      Style="{StaticResource PillBackButtonStyle}">
       <Button.KeyboardAccelerators>
         <KeyboardAccelerator Key="Escape" />
       </Button.KeyboardAccelerators>
+      <StackPanel Orientation="Horizontal" Spacing="6">
+        <Ellipse
+          Width="9"
+          Height="9"
+          VerticalAlignment="Center"
+          Stroke="{ThemeResource KvMintBrush}"
+          StrokeThickness="1.5" />
+        <TextBlock x:Uid="Galaxy_Back_Text" VerticalAlignment="Center" />
+      </StackPanel>
     </Button>
 
+    <!-- .titel: 17 bold, second line 12.5 muted -->
     <StackPanel
-      Grid.Row="0"
-      Grid.Column="1"
-      HorizontalAlignment="Center">
+      Margin="0,14,0,0"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Top"
+      Spacing="1">
       <TextBlock
         HorizontalAlignment="Center"
-        Style="{StaticResource SubtitleTextBlockStyle}"
+        FontWeight="Bold"
+        Style="{StaticResource KvTitleTextStyle}"
         Text="{x:Bind Paths.Title, Mode=OneWay}" />
       <TextBlock
         HorizontalAlignment="Center"
-        Foreground="{ThemeResource KvMutedBrush}"
-        Style="{StaticResource CaptionTextBlockStyle}"
+        FontSize="12.5"
+        Style="{StaticResource KvSmallTextStyle}"
         Text="{x:Bind Paths.Subtitle, Mode=OneWay}" />
     </StackPanel>
 
-    <!-- Left: the readable formats of this kind as one radio group. -->
-    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="4">
-      <TextBlock x:Uid="Galaxy_Opens_Title" Style="{StaticResource BodyStrongTextBlockStyle}" />
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <!-- Left (.seite-l): the readable formats of this kind as one radio group. -->
+    <Grid
+      Width="250"
+      Margin="16,58,0,12"
+      HorizontalAlignment="Left"
+      RowSpacing="8">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <StackPanel Padding="0,0,0,2" Spacing="1">
+        <TextBlock x:Uid="Galaxy_Opens_Title" FontWeight="Bold" Style="{StaticResource KvHeadTextStyle}" />
+        <TextBlock x:Uid="Galaxy_Opens_Sub" Style="{StaticResource KvSmallTextStyle}" />
+      </StackPanel>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
         <ItemsControl x:Name="InputList" ItemsSource="{x:Bind Paths.Inputs, Mode=OneWay}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="8" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="drop:PathFormatViewModel">
               <RadioButton
-                MinHeight="32"
                 AutomationProperties.Name="{x:Bind Label}"
                 Checked="OnInputChecked"
                 GroupName="GalaxyInputs"
-                IsChecked="{x:Bind IsSelected, Mode=OneWay}">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                  <Ellipse
-                    Width="8"
-                    Height="8"
-                    VerticalAlignment="Center"
-                    Fill="{ThemeResource KvMintBrush}"
-                    Visibility="{x:Bind helpers:Ui.Show(IsStaged)}" />
-                  <TextBlock
-                    VerticalAlignment="Center"
-                    Style="{StaticResource BodyStrongTextBlockStyle}"
-                    Text="{x:Bind Label}" />
-                  <TextBlock
-                    VerticalAlignment="Center"
-                    Foreground="{ThemeResource KvMutedBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="{x:Bind Hint}" />
-                </StackPanel>
+                IsChecked="{x:Bind IsSelected, Mode=OneWay}"
+                Loaded="OnRowLoaded"
+                Style="{StaticResource PathInputRowStyle}">
+                <!-- .knopf-l: 56 | 1fr, gap 8, padding 5/8, radius 9, line on panel 75 %, 12 muted; chosen: kind 60 %
+                     frame, kind 10 % fill, text ink. A dropped-in format wears the filled chip (.fc.da). -->
+                <Border
+                  Padding="8,5"
+                  Background="{x:Bind helpers:Ui.KindBrushIf(IsSelected, BrushKey, 'Tint12', 'KvPanel80Brush'), Mode=OneWay}"
+                  BorderBrush="{x:Bind helpers:Ui.KindBrushIf(IsSelected, BrushKey, 'Frame60', 'KvLineBrush'), Mode=OneWay}"
+                  BorderThickness="1"
+                  CornerRadius="9">
+                  <Grid ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="56" />
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border
+                      HorizontalAlignment="Left"
+                      Background="{x:Bind helpers:Ui.KindBrushEither(IsStaged, BrushKey, '', 'Tint12')}"
+                      BorderBrush="{x:Bind helpers:Ui.KindVariant(BrushKey, 'Frame40')}"
+                      Style="{StaticResource KvChipStyle}">
+                      <TextBlock
+                        Foreground="{x:Bind helpers:Ui.BrushOrKind(IsStaged, 'KvPaperInkBrush', BrushKey, '')}"
+                        Style="{StaticResource KvChipTextStyle}"
+                        Text="{x:Bind Label}" />
+                    </Border>
+                    <TextBlock
+                      Grid.Column="1"
+                      VerticalAlignment="Center"
+                      FontSize="12"
+                      Foreground="{x:Bind helpers:Ui.BrushIf(IsSelected, 'KvInkBrush', 'KvMutedBrush'), Mode=OneWay}"
+                      Style="{StaticResource KvTextBaseStyle}"
+                      Text="{x:Bind Hint}" />
+                  </Grid>
+                </Border>
               </RadioButton>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
-    </StackPanel>
+    </Grid>
 
-    <!-- Right: the writable formats. Read only; the focus skips them. -->
-    <StackPanel Grid.Row="1" Grid.Column="2" Spacing="4">
-      <TextBlock x:Uid="Galaxy_Becomes_Title" Style="{StaticResource BodyStrongTextBlockStyle}" />
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <!-- Right (.seite-r): the writable formats. Read only; the focus skips them. -->
+    <Grid
+      Width="250"
+      Margin="0,58,16,12"
+      HorizontalAlignment="Right"
+      RowSpacing="8">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <StackPanel Padding="0,0,0,2" Spacing="1">
+        <TextBlock
+          x:Uid="Galaxy_Becomes_Title"
+          HorizontalAlignment="Right"
+          FontWeight="Bold"
+          Foreground="{ThemeResource KvMintBrush}"
+          Style="{StaticResource KvHeadTextStyle}" />
+        <TextBlock
+          HorizontalAlignment="Right"
+          Style="{StaticResource KvSmallTextStyle}"
+          Text="{x:Bind Paths.ReachText, Mode=OneWay}" />
+      </StackPanel>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
         <ItemsControl x:Name="OutputList" ItemsSource="{x:Bind Paths.Outputs, Mode=OneWay}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="8" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="drop:PathTargetViewModel">
-              <Grid
-                MinHeight="32"
-                Padding="8,4"
+              <!-- .knopf-r: 1fr | 56, text right, mint chip right; unreachable 0.3; the recommendation: mint frame on
+                   the mint surface, text ink, the "empfohlen" pill after the text. -->
+              <Border
+                MinHeight="30"
+                Padding="8,5"
                 AutomationProperties.HelpText="{x:Bind HelpText, Mode=OneWay}"
                 AutomationProperties.Name="{x:Bind Label}"
-                ColumnSpacing="8"
-                Opacity="{x:Bind helpers:Ui.DimIf(IsReachable), Mode=OneWay}">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="Auto" />
-                  <ColumnDefinition Width="*" />
-                  <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBlock
-                  Grid.Column="0"
-                  VerticalAlignment="Center"
-                  Style="{StaticResource BodyStrongTextBlockStyle}"
-                  Text="{x:Bind Label}" />
-                <TextBlock
-                  Grid.Column="1"
-                  VerticalAlignment="Center"
-                  Foreground="{ThemeResource KvMutedBrush}"
-                  Style="{StaticResource CaptionTextBlockStyle}"
-                  Text="{x:Bind Hint}"
-                  TextTrimming="CharacterEllipsis" />
-                <Border
-                  Grid.Column="2"
-                  Padding="6,1"
-                  VerticalAlignment="Center"
-                  BorderBrush="{ThemeResource KvMintBrush}"
-                  BorderThickness="1"
-                  CornerRadius="4"
-                  Visibility="{x:Bind helpers:Ui.Show(IsRecommended), Mode=OneWay}">
-                  <TextBlock
-                    Foreground="{ThemeResource KvMintBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="{x:Bind HelpText, Mode=OneWay}" />
-                </Border>
-              </Grid>
+                Background="{x:Bind helpers:Ui.BrushIf(IsRecommended, 'KvMintSurfaceBrush', 'KvPanel80Brush'), Mode=OneWay}"
+                BorderBrush="{x:Bind helpers:Ui.BrushIf(IsRecommended, 'KvMintBrush', 'KvLineBrush'), Mode=OneWay}"
+                BorderThickness="1"
+                CornerRadius="9"
+                Loaded="OnRowLoaded"
+                Opacity="{x:Bind helpers:Ui.OpacityIf(IsReachable, 0.3), Mode=OneWay}">
+                <Grid ColumnSpacing="8">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="56" />
+                  </Grid.ColumnDefinitions>
+                  <StackPanel
+                    Grid.Column="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <TextBlock
+                      VerticalAlignment="Center"
+                      FontSize="12"
+                      Foreground="{x:Bind helpers:Ui.BrushIf(IsRecommended, 'KvInkBrush', 'KvMutedBrush'), Mode=OneWay}"
+                      Style="{StaticResource KvTextBaseStyle}"
+                      Text="{x:Bind Hint}" />
+                    <!-- .empf-tag: pill 9.5 mono SemiBold, mint with on-mint text -->
+                    <Border
+                      Padding="6,1"
+                      Background="{ThemeResource KvMintBrush}"
+                      BorderThickness="0"
+                      Style="{StaticResource KvPillStyle}"
+                      Visibility="{x:Bind helpers:Ui.Show(IsRecommended), Mode=OneWay}">
+                      <TextBlock
+                        FontSize="9.5"
+                        Foreground="{ThemeResource KvOnMintBrush}"
+                        Style="{StaticResource KvPillTextStyle}"
+                        Text="{x:Bind HelpText, Mode=OneWay}" />
+                    </Border>
+                  </StackPanel>
+                  <Border
+                    Grid.Column="1"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource KvChipStyle}">
+                    <TextBlock Style="{StaticResource KvChipTextStyle}" Text="{x:Bind Label}" />
+                  </Border>
+                </Grid>
+              </Border>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
-    </StackPanel>
+    </Grid>
   </Grid>
 </UserControl>

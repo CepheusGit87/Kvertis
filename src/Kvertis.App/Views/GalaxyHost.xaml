@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- The top area of step 1 (ADR-022): the galaxy plus everything that lies on top of it as XAML. The single
-     place that decides what is drawn at all - moving surface, still picture, or nothing in high contrast. -->
+     place that decides what is drawn at all - moving surface, still picture, or nothing in high contrast.
+     Placement after the draft (#gal-stil): sum top left, drop card top centre, "not convertible" top right,
+     zoom hint at the foot. -->
 <UserControl
   x:Class="Kvertis.App.Views.GalaxyHost"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -8,122 +10,178 @@
   xmlns:helpers="using:Kvertis.App.Helpers"
   xmlns:vm="using:Kvertis.App.ViewModels">
 
-  <Grid>
+  <Grid x:Name="HostRoot">
+    <VisualStateManager.VisualStateGroups>
+      <!-- .welt.zieht .einwurf: while files hover over the page the drop card turns mint and says "Loslassen". -->
+      <VisualStateGroup x:Name="DragStates">
+        <VisualState x:Name="Idle" />
+        <VisualState x:Name="Dragging">
+          <VisualState.Setters>
+            <Setter Target="EntryFrame.Stroke" Value="{ThemeResource KvMintBrush}" />
+            <Setter Target="EntryRing.Visibility" Value="Visible" />
+            <Setter Target="EntryIdleText.Visibility" Value="Collapsed" />
+            <Setter Target="EntryDragText.Visibility" Value="Visible" />
+          </VisualState.Setters>
+        </VisualState>
+      </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+
     <!-- The drawing surface (or the still picture) is put in here by the code behind. -->
     <Grid x:Name="SurfaceLayer" AutomationProperties.AccessibilityView="Raw" />
 
-    <!-- Empty round: the drop line stands in the middle of the empty galaxy, where it covers no orbit. -->
-    <Border
+    <!-- .summe: left 16, top 16; count 15 / SemiBold ink, line 12.5 muted, the rejected part in coral. -->
+    <StackPanel
+      x:Name="Summary"
+      Margin="16,16,0,0"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top"
+      AutomationProperties.LiveSetting="Polite"
+      Spacing="2"
+      Visibility="{x:Bind helpers:Ui.Hide(ViewModel.IsZoomed), Mode=OneWay}">
+      <TextBlock
+        FontSize="15"
+        Style="{StaticResource KvHeadTextStyle}"
+        Text="{x:Bind ViewModel.SummaryTitle, Mode=OneWay}" />
+      <TextBlock FontSize="12.5" Style="{StaticResource KvSmallTextStyle}">
+        <Run Text="{x:Bind ViewModel.SummaryDetail, Mode=OneWay}" /><Run Foreground="{ThemeResource KvErrorBrush}" Text="{x:Bind ViewModel.SummaryRejected, Mode=OneWay}" />
+      </TextBlock>
+    </StackPanel>
+
+    <!-- .einwurf: top 12, centred; one row of text and buttons, gap 12, padding 9/12/9/14, radius 14, 1.5 px
+         dashed line-stark on bg 70 % (78 % here, no blur, 1.4). Stays in the overview also with files, as in
+         the draft; in the zoom it only comes back while files are dragged over the page. -->
+    <Grid
       x:Name="EntryCard"
-      Padding="16,10"
+      Margin="0,12,0,0"
       HorizontalAlignment="Center"
-      VerticalAlignment="Center"
-      Background="{ThemeResource KvGlasBrush}"
-      BorderBrush="{ThemeResource KvLineBrush}"
-      BorderThickness="1"
-      CornerRadius="8"
-      Visibility="{x:Bind helpers:Ui.ShowUnless(ViewModel.ShowEmptyState, ViewModel.IsZoomed), Mode=OneWay}">
-      <StackPanel HorizontalAlignment="Center" Spacing="6">
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="8">
-          <FontIcon FontSize="16" Glyph="&#xE898;" />
-          <TextBlock
-            x:Uid="Galaxy_Entry_Title"
-            VerticalAlignment="Center"
-            Style="{StaticResource BodyStrongTextBlockStyle}" />
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Spacing="12">
-          <Button x:Uid="Main_AddFiles_Button" Command="{x:Bind ViewModel.AddFilesCommand}" />
-          <HyperlinkButton x:Uid="Main_AddFolder_Link" Command="{x:Bind ViewModel.AddFolderCommand}" />
-        </StackPanel>
-        <TextBlock
-          x:Uid="Galaxy_Entry_PasteHint"
-          HorizontalAlignment="Center"
-          Style="{StaticResource SecondaryCaptionTextStyle}" />
-      </StackPanel>
-    </Border>
-
-    <!-- Once files are in, the same two ways in stay reachable as one quiet line at the foot of the galaxy,
-         so nothing covers the orbits any more. -->
-    <Border
-      x:Name="EntryBar"
-      Margin="0,0,0,4"
-      Padding="10,4"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Bottom"
-      Background="{ThemeResource KvGlasBrush}"
-      BorderBrush="{ThemeResource KvLineBrush}"
-      BorderThickness="1"
-      CornerRadius="6"
-      Visibility="{x:Bind helpers:Ui.ShowUnless(ViewModel.HasJobs, ViewModel.IsZoomed), Mode=OneWay}">
-      <StackPanel Orientation="Horizontal" Spacing="10">
-        <FontIcon VerticalAlignment="Center" FontSize="13" Glyph="&#xE898;" />
+      VerticalAlignment="Top"
+      Visibility="{x:Bind helpers:Ui.Hide(ViewModel.IsZoomed), Mode=OneWay}">
+      <ToolTipService.ToolTip>
+        <ToolTip>
+          <TextBlock x:Uid="Galaxy_Entry_PasteHint" />
+        </ToolTip>
+      </ToolTipService.ToolTip>
+      <!-- box-shadow 0 0 0 4px mint-flaeche while dragging -->
+      <Border
+        x:Name="EntryRing"
+        Margin="-4"
+        BorderBrush="{ThemeResource KvMintSurfaceBrush}"
+        BorderThickness="4"
+        CornerRadius="18"
+        Visibility="Collapsed" />
+      <Rectangle
+        x:Name="EntryFrame"
+        Fill="{ThemeResource KvBg78Brush}"
+        RadiusX="14"
+        RadiusY="14"
+        Stroke="{ThemeResource KvLineStrongBrush}"
+        StrokeDashArray="3,3"
+        StrokeThickness="1.5" />
+      <StackPanel
+        Padding="14,9,12,9"
+        Orientation="Horizontal"
+        Spacing="12">
+        <Grid VerticalAlignment="Center">
+          <StackPanel x:Name="EntryIdleText">
+            <TextBlock x:Uid="Galaxy_Entry_Title" FontWeight="Bold" Style="{StaticResource KvBodyTextStyle}" />
+            <TextBlock x:Uid="Galaxy_Entry_Sub" Style="{StaticResource KvSmallTextStyle}" />
+          </StackPanel>
+          <StackPanel x:Name="EntryDragText" Visibility="Collapsed">
+            <TextBlock
+              x:Uid="Galaxy_Entry_DragTitle"
+              FontWeight="Bold"
+              Foreground="{ThemeResource KvMintBrush}"
+              Style="{StaticResource KvBodyTextStyle}" />
+            <TextBlock
+              x:Uid="Galaxy_Entry_DragSub"
+              Foreground="{ThemeResource KvMintBrush}"
+              Style="{StaticResource KvSmallTextStyle}" />
+          </StackPanel>
+        </Grid>
         <Button x:Uid="Main_AddFiles_Button" Command="{x:Bind ViewModel.AddFilesCommand}" />
-        <HyperlinkButton x:Uid="Main_AddFolder_Link" Command="{x:Bind ViewModel.AddFolderCommand}" />
-        <TextBlock
-          x:Uid="Galaxy_Entry_PasteHint"
-          VerticalAlignment="Center"
-          Style="{StaticResource SecondaryCaptionTextStyle}" />
+        <HyperlinkButton
+          x:Uid="Main_AddFolder_Link"
+          Margin="-6,0,0,0"
+          Command="{x:Bind ViewModel.AddFolderCommand}" />
       </StackPanel>
-    </Border>
+    </Grid>
 
-    <!-- "Nicht umwandelbar": name and reason per file, at most three rows. -->
-    <Border
+    <!-- .abweis: right 16, top 74, max 250, padding 8/12, radius 12, 1 px dashed coral frame on bg 75 %.
+         Title 12 / SemiBold coral, rows 11.5; name and reason per file, at most three rows. -->
+    <ContentControl
       x:Name="RejectedCard"
-      MaxWidth="300"
-      Margin="0,8,8,0"
+      MaxWidth="250"
+      Margin="0,74,16,0"
       Padding="12,8"
       HorizontalAlignment="Right"
       VerticalAlignment="Top"
-      Background="{ThemeResource KvGlasBrush}"
-      BorderBrush="{ThemeResource KvErrorBrush}"
-      BorderThickness="1"
-      CornerRadius="8"
+      Background="{ThemeResource KvBg80Brush}"
+      BorderBrush="{ThemeResource KvErrorFrameBrush}"
       SizeChanged="OnRejectedCardSizeChanged"
+      Style="{StaticResource KvDashedBoxStyle}"
       Visibility="{x:Bind helpers:Ui.ShowUnless(ViewModel.Rejected.HasAny, ViewModel.IsZoomed), Mode=OneWay}">
-      <StackPanel Spacing="6">
+      <StackPanel Spacing="2">
         <TextBlock
           x:Uid="Galaxy_Rejected_Title"
           AutomationProperties.LiveSetting="Assertive"
-          Style="{StaticResource BodyStrongTextBlockStyle}" />
+          FontSize="12"
+          Foreground="{ThemeResource KvErrorBrush}"
+          Style="{StaticResource KvHeadTextStyle}" />
         <ItemsControl ItemsSource="{x:Bind ViewModel.Rejected.Visible, Mode=OneWay}">
           <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:JobItemViewModel">
-              <Grid ColumnSpacing="8">
+              <Grid ColumnSpacing="6">
                 <Grid.ColumnDefinitions>
                   <ColumnDefinition Width="*" />
                   <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
                   <TextBlock
-                    Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="{x:Bind FileName}"
-                    TextTrimming="CharacterEllipsis" />
+                    Foreground="{ThemeResource KvInkBrush}"
+                    Style="{StaticResource KvSmallTextStyle}"
+                    Text="{x:Bind FileName}" />
                   <TextBlock
-                    Foreground="{ThemeResource KvMutedBrush}"
-                    Style="{StaticResource CaptionTextBlockStyle}"
+                    Style="{StaticResource KvSmallTextStyle}"
                     Text="{x:Bind ErrorTitle, Mode=OneWay}"
                     TextWrapping="Wrap" />
                 </StackPanel>
+                <!-- 24 visible, 32 to click: the negative margin keeps the row compact. -->
                 <Button
                   x:Uid="Card_Remove_Button"
                   Grid.Column="1"
-                  Width="{StaticResource IconButtonSize}"
-                  Height="{StaticResource IconButtonSize}"
-                  VerticalAlignment="Top"
-                  Padding="0"
-                  Command="{x:Bind RemoveCommand}">
-                  <FontIcon FontSize="12" Glyph="&#xE74D;" />
+                  Margin="-4"
+                  VerticalAlignment="Center"
+                  Command="{x:Bind RemoveCommand}"
+                  Style="{StaticResource KvIconButtonStyle}">
+                  <FontIcon FontSize="11" Glyph="&#xE711;" />
                 </Button>
               </Grid>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
         <HyperlinkButton
+          Padding="0,2"
           AutomationProperties.Name="{x:Bind ViewModel.Rejected.MoreText, Mode=OneWay}"
           Command="{x:Bind ViewModel.Rejected.ToggleExpandCommand}"
           Content="{x:Bind ViewModel.Rejected.MoreText, Mode=OneWay}"
+          FontSize="11.5"
           Visibility="{x:Bind helpers:Ui.Show(ViewModel.Rejected.HasMore), Mode=OneWay}" />
       </StackPanel>
+    </ContentControl>
+
+    <!-- .hin-ueber: centred at the foot of the galaxy, 12 muted; only in the overview and only where there is a
+         galaxy to click (none in high contrast). -->
+    <Border
+      x:Name="ZoomHintHost"
+      Margin="0,0,0,12"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Bottom"
+      IsHitTestVisible="False">
+      <TextBlock
+        x:Uid="Galaxy_ZoomHint"
+        FontSize="12"
+        Style="{StaticResource KvSmallTextStyle}"
+        Visibility="{x:Bind helpers:Ui.Hide(ViewModel.IsZoomed), Mode=OneWay}" />
     </Border>
   </Grid>
 </UserControl>

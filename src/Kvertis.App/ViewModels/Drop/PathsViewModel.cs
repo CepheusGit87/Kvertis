@@ -16,11 +16,12 @@ namespace Kvertis.App.ViewModels.Drop;
 /// </remarks>
 public abstract partial class PathRowBase : ObservableObject
 {
-    protected PathRowBase(FormatId id, string label, string hint)
+    protected PathRowBase(FormatId id, string label, string hint, string brushKey)
     {
         Id = id;
         Label = label;
         Hint = hint;
+        BrushKey = brushKey;
     }
 
     public FormatId Id { get; }
@@ -30,13 +31,16 @@ public abstract partial class PathRowBase : ObservableObject
 
     /// <summary>The short explanation next to it, for example "Handyfoto".</summary>
     public string Hint { get; }
+
+    /// <summary>Resource key of the kind colour the row's chip and frame wear, for example <c>KvImageBrush</c>.</summary>
+    public string BrushKey { get; }
 }
 
 /// <summary>One row on the left, "Kvertis öffnet": a format the user can pick as the starting point.</summary>
 public sealed partial class PathFormatViewModel : PathRowBase
 {
-    public PathFormatViewModel(FormatId id, string label, string hint, bool isStaged)
-        : base(id, label, hint)
+    public PathFormatViewModel(FormatId id, string label, string hint, bool isStaged, string brushKey = "KvMintBrush")
+        : base(id, label, hint, brushKey)
     {
         IsStaged = isStaged;
     }
@@ -51,8 +55,8 @@ public sealed partial class PathFormatViewModel : PathRowBase
 /// <summary>One row on the right, "kann werden zu": a format the chosen input may or may not reach.</summary>
 public sealed partial class PathTargetViewModel : PathRowBase
 {
-    public PathTargetViewModel(FormatId id, string label, string hint)
-        : base(id, label, hint)
+    public PathTargetViewModel(FormatId id, string label, string hint, string brushKey = "KvMintBrush")
+        : base(id, label, hint, brushKey)
     {
     }
 
@@ -119,6 +123,10 @@ public sealed partial class PathsViewModel : ObservableObject
     [ObservableProperty]
     private PathFormatViewModel? selectedInput;
 
+    /// <summary>"HEIC: 5 Ziele" under the right heading; empty without a chosen input.</summary>
+    [ObservableProperty]
+    private string reachText = string.Empty;
+
     /// <summary>The ids the chosen input can become; the scene draws a way to each of them.</summary>
     public IReadOnlySet<string> Reachable { get; private set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -145,6 +153,7 @@ public sealed partial class PathsViewModel : ObservableObject
         Title = _loc.Get("Kind_" + kind + "_Name");
         Subtitle = _loc.Get("Kind_" + kind + "_Sub");
 
+        var brushKey = TrayViewModel.BrushKeyOf(kind);
         Inputs.Clear();
         Outputs.Clear();
         foreach (var descriptor in _registry.All.Where(d => d.Kind == kind && d.CanRead).OrderBy(d => d.DisplayName, StringComparer.CurrentCulture))
@@ -153,7 +162,8 @@ public sealed partial class PathsViewModel : ObservableObject
                 descriptor.Id,
                 descriptor.DisplayName,
                 _loc.Get("Format_" + descriptor.Id.Id + "_Hint"),
-                stagedFormats.Contains(descriptor.Id)));
+                stagedFormats.Contains(descriptor.Id),
+                brushKey));
         }
 
         foreach (var descriptor in _registry.All
@@ -163,7 +173,8 @@ public sealed partial class PathsViewModel : ObservableObject
             Outputs.Add(new PathTargetViewModel(
                 descriptor.Id,
                 descriptor.DisplayName,
-                _loc.Get("Format_" + descriptor.Id.Id + "_Hint")));
+                _loc.Get("Format_" + descriptor.Id.Id + "_Hint"),
+                brushKey));
         }
 
         _lockedUntil = DateTimeOffset.MinValue;
@@ -272,6 +283,9 @@ public sealed partial class PathsViewModel : ObservableObject
                 : row.IsReachable ? string.Empty : _loc.Format("Galaxy_NotReachable_Text", input?.Label ?? string.Empty);
         }
 
+        ReachText = input is null
+            ? string.Empty
+            : _loc.Format(reachable.Count == 1 ? "Galaxy_Reach_One_Text" : "Galaxy_Reach_Many_Text", input.Label, reachable.Count);
         OnPropertyChanged(nameof(Reachable));
         OnPropertyChanged(nameof(RecommendedId));
     }

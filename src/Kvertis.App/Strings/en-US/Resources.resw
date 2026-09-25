@@ -735,23 +735,44 @@
   <data name="Galaxy_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Back to the overview</value>
   </data>
-  <data name="Galaxy_Back_Button.Content" xml:space="preserve">
+  <data name="Galaxy_Back_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Back to the overview (Esc)</value>
+  </data>
+  <data name="Galaxy_Back_Text.Text" xml:space="preserve">
     <value>Overview</value>
   </data>
   <data name="Galaxy_Becomes_Title.Text" xml:space="preserve">
     <value>can become</value>
   </data>
+  <data name="Galaxy_Entry_DragSub.Text" xml:space="preserve">
+    <value>Kvertis checks every file by its content</value>
+  </data>
+  <data name="Galaxy_Entry_DragTitle.Text" xml:space="preserve">
+    <value>Let go</value>
+  </data>
   <data name="Galaxy_Entry_PasteHint.Text" xml:space="preserve">
     <value>Ctrl+V pastes an image from the clipboard</value>
   </data>
+  <data name="Galaxy_Entry_Sub.Text" xml:space="preserve">
+    <value>Images, music, videos, documents, 3D models</value>
+  </data>
   <data name="Galaxy_Entry_Title.Text" xml:space="preserve">
-    <value>Drag files here or pick them</value>
+    <value>Throw everything in here</value>
   </data>
   <data name="Galaxy_NotReachable_Text" xml:space="preserve">
     <value>not from {0}</value>
   </data>
+  <data name="Galaxy_Opens_Sub.Text" xml:space="preserve">
+    <value>Pick a format, the ways appear</value>
+  </data>
   <data name="Galaxy_Opens_Title.Text" xml:space="preserve">
     <value>Kvertis opens</value>
+  </data>
+  <data name="Galaxy_Reach_Many_Text" xml:space="preserve">
+    <value>{0}: {1} targets</value>
+  </data>
+  <data name="Galaxy_Reach_One_Text" xml:space="preserve">
+    <value>{0}: {1} target</value>
   </data>
   <data name="Galaxy_Recommended_Text" xml:space="preserve">
     <value>recommended</value>
@@ -761,6 +782,30 @@
   </data>
   <data name="Galaxy_Rejected_Title.Text" xml:space="preserve">
     <value>Cannot be converted</value>
+  </data>
+  <data name="Galaxy_Summary_Detail_Many" xml:space="preserve">
+    <value>{0} convertible in {1} kinds</value>
+  </data>
+  <data name="Galaxy_Summary_Detail_One" xml:space="preserve">
+    <value>{0} convertible in {1} kind</value>
+  </data>
+  <data name="Galaxy_Summary_Empty_Detail" xml:space="preserve">
+    <value>All five kinds are waiting</value>
+  </data>
+  <data name="Galaxy_Summary_Empty_Title" xml:space="preserve">
+    <value>Nothing yet</value>
+  </data>
+  <data name="Galaxy_Summary_Files_Many" xml:space="preserve">
+    <value>{0} files</value>
+  </data>
+  <data name="Galaxy_Summary_Files_One" xml:space="preserve">
+    <value>1 file</value>
+  </data>
+  <data name="Galaxy_Summary_Rejected" xml:space="preserve">
+    <value> · {0} not</value>
+  </data>
+  <data name="Galaxy_ZoomHint.Text" xml:space="preserve">
+    <value>Click an orbit or a tray to zoom in</value>
   </data>
   <data name="Grade_Band_Excellent" xml:space="preserve">
     <value>excellent</value>
@@ -904,7 +949,7 @@
     <value>Next to step 2: Target</value>
   </data>
   <data name="Main_GoTarget_Button.Content" xml:space="preserve">
-    <value>Next: Target</value>
+    <value>Next: choose target</value>
   </data>
   <data name="Main_ManyFiles_Body" xml:space="preserve">
     <value>The folder contains {0} files. Add all of them?</value>
@@ -1484,6 +1529,18 @@
   </data>
   <data name="Tray_ExtensionMismatch_Text" xml:space="preserve">
     <value>Extension .{0}, content is {1}</value>
+  </data>
+  <data name="Tray_Foot_Arrow" xml:space="preserve">
+    <value> → </value>
+  </data>
+  <data name="Tray_Foot_Formats" xml:space="preserve">
+    <value> formats</value>
+  </data>
+  <data name="Tray_Foot_Makes" xml:space="preserve">
+    <value>makes </value>
+  </data>
+  <data name="Tray_Foot_Opens" xml:space="preserve">
+    <value>opens </value>
   </data>
   <data name="Tray_Foot_Text" xml:space="preserve">
     <value>opens {0} → makes {1} formats</value>

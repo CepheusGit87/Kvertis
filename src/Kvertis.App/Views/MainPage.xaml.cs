@@ -22,13 +22,24 @@ public sealed partial class MainPage : Page, ITransitionAnchors
     /// <summary>Smallest height the galaxy keeps in a normal window.</summary>
     private const double GalaxyMinHeight = 240;
 
-    /// <summary>Tallest the galaxy grows in the overview; in the zoom it takes the whole page.</summary>
-    private const double GalaxyMaxHeight = 520;
+    /// <summary>Height of the tray row in the overview (.faecher 188), in a low window and in the zoom (52).</summary>
+    private const double TrayHeight = 188 + TrayGap;
+
+    private const double TrayHeightLow = 150 + TrayGap;
+
+    private const double TrayHeightZoomed = 52 + TrayGap;
+
+    /// <summary>Gap between the trays and the action bar (.faecher bottom 12); part of the tray row.</summary>
+    private const double TrayGap = 12;
+
+    /// <summary>Below this content height the trays get the lower height (worksheet 1.1: window height 720).</summary>
+    private const double LowHeight = 600;
 
     private readonly ILocalizer _loc;
     private readonly ITransitionService _transitions;
 
     private bool _narrow;
+    private bool _low;
     private bool _widthApplied;
     private bool _windowVisible = true;
 
@@ -157,10 +168,12 @@ public sealed partial class MainPage : Page, ITransitionAnchors
     {
         var visible = Galaxy.SurfaceVisible;
         GalaxyRow.MinHeight = visible && !_narrow ? GalaxyMinHeight : 0;
-        GalaxyRow.Height = visible ? new GridLength(2, GridUnitType.Star) : GridLength.Auto;
-        // In the zoom the trays are only a bar of heads, so the galaxy takes the rest of the page.
-        TrayRow.Height = ViewModel.IsZoomed ? GridLength.Auto : new GridLength(3, GridUnitType.Star);
-        GalaxyRow.MaxHeight = ViewModel.IsZoomed ? double.PositiveInfinity : GalaxyMaxHeight;
+        GalaxyRow.Height = visible ? new GridLength(1, GridUnitType.Star) : GridLength.Auto;
+        // The galaxy takes whatever the trays leave; in the zoom the trays are only a bar of heads. Without a
+        // galaxy (high contrast) the trays get the whole height.
+        TrayRow.Height = !visible
+            ? new GridLength(1, GridUnitType.Star)
+            : new GridLength(ViewModel.IsZoomed ? TrayHeightZoomed : _low ? TrayHeightLow : TrayHeight);
     }
 
     /// <summary>
@@ -171,12 +184,14 @@ public sealed partial class MainPage : Page, ITransitionAnchors
     private void OnContentSizeChanged(object sender, SizeChangedEventArgs e)
     {
         var narrow = e.NewSize.Width < NarrowWidth;
-        if (narrow == _narrow && _widthApplied)
+        var low = e.NewSize.Height < LowHeight;
+        if (narrow == _narrow && low == _low && _widthApplied)
         {
             return;
         }
 
         _narrow = narrow;
+        _low = low;
         _widthApplied = true;
         var width = narrow ? new GridLength(200) : new GridLength(1, GridUnitType.Star);
         TrayColumn0.Width = width;
@@ -201,14 +216,19 @@ public sealed partial class MainPage : Page, ITransitionAnchors
         e.AcceptedOperation = DataPackageOperation.Copy;
         e.DragUIOverride.Caption = _loc.Get("Main_DropZone_DragCaption");
         ViewModel.Scene.Enqueue(new Scenes.SetDragOver(true));
+        Galaxy.SetDragOver(true);
     }
 
-    private void OnPageDragLeave(object sender, DragEventArgs e) =>
+    private void OnPageDragLeave(object sender, DragEventArgs e)
+    {
         ViewModel.Scene.Enqueue(new Scenes.SetDragOver(false));
+        Galaxy.SetDragOver(false);
+    }
 
     private async void OnPageDrop(object sender, DragEventArgs e)
     {
         ViewModel.Scene.Enqueue(new Scenes.SetDragOver(false));
+        Galaxy.SetDragOver(false);
         if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
             return;

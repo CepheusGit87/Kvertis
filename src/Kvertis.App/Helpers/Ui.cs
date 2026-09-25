@@ -38,4 +38,38 @@ public static class Ui
         }
         return new SolidColorBrush(Microsoft.UI.Colors.Transparent);
     }
+
+    /// <summary>
+    /// One of the mixed brushes of a kind (KvertisColors.xaml): <c>KindVariant("KvImageBrush", "Tint12")</c> gives
+    /// <c>KvImageTint12Brush</c>. An empty variant gives the kind colour itself.
+    /// </summary>
+    public static Brush KindVariant(string? key, string variant) => Brush(KindKey(key, variant));
+
+    /// <summary>The kind variant when <paramref name="on"/> holds, otherwise the plain brush <paramref name="offKey"/>.</summary>
+    public static Brush KindBrushIf(bool on, string? key, string variant, string offKey) =>
+        on ? KindVariant(key, variant) : Brush(offKey);
+
+    /// <summary>One of two variants of the same kind.</summary>
+    public static Brush KindBrushEither(bool on, string? key, string onVariant, string offVariant) =>
+        KindVariant(key, on ? onVariant : offVariant);
+
+    /// <summary>The plain brush <paramref name="onKey"/> when <paramref name="on"/> holds, otherwise a kind variant.</summary>
+    public static Brush BrushOrKind(bool on, string onKey, string? key, string offVariant) =>
+        on ? Brush(onKey) : KindVariant(key, offVariant);
+
+    /// <summary>One of two plain brushes.</summary>
+    public static Brush BrushIf(bool on, string onKey, string offKey) => Brush(on ? onKey : offKey);
+
+    /// <summary>Full opacity when true, <paramref name="off"/> otherwise.</summary>
+    public static double OpacityIf(bool value, double off) => value ? 1.0 : off;
+
+    /// <summary>The resource key of a kind variant, see <see cref="KindVariant"/>.</summary>
+    public static string KindKey(string? key, string variant)
+    {
+        if (string.IsNullOrEmpty(key) || !key.EndsWith("Brush", StringComparison.Ordinal))
+        {
+            return key ?? string.Empty;
+        }
+        return string.Concat(key.AsSpan(0, key.Length - "Brush".Length), variant, "Brush");
+    }
 }

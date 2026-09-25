@@ -1,5 +1,9 @@
 using Kvertis.App.Animations;
+using Kvertis.App.Helpers;
+using Kvertis.App.Services;
 using Kvertis.App.ViewModels;
+using Kvertis.App.ViewModels.Drop;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
@@ -10,19 +14,25 @@ namespace Kvertis.App.Views;
 public sealed partial class TrayFileControl : UserControl
 {
     public static readonly DependencyProperty ItemProperty = DependencyProperty.Register(
-        nameof(Item), typeof(JobItemViewModel), typeof(TrayFileControl), new PropertyMetadata(null));
+        nameof(Item), typeof(JobItemViewModel), typeof(TrayFileControl), new PropertyMetadata(null, OnItemChanged));
+
+    private readonly IMotionSettings _motion;
 
     private bool _entered;
+    private bool _hover;
 
     public TrayFileControl()
     {
+        _motion = App.Services.GetRequiredService<IMotionSettings>();
         InitializeComponent();
         Loaded += OnLoaded;
+        ActualThemeChanged += (_, _) => ApplyLook();
     }
 
     /// <summary>The row fades in from 12 px below (250 ms); with reduced motion only the fade remains.</summary>
     private void OnLoaded(object sender, RoutedEventArgs e)
     {
+        ApplyLook();
         if (_entered)
         {
             return;
@@ -35,6 +45,44 @@ public sealed partial class TrayFileControl : UserControl
     {
         get => (JobItemViewModel?)GetValue(ItemProperty);
         set => SetValue(ItemProperty, value);
+    }
+
+    private static void OnItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args) =>
+        ((TrayFileControl)sender).ApplyLook();
+
+    private void OnRowPointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _hover = true;
+        ApplyLook();
+    }
+
+    private void OnRowPointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _hover = false;
+        ApplyLook();
+    }
+
+    private void OnFocusChanged(object sender, RoutedEventArgs e) => ApplyLook();
+
+    /// <summary>
+    /// Kind colours of icon and chip, the hover frame of the row (.fz:hover) and the remove cross: hidden until
+    /// the row is hovered or the row or the cross has focus (.fz:hover .fz-weg, .fz-weg:focus-visible); in high
+    /// contrast it always shows.
+    /// </summary>
+    private void ApplyLook()
+    {
+        var key = TrayViewModel.BrushKeyOf(Item?.Kind ?? Kvertis.Engine.Abstractions.MediaKind.Unknown);
+        IconBox.Background = Ui.KindVariant(key, "Tint12");
+        KindIcon.Foreground = Ui.Brush(key);
+        FormatChipBox.Background = Ui.KindVariant(key, "Tint12");
+        FormatChipBox.BorderBrush = Ui.KindVariant(key, "Frame40");
+        FormatChipText.Foreground = Ui.Brush(key);
+
+        RowFrame.BorderBrush = _hover ? Ui.KindVariant(key, "Frame60") : new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        RowFrame.Background = _hover ? Ui.KindVariant(key, "Tint12") : Ui.Brush("KvPanel80Brush");
+
+        var focused = FocusState != FocusState.Unfocused || RemoveButton.FocusState != FocusState.Unfocused;
+        RemoveButton.Opacity = _hover || focused || _motion.IsHighContrast ? 1.0 : 0.0;
     }
 
     /// <summary>

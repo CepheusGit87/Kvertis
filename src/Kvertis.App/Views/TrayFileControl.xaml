@@ -1,92 +1,189 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- One row of a tray (ADR-022): thumbnail or kind icon, name, size or the extension warning, format badge
-     and "Entfernen". Replaces the old JobCardControl; the card frame is gone, the tray carries it now. -->
+<!-- One row of a tray (ADR-022): thumbnail or kind icon, name, size or the extension warning, format chip
+     and "Entfernen". Look after the draft's .fz: columns 22 | 1fr | auto | auto, gap 7, padding 3/6/3/3,
+     radius 8, 1 px transparent border on panel 80 %; hover = border kind 60 %, background kind 12 %. -->
 <UserControl
   x:Class="Kvertis.App.Views.TrayFileControl"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:helpers="using:Kvertis.App.Helpers"
+  GotFocus="OnFocusChanged"
   IsTabStop="True"
   KeyDown="OnRowKeyDown"
+  LostFocus="OnFocusChanged"
+  PointerCanceled="OnRowPointerExited"
+  PointerEntered="OnRowPointerEntered"
+  PointerExited="OnRowPointerExited"
   UseSystemFocusVisuals="True">
 
+  <UserControl.Resources>
+    <!-- .fz-weg: 18 in the draft, here 24 visible inside a 32 px hit area (1.6); quiet cross, hover coral 18 %
+         with coral text. -->
+    <Style x:Key="RowRemoveButtonStyle" TargetType="Button">
+      <Setter Property="Width" Value="32" />
+      <Setter Property="Height" Value="32" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Foreground" Value="{ThemeResource KvQuietBrush}" />
+      <Setter Property="UseSystemFocusVisuals" Value="True" />
+      <Setter Property="FocusVisualMargin" Value="1" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Grid Background="Transparent">
+              <VisualStateManager.VisualStateGroups>
+                <VisualStateGroup x:Name="CommonStates">
+                  <VisualState x:Name="Normal" />
+                  <VisualState x:Name="PointerOver">
+                    <VisualState.Setters>
+                      <Setter Target="HoverFill.Opacity" Value="0.18" />
+                      <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource KvErrorBrush}" />
+                    </VisualState.Setters>
+                  </VisualState>
+                  <VisualState x:Name="Pressed">
+                    <VisualState.Setters>
+                      <Setter Target="HoverFill.Opacity" Value="0.28" />
+                      <Setter Target="ContentPresenter.Foreground" Value="{ThemeResource KvErrorBrush}" />
+                    </VisualState.Setters>
+                  </VisualState>
+                  <VisualState x:Name="Disabled">
+                    <VisualState.Setters>
+                      <Setter Target="ContentPresenter.Opacity" Value="0.4" />
+                    </VisualState.Setters>
+                  </VisualState>
+                </VisualStateGroup>
+              </VisualStateManager.VisualStateGroups>
+              <Border
+                Width="24"
+                Height="24"
+                BorderBrush="{ThemeResource KvGhostBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="5">
+                <Grid>
+                  <Border
+                    x:Name="HoverFill"
+                    Background="{ThemeResource KvErrorBrush}"
+                    CornerRadius="5"
+                    Opacity="0" />
+                  <ContentPresenter
+                    x:Name="ContentPresenter"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    AutomationProperties.AccessibilityView="Raw"
+                    Content="{TemplateBinding Content}"
+                    Foreground="{TemplateBinding Foreground}" />
+                </Grid>
+              </Border>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </UserControl.Resources>
+
   <!-- The row itself (this control) takes focus and has its own automation peer, so the keyboard path
-       runs tray head -> row -> row -> next tray head and a screen reader announces name and state.
-       Delete removes the file, Enter carries on to step 2. -->
-  <Grid Padding="4" ColumnSpacing="8">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="*" />
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="Auto" />
-    </Grid.ColumnDefinitions>
+       runs tray head -> row -> Entfernen -> next row -> next tray head and a screen reader announces name
+       and state. Delete removes the file, Enter carries on to step 2. -->
+  <Border
+    x:Name="RowFrame"
+    MinHeight="28"
+    Padding="3,3,6,3"
+    Background="{ThemeResource KvPanel80Brush}"
+    BorderBrush="Transparent"
+    BorderThickness="1"
+    CornerRadius="8">
+    <Grid ColumnSpacing="7">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="22" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
 
-    <!-- Preview. The thumbnail is a XAML image; the drawing surface never loads a user file (ADR-022). -->
-    <Grid
-      Grid.Column="0"
-      Width="48"
-      Height="48"
-      VerticalAlignment="Top"
-      Background="{ThemeResource SubtleFillColorSecondaryBrush}"
-      CornerRadius="6">
-      <Image
-        AutomationProperties.AccessibilityView="Raw"
-        Source="{x:Bind Item.Thumbnail, Mode=OneWay}"
-        Stretch="UniformToFill"
-        Visibility="{x:Bind helpers:Ui.Show(Item.HasThumbnail), Mode=OneWay}" />
-      <FontIcon
-        FontSize="20"
-        Glyph="{x:Bind Item.KindGlyph, Mode=OneWay}"
-        Visibility="{x:Bind helpers:Ui.Hide(Item.HasThumbnail), Mode=OneWay}" />
-    </Grid>
+      <!-- .ikon: 22, radius 6, kind 16 % on panel2, symbol 13 in the kind colour. The thumbnail is a XAML image;
+           the drawing surface never loads a user file (ADR-022). -->
+      <Grid
+        x:Name="IconBox"
+        Grid.Column="0"
+        Width="22"
+        Height="22"
+        VerticalAlignment="Center"
+        CornerRadius="6">
+        <FontIcon
+          x:Name="KindIcon"
+          FontSize="13"
+          Glyph="{x:Bind Item.KindGlyph, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.Hide(Item.HasThumbnail), Mode=OneWay}" />
+        <Image
+          AutomationProperties.AccessibilityView="Raw"
+          Source="{x:Bind Item.Thumbnail, Mode=OneWay}"
+          Stretch="UniformToFill"
+          Visibility="{x:Bind helpers:Ui.Show(Item.HasThumbnail), Mode=OneWay}" />
+      </Grid>
 
-    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
-      <TextBlock
-        Style="{StaticResource BodyStrongTextBlockStyle}"
-        Text="{x:Bind Item.FileName, Mode=OneWay}"
-        TextTrimming="CharacterEllipsis" />
-      <TextBlock
-        Style="{StaticResource SecondaryCaptionTextStyle}"
-        Text="{x:Bind Item.SizeText, Mode=OneWay}"
-        Visibility="{x:Bind helpers:Ui.Hide(Item.HasMismatch), Mode=OneWay}" />
-      <!-- The extension lies about the content: this replaces the size, because it matters more. -->
-      <StackPanel
-        Orientation="Horizontal"
-        Spacing="4"
-        Visibility="{x:Bind helpers:Ui.Show(Item.HasMismatch), Mode=OneWay}">
-        <FontIcon FontSize="12" Foreground="{ThemeResource KvVideoBrush}" Glyph="&#xE7BA;" />
+      <StackPanel Grid.Column="1" VerticalAlignment="Center">
         <TextBlock
-          Style="{StaticResource CaptionTextBlockStyle}"
+          FontSize="12"
+          LineHeight="14"
+          LineStackingStrategy="BlockLineHeight"
+          Style="{StaticResource KvRowTextStyle}"
+          Text="{x:Bind Item.FileName, Mode=OneWay}" />
+        <TextBlock
+          FontSize="10"
+          FontWeight="Normal"
+          LineHeight="12"
+          LineStackingStrategy="BlockLineHeight"
+          Style="{StaticResource KvMonoTextStyle}"
+          Text="{x:Bind Item.SizeText, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.Hide(Item.HasMismatch), Mode=OneWay}" />
+        <!-- .fz .nm small.warn: the extension lies about the content; this replaces the size, because it matters more. -->
+        <TextBlock
+          FontSize="10"
+          FontWeight="Normal"
+          Foreground="{ThemeResource KvVideoBrush}"
+          LineHeight="12"
+          LineStackingStrategy="BlockLineHeight"
+          Style="{StaticResource KvMonoTextStyle}"
           Text="{x:Bind Item.MismatchText, Mode=OneWay}"
-          TextWrapping="Wrap" />
+          Visibility="{x:Bind helpers:Ui.Show(Item.HasMismatch), Mode=OneWay}" />
+        <TextBlock
+          FontSize="10"
+          FontWeight="Normal"
+          Foreground="{ThemeResource KvVideoBrush}"
+          LineHeight="12"
+          LineStackingStrategy="BlockLineHeight"
+          Style="{StaticResource KvMonoTextStyle}"
+          Text="{x:Bind Item.WarningText, Mode=OneWay}"
+          TextWrapping="Wrap"
+          Visibility="{x:Bind helpers:Ui.ShowText(Item.WarningText), Mode=OneWay}" />
       </StackPanel>
-      <TextBlock
-        Style="{StaticResource CaptionTextBlockStyle}"
-        Text="{x:Bind Item.WarningText, Mode=OneWay}"
-        TextWrapping="Wrap"
-        Visibility="{x:Bind helpers:Ui.ShowText(Item.WarningText), Mode=OneWay}" />
-    </StackPanel>
 
-    <Border
-      Grid.Column="2"
-      Padding="6,1"
-      VerticalAlignment="Center"
-      BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-      BorderThickness="1"
-      CornerRadius="4">
-      <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind Item.InputFormatLabel, Mode=OneWay}" />
-    </Border>
+      <!-- .fz .fc: format chip in the kind colour, 9.5 px, padding 5/1 -->
+      <Border
+        x:Name="FormatChipBox"
+        Grid.Column="2"
+        Padding="5,1"
+        Style="{StaticResource KvChipStyle}">
+        <TextBlock
+          x:Name="FormatChipText"
+          FontSize="9.5"
+          Style="{StaticResource KvChipTextStyle}"
+          Text="{x:Bind Item.InputFormatLabel, Mode=OneWay}" />
+      </Border>
 
-    <Button
-      x:Uid="Card_Remove_Button"
-      Grid.Column="3"
-      Width="{StaticResource IconButtonSize}"
-      Height="{StaticResource IconButtonSize}"
-      VerticalAlignment="Center"
-      Padding="0"
-      Command="{x:Bind Item.RemoveCommand, Mode=OneWay}"
-      Visibility="{x:Bind helpers:Ui.Show(Item.CanRemove), Mode=OneWay}">
-      <FontIcon FontSize="14" Glyph="&#xE74D;" />
-    </Button>
-  </Grid>
+      <!-- Hidden until the row is hovered or something in it has keyboard focus; always there in high contrast. -->
+      <Button
+        x:Name="RemoveButton"
+        x:Uid="Card_Remove_Button"
+        Grid.Column="3"
+        Margin="-4"
+        VerticalAlignment="Center"
+        Command="{x:Bind Item.RemoveCommand, Mode=OneWay}"
+        Opacity="0"
+        Style="{StaticResource RowRemoveButtonStyle}"
+        Visibility="{x:Bind helpers:Ui.Show(Item.CanRemove), Mode=OneWay}">
+        <FontIcon FontSize="10" Glyph="&#xE711;" />
+      </Button>
+    </Grid>
+  </Border>
 </UserControl>

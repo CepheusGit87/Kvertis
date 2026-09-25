@@ -735,23 +735,44 @@
   <data name="Galaxy_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Zurück zur Übersicht</value>
   </data>
-  <data name="Galaxy_Back_Button.Content" xml:space="preserve">
+  <data name="Galaxy_Back_Button.[using:Microsoft.UI.Xaml.Controls]ToolTipService.ToolTip" xml:space="preserve">
+    <value>Zurück zur Übersicht (Esc)</value>
+  </data>
+  <data name="Galaxy_Back_Text.Text" xml:space="preserve">
     <value>Übersicht</value>
   </data>
   <data name="Galaxy_Becomes_Title.Text" xml:space="preserve">
     <value>kann werden zu</value>
   </data>
+  <data name="Galaxy_Entry_DragSub.Text" xml:space="preserve">
+    <value>Kvertis prüft jede Datei am Inhalt</value>
+  </data>
+  <data name="Galaxy_Entry_DragTitle.Text" xml:space="preserve">
+    <value>Loslassen</value>
+  </data>
   <data name="Galaxy_Entry_PasteHint.Text" xml:space="preserve">
     <value>Strg+V fügt ein Bild aus der Zwischenablage ein</value>
   </data>
+  <data name="Galaxy_Entry_Sub.Text" xml:space="preserve">
+    <value>Bilder, Musik, Videos, Dokumente, 3D-Modelle</value>
+  </data>
   <data name="Galaxy_Entry_Title.Text" xml:space="preserve">
-    <value>Dateien hierher ziehen oder auswählen</value>
+    <value>Alles hier hineinwerfen</value>
   </data>
   <data name="Galaxy_NotReachable_Text" xml:space="preserve">
     <value>nicht von {0}</value>
   </data>
+  <data name="Galaxy_Opens_Sub.Text" xml:space="preserve">
+    <value>Format wählen, Wege erscheinen</value>
+  </data>
   <data name="Galaxy_Opens_Title.Text" xml:space="preserve">
     <value>Kvertis öffnet</value>
+  </data>
+  <data name="Galaxy_Reach_Many_Text" xml:space="preserve">
+    <value>{0}: {1} Ziele</value>
+  </data>
+  <data name="Galaxy_Reach_One_Text" xml:space="preserve">
+    <value>{0}: {1} Ziel</value>
   </data>
   <data name="Galaxy_Recommended_Text" xml:space="preserve">
     <value>empfohlen</value>
@@ -761,6 +782,30 @@
   </data>
   <data name="Galaxy_Rejected_Title.Text" xml:space="preserve">
     <value>Nicht umwandelbar</value>
+  </data>
+  <data name="Galaxy_Summary_Detail_Many" xml:space="preserve">
+    <value>{0} umwandelbar in {1} Arten</value>
+  </data>
+  <data name="Galaxy_Summary_Detail_One" xml:space="preserve">
+    <value>{0} umwandelbar in {1} Art</value>
+  </data>
+  <data name="Galaxy_Summary_Empty_Detail" xml:space="preserve">
+    <value>Alle fünf Arten warten</value>
+  </data>
+  <data name="Galaxy_Summary_Empty_Title" xml:space="preserve">
+    <value>Noch leer</value>
+  </data>
+  <data name="Galaxy_Summary_Files_Many" xml:space="preserve">
+    <value>{0} Dateien</value>
+  </data>
+  <data name="Galaxy_Summary_Files_One" xml:space="preserve">
+    <value>1 Datei</value>
+  </data>
+  <data name="Galaxy_Summary_Rejected" xml:space="preserve">
+    <value> · {0} nicht</value>
+  </data>
+  <data name="Galaxy_ZoomHint.Text" xml:space="preserve">
+    <value>Bahn oder Fach anklicken zum Heranzoomen</value>
   </data>
   <data name="Grade_Band_Excellent" xml:space="preserve">
     <value>sehr gut</value>
@@ -904,7 +949,7 @@
     <value>Weiter zu Schritt 2: Ziel</value>
   </data>
   <data name="Main_GoTarget_Button.Content" xml:space="preserve">
-    <value>Weiter: Ziel</value>
+    <value>Weiter: Ziel wählen</value>
   </data>
   <data name="Main_ManyFiles_Body" xml:space="preserve">
     <value>Der Ordner enthält {0} Dateien. Sollen alle hinzugefügt werden?</value>
@@ -1484,6 +1529,18 @@
   </data>
   <data name="Tray_ExtensionMismatch_Text" xml:space="preserve">
     <value>Endung .{0}, Inhalt ist {1}</value>
+  </data>
+  <data name="Tray_Foot_Arrow" xml:space="preserve">
+    <value> → </value>
+  </data>
+  <data name="Tray_Foot_Formats" xml:space="preserve">
+    <value> Formate</value>
+  </data>
+  <data name="Tray_Foot_Makes" xml:space="preserve">
+    <value>macht </value>
+  </data>
+  <data name="Tray_Foot_Opens" xml:space="preserve">
+    <value>öffnet </value>
   </data>
   <data name="Tray_Foot_Text" xml:space="preserve">
     <value>öffnet {0} → macht {1} Formate</value>

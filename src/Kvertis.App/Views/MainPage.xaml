@@ -35,15 +35,16 @@
         <views:HistoryPanel ViewModel="{x:Bind History}" />
       </SplitView.Pane>
 
-      <Grid Padding="24,8,24,0" RowSpacing="12" SizeChanged="OnContentSizeChanged">
+      <!-- Layout after the draft (#gal-stil): the galaxy runs edge to edge and takes whatever the trays leave;
+           the trays are 188 high (52 in the zoom), 16 from the sides and 12 above the action bar. -->
+      <Grid SizeChanged="OnContentSizeChanged">
         <Grid.RowDefinitions>
-          <RowDefinition x:Name="GalaxyRow" Height="2*" MinHeight="240" MaxHeight="520" />
-          <RowDefinition x:Name="TrayRow" Height="3*" />
+          <RowDefinition x:Name="GalaxyRow" Height="*" MinHeight="240" />
+          <RowDefinition x:Name="TrayRow" Height="200" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-
-        <!-- 1. The galaxy with the drop line, the rejected card and, while zoomed, the two format lists. -->
+        <!-- 1. The galaxy with sum, drop card, rejected card, zoom hint and, while zoomed, the two format lists. -->
         <Grid Grid.Row="0">
           <views:GalaxyHost x:Name="Galaxy" ZoomRequested="OnGalaxyZoomRequested" />
           <views:PathsOverlay
@@ -56,10 +57,11 @@
         <ScrollViewer
           x:Name="TrayScroll"
           Grid.Row="1"
+          Margin="16,0,16,12"
           HorizontalScrollBarVisibility="Disabled"
           HorizontalScrollMode="Disabled"
           VerticalScrollMode="Disabled">
-          <Grid ColumnSpacing="8">
+          <Grid ColumnSpacing="10">
             <Grid.ColumnDefinitions>
               <ColumnDefinition x:Name="TrayColumn0" Width="*" />
               <ColumnDefinition x:Name="TrayColumn1" Width="*" />
@@ -95,15 +97,9 @@
           </Grid>
         </ScrollViewer>
 
-        <!-- 3. Action bar: trust line and the single mint button. -->
-        <Border
-          Grid.Row="2"
-          Margin="-24,0"
-          Padding="24,12"
-          Background="{ThemeResource LayerFillColorDefaultBrush}"
-          BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-          BorderThickness="0,1,0,0">
-          <Grid ColumnSpacing="12">
+        <!-- 3. Action bar (.leiste): trust line with the mint lock and the single primary button. -->
+        <Border Grid.Row="2" Style="{StaticResource KvBottomBarStyle}">
+          <Grid ColumnSpacing="10">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*" />
               <ColumnDefinition Width="Auto" />
@@ -114,8 +110,16 @@
               VerticalAlignment="Center"
               Orientation="Horizontal"
               Spacing="8">
-              <FontIcon FontSize="14" Foreground="{ThemeResource SystemFillColorSuccessBrush}" Glyph="&#xE72E;" />
-              <TextBlock x:Uid="Main_Trust_Text" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+              <FontIcon
+                VerticalAlignment="Center"
+                FontSize="14"
+                Foreground="{ThemeResource KvMintBrush}"
+                Glyph="&#xE72E;" />
+              <TextBlock
+                x:Uid="Main_Trust_Text"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Style="{StaticResource KvSmallTextStyle}" />
               <ProgressRing
                 x:Uid="Main_Adding_Progress"
                 Width="16"
@@ -129,9 +133,8 @@
               x:Uid="Main_GoTarget_Button"
               Grid.Column="1"
               MinWidth="160"
-              MinHeight="40"
               Command="{x:Bind ViewModel.GoToTargetCommand}"
-              Style="{StaticResource AccentButtonStyle}" />
+              Style="{StaticResource KvPrimaryButtonStyle}" />
           </Grid>
         </Border>
       </Grid>

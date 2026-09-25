@@ -131,6 +131,45 @@ public sealed partial class PathsOverlay : UserControl, IDisposable
 
     private void OnLayoutUpdated(object? sender, object e) => _anchors?.Request();
 
+    /// <summary>
+    /// The rows slide in from their side, 35 ms apart (.seite-l/-r > *: 14 px, 0.4 s fade, 0.5 s slide); with
+    /// reduced motion they simply appear. Composition translation does not move the layout slot, so the
+    /// anchors of the ways stay where the rows end up.
+    /// </summary>
+    private void OnRowLoaded(object sender, RoutedEventArgs e)
+    {
+        if (!_motion.AnimationsEnabled || sender is not FrameworkElement row)
+        {
+            return;
+        }
+
+        var left = row.DataContext is PathFormatViewModel;
+        var list = left ? InputList : OutputList;
+        var index = list.IndexFromContainer(list.ContainerFromItem(row.DataContext));
+        var delay = TimeSpan.FromMilliseconds(35 * (Math.Max(index, 0) + 1));
+
+        var visual = Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.GetElementVisual(row);
+        var compositor = visual.Compositor;
+        var ease = compositor.CreateCubicBezierEasingFunction(new Vector2(0.2f, 0.9f), new Vector2(0.25f, 1f));
+
+        var fade = compositor.CreateScalarKeyFrameAnimation();
+        fade.InsertKeyFrame(0f, 0f);
+        fade.InsertKeyFrame(1f, 1f);
+        fade.Duration = TimeSpan.FromMilliseconds(400);
+        fade.DelayTime = delay;
+        fade.DelayBehavior = Microsoft.UI.Composition.AnimationDelayBehavior.SetInitialValueBeforeDelay;
+        visual.StartAnimation("Opacity", fade);
+
+        Microsoft.UI.Xaml.Hosting.ElementCompositionPreview.SetIsTranslationEnabled(row, true);
+        var slide = compositor.CreateVector3KeyFrameAnimation();
+        slide.InsertKeyFrame(0f, new Vector3(left ? -14f : 14f, 0f, 0f));
+        slide.InsertKeyFrame(1f, Vector3.Zero, ease);
+        slide.Duration = TimeSpan.FromMilliseconds(500);
+        slide.DelayTime = delay;
+        slide.DelayBehavior = Microsoft.UI.Composition.AnimationDelayBehavior.SetInitialValueBeforeDelay;
+        visual.StartAnimation("Translation", slide);
+    }
+
     private void OnBackClick(object sender, RoutedEventArgs e) => BackRequested?.Invoke(this, EventArgs.Empty);
 
     private void OnInputChecked(object sender, RoutedEventArgs e)

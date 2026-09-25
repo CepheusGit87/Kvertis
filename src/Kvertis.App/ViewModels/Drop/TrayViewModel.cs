@@ -50,6 +50,12 @@ public sealed partial class TrayViewModel : ObservableObject
         ExampleFormats = readable.Take(ExampleLimit).Select(d => d.DisplayName).ToList();
         ExampleText = string.Join(" · ", ExampleFormats);
         FootText = loc.Format("Tray_Foot_Text", ReadableCount, WritableCount);
+        FootOpens = loc.Get("Tray_Foot_Opens");
+        FootArrow = loc.Get("Tray_Foot_Arrow");
+        FootMakes = loc.Get("Tray_Foot_Makes");
+        FootFormats = loc.Get("Tray_Foot_Formats");
+        ReadableCountText = ReadableCount.ToString(CultureInfo.CurrentCulture);
+        WritableCountText = WritableCount.ToString(CultureInfo.CurrentCulture);
     }
 
     public MediaKind Kind { get; }
@@ -76,6 +82,20 @@ public sealed partial class TrayViewModel : ObservableObject
 
     /// <summary>"öffnet 11 → macht 8 Formate".</summary>
     public string FootText { get; }
+
+    // The same foot line in pieces, so the view can set the numbers bold and the arrow in mint. The screen
+    // reader reads FootText as a whole.
+    public string FootOpens { get; }
+
+    public string FootArrow { get; }
+
+    public string FootMakes { get; }
+
+    public string FootFormats { get; }
+
+    public string ReadableCountText { get; }
+
+    public string WritableCountText { get; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CountText), nameof(IsEmpty), nameof(AutomationName))]

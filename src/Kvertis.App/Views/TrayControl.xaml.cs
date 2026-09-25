@@ -1,4 +1,5 @@
 using Kvertis.App.Animations;
+using Kvertis.App.Helpers;
 using Kvertis.App.ViewModels.Drop;
 using Kvertis.Engine.Abstractions;
 using Microsoft.UI.Xaml;
@@ -17,6 +18,7 @@ public sealed partial class TrayControl : UserControl
 
     private TrayViewModel? _attached;
     private int _lastCount;
+    private bool _hover;
 
     public TrayControl()
     {
@@ -25,6 +27,7 @@ public sealed partial class TrayControl : UserControl
         // follow, otherwise the tray stops reacting to its view model.
         Loaded += (_, _) => Attach(Tray);
         Unloaded += (_, _) => Attach(null);
+        ActualThemeChanged += (_, _) => { FillExampleChips(); ApplyFrame(); };
     }
 
     /// <summary>Raised when the head was activated (mouse, Enter or space).</summary>
@@ -62,6 +65,7 @@ public sealed partial class TrayControl : UserControl
             tray.PropertyChanged += OnTrayPropertyChanged;
         }
 
+        FillExampleChips();
         ApplyZoomState();
     }
 
@@ -78,6 +82,8 @@ public sealed partial class TrayControl : UserControl
             return;
         }
 
+        ApplyFrame();
+
         // A new file made the count grow: the number hops once (0.45 s spring, plain fade without animations).
         var grew = tray.Count > _lastCount;
         _lastCount = tray.Count;
@@ -87,8 +93,54 @@ public sealed partial class TrayControl : UserControl
         }
     }
 
-    private void ApplyZoomState() =>
+    private void ApplyZoomState()
+    {
         VisualStateManager.GoToState(this, Tray?.IsBar == true ? "Zoomed" : "Overview", useTransitions: true);
+        ApplyFrame();
+    }
+
+    private void OnTrayPointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _hover = true;
+        ApplyFrame();
+    }
+
+    private void OnTrayPointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e)
+    {
+        _hover = false;
+        ApplyFrame();
+    }
+
+    /// <summary>
+    /// The frame of the draft's .fach: top edge kind 70 % (empty 30 %); hover = border kind 55 %, top edge full,
+    /// 1 px ring kind 25 %; zoomed to this kind (.fach.an) = border and top edge full, background kind 12 %.
+    /// The kind variants are looked up here because they depend on the tray, not on the theme alone.
+    /// </summary>
+    private void ApplyFrame()
+    {
+        var key = Tray?.BrushKey;
+        var zoomed = Tray?.IsZoomed == true;
+        var empty = Tray?.IsEmpty != false;
+        TopEdge.Opacity = zoomed || _hover ? 1.0 : empty ? 0.3 : 0.7;
+        HoverRing.Visibility = _hover && !zoomed ? Visibility.Visible : Visibility.Collapsed;
+        Frame.BorderBrush = zoomed ? Ui.Brush(key) : _hover ? Ui.KindVariant(key, "Frame60") : Ui.Brush("KvLineBrush");
+        Frame.Background = zoomed ? Ui.KindVariant(key, "Tint12") : Ui.Brush("KvBg86Brush");
+    }
+
+    /// <summary>The example formats of the empty tray as chips in the kind colour (.fach-leer .chips .fc, 9.5 px).</summary>
+    private void FillExampleChips()
+    {
+        ExampleChips.Children.Clear();
+        if (Tray is not { } tray)
+        {
+            return;
+        }
+
+        foreach (var format in tray.ExampleFormats)
+        {
+            ExampleChips.Children.Add(FormatChip.Create(format, tray.BrushKey, small: true));
+        }
+    }
 
     private void OnRowAccepted(object? sender, EventArgs e) => AcceptRequested?.Invoke(this, EventArgs.Empty);
 

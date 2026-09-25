@@ -25,6 +25,7 @@ public sealed partial class GalaxyHost : UserControl
     private bool _suspended = true;
     private bool _paused;
     private bool _built;
+    private bool _dragOver;
 
     public GalaxyHost()
     {
@@ -94,6 +95,18 @@ public sealed partial class GalaxyHost : UserControl
         ApplyPaused();
     }
 
+    /// <summary>Files hover over the page: the drop card turns mint and says "Loslassen" (.welt.zieht .einwurf).</summary>
+    public void SetDragOver(bool over)
+    {
+        if (over == _dragOver)
+        {
+            return;
+        }
+
+        _dragOver = over;
+        VisualStateManager.GoToState(this, over ? "Dragging" : "Idle", useTransitions: false);
+    }
+
     /// <summary>Pauses the loop without destroying anything (window hidden, history pane open).</summary>
     public void SetPaused(bool paused)
     {
@@ -145,6 +158,8 @@ public sealed partial class GalaxyHost : UserControl
     {
         _built = true;
         DropSurface();
+        // "Bahn oder Fach anklicken" only makes sense where orbits are drawn.
+        ZoomHintHost.Visibility = SurfaceVisible ? Visibility.Visible : Visibility.Collapsed;
         switch (WantedSurface())
         {
             case 1:

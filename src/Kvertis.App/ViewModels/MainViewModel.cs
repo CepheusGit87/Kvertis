@@ -171,6 +171,18 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
 
     public bool ShowEmptyState => !HasJobs;
 
+    /// <summary>Top left of the galaxy: "Noch leer" or "3 Dateien".</summary>
+    [ObservableProperty]
+    private string summaryTitle = string.Empty;
+
+    /// <summary>Second line: "Alle fünf Arten warten" or "2 umwandelbar in 1 Art".</summary>
+    [ObservableProperty]
+    private string summaryDetail = string.Empty;
+
+    /// <summary>" · 1 nicht" in the error colour, empty when every file can be converted.</summary>
+    [ObservableProperty]
+    private string summaryRejected = string.Empty;
+
     public bool IsZoomed => ZoomKind is not null;
 
     // ---- Galaxy: zoom and scene ------------------------------------------------------------------
@@ -213,10 +225,31 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         }
 
         Rejected.Sync(all);
+        UpdateSummary();
         SyncScene();
         // The still picture draws its dots from the kinds, which only exist once detection is done; a plain
         // collection change of Jobs comes too early for it.
         StagedChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>The two lines top left of the galaxy, from the counts the trays and the rejected card already have.</summary>
+    private void UpdateSummary()
+    {
+        var total = Jobs.Count;
+        if (total == 0)
+        {
+            SummaryTitle = _loc.Get("Galaxy_Summary_Empty_Title");
+            SummaryDetail = _loc.Get("Galaxy_Summary_Empty_Detail");
+            SummaryRejected = string.Empty;
+            return;
+        }
+
+        var convertible = Trays.Sum(t => t.Count);
+        var kinds = Trays.Count(t => t.Count > 0);
+        var rejected = Rejected.Items.Count;
+        SummaryTitle = total == 1 ? _loc.Get("Galaxy_Summary_Files_One") : _loc.Format("Galaxy_Summary_Files_Many", total);
+        SummaryDetail = _loc.Format(kinds == 1 ? "Galaxy_Summary_Detail_One" : "Galaxy_Summary_Detail_Many", convertible, kinds);
+        SummaryRejected = rejected > 0 ? _loc.Format("Galaxy_Summary_Rejected", rejected) : string.Empty;
     }
 
     /// <summary>
