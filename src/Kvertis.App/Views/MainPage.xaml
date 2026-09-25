@@ -284,6 +284,14 @@
                 x:Uid="Main_CancelAll_Button"
                 Command="{x:Bind ViewModel.CancelAllCommand}"
                 Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsQueueActive), Mode=OneWay}" />
+              <!-- The main path of the new interface: step 1 hands the files to step 2 (ADR-020).
+                   The old start button stays until step 3 runs the jobs itself. -->
+              <Button
+                x:Name="GoTargetButton"
+                x:Uid="Main_GoTarget_Button"
+                MinWidth="120"
+                MinHeight="40"
+                Command="{x:Bind ViewModel.GoToTargetCommand}" />
               <Button
                 x:Name="StartButton"
                 x:Uid="Main_Start_Button"

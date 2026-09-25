@@ -14,12 +14,14 @@ public sealed partial class StepHeader : UserControl
 {
     private readonly IStepNavigationService _steps;
     private readonly IMotionSettings _motion;
+    private readonly IWorkflowSession _session;
     private readonly ILocalizer _loc;
 
     public StepHeader()
     {
         _steps = App.Services.GetRequiredService<IStepNavigationService>();
         _motion = App.Services.GetRequiredService<IMotionSettings>();
+        _session = App.Services.GetRequiredService<IWorkflowSession>();
         _loc = App.Services.GetRequiredService<ILocalizer>();
         InitializeComponent();
 
@@ -33,8 +35,10 @@ public sealed partial class StepHeader : UserControl
         // Loaded can fire again after the control was unloaded, so unsubscribe first.
         _steps.StepChanged -= OnStepChanged;
         _motion.Changed -= OnMotionChanged;
+        _session.Changed -= OnSessionChanged;
         _steps.StepChanged += OnStepChanged;
         _motion.Changed += OnMotionChanged;
+        _session.Changed += OnSessionChanged;
         Update();
     }
 
@@ -42,9 +46,12 @@ public sealed partial class StepHeader : UserControl
     {
         _steps.StepChanged -= OnStepChanged;
         _motion.Changed -= OnMotionChanged;
+        _session.Changed -= OnSessionChanged;
     }
 
     private void OnStepChanged(object? sender, EventArgs e) => Update();
+
+    private void OnSessionChanged(object? sender, EventArgs e) => Update();
 
     private void OnMotionChanged(object? sender, EventArgs e) => Update();
 
@@ -93,8 +100,17 @@ public sealed partial class StepHeader : UserControl
         }
         VisualStateManager.GoToState(this, prefix + state, animate);
         AutomationProperties.SetItemStatus(button, status);
-        // Only going back is allowed for now; a step that was never run must not be reachable, otherwise a
-        // screen reader would report it as done afterwards. Going forward comes with the conditions per step.
-        button.IsEnabled = step <= current;
+        button.IsEnabled = step <= current || IsReachable(step);
     }
+
+    /// <summary>
+    /// A step ahead of the current one is only reachable once it has something to show: step 2 needs at least
+    /// one staged file, step 3 a plan from step 2.
+    /// </summary>
+    private bool IsReachable(WorkflowStep step) => step switch
+    {
+        WorkflowStep.Target => _session.Staged.Count > 0,
+        WorkflowStep.Convert => _session.Plan is { Items.Count: > 0 },
+        _ => true,
+    };
 }

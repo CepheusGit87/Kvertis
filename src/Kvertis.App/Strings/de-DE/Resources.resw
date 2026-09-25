@@ -207,8 +207,14 @@
   <data name="Card_WhatToDo_Link.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Was tun?</value>
   </data>
+  <data name="Convert_NoPlan_Text" xml:space="preserve">
+    <value>Noch nichts geplant.</value>
+  </data>
   <data name="Convert_Placeholder_Text.Text" xml:space="preserve">
     <value>Dieser Schritt ist noch in Arbeit. Bis er fertig ist, starten Sie die Umwandlung im ersten Schritt.</value>
+  </data>
+  <data name="Convert_Plan_Text" xml:space="preserve">
+    <value>{0} Dateien geplant · ≈ {1}</value>
   </data>
   <data name="Convert_Title.Text" xml:space="preserve">
     <value>Umwandeln</value>
@@ -218,6 +224,78 @@
   </data>
   <data name="Dialog_Ok_Button" xml:space="preserve">
     <value>OK</value>
+  </data>
+  <data name="Effect_AnimationDropped_Text" xml:space="preserve">
+    <value>Die Animation geht verloren; nur das erste Bild bleibt.</value>
+  </data>
+  <data name="Effect_BitrateLikeOriginal_Text" xml:space="preserve">
+    <value>{0} kbit/s klingen wie das Original.</value>
+  </data>
+  <data name="Effect_BitrateSlightlyDull_Text" xml:space="preserve">
+    <value>Bei {0} kbit/s klingt Musik etwas matter.</value>
+  </data>
+  <data name="Effect_BitrateSpeechOnly_Text" xml:space="preserve">
+    <value>{0} kbit/s reichen für Sprache, nicht für Musik.</value>
+  </data>
+  <data name="Effect_ColorsAndMaterialsDropped_Text" xml:space="preserve">
+    <value>Farben und Materialien gehen verloren; nur die Form bleibt.</value>
+  </data>
+  <data name="Effect_FormattingLost_Text" xml:space="preserve">
+    <value>Die Formatierung geht verloren; es bleibt reiner Text.</value>
+  </data>
+  <data name="Effect_FrameRateReduced_Text" xml:space="preserve">
+    <value>Die Bildrate sinkt auf {0} Bilder pro Sekunde.</value>
+  </data>
+  <data name="Effect_FullResolutionKept_Text" xml:space="preserve">
+    <value>Die volle Auflösung bleibt erhalten.</value>
+  </data>
+  <data name="Effect_LayoutSimplified_Text" xml:space="preserve">
+    <value>Das Layout wird vereinfacht.</value>
+  </data>
+  <data name="Effect_LosslessOutput_Text" xml:space="preserve">
+    <value>Die Ausgabe ist verlustfrei.</value>
+  </data>
+  <data name="Effect_MetadataKept_Text" xml:space="preserve">
+    <value>Aufnahmeort und Kameradaten bleiben erhalten.</value>
+  </data>
+  <data name="Effect_MetadataNotStrippable_Text" xml:space="preserve">
+    <value>Einzelne Metadaten lassen sich auf diesem Weg nicht entfernen.</value>
+  </data>
+  <data name="Effect_MetadataStripped_Text" xml:space="preserve">
+    <value>Aufnahmeort und Kameradaten werden entfernt.</value>
+  </data>
+  <data name="Effect_MotionBlocky_Text" xml:space="preserve">
+    <value>Schnelle Bewegungen werden klobig.</value>
+  </data>
+  <data name="Effect_NearOriginalQuality_Text" xml:space="preserve">
+    <value>Die Qualität bleibt nahe am Original.</value>
+  </data>
+  <data name="Effect_PaletteLimited_Text" xml:space="preserve">
+    <value>Die Farben werden auf 256 begrenzt.</value>
+  </data>
+  <data name="Effect_ResolutionReduced_Text" xml:space="preserve">
+    <value>Die Auflösung sinkt auf {0} px (vorher {1} px).</value>
+  </data>
+  <data name="Effect_SlightArtifacts_Text" xml:space="preserve">
+    <value>Leichte Artefakte sind möglich.</value>
+  </data>
+  <data name="Effect_StructureKept_Text" xml:space="preserve">
+    <value>Überschriften und Listen bleiben erhalten.</value>
+  </data>
+  <data name="Effect_TargetSizeMayBeUnreachable_Text" xml:space="preserve">
+    <value>Die gewünschte Zielgröße ist vermutlich nicht erreichbar.</value>
+  </data>
+  <data name="Effect_TransparencyLost_Text" xml:space="preserve">
+    <value>Transparenz geht verloren.</value>
+  </data>
+  <data name="Effect_UnitUnknown_Text" xml:space="preserve">
+    <value>Die Maßeinheit ist in diesem Format nicht festgelegt.</value>
+  </data>
+  <data name="Effect_VideoTrackDropped_Text" xml:space="preserve">
+    <value>Das Bild geht verloren; nur der Ton bleibt.</value>
+  </data>
+  <data name="Effect_VisibleArtifacts_Text" xml:space="preserve">
+    <value>Sichtbare Artefakte sind zu erwarten.</value>
   </data>
   <data name="Error_Cancelled_Body" xml:space="preserve">
     <value>Sie haben die Umwandlung abgebrochen. Mit „Wiederholen“ starten Sie sie neu.</value>
@@ -351,6 +429,18 @@
   <data name="Format_Size_MB" xml:space="preserve">
     <value>{0} MB</value>
   </data>
+  <data name="Grade_Band_Excellent" xml:space="preserve">
+    <value>sehr gut</value>
+  </data>
+  <data name="Grade_Band_Good" xml:space="preserve">
+    <value>gut</value>
+  </data>
+  <data name="Grade_Band_HeavilyReduced" xml:space="preserve">
+    <value>stark verkleinert</value>
+  </data>
+  <data name="Grade_Band_Usable" xml:space="preserve">
+    <value>brauchbar</value>
+  </data>
   <data name="History_Again_Button.Content" xml:space="preserve">
     <value>Nochmal mit denselben Einstellungen</value>
   </data>
@@ -480,6 +570,12 @@
   <data name="Main_DropZone_Title.Text" xml:space="preserve">
     <value>Dateien hierher ziehen oder auswählen</value>
   </data>
+  <data name="Main_GoTarget_Button.Content" xml:space="preserve">
+    <value>Weiter: Ziel</value>
+  </data>
+  <data name="Main_GoTarget_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Weiter zu Schritt 2: Ziel</value>
+  </data>
   <data name="Main_JobList.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Dateien</value>
   </data>
@@ -522,11 +618,11 @@
   <data name="Main_Overall_Estimate" xml:space="preserve">
     <value>{0} Dateien · Dauer etwa {1}</value>
   </data>
-  <data name="Main_Overall_ProgressText" xml:space="preserve">
-    <value>{0} von {1} fertig</value>
-  </data>
   <data name="Main_Overall_Progress.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Gesamtfortschritt</value>
+  </data>
+  <data name="Main_Overall_ProgressText" xml:space="preserve">
+    <value>{0} von {1} fertig</value>
   </data>
   <data name="Main_Overall_Remaining" xml:space="preserve">
     <value>{0} von {1} fertig · noch etwa {2}</value>
@@ -687,8 +783,14 @@
   <data name="Pro_Card_Batch_Text" xml:space="preserve">
     <value>In der Gratis-Version wandeln Sie bis zu {0} Dateien auf einmal um. Kvertis Pro hat keine Grenze.</value>
   </data>
+  <data name="Pro_Card_Batch_Title" xml:space="preserve">
+    <value>Zu viele Dateien auf einmal</value>
+  </data>
   <data name="Pro_Card_Video_Text" xml:space="preserve">
     <value>Video-Konvertierung ist Teil von Kvertis Pro. Einmal kaufen, für immer nutzen.</value>
+  </data>
+  <data name="Pro_Card_Video_Title" xml:space="preserve">
+    <value>Video braucht Kvertis Pro</value>
   </data>
   <data name="Pro_Feature_Batch.Text" xml:space="preserve">
     <value>Beliebig viele Dateien auf einmal</value>
@@ -945,11 +1047,200 @@
   <data name="Steps_Target_Label.Text" xml:space="preserve">
     <value>Ziel</value>
   </data>
-  <data name="Target_Placeholder_Text.Text" xml:space="preserve">
-    <value>Dieser Schritt ist noch in Arbeit. Bis er fertig ist, wählen Sie das Zielformat im ersten Schritt.</value>
+  <data name="Target_Back_Button.Content" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="Target_Back_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zurück zu Schritt 1</value>
+  </data>
+  <data name="Target_Continue_Button.Content" xml:space="preserve">
+    <value>Weiter: Umwandeln</value>
+  </data>
+  <data name="Target_Continue_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Weiter zu Schritt 3: Umwandeln</value>
+  </data>
+  <data name="Target_Effects_Header.Text" xml:space="preserve">
+    <value>Was sich ändert</value>
+  </data>
+  <data name="Target_Empty_Text.Text" xml:space="preserve">
+    <value>Noch keine Dateien. Gehen Sie zurück zu Schritt 1.</value>
+  </data>
+  <data name="Target_ExactSize_Expander.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielgröße genau</value>
+  </data>
+  <data name="Target_ExactSize_Header.Text" xml:space="preserve">
+    <value>Zielgröße genau</value>
+  </data>
+  <data name="Target_ExactSize_Hint.Text" xml:space="preserve">
+    <value>Diese Größe ist mit den gewählten Formaten vermutlich nicht erreichbar.</value>
+  </data>
+  <data name="Target_ExactSize_NumberBox.Header" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Target_ExactSize_NumberBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielgröße in Megabyte</value>
+  </data>
+  <data name="Target_ExactSize_Toggle.Header" xml:space="preserve">
+    <value>Zielgröße vorgeben</value>
+  </data>
+  <data name="Target_ExactSize_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielgröße vorgeben</value>
+  </data>
+  <data name="Target_ExactSize_Unit.Text" xml:space="preserve">
+    <value>MB</value>
+  </data>
+  <data name="Target_File_AutomationName" xml:space="preserve">
+    <value>{0}, {1} nach {2}, {3}</value>
+  </data>
+  <data name="Target_Format_ComboBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Zielformat</value>
+  </data>
+  <data name="Target_Formats_Header.Text" xml:space="preserve">
+    <value>Zielformat</value>
+  </data>
+  <data name="Target_Grade_AutomationValue" xml:space="preserve">
+    <value>{0} von 100, {1}, {2}</value>
+  </data>
+  <data name="Target_Grade_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Qualität</value>
+  </data>
+  <data name="Target_Kind_Audio" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="Target_Kind_AutomationName" xml:space="preserve">
+    <value>{0}, {1} Dateien</value>
+  </data>
+  <data name="Target_Kind_Count" xml:space="preserve">
+    <value>{0} Dateien</value>
+  </data>
+  <data name="Target_Kind_Document" xml:space="preserve">
+    <value>Dokumente</value>
+  </data>
+  <data name="Target_Kind_Image" xml:space="preserve">
+    <value>Bilder</value>
+  </data>
+  <data name="Target_Kind_Model3D" xml:space="preserve">
+    <value>3D-Modelle</value>
+  </data>
+  <data name="Target_Kind_Unknown" xml:space="preserve">
+    <value>Unbekannt</value>
+  </data>
+  <data name="Target_Kind_Video" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="Target_Kinds_Header.Text" xml:space="preserve">
+    <value>Dateiarten</value>
+  </data>
+  <data name="Target_Kinds_List.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Dateiarten</value>
+  </data>
+  <data name="Target_Metadata_Hint.Text" xml:space="preserve">
+    <value>Entfernt Aufnahmeort und Kameradaten aus der Ausgabe.</value>
+  </data>
+  <data name="Target_Metadata_Toggle.Header" xml:space="preserve">
+    <value>Metadaten entfernen</value>
+  </data>
+  <data name="Target_Metadata_Toggle.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Metadaten entfernen</value>
+  </data>
+  <data name="Target_Mode_AllSame.Content" xml:space="preserve">
+    <value>Alle gleich</value>
+  </data>
+  <data name="Target_Mode_AllSame.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Alle gleich</value>
+  </data>
+  <data name="Target_Mode_Header.Text" xml:space="preserve">
+    <value>Zielformat wählen</value>
+  </data>
+  <data name="Target_Mode_Individual.Content" xml:space="preserve">
+    <value>Jede einzeln</value>
+  </data>
+  <data name="Target_Mode_Individual.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Jede einzeln</value>
+  </data>
+  <data name="Target_More_Expander.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Weiteres</value>
+  </data>
+  <data name="Target_More_Header.Text" xml:space="preserve">
+    <value>Weiteres</value>
+  </data>
+  <data name="Target_NamePattern_TextBox.Header" xml:space="preserve">
+    <value>Dateiname</value>
+  </data>
+  <data name="Target_NamePattern_TextBox.PlaceholderText" xml:space="preserve">
+    <value>{name}</value>
+  </data>
+  <data name="Target_NamePattern_TextBox.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Muster für den Dateinamen</value>
+  </data>
+  <data name="Target_Paths_Header.Text" xml:space="preserve">
+    <value>Wege</value>
+  </data>
+  <data name="Target_Previous_Apply_Button.Content" xml:space="preserve">
+    <value>Alte Werte übernehmen</value>
+  </data>
+  <data name="Target_Previous_Apply_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Alte Werte übernehmen</value>
+  </data>
+  <data name="Target_Previous_Bar_Mark.Text" xml:space="preserve">
+    <value>damals</value>
+  </data>
+  <data name="Target_Previous_Mark" xml:space="preserve">
+    <value>damals: Stufe {0}, {1}</value>
+  </data>
+  <data name="Target_Previous_NotPossible" xml:space="preserve">
+    <value>damals: {0}, hier nicht möglich</value>
+  </data>
+  <data name="Target_Previous_Summary" xml:space="preserve">
+    <value>damals: {0}, Stufe {1}</value>
+  </data>
+  <data name="Target_Previous_Title" xml:space="preserve">
+    <value>Aus dem Verlauf · {0}</value>
+  </data>
+  <data name="Target_SizeBar_AutomationName" xml:space="preserve">
+    <value>Größe: {0}</value>
+  </data>
+  <data name="Target_SizeBar_Header.Text" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Target_SizeBar_Slider.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Größe</value>
+  </data>
+  <data name="Target_Size_Approx" xml:space="preserve">
+    <value>≈ {0}</value>
+  </data>
+  <data name="Target_Summary_Text" xml:space="preserve">
+    <value>{0} Dateien · ≈ {1}</value>
   </data>
   <data name="Target_Title.Text" xml:space="preserve">
     <value>Ziel</value>
+  </data>
+  <data name="Target_Trust_Text.Text" xml:space="preserve">
+    <value>Ihre Dateien verlassen nie diesen PC.</value>
+  </data>
+  <data name="Target_Zone_AutomationName" xml:space="preserve">
+    <value>{0}, {1} von 100, {2}</value>
+  </data>
+  <data name="Target_Zone_Detail_FrameRate" xml:space="preserve">
+    <value>{0} Bilder/s</value>
+  </data>
+  <data name="Target_Zone_Detail_Kbps" xml:space="preserve">
+    <value>{0} kbit/s</value>
+  </data>
+  <data name="Target_Zone_Detail_Lossless" xml:space="preserve">
+    <value>verlustfrei</value>
+  </data>
+  <data name="Target_Zone_Detail_Pixels" xml:space="preserve">
+    <value>{0} px</value>
+  </data>
+  <data name="Target_Zone_Detail_PixelsFrom" xml:space="preserve">
+    <value>{0} statt {1} px</value>
+  </data>
+  <data name="Target_Zone_Detail_Quality" xml:space="preserve">
+    <value>Stufe {0}</value>
+  </data>
+  <data name="Target_Zone_Fixed_Text.Text" xml:space="preserve">
+    <value>Hängt am Format und lässt sich hier nicht ändern.</value>
   </data>
   <data name="Warning_AnimationDropped" xml:space="preserve">
     <value>Nur das erste Bild der Animation wird umgewandelt.</value>
@@ -1007,5 +1298,17 @@
   </data>
   <data name="Window_Title_Text.Text" xml:space="preserve">
     <value>Kvertis</value>
+  </data>
+  <data name="Zone_Detail_Name" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Zone_Motion_Name" xml:space="preserve">
+    <value>Bewegung</value>
+  </data>
+  <data name="Zone_Sharpness_Name" xml:space="preserve">
+    <value>Schärfe</value>
+  </data>
+  <data name="Zone_Sound_Name" xml:space="preserve">
+    <value>Klang</value>
   </data>
 </root>

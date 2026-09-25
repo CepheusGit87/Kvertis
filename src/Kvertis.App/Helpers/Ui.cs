@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Media;
 
 namespace Kvertis.App.Helpers;
 
@@ -16,4 +17,19 @@ public static class Ui
     public static Visibility ShowAll(bool first, bool second) => first && second ? Visibility.Visible : Visibility.Collapsed;
 
     public static bool Not(bool value) => !value;
+
+    /// <summary>
+    /// Looks up a theme brush by key, so a view model can name a colour ("KvMintBrush") without referencing
+    /// a WinUI type. Unknown keys stay transparent instead of throwing.
+    /// </summary>
+    public static Brush Brush(string? key)
+    {
+        if (!string.IsNullOrEmpty(key)
+            && Application.Current?.Resources.TryGetValue(key, out var value) == true
+            && value is Brush brush)
+        {
+            return brush;
+        }
+        return new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
 }

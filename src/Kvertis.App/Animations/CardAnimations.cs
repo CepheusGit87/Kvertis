@@ -142,6 +142,9 @@ public static class CardAnimations
     public static void StopProgressGlow(UIElement glow)
     {
         ArgumentNullException.ThrowIfNull(glow);
+        // "Translation" only exists on the visual once translation was switched on; stopping it before the
+        // first start would throw ("The specified property was not found or cannot be animated").
+        ElementCompositionPreview.SetIsTranslationEnabled(glow, true);
         var visual = ElementCompositionPreview.GetElementVisual(glow);
         visual.StopAnimation("Translation");
         visual.StopAnimation("Opacity");

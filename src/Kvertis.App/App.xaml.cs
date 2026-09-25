@@ -61,6 +61,9 @@ public partial class App : Application
             _window.Activate();
 
             await _services.GetRequiredService<ILicenseService>().RefreshAsync();
+#if DEBUG
+            await StageDebugFilesAsync();
+#endif
         }
         catch (Exception ex)
         {
@@ -68,6 +71,32 @@ public partial class App : Application
             throw;
         }
     }
+
+#if DEBUG
+    /// <summary>
+    /// Development aid: KVERTIS_STAGE_FILES holds paths separated by ";". They are staged like dropped files
+    /// and step 2 opens right away, so the target page can be looked at without clicking through step 1.
+    /// Debug builds only; the shipped app never reads an environment variable.
+    /// </summary>
+    private async Task StageDebugFilesAsync()
+    {
+        var value = Environment.GetEnvironmentVariable("KVERTIS_STAGE_FILES");
+        if (string.IsNullOrWhiteSpace(value) || _services is null)
+        {
+            return;
+        }
+        var paths = value
+            .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(File.Exists)
+            .ToList();
+        if (paths.Count == 0)
+        {
+            return;
+        }
+        await _services.GetRequiredService<ViewModels.MainViewModel>().AddPathsWithSettingsAsync(paths, null);
+        _services.GetRequiredService<IStepNavigationService>().GoTo(WorkflowStep.Target);
+    }
+#endif
 
     private async void OnWindowClosed(object sender, WindowEventArgs args)
     {
@@ -87,8 +116,13 @@ public partial class App : Application
         }
     }
 
-    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e) =>
-        Log(e.Exception, "Unhandled exception");
+    private void OnUnhandledException(object sender, Microsoft.UI.Xaml.UnhandledExceptionEventArgs e)
+    {
+        if (e.Exception is { } exception)
+        {
+            Log(exception, "Unhandled exception");
+        }
+    }
 
     private void Log(Exception exception, string message)
     {

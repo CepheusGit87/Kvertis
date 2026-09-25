@@ -9,6 +9,7 @@ Engine 353 Tests (1 Integrationstest übersprungen ohne ffmpeg), Queue 47 Tests,
 | Ebene | Was | Werkzeug | Läuft wo |
 |---|---|---|---|
 | Unit | Formaterkennung, Eingabeprüfung, Zielgrößen-Berechnung, Schätzung, Dateinamen-Muster, Queue-Logik, ViewModels | xUnit, NSubstitute, Shouldly | Linux und Windows, jede CI-Ausführung |
+| Unit (App) | WinUI-freie App-Logik: `WorkflowSession`, `TargetPlanner`, `Debouncer`, ViewModels von Schritt 2. Das Projekt `tests/Kvertis.App.Tests` bindet diese Klassen als Quelldateien ein, weil eine Projektreferenz auf die WinExe-App am XAML-Compiler scheitert. | xUnit, NSubstitute, Shouldly | nur Windows (`dotnet test Kvertis.sln -p:Platform=x64`), nicht in `Kvertis.Core.slnf` |
 | Integration | Echte Konvertierungen mit ffmpeg und Magick.NET, FFmpeg-Build-Nachweis (LGPL) | xUnit mit Trait `Category=Integration` | Windows-CI und lokal; braucht `ffmpeg.exe` |
 | UI | Hauptweg per Tastatur, Screenreader-Namen, Kontrast | manuell nach Checkliste, später WinAppDriver falls Lizenz passt | Windows, vor jedem Release |
 | Compliance | Grep nach Netzwerkcode, Markennamen, verbotenen Bibliotheken; Abgleich `04-bibliotheken.md` mit `.csproj` | Skript unter `tools/compliance/` | jede CI-Ausführung |

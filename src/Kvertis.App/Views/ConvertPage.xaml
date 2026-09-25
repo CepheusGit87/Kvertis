@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Step 3 of the main path. Placeholder: pixel swirl, white hole and the closing sequence from
-     design/ENTSCHEIDUNGEN.md follow in a later stage. -->
+     design/ENTSCHEIDUNGEN.md follow in a later stage. It already shows what step 2 planned. -->
 <Page
   x:Class="Kvertis.App.Views.ConvertPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11,7 +11,13 @@
     <StackPanel MaxWidth="720" Padding="24" Spacing="12">
       <TextBlock x:Uid="Convert_Title" Style="{StaticResource TitleTextBlockStyle}" />
       <Border Style="{StaticResource CardBorderStyle}">
-        <TextBlock x:Uid="Convert_Placeholder_Text" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="Wrap" />
+        <StackPanel Spacing="8">
+          <TextBlock
+            x:Name="PlanText"
+            Style="{StaticResource BodyTextBlockStyle}"
+            TextWrapping="Wrap" />
+          <TextBlock x:Uid="Convert_Placeholder_Text" Style="{StaticResource SecondaryCaptionTextStyle}" />
+        </StackPanel>
       </Border>
     </StackPanel>
   </ScrollViewer>

@@ -2,6 +2,22 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Schritt 2 „Ziel“, Teile B–D: Ziel-Seite in der App
+
+**Geändert**
+
+- Neue Ziel-Seite (`Views/TargetPage`): links Dateiarten und Dateikarten mit „Alle gleich / Jede einzeln“, Mitte die Wege Format → Ziel mit Größenschätzung, rechts Zielformat, Note 0–100 im Ring (als Slider, Tastatur ±5), Größenleiste mit Farbsegmenten und Preset-Marken, Zonen je Merkmal (Schärfe, Details, Bewegung, Klang), „Zielgröße genau“, „Weiteres“, „Was sich ändert“, „damals“-Karte aus dem Verlauf; untere Leiste mit Summe und „Weiter: Umwandeln“. Ohne Zeichenschicht (kommt mit Win2D).
+- `IWorkflowSession` (ADR-020) hält Dateien, Plan und Speicherort; `TargetPlanner` als WinUI-freie Logik (Format-Schnittmenge, logarithmische Größenskala, Plan mit Freemium-Grenzen); `Debouncer` (50 ms, TimeProvider). `FreemiumPolicy` mit `IsKindLocked` und `BatchLimit`.
+- Schritt 1 legt Dateien in die Sitzung und bietet „Weiter: Ziel“; Verlauf „Nochmal“ setzt die alten Werte als „damals“ und springt nach Schritt 2; Schritt 3 zeigt vorerst Anzahl und Summe des Plans. Der alte Start-Weg bleibt bis Schritt 3 erhalten.
+- Absturzfix in `CardAnimations` (Translation-Animation vor Aktivierung gestoppt).
+- Debug-Hilfe: Umgebungsvariable `KVERTIS_STAGE_FILES` (nur Debug-Build) legt Dateien direkt in die Sitzung.
+- Neues Testprojekt `tests/Kvertis.App.Tests` (26 Tests, WinUI-freie Logik als Quelldateien eingebunden). Gesamt 792 Tests.
+- 105 neue Ressourcen-Schlüssel je Sprache; `check-resw.py` kennt die neuen Familien.
+
+**Bibliotheken**
+
+- Keine Änderung.
+
 ## 2026-09-25 – Schritt 2 „Ziel“, Teil A: Note und Größenmodell in der Engine
 
 **Geändert**

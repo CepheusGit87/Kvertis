@@ -17,14 +17,6 @@ public interface IWindowContext
     XamlRoot? XamlRoot { get; }
 }
 
-/// <summary>Runs work on the UI thread. The queue raises its events on worker threads.</summary>
-public interface IUiDispatcher
-{
-    bool HasThreadAccess { get; }
-
-    void Post(Action action);
-}
-
 public sealed class WindowContext : IWindowContext
 {
     public Window? Window { get; private set; }

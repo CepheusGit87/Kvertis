@@ -35,6 +35,8 @@ ALLOWED = {
     'DropDownButton': {'Content', AN, TT},
     'ComboBoxItem': {'Content'},
     'ComboBox': {AN, 'Header', 'PlaceholderText'},
+    'RadioButton': {'Content', AN},
+    'CheckBox': {'Content', AN},
     'ListView': {AN},
     'ProgressRing': {AN},
     'ProgressBar': {AN},
@@ -44,6 +46,7 @@ ALLOWED = {
     'TextBox': {'Header', 'PlaceholderText', AN},
     'SettingsCard': {'Header', 'Description', AN},
     'InfoBar': {'Title', 'Message'},
+    'Expander': {AN},
     'ContentDialog': {'Title', 'CloseButtonText', 'PrimaryButtonText', 'SecondaryButtonText'},
     'Image': {AN},
     'MediaPlayerElement': {AN},
@@ -52,7 +55,7 @@ ALLOWED = {
 
 INTERACTIVE = {'Button', 'HyperlinkButton', 'DropDownButton', 'SplitButton', 'ToggleButton', 'ToggleSwitch', 'ComboBox',
                'Slider', 'NumberBox', 'TextBox', 'PasswordBox', 'ListView', 'GridView', 'CheckBox', 'RadioButton',
-               'AppBarButton', 'AppBarToggleButton'}
+               'AppBarButton', 'AppBarToggleButton', 'Expander'}
 
 # Code keys built at runtime: prefix -> enum whose members complete the key.
 DYNAMIC = {
@@ -60,8 +63,15 @@ DYNAMIC = {
     'Warning_': 'InputWarning',
     'Preset_': 'ConversionPreset',
     'Pro_Purchase_': 'PurchaseOutcome',
+    'Grade_Band_': 'GradeBand',
+    'Target_Kind_': 'MediaKind',
 }
-KEY_LITERAL = re.compile(r'"((?:App|About|Card|Convert|Dialog|Error|Format|FormatPicker|History|Licenses|Main|More|Preset|Preview|Pro|Settings|Steps|Target|Warning|Window)_[A-Za-z0-9_]*)"')
+# Families whose key is prefix + enum member + suffix (step 2: "Effect_ResolutionReduced_Text").
+DYNAMIC_SUFFIX = {
+    ('Effect_', '_Text'): 'EffectCode',
+    ('Zone_', '_Name'): 'TuningAspect',
+}
+KEY_LITERAL = re.compile(r'"((?:App|About|Card|Convert|Dialog|Effect|Error|Format|FormatPicker|Grade|History|Licenses|Main|More|Preset|Preview|Pro|Settings|Steps|Target|Warning|Window|Zone)_[A-Za-z0-9_]*)"')
 RESOURCE_REF = re.compile(r'\{(?:StaticResource|ThemeResource)\s+([A-Za-z0-9_.]+)\s*\}')
 PLACEHOLDER = re.compile(r'\{(\d+)\}')
 
@@ -210,9 +220,10 @@ def main():
         if f'{os.sep}obj{os.sep}' in path or f'{os.sep}bin{os.sep}' in path:
             continue
         with open(path, encoding='utf-8') as f:
+            prefixes = set(DYNAMIC) | {p for p, _ in DYNAMIC_SUFFIX}
             for literal in KEY_LITERAL.findall(f.read()):
                 if literal.endswith('_'):
-                    if literal not in DYNAMIC and not literal.startswith('Error_'):
+                    if literal not in prefixes and not literal.startswith('Error_'):
                         fail(f'{os.path.relpath(path, repo)}: dynamic key prefix "{literal}" is unknown to check-resw.py')
                     continue
                 used.add(literal)
@@ -222,6 +233,9 @@ def main():
     for prefix, enum in DYNAMIC.items():
         for member in enum_members(repo, enum):
             used.add(prefix + member)
+    for (prefix, suffix), enum in DYNAMIC_SUFFIX.items():
+        for member in enum_members(repo, enum):
+            used.add(prefix + member + suffix)
     for member in enum_members(repo, 'ConversionErrorCode'):
         used.add(f'Error_{member}_Title')
         used.add(f'Error_{member}_Body')

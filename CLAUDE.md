@@ -29,6 +29,7 @@ docs/                 Dokumentation (Deutsch)
 dotnet build Kvertis.sln
 dotnet test tests/Kvertis.Engine.Tests
 dotnet test tests/Kvertis.Queue.Tests
+dotnet test tests/Kvertis.App.Tests -p:Platform=x64   # nur Windows: WinUI-freie App-Logik (Sitzung, Planer, ViewModels)
 dotnet test --filter Category!=Integration      # ohne FFmpeg-Binärdateien
 bash tools/compliance/check.sh                    # Lizenz-, Marken-, Netzwerk- und Ressourcen-Gate (Pflicht vor Merge)
 dotnet build Kvertis.Core.slnf                    # Linux: alles außer der WinUI-App

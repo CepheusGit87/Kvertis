@@ -48,11 +48,15 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     private readonly ILocalizer _loc;
     private readonly IUiDispatcher _ui;
     private readonly INavigationService _navigation;
+    private readonly IWorkflowSession _session;
+    private readonly IStepNavigationService _steps;
     private readonly ILogger<MainViewModel> _logger;
     private readonly Dictionary<Guid, JobItemViewModel> _byJobId = [];
     private readonly SemaphoreSlim _detectGate = new(MaxParallelDetections, MaxParallelDetections);
     private int _lastOutputIndex;
     private bool _changingOutputIndex;
+    /// <summary>The paths of the cards last handed to the session; guards against publishing on every tick.</summary>
+    private string _stagedKey = string.Empty;
 
     public MainViewModel(
         IFormatDetector detector,
@@ -70,6 +74,8 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         ILocalizer loc,
         IUiDispatcher ui,
         INavigationService navigation,
+        IWorkflowSession session,
+        IStepNavigationService steps,
         ILogger<MainViewModel> logger)
     {
         _detector = detector;
@@ -87,6 +93,8 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         _loc = loc;
         _ui = ui;
         _navigation = navigation;
+        _session = session;
+        _steps = steps;
         _logger = logger;
 
         PresetOptions =
@@ -132,7 +140,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     private bool hasJobs;
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StartCommand), nameof(GoToTargetCommand))]
     private bool hasStagedJobs;
 
     [ObservableProperty]
@@ -232,7 +240,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     }
 
     /// <summary>Stages files with the settings of an earlier conversion (history "again").</summary>
-    public Task AddPathsWithSettingsAsync(IReadOnlyList<string> paths, ConversionSettings settings) =>
+    public Task AddPathsWithSettingsAsync(IReadOnlyList<string> paths, ConversionSettings? settings) =>
         AddPathsAsync(paths, isFromClipboard: false, settings);
 
     private async Task AddFoldersAsync(IReadOnlyList<string> folders, IReadOnlyList<string> files)
@@ -452,6 +460,47 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
     // ---- Start, pause, cancel ---------------------------------------------------------------------
 
     private bool CanStart() => HasStagedJobs;
+
+    /// <summary>
+    /// Step 1 hands the detected files to the session and moves on to step 2 (ADR-020). The old start path
+    /// below stays in place until step 3 runs the jobs itself.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStart))]
+    private void GoToTarget()
+    {
+        PublishStaged();
+        _steps.GoTo(WorkflowStep.Target);
+    }
+
+    /// <summary>
+    /// Mirrors the ready cards into <see cref="IWorkflowSession.Staged"/>. <see cref="UpdateOverall"/> runs on
+    /// every progress tick, so the session is only told about a real change of the set of files.
+    /// </summary>
+    private void PublishStaged()
+    {
+        if (Jobs.Count == 0)
+        {
+            // The list was emptied ("Neue Runde"): the plan and the history entry go with it.
+            if (_stagedKey.Length > 0)
+            {
+                _stagedKey = string.Empty;
+                _session.Reset();
+            }
+            return;
+        }
+        var ready = Jobs.Where(j => j.IsReady && j.Input is not null).ToList();
+        var key = string.Join("|", ready.Select(j => j.FilePath));
+        if (key == _stagedKey)
+        {
+            return;
+        }
+        _stagedKey = key;
+        _session.SetStaged(ready
+            .Select(j => new StagedFile(
+                j.Input!,
+                j.Kind is MediaKind.Image or MediaKind.Video ? j.FilePath : null))
+            .ToList());
+    }
 
     [RelayCommand(CanExecute = nameof(CanStart))]
     private async Task StartAsync()
@@ -787,6 +836,7 @@ public sealed partial class MainViewModel : ObservableObject, IJobItemHost, IDis
         OverallAutomationText = string.IsNullOrEmpty(OverallText)
             ? string.Empty
             : _loc.Format("Main_Overall_AutomationName", ((int)OverallProgress).ToString(CultureInfo.CurrentCulture), OverallText);
+        PublishStaged();
     }
 
     // ---- IJobItemHost -----------------------------------------------------------------------------

@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- Same target as Kvertis.App so the linked sources compile identically. -->
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <Platforms>x64;ARM64</Platforms>
+    <RootNamespace>Kvertis.App.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="Shouldly" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Kvertis.Engine\Kvertis.Engine.csproj" />
+    <ProjectReference Include="..\..\src\Kvertis.Queue\Kvertis.Queue.csproj" />
+  </ItemGroup>
+
+  <!-- Kvertis.App is a WinUI 3 application (WinExe, MSIX tooling, XAML compiler); a project reference to it
+       cannot be consumed by a test host. The parts of step 2 that carry logic are written without any WinUI
+       type, so they are compiled into this project from source instead. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\Kvertis.App\Services\TargetPlanner.cs" Link="FromApp\TargetPlanner.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\WorkflowSession.cs" Link="FromApp\WorkflowSession.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\Debouncer.cs" Link="FromApp\Debouncer.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Options.cs" Link="FromApp\Options.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\ILocalizer.cs" Link="FromApp\ILocalizer.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Services\IUiDispatcher.cs" Link="FromApp\IUiDispatcher.cs" />
+    <Compile Include="..\..\src\Kvertis.App\Helpers\Formatting.cs" Link="FromApp\Formatting.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\TuningPanelViewModel.cs" Link="FromApp\Target\TuningPanelViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\KindGroupViewModel.cs" Link="FromApp\Target\KindGroupViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\TargetFileViewModel.cs" Link="FromApp\Target\TargetFileViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\ZoneViewModel.cs" Link="FromApp\Target\ZoneViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\SizeBarViewModel.cs" Link="FromApp\Target\SizeBarViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\EffectViewModel.cs" Link="FromApp\Target\EffectViewModel.cs" />
+    <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\PathRowViewModel.cs" Link="FromApp\Target\PathRowViewModel.cs" />
+  </ItemGroup>
+</Project>

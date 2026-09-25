@@ -201,3 +201,44 @@ Fundament für Fächer-Galaxie, Zoom-Wege und Pixelwirbel. Umgesetzt in `src/Kve
 (Dateien vorhanden, Ziel gewählt). Win2D ist nach ADR-018 vorgesehen, in dieser Etappe aber bewusst nicht
 eingebunden. Die Farbtokens sind angelegt, aber außerhalb von `StepHeader` noch nicht auf die bestehenden
 Ansichten angewandt; Karten und Job-Liste nutzen weiter die WinUI-Fluent-Pinsel.
+
+## Umsetzungsstand Schritt 2 „Ziel“, Etappen B–D (2026-09-25)
+
+Umgesetzt nach `docs/entwuerfe/schritt-2-ziel.md` und dem Abschnitt „Schritt 2 „Ziel““ in `03-architektur.md`
+(ADR-019, ADR-020). Reines XAML, keine Zeichenschicht.
+
+- **Sitzung** `Services/WorkflowSession.cs`: `IWorkflowSession` mit `Staged`, `Plan`, `Location`, `Previous`,
+  `Changed`, `SetStaged` und `Reset`; Singleton in `ServiceRegistration`. Dazu `StagedFile`, `TargetPlan`,
+  `PlannedConversion`, `SkippedFile`.
+- **Reine Logik** `Services/TargetPlanner.cs` (ohne WinUI): Reihenfolge der Arten, Schnittmenge der Formate,
+  Farbtoken je Art, logarithmische Größenskala, Plan mit Freemium-Grenzen. `Services/Debouncer.cs` entprellt
+  über `TimeProvider` (50 ms). `FreemiumPolicy` hat jetzt `IsKindLocked`, `BatchLimit` und `Limits`.
+- **ViewModels** unter `ViewModels/Target/`: `TargetPageViewModel`, `KindGroupViewModel`,
+  `TargetFileViewModel`, `TuningPanelViewModel`, `SizeBarViewModel`, `ZoneViewModel`, `EffectViewModel`,
+  `PreviousSettingsViewModel`, `PathRowViewModel`.
+- **Seite** `Views/TargetPage.xaml`: links Artenliste mit Farbpunkt, Modus-Umschalter und Dateikarten; Mitte
+  die Wege je Datei; rechts Zielformat, Ring (ein `Slider` mit eigenem `ControlTemplate`, Pfeiltasten ±5),
+  Größenleiste mit 24 Farbsegmenten und Marken, Zonen als `Expander` mit `ProgressBar` und `Slider`,
+  „Zielgröße genau“, „Weiteres“, „Was sich ändert“. Untere Leiste mit Vertrauenszeile, Summe, „Zurück“ und
+  „Weiter: Umwandeln“ als einzigem Mint-Knopf. `AdaptiveTrigger` ab 640 px; im Hohen Kontrast werden die
+  Farbsegmente der Leiste ausgeblendet (nur Text).
+- **Verdrahtung:** `MainPage` hat den Knopf „Weiter: Ziel“ (`MainViewModel.GoToTargetCommand`) und spiegelt
+  die fertigen Karten laufend in `IWorkflowSession.Staged`. Schritt 2 schreibt den Plan, `ConvertPage` zeigt
+  Anzahl und Summe. `HistoryViewModel.AgainAsync` setzt `Previous` und springt nach Schritt 2. Die
+  Schrittleiste macht Schritt 2 anklickbar, sobald mindestens eine Datei abgelegt ist, Schritt 3 erst mit
+  Plan. Der alte Start-Weg auf `MainPage` bleibt unverändert bestehen.
+
+**Abweichungen vom Arbeitsblatt:**
+
+- Die Miniatur auf den Dateikarten fehlt noch; die Karte zeigt Name, Größe, Maße und Warnung. Grund: Der
+  Pfad zur Vorschau liegt in `StagedFile.ThumbnailPath`, das Dekodieren gehört zu einer eigenen kleinen
+  Bildquelle, die zusammen mit der Zeichenschicht kommt.
+- Die Größenleiste hat eine feste Breite von 320 px, weil Marken und Segmente ohne Zeichenschicht an einer
+  festen Breite ausgerichtet werden. Die rechte Spalte ist entsprechend 360 px breit.
+- Der Ring zeigt die Note als Zahl und Wort in einem farbigen Kreis, nicht als gefüllten Bogen; ein Bogen
+  bräuchte eine gezeichnete Fläche (ADR-018).
+- Die Pro-Karte „Batch zu groß“ steht in der rechten Spalte, die Karte „Video braucht Pro“ in der Gruppe.
+- Für Bindungen mit möglicherweise leerem Datenkontext (gewählte Art) werden zwei Konverter benutzt
+  (`ShowConverter`, `BrushKeyConverter` in `Helpers/Converters.cs`); `x:Bind` bleibt überall sonst.
+- Entwicklungshilfe: In Debug-Builds legt die Umgebungsvariable `KVERTIS_STAGE_FILES` (Pfade mit `;`)
+  Dateien ab und öffnet Schritt 2. Im ausgelieferten Build existiert der Zweig nicht.

@@ -53,6 +53,8 @@ public static class ServiceRegistration
         services.AddSingleton<FrameNavigationService>();
         services.AddSingleton<INavigationService>(sp => sp.GetRequiredService<FrameNavigationService>());
         services.AddSingleton<IStepNavigationService, StepNavigationService>();
+        // State of the three steps (ADR-020): staged files, target plan, output location, history entry.
+        services.AddSingleton<IWorkflowSession, WorkflowSession>();
         services.AddSingleton<IMotionSettings, SystemMotionSettings>();
         services.AddSingleton<ILocalizer, ResourceLocalizer>();
         services.AddSingleton<ErrorMessageMapper>();
@@ -149,6 +151,7 @@ public static class ServiceRegistration
 
         // View models
         services.AddSingleton<MainViewModel>();
+        services.AddSingleton<Kvertis.App.ViewModels.Target.TargetPageViewModel>();
         services.AddSingleton<HistoryViewModel>();
         services.AddSingleton<ProViewModel>();
         services.AddTransient<SettingsViewModel>();

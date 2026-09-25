@@ -449,12 +449,189 @@ Schritt 3 macht daraus `new ConversionJob(item.Input, item.Settings, OutputDirec
 
 | Etappe | Inhalt | Wer | Abnahme |
 |---|---|---|---|
-| A | `Kvertis.Engine.Tuning` (`QualityGrade`, `GradeMapper`, `EffectAnalyzer`, `GradeSizeTable`, `SizeMarks`) und `Estimation.SizeModel`; `Estimator` reagiert auf Einstellungen. Tests: Rundreise `GradeOf(Apply(g)) == g`, Monotonie der Tabelle, Determinismus, keine Engine-Ausnahme für alle Arten × Formate der Registry | engine-entwickler, tester | `dotnet test tests/Kvertis.Engine.Tests --filter Category!=Integration` |
+| A | `Kvertis.Engine.Tuning` (`QualityGrade`, `GradeMapper`, `EffectAnalyzer`, `GradeSizeTable`, `SizeMarks`) und `Estimation.SizeModel`; `Estimator` reagiert auf Einstellungen. Tests: Monotonie von `GradeOf` und Toleranz zur Note (siehe Nachtrag unten), Monotonie der Tabelle, Determinismus, keine Engine-Ausnahme für alle Arten × Formate der Registry | engine-entwickler, tester | `dotnet test tests/Kvertis.Engine.Tests --filter Category!=Integration` |
 | B | `IWorkflowSession`, `TargetPlan`, ViewModels unter `ViewModels/Target/` mit Tests ohne WinUI (reine Logik: Modus, Schnittmenge der Formate, Tabellen-Cache, Entprellung über `TimeProvider`) | ui-entwickler, tester | ViewModel-Tests |
 | C | `TargetPage.xaml` in reinem XAML: links Artenliste (Text und Farbpunkt, kein Ring, keine Bewegung), Dateikarten, Modus-Umschalter; Mitte schlichte Liste „Format → Ziel“; rechts Ring (`ProgressRing` oder `Ellipse` mit Text), Leiste als `Slider` mit Markenbeschriftung darunter, Zonen als `Expander` mit `Slider`, „Zielgröße genau“ als `NumberBox`, „Weiteres“, „Was sich ändert“ als Liste mit Symbol und Text. Alles mit `AutomationProperties.Name` und Wert; Farben nur aus `KvertisColors.xaml` | ui-entwickler | Sichtprüfung unter Windows, Hoher Kontrast, Tastatur |
 | D | Verdrahtung: Schritt 1 füllt `IWorkflowSession.Staged`, „Weiter: Ziel“ nur mit Dateien; Schritt 2 „Weiter: Umwandeln“ schreibt `Plan`; Schritt 3 baut die Jobs; Verlauf setzt `Previous`. `MainPage` gibt Start, Format-Chip, `MorePanel` und `FormatPickerFlyout` ab (bleiben bis dahin bestehen, werden danach entfernt) | ui-entwickler, reviewer | Durchlauf Bild, Audio, Dokument; Verlauf → damals |
 
 Die Zeichenschicht (Bahn und Loch in der Mitte, Universum-Symbole links, Übergänge) ist ausdrücklich **nicht** Teil dieser Etappen (ADR-018, später mit Win2D).
+
+### Nachtrag 2026-09-25 · Abweichungen der Umsetzung (engine-entwickler) von der Skizze oben
+
+Umgesetzt in `src/Kvertis.Engine/Tuning/` und `Estimation/SizeModel.cs`; der Code ist verbindlich, die Skizze oben bleibt als Entwurf stehen.
+
+1. **Rundreise nicht exakt:** `GradeOf(Apply(g))` kann bei Stufenleitern nicht auf die Note zurückführen. Getestet werden Monotonie und eine Toleranz von 20 Punkten (AAC hat nur vier Bitratenstufen), 12 Punkten bei feinen Leitern. Die Rückabbildung nimmt die Stufenmitte; eine Stufe ohne Reduktion gegenüber der Quelle zählt als 100.
+2. **Feinere Leitern:** Schärfe sieben Stufen 640 … 3840 px (Bilder, lange Kante) bzw. 360 … 1440 px (Video, Höhe); Bildrate sechs Stufen 15 / 20 / 24 / 25 / 30 / Original; Details linear `30 + 0,7 × Note`; Audio-Stufen wie in der Tabelle, Deckel 192 kbit/s für Videoton, AAC auf `TranscodePlan.AacBitrateSteps` gerundet.
+3. **Referenz von `SizeModel.Factor`:** `ConversionSettings` im Auslieferungszustand (Quality 80, keine Advanced-Schlüssel), nicht Note 80, damit der Faktor dort exakt 1,0 ist und bestehende `speed-profile.json` unverändert gültig bleiben. `SizeMarks.For` liefert `SizeMark(Preset, Bytes)`-Records statt Tupel.
+4. **Verlustfreie Bilder** behalten die Schärfe-Stufe als einstellbares Merkmal (nur Details ist fest). `SupportsGrade` ist genau dann falsch, wenn kein einstellbares Merkmal übrig bleibt: Dokumente, 3D-Modelle, verlustfreies Audio (FLAC, WAV, AIFF).
+
+Für die App ändert sich: „damals“-Noten und Noten nach Zonen-Änderungen sind auf ±12 bzw. ±20 Punkte genau, der Ring zeigt sie mit „≈“; die Zone „Schärfe“ erscheint auch bei PNG/TIFF; FLAC/WAV zeigen keinen Ring und keine Leiste, nur „Was sich ändert“ und „Weiteres“.
+
+## Schritt 3 „Umwandeln“: Schnittstellen und Datenfluss (Skizze, 2026-09-25)
+
+Grundlage: `design/ENTSCHEIDUNGEN.md` (Zeilen „Schritt 3“, „Ziel in Schritt 3“, „Speicherort“, „Übergänge und Abschluss“), `design/oberflaeche-mischentwurf.html` (Abschnitt „Schritt 3“), ADR-020 und ADR-021. Kurzfassung zum Abarbeiten: `docs/entwuerfe/schritt-3-umwandeln.md`. Reines XAML; die Zeichenschicht (ADR-018) kommt später und bekommt in der Seite nur eine leere Fläche.
+
+### Was schon da ist und was fehlt
+
+| Element der Umwandeln-Seite | Vorhanden | Fehlt |
+|---|---|---|
+| Jobs bauen und einreihen | `ConversionJob(InputInfo, ConversionSettings, outputDirectory, namePattern, batchIndex)`, `OutputDirectoryResolver.Resolve`, `IJobQueue.EnqueueRange`, Admission über `FreemiumPolicy` | ein Ort ohne WinUI, der aus `TargetPlan` + Speicherort die Jobs baut und die Ids **dieser Runde** kennt (heute verstreut in `MainViewModel.StartAsync`) |
+| Zielpfad je Datei vor dem Start | `OutputNamePattern.Render` + `EnsureUnique`, `FormatRegistry.ExtensionFor`; die Queue rechnet den endgültigen Pfad erst beim Start (`JobRunner`, `OutputPathReserver`) und meldet ihn mit `JobChangeKind.Details` | dieselbe Rechnung als Vorschau für die Liste, mit Nummerierung innerhalb der Runde |
+| Speicherort für alle | `OutputLocation` (SameFolder, SubFolder, Custom), `IWorkflowSession.Location`, Einstellungen (`OutputLocationKind`, Ordner-Token über `IFilePickerService`) | Speicherort „noch nicht gewählt“ (Vorgabe aus Einstellungen), Ordner aus dem Explorer ziehen |
+| Eigenes Ziel je Datei („Ändern“, „Tasche“) | nichts | Ausnahmen je Datei als Sitzungszustand (ADR-021) |
+| Fortschritt, Restzeit, Pause, Abbruch | `IJobQueue.JobChanged`, `OverallProgress.Compute`, `Pause/Resume/Cancel(id)`, `IUiDispatcher` | Aggregat nur über die Jobs der Runde; Marshalling an einer Stelle statt in jedem ViewModel |
+| Fehler mit Lösung | `ConversionErrorCode`, `ErrorMessageMapper` (`Error_<Code>_Title/Body`) | nichts |
+| Verlauf | `JobQueueOptions.History` → `JobHistory.RecordAsync` (Completed, Failed); `HistoryEntry.FromJob` hält `Settings`, `OutputPath`, Bytes | nichts; die App schreibt keinen Verlauf |
+| „Öffnen“, „Im Ordner zeigen“ | `MainViewModel.OpenFolderAsync` (WinRT `Launcher`) | kleiner Dienst mit zwei Nutzern (Zeile, Bericht) |
+| Bericht am Ende | `OverallProgress` (Completed, Failed, Cancelled, BytesIn/Out), `ConversionJob.StartedAt/FinishedAt` | Zusammenfassung je Runde |
+
+`Kvertis.Queue` und `Kvertis.Engine` ändern sich für Schritt 3 **nicht**. Alles Neue liegt in `Kvertis.App/Services` (ohne WinUI, testbar) und `Kvertis.App/ViewModels/Convert`.
+
+### Sitzung: Ergänzungen an `IWorkflowSession`
+
+```csharp
+public interface IWorkflowSession
+{
+    // ... wie ADR-020 ...
+
+    /// <summary>Step 3: shared location. Null until the user chose one in this round; the convert page then takes the settings default.</summary>
+    OutputLocation? Location { get; set; }
+
+    /// <summary>Step 3: per-file exceptions ("Ändern"), keyed by InputInfo.Path. Empty by default; Reset clears it.</summary>
+    IReadOnlyDictionary<string, OutputLocation> OwnLocations { get; }
+
+    /// <summary>Sets or (with null) removes the exception for one file. Raises Changed.</summary>
+    void SetOwnLocation(string inputPath, OutputLocation? location);
+}
+```
+
+### Zielpfad-Vorschau (rein, `Kvertis.App/Services/TargetPathPlanner.cs`)
+
+```csharp
+namespace Kvertis.App.Services;
+
+/// <summary>Where one planned file will land, computed the same way JobRunner does it at start (ADR-007: numbered, never overwritten).</summary>
+public sealed record TargetPathPreview(
+    PlannedConversion Item,
+    OutputLocation Location,          // effective: own location or the shared one
+    bool IsOwnLocation,
+    string? Directory,                // null when NeedsFolder
+    string? FileName,
+    string? FullPath,
+    bool NeedsFolder);                // temporary input (clipboard) with SameFolder/SubFolder: the user must pick a folder first
+
+public static class TargetPathPlanner
+{
+    public static OutputLocation EffectiveLocation(PlannedConversion item, OutputLocation shared, IReadOnlyDictionary<string, OutputLocation> own);
+
+    /// <summary>True when the input lives under <paramref name="temporaryRoot"/> (clipboard images) and the location is relative to it.</summary>
+    public static bool NeedsFolder(PlannedConversion item, OutputLocation location, string temporaryRoot);
+
+    /// <summary>
+    /// One preview per plan item, in plan order. Batch index 1..n only when the plan has more than one item.
+    /// Numbering ("_1", "_2") considers <paramref name="exists"/> (disk) and the other previews of this call, like OutputPathReserver does at start.
+    /// </summary>
+    public static IReadOnlyList<TargetPathPreview> PreviewAll(
+        TargetPlan plan, OutputLocation shared, IReadOnlyDictionary<string, OutputLocation> own,
+        FormatRegistry registry, DateTimeOffset now, Func<string, bool> exists, string temporaryRoot);
+}
+```
+
+### Koordinator (`Kvertis.App/Services/ConversionCoordinator.cs`, ohne WinUI)
+
+```csharp
+namespace Kvertis.App.Services;
+
+public enum RoundState { Ready = 0, Running, Paused, Finished }
+
+/// <summary>Summary of one round for the closing report. Elapsed = first StartedAt to last FinishedAt.</summary>
+public sealed record RoundReport(int Total, int Completed, int Failed, int Cancelled, long BytesIn, long BytesOut, TimeSpan Elapsed,
+                                 IReadOnlyList<(ConversionJob Job, ConversionErrorCode Error)> Failures);
+
+public sealed class RoundChangedEventArgs(ConversionJob? job, JobChangeKind? kind) : EventArgs
+{
+    public ConversionJob? Job { get; } = job;          // null for state changes of the round itself
+    public JobChangeKind? Kind { get; } = kind;
+}
+
+/// <summary>
+/// Owns the jobs of the current round (ADR-021): builds them from the plan, enqueues them, filters queue events to
+/// its own ids and re-raises them on the UI thread. The only place in the app that calls IJobQueue for conversions.
+/// </summary>
+public interface IConversionCoordinator
+{
+    RoundState State { get; }
+    IReadOnlyList<ConversionJob> Jobs { get; }         // plan order; replaced jobs (RelocateWaiting) keep their slot
+    OverallProgress Overall { get; }                   // OverallProgress.Compute(Jobs)
+    RoundReport? Report { get; }                       // set when State == Finished
+
+    /// <summary>Raised on the UI thread via IUiDispatcher.</summary>
+    event EventHandler<RoundChangedEventArgs>? Changed;
+
+    /// <summary>Builds one ConversionJob per preview and calls EnqueueRange. Throws JobAdmissionException (nothing enqueued) and ArgumentException (bad folder). Requires State == Ready and no preview with NeedsFolder.</summary>
+    void Start(IReadOnlyList<TargetPathPreview> previews);
+
+    /// <summary>After start: replaces jobs that are still Queued (or paused before start) whose directory changed. Remove + new job with the same input, settings, name pattern and batch index. Running and finished jobs are untouched. Returns the number of replaced jobs.</summary>
+    int RelocateWaiting(IReadOnlyList<TargetPathPreview> previews);
+
+    void PauseAll();      // Pause(id) for every own job that is Queued or Running
+    void ResumeAll();
+    void CancelAll();
+
+    /// <summary>Forgets the round: Remove(id) for own finished jobs, clears ids, State = Ready.</summary>
+    void Reset();
+}
+```
+
+Regeln:
+
+- Abhängigkeiten nur `IJobQueue`, `IUiDispatcher`, `TimeProvider`. Registrierung als Singleton. Tests mit Fake-`IJobQueue` und synchronem Fake-`IUiDispatcher` in `tests/Kvertis.App.Tests` (per `<Compile Include>` wie `TargetPlanner`).
+- `State` wird aus den eigenen Jobs abgeleitet: `Running`, solange einer `Running` oder `Queued` ist; `Paused`, wenn alle nicht fertigen Jobs `Paused` sind; `Finished`, wenn alle fertig sind; `Ready` ohne Jobs. Beim Übergang nach `Finished` wird `Report` einmal berechnet.
+- `PauseAll`/`CancelAll` gehen je Id, nie über `IJobQueue.PauseAll`, damit der Koordinator nur seine Runde anfasst.
+- Der Koordinator schreibt **keinen** Verlauf und kennt keine Lizenz; beides bleibt bei Queue und `FreemiumPolicy`.
+
+### Datenmodell der Umwandeln-Seite (App)
+
+Alles unter `Kvertis.App/ViewModels/Convert/`. Kein `ConversionJob` und kein Engine-Typ in XAML.
+
+```
+ConvertPageViewModel
+  Rows : ObservableCollection<ConvertRowViewModel>       eine je Plan.Items, Plan-Reihenfolge
+  Inbox : IReadOnlyList<ConvertRowViewModel>              Zeilen mit State Ready/Queued/Paused (links), nach dem Lauf die fehlgeschlagenen
+  Swirl : IReadOnlyList<ConvertRowViewModel>              höchstens zwei laufende (früheste StartedAt), Mitte; MoreRunningCount für „und n weitere“
+  Done : IReadOnlyList<ConvertRowViewModel>, DoneText     „fertig 3 von 7“ (rechts)
+  Location : LocationCardViewModel                       Titel, Erklärung/Pfad, ChangeCommand (Flyout), PickFolderCommand, DropFolder(path), IsEnabled (nur vor dem Start bzw. für wartende Jobs)
+  BagText, BagCommand                                    „2 Dateien woanders hin“ / Hinweis
+  Skipped : IReadOnlyList<SkippedFile>, ShowProCard, ProReason
+  State : RoundState, OverallFraction, OverallText, OverallAutomationText, RemainingText
+  CanStart : bool                                        State == Ready, Rows > 0, keine Zeile NeedsFolder
+  StartCommand, PauseResumeCommand, CancelAllCommand (mit Rückfrage), BackCommand (nur Ready), NewRoundCommand (nur Finished)
+  Report : RoundReportViewModel?                         Titel, Zeile Größe/gespart/Dauer, Fehlerliste, OpenFolderCommand
+  Announcement : string                                  Assertive-Text je fertiger/fehlgeschlagener Datei und einmal für den Bericht
+
+ConvertRowViewModel
+  Item : PlannedConversion, FileName, KindColorKey, SourceFormat, TargetFormat
+  SizeBeforeText, SizeAfterText                           „≈“ aus IEstimator vor dem Lauf, echt aus Result danach
+  Preview : TargetPathPreview, TargetDirectoryText (gekürzt), TargetFileName, FullPath (ToolTip, Automation), IsOwnLocation, NeedsFolder
+  State : JobState?, ProgressFraction, PercentText, RemainingText, StateText
+  ErrorTitle, ErrorBody                                    ErrorMessageMapper.Map(job.Error)
+  ChangeTargetCommand (nur vor Start bzw. wartend), OpenCommand, ShowInFolderCommand (nur Completed)
+  AutomationName                                           „foto.heic, HEIC nach JPG, wird gespeichert als …, wartend“
+
+LocationCardViewModel
+  Kind : OutputLocationKind, CustomPath, TitleText, DetailText, DropCaption
+  SetSame/SetSub/SetCustom(path)                           schreibt session.Location, speichert Einstellungen, löst PreviewAll neu aus
+```
+
+Ablauf: Betreten → `session.Location ??= aus Einstellungen` → `PreviewAll` → Zeilen. Speicherort oder „Ändern“ → `PreviewAll` → vor dem Start alle Zeilen neu, nach dem Start `coordinator.RelocateWaiting(previews)`. „Umwandeln“ → `coordinator.Start(previews)`. `Changed` → betroffene Zeile aus `job` aktualisieren (`Details` liefert den endgültigen Pfad, `Progress` den Balken, `StateChanged` Zustand, Ergebnis oder Fehler), danach Aggregate. `Finished` → Bericht. „Neue Runde“ → `coordinator.Reset()`, `session.Reset()`, `GoTo(Drop)`.
+
+### Etappen für `ui-entwickler`
+
+| Etappe | Inhalt | Wer | Abnahme |
+|---|---|---|---|
+| A | `TargetPathPlanner`, `ConversionCoordinator`, `IShellLauncher`, Ergänzungen an `IWorkflowSession`; Tests ohne WinUI (Nummerierung in der Runde, `NeedsFolder`, Start reiht n Jobs, Fremd-Ids ignoriert, `RelocateWaiting` nur wartende, `Report`, `Reset`) | ui-entwickler, tester | `dotnet test tests/Kvertis.App.Tests` |
+| B | `ConvertPage.xaml` und ViewModels unter `ViewModels/Convert/`: drei Spalten, Liste, Leiste, Speicherort-Karte mit Flyout und Ordner-Ablage, „Ändern“ je Zeile, Bericht; alle Texte `Convert_*` in DE und EN; `AutomationProperties` überall | ui-entwickler | Sichtprüfung unter Windows, Hoher Kontrast, Tastatur, Erzähler |
+| C | Verdrahtung und Abbau: Schritt 1 gibt Start, Speicherort, Gesamtfortschritt, Pause/Abbruch, Pro-Karte, Format-Chip, Preset-Chip, `MorePanel`, `FormatPickerFlyout` ab; `MainViewModel` verliert die Queue-Anbindung; frei gewordene Schlüssel werden gelöscht (Liste im Arbeitsblatt); Schrittleiste sperrt 1 und 2 während des Laufs | ui-entwickler, reviewer | Durchläufe laut Arbeitsblatt; kein `IJobQueue`-Aufruf außerhalb von `ConversionCoordinator` und `HistoryViewModel`; `check.sh` grün |
 
 ## Architekturentscheidungen (ADR)
 
@@ -603,9 +780,18 @@ Die Parallelitätsgrenzen sind Zähler unter dem Queue-Lock statt `SemaphoreSlim
 **Grund:** Bei (a) müssten alle Konverter, der Verlauf, das Tempo-Profil und die Tests umgestellt werden, und derselbe Wert stünde doppelt in den Einstellungen (Note und Qualität); alte Verlaufseinträge hätten keine Note. Bei (b) wäre die Abbildung nicht ohne WinUI testbar und in einer zweiten UI (Avalonia) doppelt zu schreiben; die Zuordnung Note → Bitrate gehört zur Konvertierung, nicht zur Anzeige. Bei (c) würde jedes Ziehen der Leiste eine versteckte Zielgröße erzeugen, die später `TargetSizeUnreachable` auslösen kann, und die Konverter würden bei jeder Datei eine Suche mit mehreren Kodierungen fahren; eine Tabelle über die Note ist deterministisch, sofort und für Ring und Leiste dieselbe Quelle. Reine Funktionen ohne Zustand brauchen keine Abstraktion (kein Interface, kein zweiter Nutzer), sind auf Linux testbar und bleiben frei von UI.
 **Folgen:** Neu in `Kvertis.Engine`: `Tuning/QualityGrade.cs`, `Tuning/GradeMapper.cs`, `Tuning/EffectAnalyzer.cs`, `Tuning/GradeSizeTable.cs`, `Tuning/SizeMarks.cs`, `Estimation/SizeModel.cs`; `Estimator.Estimate` multipliziert mit `SizeModel.Factor`, `Record` normalisiert damit, Profil-Schlüssel und Dateiformat des Tempo-Profils bleiben gleich. Keine neue Bibliothek. `ConversionSettings`, `PresetCatalog`, `IConverter` und `IEstimator` bleiben unverändert; `ConversionPreset` bleibt für Verlauf und Marken bestehen, die neue Oberfläche zeigt keinen Preset-Chip mehr. Die App übersetzt `GradeBand` und `EffectCode` über `.resw` (`Grade_Band_*`, `Effect_<Code>_Text`) und entprellt das Ziehen selbst; die Engine ruft beim Ziehen nichts auf. Tests: Rundreise `GradeOf(Apply(g)) == g` für 0..100 und jede Art, Monotonie der Tabelle, Determinismus, kein Wurf für alle Registry-Kombinationen. Die Abbildungstabelle (Note → Auflösungsstufe, Bitratenstufe, Bildrate) steht im Skizzen-Abschnitt oben und darf nach Sichtprüfung angepasst werden; ihre Form (Stufen, linear für `Quality`) nicht ohne Nachtrag hier.
 
+> **Nachtrag 2026-09-25 (Umsetzung):** Die Rundreise `GradeOf(Apply(g)) == g` gilt nicht exakt, weil Auflösung, Bitrate und Bildrate Stufenleitern sind; verbindlich sind Monotonie und eine Toleranz (20 Punkte bei AAC, 12 bei feinen Leitern), die Rückabbildung nimmt die Stufenmitte und wertet „wie Quelle“ als 100. Die Leitern sind feiner als in der Skizze (Schärfe 7 Stufen, Bildrate 6 Stufen). Referenz von `SizeModel.Factor` ist der Auslieferungszustand von `ConversionSettings` (Quality 80, keine Advanced-Schlüssel), nicht Note 80. Verlustfreie Bilder behalten die Schärfe-Zone; `SupportsGrade` ist nur ohne einstellbares Merkmal falsch (Dokumente, 3D, verlustfreies Audio). `SizeMarks.For` liefert `SizeMark`-Records. Einzelheiten im Nachtrag des Skizzen-Abschnitts.
+
 ### ADR-020 · 2026-09-25 · Ablaufzustand der drei Schritte in der App (`IWorkflowSession`), Queue bekommt weiter nur `ConversionJob`
 
 **Entscheidung:** Ein Dienst `IWorkflowSession` in `Kvertis.App` hält, was zwischen den Schritten wandert: die erkannten Dateien aus Schritt 1 (`StagedFile` mit `InputInfo` und Miniatur), den `TargetPlan` aus Schritt 2 (`PlannedConversion(InputInfo, ConversionSettings, NamePattern)` je Datei plus `SkippedFile` mit Grund) und den Speicherort aus Schritt 3, dazu `Previous` (der `HistoryEntry` für „Anpassen aus dem Verlauf“). Schritt 3 baut daraus `ConversionJob`s und ruft `IJobQueue.EnqueueRange`. Die Freemium-Grenzen (Video nur Pro, Batch-Limit) prüft die App in Schritt 2 über `FreemiumPolicy` (Gruppe gesperrt, Pro-Karte, Datei in `Skipped`); die Queue-Admission bleibt als zweites Netz.
 **Alternativen:** (a) `TargetPlan` in `Kvertis.Queue` als neues Auftragsobjekt, das die Queue selbst in Jobs zerlegt; (b) Zustand in `MainViewModel` belassen und die Seiten daran binden (heutiger Stand); (c) Schritt 2 legt die Jobs schon in die Queue und Schritt 3 startet sie nur.
 **Grund:** Bei (a) käme UI-Zustand (Modus „Alle gleich / Jede einzeln“, gesperrte Gruppen) in die Queue, die bewusst nur Jobs, Parallelität und Fortschritt kennt (ADR-005). Bei (b) wächst `MainViewModel` weiter und die drei Seiten hängen an einem Modell, das schon jetzt Ablage, Liste, Start und Fortschritt mischt; die Aufteilung in drei Schritte ist genau die Gelegenheit, das zu trennen. Bei (c) müsste die Queue Jobs ohne Speicherort halten und ein „Ändern“ des Ziels in Schritt 3 hieße Job entfernen und neu anlegen; außerdem würde der Verlauf verfrühte Einträge sehen. `ConversionJob` trägt bereits alles (Eingabe, Einstellungen, Zielordner, Namensmuster, Stapelindex); ein zweites Auftragsobjekt in der Queue hätte keinen zweiten Nutzer.
 **Folgen:** Neu in `Kvertis.App/Services`: `IWorkflowSession`, `WorkflowSession` (Singleton je Fenster, `Reset` bei „Neue Runde“), `TargetPlan`, `PlannedConversion`, `SkippedFile`, `StagedFile`. `FreemiumPolicy` bekommt `IsKindLocked(MediaKind)` und `BatchLimit`. `MainViewModel` gibt in Etappe D die Formatwahl, das „Mehr“-Panel und den Start ab; `MorePanel` und `FormatPickerFlyout` werden danach entfernt. `Kvertis.Queue` und `Kvertis.Engine` ändern sich für diese Entscheidung nicht. Der Rückweg „Zurück“ zu Schritt 1 lässt `Plan` bestehen, damit Zielwahl und Note beim erneuten Vorwärtsgehen erhalten bleiben; `Reset` löscht alles.
+
+### ADR-021 · 2026-09-25 · Schritt 3 über einen WinUI-freien `ConversionCoordinator`; Ziel je Datei als Sitzungszustand; Queue bleibt unverändert
+
+**Entscheidung:** Schritt 3 startet die Umwandlung erst auf den Knopf „Umwandeln“, nicht beim Betreten der Seite. Ein Dienst `IConversionCoordinator` in `Kvertis.App/Services` (ohne WinUI, nur `IJobQueue`, `IUiDispatcher`, `TimeProvider`) baut aus `TargetPlan`, gemeinsamem Speicherort und den Ausnahmen je Datei die `ConversionJob`s, ruft `IJobQueue.EnqueueRange`, merkt sich die Ids **seiner Runde**, filtert `JobChanged` darauf, marshallt einmal auf den UI-Thread und liefert Zustand, Gesamtfortschritt und den Abschlussbericht. Er ist die einzige Stelle der App, die für Konvertierungen mit der Queue spricht. Der Zielpfad je Zeile wird vor dem Start als Vorschau mit derselben Rechnung wie `JobRunner` berechnet (`TargetPathPlanner`: `OutputDirectoryResolver` + `OutputNamePattern.Render` + `EnsureUnique` gegen Datenträger und die übrigen Zeilen der Runde); der endgültige Pfad kommt weiterhin von der Queue (`JobChangeKind.Details`). Ausnahmen je Datei („Ändern“, „Tasche“) sind Sitzungszustand (`IWorkflowSession.OwnLocations`), nicht Teil von `TargetPlan` und nicht Teil der Queue; `IWorkflowSession.Location` wird nullable (null = in dieser Runde noch nicht gewählt, dann gilt die Einstellung). Ein Speicherort-Wechsel nach dem Start ersetzt nur wartende Jobs (`IJobQueue.Remove` + neuer Job mit gleichem `BatchIndex`); laufende und fertige bleiben. Zwischenablage-Bilder (unter `AppPaths.ClipboardFolder`) verlangen einen ausdrücklich gewählten Ordner, bevor „Umwandeln“ frei wird. Der Verlauf wird weiter allein von der Queue geschrieben. `Kvertis.Queue` und `Kvertis.Engine` ändern sich nicht.
+**Alternativen:** (a) Start beim Betreten von Schritt 3 (kein Start-Knopf); (b) Start-, Fortschritts- und Verlaufslogik in `ConvertPageViewModel` belassen, wie heute in `MainViewModel`; (c) `IJobQueue` um `Replace(jobId, newDirectory)` oder ein veränderliches `OutputDirectory` erweitern; (d) Ausnahmen je Datei als Feld in `PlannedConversion` (Schritt 2 schreibt den Plan neu); (e) Zielpfad erst nach dem Start anzeigen, wenn die Queue ihn gemeldet hat.
+**Grund:** (a) nimmt dem Nutzer die letzte Prüfung (Speicherort, Zielpfade, „Ändern“) und widerspricht dem Entwurf, der „Speicherort ändern“ und „Ändern“ genau vor dem Lauf zulässt. (b) wiederholt den heutigen Zustand: `MainViewModel` mischt Ablage, Start, Fortschritt und Verlauf, ist nicht ohne WinUI testbar und wächst mit jeder Anforderung; ein Koordinator ohne UI-Typen ist wie `TargetPlanner` unter Linux testbar und in einer zweiten UI wiederverwendbar. (c) würde `ConversionJob` veränderlich machen, obwohl die Queue bewusst nur unveränderliche Auftragsdaten plus Zustand kennt (ADR-005, ADR-020); `Remove` + neuer Job reicht, weil nur wartende Jobs betroffen sind und die Reihenfolge innerhalb der ersetzten Jobs erhalten bleibt. (d) vermischt die Ergebnisse von Schritt 2 (Format, Einstellungen) mit einer Entscheidung aus Schritt 3 und zwänge Schritt 3, den Plan zu ändern; als eigener Sitzungszustand bleibt der Plan unangetastet und „Zurück“ zu Schritt 2 verliert nichts. (e) ließe die Liste vor dem Start ohne Pfad, obwohl der Entwurf den vollen Zielpfad als Prüfmöglichkeit zeigt; die Rechnung ist dieselbe wie beim Start und billig, Abweichungen sind selten und werden durch das `Details`-Ereignis korrigiert.
+**Folgen:** Neu in `Kvertis.App/Services`: `TargetPathPlanner` (rein), `ConversionCoordinator` (`IConversionCoordinator`, Singleton), `ShellLauncher` (`IShellLauncher`, WinRT `Launcher` für „Öffnen“, „Im Ordner zeigen“, „Ordner öffnen“); `IWorkflowSession` bekommt `Location` als `OutputLocation?`, `OwnLocations` und `SetOwnLocation`. Neu `ViewModels/Convert/` mit `ConvertPageViewModel`, `ConvertRowViewModel`, `LocationCardViewModel`, `RoundReportViewModel`. `StepHeader` sperrt Schritt 1 und 2, solange der Koordinator läuft oder pausiert. Nach Etappe C entfallen in `MainViewModel` Start, Speicherort, Gesamtfortschritt, Pause/Abbruch, Verlaufs-Neustart, Pro-Karte und die Queue-Anbindung; `MorePanel` und `FormatPickerFlyout` werden gelöscht, die frei werdenden Ressourcen-Schlüssel ebenfalls (Liste in `docs/entwuerfe/schritt-3-umwandeln.md`). „Abbrechen“ fragt nach; Einzel-Pause, „Erneut versuchen“ je Zeile und die Rückfrage beim Schließen des Fensters während eines Laufs sind spätere Blätter. Keine neue Bibliothek.

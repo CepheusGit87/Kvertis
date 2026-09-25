@@ -2,7 +2,8 @@
 <Application
   x:Class="Kvertis.App.App"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:helpers="using:Kvertis.App.Helpers">
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
@@ -31,6 +32,10 @@
       </Style>
 
       <x:Double x:Key="IconButtonSize">32</x:Double>
+
+      <!-- Only for classic bindings whose data context can be null (step 2); x:Bind uses helpers:Ui. -->
+      <helpers:ShowConverter x:Key="ShowConverter" />
+      <helpers:BrushKeyConverter x:Key="BrushKeyConverter" />
     </ResourceDictionary>
   </Application.Resources>
 </Application>

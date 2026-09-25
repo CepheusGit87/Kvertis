@@ -66,6 +66,8 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
     private readonly IDialogService _dialogs;
     private readonly ILocalizer _loc;
     private readonly IUiDispatcher _ui;
+    private readonly IWorkflowSession _session;
+    private readonly IStepNavigationService _steps;
     private readonly ILogger<HistoryViewModel> _logger;
 
     public HistoryViewModel(
@@ -76,6 +78,8 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
         IDialogService dialogs,
         ILocalizer loc,
         IUiDispatcher ui,
+        IWorkflowSession session,
+        IStepNavigationService steps,
         ILogger<HistoryViewModel> logger)
     {
         _history = history;
@@ -85,6 +89,8 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
         _dialogs = dialogs;
         _loc = loc;
         _ui = ui;
+        _session = session;
+        _steps = steps;
         _logger = logger;
         _history.Changed += OnHistoryChanged;
         Reload();
@@ -103,15 +109,22 @@ public sealed partial class HistoryViewModel : ObservableObject, IDisposable
 
     public bool IsEmpty => !HasItems;
 
-    /// <summary>Picks files and stages them with the entry's settings ("again with the same settings").</summary>
+    /// <summary>
+    /// Picks files, stages them with the entry's settings and opens step 2, where the entry shows up as the
+    /// "damals" card (ADR-020, "Anpassen aus dem Verlauf").
+    /// </summary>
     public async Task AgainAsync(HistoryItemViewModel item)
     {
         ArgumentNullException.ThrowIfNull(item);
         var paths = await _pickers.PickFilesAsync();
-        if (paths.Count > 0)
+        if (paths.Count == 0)
         {
-            await _main.AddPathsWithSettingsAsync(paths, item.Entry.Settings);
+            return;
         }
+        _session.Previous = item.Entry;
+        await _main.AddPathsWithSettingsAsync(paths, item.Entry.Settings);
+        IsOpen = false;
+        _steps.GoTo(WorkflowStep.Target);
     }
 
     public async Task OpenFolderAsync(HistoryItemViewModel item)

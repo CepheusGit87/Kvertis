@@ -1,3 +1,4 @@
+using Kvertis.Engine.Abstractions;
 using Kvertis.Queue;
 
 namespace Kvertis.App.Services;
@@ -12,9 +13,9 @@ public sealed class FreemiumPolicy : IJobAdmissionPolicy
     public const int FreeBatchLimit = 5;
 
     /// <summary>Stable reason keys carried in <see cref="AdmissionResult.Reason"/>.</summary>
-    public const string ReasonVideo = "video";
+    public const string ReasonVideo = TargetPlanner.ReasonVideo;
 
-    public const string ReasonBatchSize = "batch-size";
+    public const string ReasonBatchSize = TargetPlanner.ReasonBatchSize;
 
     private readonly ILicenseService _license;
 
@@ -22,6 +23,17 @@ public sealed class FreemiumPolicy : IJobAdmissionPolicy
     {
         _license = license ?? throw new ArgumentNullException(nameof(license));
     }
+
+    /// <summary>True when this kind needs Pro (video). Pure query for step 2 (ADR-020).</summary>
+    public bool IsKindLocked(MediaKind kind) => !_license.IsPro && kind == MediaKind.Video;
+
+    /// <summary>How many files one start may contain, null when there is no limit.</summary>
+    public int? BatchLimit => _license.IsPro ? null : FreeBatchLimit;
+
+    /// <summary>The limits as step 2 needs them.</summary>
+    public TargetLimits Limits => _license.IsPro
+        ? TargetLimits.None
+        : new TargetLimits(VideoLocked: true, BatchLimit: FreeBatchLimit);
 
     public AdmissionResult Check(IReadOnlyList<ConversionJob> proposed)
     {
