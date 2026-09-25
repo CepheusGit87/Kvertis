@@ -46,4 +46,10 @@
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\EffectViewModel.cs" Link="FromApp\Target\EffectViewModel.cs" />
     <Compile Include="..\..\src\Kvertis.App\ViewModels\Target\PathRowViewModel.cs" Link="FromApp\Target\PathRowViewModel.cs" />
   </ItemGroup>
+
+  <!-- The scene models of the drawing layer (ADR-022) are free of WinUI and Win2D by definition, so the
+       whole folder is compiled in and tested without Windows. -->
+  <ItemGroup>
+    <Compile Include="..\..\src\Kvertis.App\Scenes\*.cs" Link="FromApp\Scenes\%(Filename)%(Extension)" />
+  </ItemGroup>
 </Project>

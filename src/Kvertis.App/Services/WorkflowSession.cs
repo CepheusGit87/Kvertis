@@ -49,6 +49,12 @@ public interface IWorkflowSession
     /// <summary>Set by "Anpassen aus dem Verlauf", cleared by <see cref="Reset"/>.</summary>
     HistoryEntry? Previous { get; set; }
 
+    /// <summary>
+    /// Step 1: the kind the galaxy was zoomed to when the user moved on (ADR-022). Step 2 preselects it if
+    /// files of that kind are staged; null means no preference. Cleared by <see cref="Reset"/>.
+    /// </summary>
+    MediaKind? FocusKind { get; set; }
+
     event EventHandler? Changed;
 
     /// <summary>Sets or (with null) removes the exception for one file. Raises <see cref="Changed"/>.</summary>
@@ -68,6 +74,7 @@ public sealed class WorkflowSession : IWorkflowSession
     private TargetPlan? _plan;
     private OutputLocation? _location;
     private HistoryEntry? _previous;
+    private MediaKind? _focusKind;
 
     public IReadOnlyList<StagedFile> Staged => _staged;
 
@@ -103,6 +110,16 @@ public sealed class WorkflowSession : IWorkflowSession
         }
     }
 
+    public MediaKind? FocusKind
+    {
+        get => _focusKind;
+        set
+        {
+            _focusKind = value;
+            Raise();
+        }
+    }
+
     public event EventHandler? Changed;
 
     public void SetStaged(IReadOnlyList<StagedFile> files)
@@ -132,6 +149,7 @@ public sealed class WorkflowSession : IWorkflowSession
         _plan = null;
         _previous = null;
         _location = null;
+        _focusKind = null;
         _ownLocations.Clear();
         Raise();
     }

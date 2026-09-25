@@ -2,6 +2,18 @@
 
 Format: Datum, Änderung, neue oder entfernte Bibliotheken mit Lizenz. Neueste Einträge oben.
 
+## 2026-09-25 – Galaxie, Teil A: Win2D im Projekt, Szene-Modell mit Tests (ADR-022)
+
+**Geändert**
+
+- ADR-022 und Arbeitsblatt `docs/entwuerfe/schritt-1-galaxie.md`: Szene-Modell ohne WinUI in `Scenes/`, Renderer und Canvas-Hülle in `Rendering/`, `GalaxyHost` als Weiche für „Animationen reduzieren“ und Hohen Kontrast.
+- Szene-Modell `src/Kvertis.App/Scenes/` (`GalaxyScene`, `GalaxyLayout`, `GalaxyMotion`, `GalaxyBody`, `GalaxyCommand`, `GalaxySnapshot`, `ScenePalette`, `PointerDwell`): Bahnen außen→innen Bilder, Audio, Video, 3D, Dokumente; Anflug 0,75 s mit Staffelung; Maus-Einfluss; Zoom-Zustand; Teilchenbudget 4000; deterministisch über TimeSpan. `IWorkflowSession.FocusKind`, `FormatRegistry.OutputsFor` (reine Abfrage).
+- 35 neue Tests, gesamt 866.
+
+**Bibliotheken**
+
+- Neu im Code: Microsoft.Graphics.Win2D 1.4.0 (Quellcode MIT, Paket Microsoft Software License Terms; Prüfbericht in `04-bibliotheken.md`). Lizenztexte nach `third_party/Win2D/` verschoben (der Verschiebe-Schritt landete versehentlich bereits im Commit „Fensterposition“). Paket löst neben Windows App SDK 2.5.1 ohne Konflikt auf.
+
 ## 2026-09-25 – Fensterposition merken
 
 **Geändert**

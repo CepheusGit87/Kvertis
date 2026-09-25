@@ -257,6 +257,22 @@ public sealed class FormatRegistry
         return new OutputSuggestion(@default, options);
     }
 
+    /// <summary>
+    /// The producible outputs of one input format, without an <see cref="InputInfo"/>. Same matrix as
+    /// <see cref="Suggest"/>, a pure lookup for views that only know a format id; null when the format
+    /// cannot be read or nothing can be produced from it.
+    /// </summary>
+    public IReadOnlyList<FormatId>? OutputsFor(FormatId input, ISystemCodecCapabilities? codecs = null)
+    {
+        if (!Matrix.TryGetValue(input, out var outputs))
+        {
+            return null;
+        }
+
+        var options = outputs.Where(o => IsProducible(o, codecs)).ToList();
+        return options.Count == 0 ? null : options;
+    }
+
     public bool IsProducible(FormatId output, ISystemCodecCapabilities? codecs)
     {
         var d = Get(output);
