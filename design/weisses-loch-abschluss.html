@@ -1,0 +1,537 @@
+<title>Abschluss im Universum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<style>
+/* Farben 1:1 aus dem Mischentwurf. Dunkel ist Vorgabe. */
+:root {
+  --bg: #0c0f11; --panel: #14181b; --panel2: #1a1f23; --tief: #0f1416;
+  --line: #262d32; --line-stark: #3a454b;
+  --ink: #e7ecee; --muted: #8b959c; --leise: #7f8a91;
+  --mint: #6fe0bf; --blue: #6ba7ff; --amber: #f2b45a; --violet: #b28cff; --coral: #f07a6a; --cyan: #4fc3e8; --model: #f08fd0;
+  --auf-mint: #08110e; --mint-rahmen: #2b5a4d; --mint-flaeche: #12201c;
+  --loch: #000000; --schatten: #000000a0;
+  --schrift: 'Geist', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+    --line: #dde1e4; --line-stark: #b6bec4;
+    --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+    --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+    --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+    --loch: #0b0f12; --schatten: #1a232a40;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #f4f5f6; --panel: #ffffff; --panel2: #eef0f2; --tief: #e7eaec;
+  --line: #dde1e4; --line-stark: #b6bec4;
+  --ink: #171c1f; --muted: #5a656c; --leise: #5b646a;
+  --mint: #0a6851; --blue: #1a53a8; --amber: #7a5104; --violet: #5b39a3; --coral: #9e3123; --cyan: #095c78; --model: #9a2f7d;
+  --auf-mint: #ffffff; --mint-rahmen: #93cfbd; --mint-flaeche: #e6f5f0;
+  --loch: #0b0f12; --schatten: #1a232a40;
+  color-scheme: light;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--schrift); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mint); outline-offset: 2px; }
+
+.seite { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 80px; display: grid; gap: 52px; }
+.kopf { display: grid; gap: 14px; }
+.augenbraue { font: 500 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--mint); }
+h1 { margin: 0; font-size: clamp(30px, 4.4vw, 44px); line-height: 1.08; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; max-width: 22ch; }
+h2 { margin: 0; font-size: 23px; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+.lead { margin: 0; max-width: 68ch; color: var(--muted); font-size: 17px; }
+.legende { display: flex; flex-wrap: wrap; gap: 8px 18px; font: 500 12.5px var(--mono); color: var(--muted); }
+.legende span { display: inline-flex; align-items: center; gap: 7px; }
+.legende i { width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
+
+.konzept { display: grid; gap: 16px; padding-top: 8px; border-top: 1px solid var(--line); }
+.k-titel { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.k-nr { font: 600 13px var(--mono); color: var(--mint); letter-spacing: .06em; }
+.k-kurz { color: var(--muted); font-size: 15px; }
+.empf { font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--auf-mint); background: var(--mint); border-radius: 6px; padding: 2px 8px; }
+
+.buehne { position: relative; height: 400px; border-radius: 14px; border: 1px solid var(--line-stark); overflow: hidden;
+  background: radial-gradient(700px 320px at 20% -20%, color-mix(in srgb, var(--mint) 7%, transparent), transparent 60%), var(--bg);
+  box-shadow: 0 30px 60px -40px var(--schatten); }
+.buehne canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.eingang { position: absolute; left: 18px; bottom: 14px; display: grid; gap: 1px; font-size: 12px; }
+.eingang small, .ziel-text small { font: 600 10px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.eingang b { font-size: 13px; font-weight: 600; }
+.ziel-text { position: absolute; right: 16px; bottom: 14px; width: min(300px, 46%); display: grid; gap: 2px; }
+.ziel-text b { font-size: 16px; font-weight: 600; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ziel-text .pfad { font: 10.5px var(--mono); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ort { justify-self: start; margin-top: 6px; border: 1px solid var(--line-stark); background: var(--panel); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.ort:hover { border-color: var(--mint-rahmen); }
+.nochmal { position: absolute; left: 14px; top: 12px; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 80%, transparent); border-radius: 8px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+.nochmal:hover { color: var(--ink); border-color: var(--line-stark); }
+
+.punkte { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.punkte > div { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; background: var(--panel); display: grid; gap: 4px; align-content: start; }
+.punkte small { font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--leise); }
+.punkte p { margin: 0; font-size: 13.5px; color: var(--muted); }
+@media (max-width: 760px) { .punkte { grid-template-columns: 1fr; } .ziel-text { width: 52%; } .ziel-text b { font-size: 14px; } }
+
+.fazit { display: grid; gap: 12px; }
+.fazit p { margin: 0; color: var(--muted); max-width: 72ch; }
+.fazit b { color: var(--ink); font-weight: 600; }
+@media (prefers-reduced-motion: reduce) { .nochmal { display: none; } }
+.steuer { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 10px 14px; border: 1px solid var(--line-stark); border-radius: 12px; background: color-mix(in srgb, var(--panel) 92%, transparent); backdrop-filter: blur(8px); }
+.steuer .gruppe { display: flex; align-items: center; gap: 8px; }
+.steuer .gruppe > span { font: 600 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--leise); }
+.seg { display: inline-flex; border: 1px solid var(--line-stark); border-radius: 9px; overflow: hidden; }
+.seg button { border: 0; background: transparent; padding: 5px 14px; font: 600 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.seg button + button { border-left: 1px solid var(--line-stark); }
+.seg button[aria-pressed="true"] { background: var(--mint-flaeche); color: var(--mint); }
+.seg button:hover:not([aria-pressed="true"]) { color: var(--ink); }
+.ergebnis { position: absolute; left: 18px; bottom: 14px; display: grid; gap: 2px; max-width: 46%; opacity: 0; transform: translateY(6px); transition: opacity .5s, transform .5s cubic-bezier(.2, .9, .25, 1); }
+.ergebnis.an { opacity: 1; transform: none; }
+.ergebnis b { font-size: 16px; font-weight: 600; }
+.ergebnis span { font: 11px var(--mono); color: var(--muted); }
+.ergebnis span.fehl { color: var(--coral); }
+.ergebnis .akt { display: flex; gap: 8px; margin-top: 6px; }
+.ergebnis .akt button { border: 1px solid var(--line-stark); background: var(--panel); border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+.ergebnis .akt button.haupt { border-color: var(--mint-rahmen); background: var(--mint-flaeche); color: var(--mint); }
+.eingang { transition: opacity .4s; }
+.eingang.weg { opacity: 0; }
+</style>
+
+<main class="seite">
+  <header class="kopf">
+    <span class="augenbraue">Schritt 3 · Abschluss</span>
+    <h1>Wenn die letzte Datei landet</h1>
+    <p class="lead">Fünf Abschlussanimationen für das weiße Loch mit gebündelten Bahnen. Jede Bühne zeigt die letzten Sekunden: Die letzte Datei landet, dann folgt der Abschluss, danach steht das Ergebnis mit „Ordner öffnen“ und „Neue Runde“. Alle Varianten dauern etwa drei Sekunden und enden im selben ruhigen Zustand: ein Häkchen im Kern, das Universum kreist weiter.</p>
+  </header>
+
+  <div class="steuer" role="group" aria-label="Beispiel einstellen">
+    <div class="gruppe"><span id="l-anzahl">Anzahl</span><div class="seg" id="anzahl" role="group" aria-labelledby="l-anzahl">
+      <button type="button" data-n="10" aria-pressed="true">10</button><button type="button" data-n="50" aria-pressed="false">50</button></div></div>
+    <div class="gruppe"><span id="l-fehler">Ergebnis</span><div class="seg" id="fehler" role="group" aria-labelledby="l-fehler">
+      <button type="button" data-f="0" aria-pressed="true">alles fertig</button><button type="button" data-f="1" aria-pressed="false">eine mit Fehler</button></div></div>
+  </div>
+
+  <section class="konzept" data-k="kollision">
+    <div class="k-titel"><span class="k-nr">1</span><h2>Verschmelzung</h2><span class="empf">Empfehlung</span><span class="k-kurz">Das schwarze Loch umkreist das weiße und verschmilzt mit ihm</span></div>
+    <div class="buehne"></div>
+    <div class="punkte">
+      <div><small>Ablauf</small><p>Der Wirbel erlischt, das schwarze Loch zieht in einer enger werdenden Spirale zum weißen. Beide umkreisen sich immer schneller, dann berühren sie sich.</p></div>
+      <div><small>Höhepunkt</small><p>Ein heller Blitz, drei flache Wellen laufen über die ganze Bühne, die Planeten werden kurz nach außen gedrückt und schwingen zurück.</p></div>
+      <div><small>Ende</small><p>Aus dem Kern wird ein Mint-Kreis mit Häkchen. Erzählt die Geschichte zu Ende: Eingang und Ausgang werden eins, die Arbeit ist getan.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="supernova">
+    <div class="k-titel"><span class="k-nr">2</span><h2>Aufblühen</h2><span class="k-kurz">Das weiße Loch holt Luft und explodiert in den Farben der Dateien</span></div>
+    <div class="buehne"></div>
+    <div class="punkte">
+      <div><small>Ablauf</small><p>Die Planeten stürzen in den Kern, er zieht sich zusammen. Das schwarze Loch links erlischt dabei leise.</p></div>
+      <div><small>Höhepunkt</small><p>Eine Explosion aus Funken in Blau, Violett, Amber und Cyan, anteilig wie im Auftrag. Eine Druckwelle läuft nach außen.</p></div>
+      <div><small>Ende</small><p>Die Planeten kehren auf ihre Bahnen zurück, das Häkchen erscheint. Der stärkste Effekt der fünf, wirkt wie ein kleines Feuerwerk.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="haken">
+    <div class="k-titel"><span class="k-nr">3</span><h2>Häkchen aus Planeten</h2><span class="k-kurz">Die Planeten verlassen ihre Bahnen und bilden ein Häkchen</span></div>
+    <div class="buehne"></div>
+    <div class="punkte">
+      <div><small>Ablauf</small><p>Alle Planeten gleiten gleichzeitig zu Punkten auf einem großen Häkchen, nach Dateiart sortiert. Bei 50 Dateien wird daraus eine dichte, farbige Linie.</p></div>
+      <div><small>Höhepunkt</small><p>Ein Lichtschein läuft einmal über das Häkchen. Bei einem Fehler fehlt an einer Stelle ein Punkt, dort sitzt ein korallener Ring.</p></div>
+      <div><small>Ende</small><p>Die Planeten schwärmen zurück, das Häkchen bleibt klein im Kern. Am deutlichsten lesbar, ohne Text versteht man „fertig“.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="bruecke">
+    <div class="k-titel"><span class="k-nr">4</span><h2>Das Wurmloch schließt sich</h2><span class="k-kurz">Eine Lichtbrücke verbindet beide Löcher, dann schließt sie sich</span></div>
+    <div class="buehne"></div>
+    <div class="punkte">
+      <div><small>Ablauf</small><p>Vom schwarzen zum weißen Loch spannt sich ein Lichtbogen, letzte Funken laufen hinüber. Das schwarze Loch schrumpft zu einem Punkt, der Bogen zieht sich zum weißen Loch zurück.</p></div>
+      <div><small>Höhepunkt</small><p>Weiche Wellen breiten sich vom weißen Loch aus, die Bahnen zittern kurz mit.</p></div>
+      <div><small>Ende</small><p>Häkchen im Kern. Die ruhigste Variante, gut für häufige Nutzung, weil sie sich nicht abnutzt.</p></div>
+    </div>
+  </section>
+
+  <section class="konzept" data-k="parade">
+    <div class="k-titel"><span class="k-nr">5</span><h2>Planetenparade</h2><span class="k-kurz">Alle Planeten stellen sich zu einer Leiste auf: 100 %</span></div>
+    <div class="buehne"></div>
+    <div class="punkte">
+      <div><small>Ablauf</small><p>Die Planeten reihen sich nach Dateiart sortiert auf einer Linie durch den Kern auf. Bei 50 Dateien entsteht eine durchgehende farbige Leiste.</p></div>
+      <div><small>Höhepunkt</small><p>Ein Lichtstreifen fährt einmal über die Leiste, darüber erscheint „100 %“ oder bei einem Fehler „90 %“ mit korallener Lücke.</p></div>
+      <div><small>Ende</small><p>Die Planeten schwingen zurück auf ihre Bahnen, Häkchen im Kern. Verbindet Universum und klassische Fortschrittsleiste.</p></div>
+    </div>
+  </section>
+
+  <section class="fazit">
+    <h2>Meine Empfehlung</h2>
+    <p><b>1, Verschmelzung.</b> Sie greift deine Idee der Kollision auf und schließt die Geschichte des ganzen Ablaufs: Das schwarze Loch nimmt auf, das weiße gibt aus, am Ende werden beide eins. Der Blitz ist kurz, die Wellen sind flach und leise, dadurch wirkt es hochwertig statt laut. Danach bleibt nur der Kern mit Häkchen, das ist auch der richtige Zustand für „Neue Runde“.</p>
+    <p><b>2, Aufblühen</b> ist die Wahl, wenn der Abschluss mehr feiern soll. Für alle fünf gilt bei „Animationen reduzieren“: kein Ablauf, sofort Häkchen und Ergebnis.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const ARTEN = ['bild', 'audio', 'video', 'dok'];
+  const FARBVAR = { bild: '--blue', audio: '--violet', video: '--amber', dok: '--cyan' };
+  const MIX = { 10: { bild: 6, audio: 2, video: 1, dok: 1 }, 50: { bild: 30, audio: 10, video: 5, dok: 5 } };
+  const TAU = Math.PI * 2, FL = .42;
+  const leise = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lerp = (a, b, t) => a + (b - a) * t, clamp = t => Math.max(0, Math.min(1, t));
+  const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const aus3 = t => 1 - Math.pow(1 - t, 3);
+  const phase = (f, a, b) => clamp((f - a) / (b - a));
+  const bump = (f, a, b) => { const u = phase(f, a, b); return Math.sin(Math.PI * u); };
+  const MONO = '"Geist Mono", ui-monospace, Consolas, monospace';
+
+  let zufall = 7;
+  const rnd = () => (zufall = (zufall * 16807) % 2147483647) / 2147483647;
+  function auftrag(n) {
+    const l = []; ARTEN.forEach(a => { for (let i = 0; i < MIX[n][a]; i++) l.push(a); });
+    zufall = 7 + n; for (let i = l.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [l[i], l[j]] = [l[j], l[i]]; }
+    return l;
+  }
+
+  const F = {};
+  function farben() {
+    const cs = getComputedStyle(document.documentElement), c = document.createElement('canvas').getContext('2d');
+    const norm = v => { c.fillStyle = '#000'; c.fillStyle = v.trim(); return c.fillStyle; };
+    ['bg', 'ink', 'muted', 'mint', 'violet', 'coral', 'line-stark', 'panel2', 'auf-mint'].forEach(k => F[k] = norm(cs.getPropertyValue('--' + k)));
+    ARTEN.forEach(a => F[a] = norm(cs.getPropertyValue(FARBVAR[a])));
+    const h = F.bg; F.dunkel = (parseInt(h.slice(1, 3), 16) * .3 + parseInt(h.slice(3, 5), 16) * .59 + parseInt(h.slice(5, 7), 16) * .11) < 128;
+  }
+  const rgba = (h, a) => `rgba(${parseInt(h.slice(1, 3), 16)},${parseInt(h.slice(3, 5), 16)},${parseInt(h.slice(5, 7), 16)},${a})`;
+  function glow(ctx, x, y, r, farbe, a) { if (r <= 0 || a <= 0) return; const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(farbe, a)); g.addColorStop(1, rgba(farbe, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  const hell = ctx => { ctx.globalCompositeOperation = F.dunkel ? 'lighter' : 'source-over'; };
+  const normal = ctx => { ctx.globalCompositeOperation = 'source-over'; };
+  function welle(ctx, x, y, r, a, c, fl = FL, lw = 1.6) { if (a <= 0 || r <= 0) return; ctx.globalAlpha = a; ctx.strokeStyle = c; ctx.lineWidth = lw; ctx.beginPath(); ctx.ellipse(x, y, r, r * fl, 0, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; }
+
+  /* ---------- Weißes Loch, Häkchen, schwarzes Loch ---------- */
+  function kern(ctx, x, y, t, s = 1, a = 1) {
+    if (a <= 0 || s <= 0) return;
+    const puls = 1 + .04 * Math.sin(t * 2.2);
+    ctx.globalAlpha = a; hell(ctx);
+    glow(ctx, x, y, 80 * puls * s, F.mint, F.dunkel ? .2 : .14);
+    glow(ctx, x, y, 26 * s, F.dunkel ? '#ffffff' : F.mint, F.dunkel ? .75 : .35);
+    ctx.strokeStyle = rgba(F.dunkel ? '#ffffff' : F.mint, F.dunkel ? .45 : .35); ctx.lineWidth = 1;
+    const L = 26 * s * puls; ctx.beginPath(); ctx.moveTo(x - L, y); ctx.lineTo(x + L, y); ctx.moveTo(x, y - L * .7); ctx.lineTo(x, y + L * .7); ctx.stroke();
+    normal(ctx);
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(x, y, 8.5 * s, 0, TAU); ctx.fill();
+    ctx.strokeStyle = F.mint; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 9.8 * s, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+    ctx.globalAlpha = 1;
+  }
+  // Mint-Kreis mit Häkchen; k = 0..1 (Kreis wächst, dann Haken zeichnen)
+  function haken(ctx, x, y, k, t) {
+    if (k <= 0) return;
+    const r = 15 * aus3(clamp(k / .45)), h = clamp((k - .4) / .6);
+    hell(ctx); glow(ctx, x, y, 60, F.mint, (F.dunkel ? .22 : .16) * (1 + .1 * Math.sin(t * 1.6))); normal(ctx);
+    ctx.fillStyle = F.mint; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    if (h > 0) {
+      const P = [[-6.5, .5], [-2, 5], [7, -5]], seg1 = .4;
+      ctx.strokeStyle = F['auf-mint']; ctx.lineWidth = 2.8; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); ctx.moveTo(x + P[0][0], y + P[0][1]);
+      if (h < seg1) ctx.lineTo(x + lerp(P[0][0], P[1][0], h / seg1), y + lerp(P[0][1], P[1][1], h / seg1));
+      else { ctx.lineTo(x + P[1][0], y + P[1][1]); const m = (h - seg1) / (1 - seg1); ctx.lineTo(x + lerp(P[1][0], P[2][0], m), y + lerp(P[1][1], P[2][1], m)); }
+      ctx.stroke(); ctx.lineCap = 'butt'; ctx.lineJoin = 'miter'; ctx.lineWidth = 1;
+    }
+  }
+  function schwarz(ctx, S, x, y, s = 1, ring = 1) {
+    if (s <= 0) return;
+    const r = 12 * s;
+    if (ring > 0) { ctx.globalAlpha = ring; ctx.setLineDash([2, 6]); ctx.strokeStyle = rgba(F['line-stark'], .6); ctx.beginPath(); ctx.ellipse(S.H.x, S.H.y, S.RAD + 18, (S.RAD + 18) * FL, 0, 0, TAU); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1; }
+    glow(ctx, x, y, r * 3.4, F.violet, .22); glow(ctx, x, y, r * 2, F.mint, .25);
+    ctx.fillStyle = F.dunkel ? '#000' : '#0b0f12'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(F.mint, .95); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(x, y, r + 1.2, 0, TAU); ctx.stroke(); ctx.lineWidth = 1;
+  }
+
+  /* ---------- Universum „Gebündelte Bahnen“ ---------- */
+  function universum(S) {
+    const N = S.N, B = Math.min(N, 10);
+    const kap = j => Math.floor(N / B) + (j < N % B ? 1 : 0);
+    const schritt = () => Math.min(12, (S.tw / 2 - 30) / Math.max(1, B - 1));
+    const rx = j => 24 + j * schritt();
+    const winkel = (k, t) => { const j = k % B, p = Math.floor(k / B); return j * 2.39 + p / kap(j) * TAU + t * .9 * Math.pow(24 / rx(j), 1.5); };
+    const g = N <= 10 ? 2.8 : 2;
+    const U = {
+      B, rx, g, aussen: () => rx(B - 1),
+      pos(k, t, skal = 1) { const j = k % B, w = winkel(k, t), r = rx(j) * skal; return { x: S.T.x + Math.cos(w) * r, y: S.T.y + Math.sin(w) * r * FL, w, r }; },
+      bahnen(ctx, a, skal = 1) {
+        if (a <= 0) return;
+        for (let j = 0; j < B; j++) {
+          const auf = S.slots.filter((s, k) => k % B === j && s.fertig);
+          ctx.globalAlpha = a;
+          if (auf.length) { ctx.strokeStyle = N <= 10 ? rgba(F[auf[0].art], .38) : rgba(F.mint, .12 + .25 * auf.length / kap(j)); ctx.lineWidth = 1.2; ctx.setLineDash([]); }
+          else { ctx.strokeStyle = rgba(F['line-stark'], .75); ctx.setLineDash([2, 5]); ctx.lineWidth = 1; }
+          ctx.beginPath(); ctx.ellipse(S.T.x, S.T.y, rx(j) * skal, rx(j) * skal * FL, 0, 0, TAU); ctx.stroke();
+        }
+        ctx.setLineDash([]); ctx.lineWidth = 1; ctx.globalAlpha = 1;
+      },
+      // Planet mit Schweif; wird die Lage überschrieben (q), dann ohne Schweif
+      planet(ctx, k, t, q, a = 1, skal = 1) {
+        const s = S.slots[k], c = s.fehl ? F.coral : F[s.art];
+        if (s.fehl) { const p = q || U.pos(k, t, skal); ctx.globalAlpha = a * (.6 + .4 * Math.sin(t * 3)); ctx.strokeStyle = c; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.arc(p.x, p.y, g + 1.5, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1; return; }
+        if (!q) {
+          const p = U.pos(k, t, skal);
+          for (let i = 8; i >= 1; i--) { const ww = p.w - i * .07; ctx.globalAlpha = a * .38 * (1 - i / 9); ctx.fillStyle = c; ctx.beginPath(); ctx.arc(S.T.x + Math.cos(ww) * p.r, S.T.y + Math.sin(ww) * p.r * FL, g * (1 - i / 12), 0, TAU); ctx.fill(); }
+          q = p;
+        }
+        ctx.globalAlpha = a; hell(ctx); glow(ctx, q.x, q.y, g * 4, c, .5); normal(ctx);
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(q.x, q.y, g, 0, TAU); ctx.fill(); ctx.globalAlpha = 1;
+      }
+    };
+    return U;
+  }
+  function sternfeld(S) {
+    const st = Array.from({ length: 80 }, () => ({ w: Math.random() * TAU, r: Math.sqrt(Math.random()), a: Math.random(), f: .5 + Math.random() * 1.5, s: Math.random() < .15 ? 1.6 : 1 }));
+    return (ctx, t, hellig = 1) => {
+      st.forEach(p => {
+        const x = S.T.x + Math.cos(p.w) * p.r * (S.tw / 2 + 6), y = S.T.y + Math.sin(p.w) * p.r * 104;
+        ctx.globalAlpha = (.25 + .5 * (.5 + .5 * Math.sin(t * p.f + p.a * 9))) * (F.dunkel ? 1 : .7) * hellig;
+        ctx.fillStyle = F.dunkel ? '#dfe9ef' : F.muted; ctx.fillRect(x, y, p.s, p.s);
+      });
+      ctx.globalAlpha = 1;
+    };
+  }
+  function zaehler(ctx, x, y, n, N, a = 1) {
+    if (a <= 0) return; ctx.globalAlpha = a; ctx.textBaseline = 'middle';
+    ctx.font = `600 15px ${MONO}`; const w1 = ctx.measureText(String(n)).width;
+    ctx.font = `500 11px ${MONO}`; const w2 = ctx.measureText(' von ' + N).width;
+    const x0 = x - (w1 + w2) / 2;
+    ctx.fillStyle = F.ink; ctx.font = `600 15px ${MONO}`; ctx.fillText(String(n), x0, y);
+    ctx.fillStyle = F.muted; ctx.font = `500 11px ${MONO}`; ctx.fillText(' von ' + N, x0 + w1, y + 1);
+    ctx.textBaseline = 'alphabetic'; ctx.globalAlpha = 1;
+  }
+
+  /* ---------- Abschlüsse. f = Sekunden seit der letzten Landung ---------- */
+  // Jeder Abschluss malt Universum, beide Löcher und Häkchen selbst; D = Dauer bis Ergebnis
+  const ENDE = {
+    kollision: { D: 3.3, malen(ctx, S, U, f, t) {
+      const { x, y } = S.T, dx = S.H.x - x, dy = S.H.y - y, r0 = Math.hypot(dx, dy), a0 = Math.atan2(dy / .55, dx);
+      const u = ease(phase(f, 0, 1.7)), rr = r0 * Math.pow(1 - u, 1.8), w = a0 + u * u * u * TAU * 1.5;
+      const stoss = bump(f, 1.7, 2.6);
+      S.feld(ctx, t, 1);
+      U.bahnen(ctx, 1 - .5 * bump(f, 1.2, 2.4), 1 + .25 * stoss);
+      // Kerne umkreisen sich; das weiße Loch weicht ein wenig aus
+      const kx = f < 1.7 ? x - Math.cos(w) * rr * .12 : x, ky = f < 1.7 ? y - Math.sin(w) * rr * .55 * .12 : y;
+      S.slots.forEach((s, k) => U.planet(ctx, k, t, null, 1 - .35 * bump(f, .8, 2.4), 1 + .25 * stoss));
+      if (f < 1.7) { kern(ctx, kx, ky, t, 1 + .2 * u); schwarz(ctx, S, x + Math.cos(w) * rr, y + Math.sin(w) * rr * .55, 1 - .35 * u, 1 - phase(f, 0, .5)); }
+      if (f >= 1.7) {
+        hell(ctx); glow(ctx, x, y, 120, F.dunkel ? '#ffffff' : F.mint, .42 * clamp(1 - (f - 1.7) / .6)); normal(ctx);
+        for (let i = 0; i < 3; i++) { const e = phase(f, 1.7 + i * .16, 3.0 + i * .16); welle(ctx, x, y, 12 + aus3(e) * (S.w * .5), (1 - e) * .45, i ? F.mint : (F.dunkel ? '#ffffff' : F.mint), FL, 1.6 - i * .3); }
+        kern(ctx, x, y, t, 1.2 * (1 - phase(f, 1.7, 2.3)), 1 - phase(f, 1.9, 2.3));
+      }
+      haken(ctx, x, y, phase(f, 2.1, 3.1), t);
+      zaehler(ctx, x, y + U.aussen() * FL + 22, S.fertig, S.N, 1 - phase(f, 0, .6) + phase(f, 2.6, 3.2));
+    } },
+    supernova: { D: 3.5, malen(ctx, S, U, f, t) {
+      const { x, y } = S.T, ein = ease(phase(f, 0, .9)), aus = aus3(phase(f, 1.35, 2.5));
+      const skal = f < 1 ? 1 - .88 * ein : .12 + .88 * aus;
+      S.feld(ctx, t, 1 - .6 * bump(f, 0, 1.2));
+      U.bahnen(ctx, f < 1 ? 1 - ein : aus, 1);
+      schwarz(ctx, S, S.H.x, S.H.y, 1 - phase(f, 0, .8), 1 - phase(f, 0, .5));
+      S.slots.forEach((s, k) => U.planet(ctx, k, t * (1 + 2 * ein * (f < 1)), null, f < .95 || f > 1.3 ? 1 : 0, skal));
+      if (f < 1) kern(ctx, x, y, t, 1 - .4 * ein);
+      if (f >= .95) {
+        const e = phase(f, .95, 2.4);
+        hell(ctx); glow(ctx, x, y, 200 * aus3(phase(f, .95, 1.3)), F.dunkel ? '#ffffff' : F.mint, .6 * (1 - phase(f, 1, 1.8)));
+        S.funken.forEach(p => { const r = p.r * aus3(e) * (S.tw / 2 + 30), a = (1 - e) * .95; if (a <= 0) return; ctx.globalAlpha = a; ctx.fillStyle = p.c; const px = x + Math.cos(p.w) * r, py = y + Math.sin(p.w) * r * .6; ctx.fillRect(px - 1.2, py - 1.2, 2.4, 2.4);
+          const r2 = r * .85; ctx.strokeStyle = p.c; ctx.lineWidth = 1; ctx.globalAlpha = a * .4; ctx.beginPath(); ctx.moveTo(x + Math.cos(p.w) * r2, y + Math.sin(p.w) * r2 * .6); ctx.lineTo(px, py); ctx.stroke(); });
+        ctx.globalAlpha = 1; normal(ctx);
+        welle(ctx, x, y, 10 + aus3(phase(f, .95, 2.2)) * S.w * .45, (1 - phase(f, .95, 2.2)) * .6, F.mint, .6, 1.6);
+      }
+      haken(ctx, x, y, phase(f, 1.9, 2.9), t);
+      zaehler(ctx, x, y + U.aussen() * FL + 22, S.fertig, S.N, 1 - phase(f, 0, .4) + phase(f, 2.5, 3.1));
+    } },
+    haken: { D: 3.9, malen(ctx, S, U, f, t) {
+      const { x, y } = S.T, n = S.N;
+      // Häkchenpfad um den Kern
+      const sk = Math.min(1.25, S.tw / 260), A = { x: x - 70 * sk, y: y - 2 * sk }, M = { x: x - 22 * sk, y: y + 42 * sk }, E = { x: x + 78 * sk, y: y - 58 * sk };
+      const l1 = Math.hypot(M.x - A.x, M.y - A.y), l2 = Math.hypot(E.x - M.x, E.y - M.y);
+      const punkt = u => { const s = u * (l1 + l2); return s < l1 ? { x: lerp(A.x, M.x, s / l1), y: lerp(A.y, M.y, s / l1) } : { x: lerp(M.x, E.x, (s - l1) / l2), y: lerp(M.y, E.y, (s - l1) / l2) }; };
+      const hin = k => ease(phase(f, .1 + S.ordnung[k] / n * .5, 1.1 + S.ordnung[k] / n * .5)), zur = k => ease(phase(f, 2.5 + S.ordnung[k] / n * .3, 3.4 + S.ordnung[k] / n * .3));
+      S.feld(ctx, t, 1);
+      U.bahnen(ctx, 1 - .8 * bump(f, 0, 3.6));
+      schwarz(ctx, S, S.H.x, S.H.y, 1 - phase(f, 0, .8), 1 - phase(f, 0, .5));
+      kern(ctx, x, y, t, 1, 1 - .75 * bump(f, 0, 3.0));
+      // Grundlinie und Lichtschein
+      const zug = phase(f, .6, 1.5), schein = phase(f, 1.5, 2.3), weg = phase(f, 2.4, 2.9);
+      if (zug > 0 && weg < 1) {
+        ctx.globalAlpha = .35 * (1 - weg); ctx.strokeStyle = F.mint; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(A.x, A.y);
+        const e = punkt(zug); if (zug * (l1 + l2) > l1) ctx.lineTo(M.x, M.y); ctx.lineTo(e.x, e.y); ctx.stroke(); ctx.globalAlpha = 1; ctx.lineWidth = 1;
+        if (schein > 0 && schein < 1) { const q = punkt(schein); hell(ctx); glow(ctx, q.x, q.y, 34, F.dunkel ? '#ffffff' : F.mint, .55); normal(ctx); }
+      }
+      S.slots.forEach((s, k) => {
+        const u = hin(k) - zur(k);
+        if (u <= 0) { U.planet(ctx, k, t); return; }
+        const b = U.pos(k, t), z = punkt(S.ordnung[k] / Math.max(1, n - 1)), q = { x: lerp(b.x, z.x, u), y: lerp(b.y, z.y, u) };
+        const nah = schein > 0 && schein < 1 ? Math.max(0, 1 - Math.abs(S.ordnung[k] / (n - 1) - schein) * 6) : 0;
+        if (nah) { hell(ctx); glow(ctx, q.x, q.y, 14, F[s.art], .6 * nah); normal(ctx); }
+        U.planet(ctx, k, t, q);
+      });
+      haken(ctx, x, y, phase(f, 2.8, 3.7), t);
+      zaehler(ctx, x, y + U.aussen() * FL + 22, S.fertig, S.N, 1 - phase(f, 0, .4) + phase(f, 3.0, 3.6));
+    } },
+    bruecke: { D: 3.3, malen(ctx, S, U, f, t) {
+      const { x, y } = S.T, H = S.H, C = { x: (H.x + x) / 2, y: Math.min(H.y, y) - 90 };
+      const bez = u => ({ x: (1 - u) * (1 - u) * H.x + 2 * (1 - u) * u * C.x + u * u * x, y: (1 - u) * (1 - u) * H.y + 2 * (1 - u) * u * C.y + u * u * y });
+      const auf = aus3(phase(f, 0, .8)), zu = ease(phase(f, 1.0, 1.7));
+      const wellen = [0, 1, 2, 3].map(i => phase(f, 1.6 + i * .18, 3.0 + i * .18));
+      const zittern = wellen.reduce((s, e) => s + (e > 0 && e < 1 ? Math.sin(e * Math.PI) * .035 : 0), 0);
+      S.feld(ctx, t, 1);
+      U.bahnen(ctx, 1, 1 + zittern);
+      S.slots.forEach((s, k) => U.planet(ctx, k, t, null, 1, 1 + zittern));
+      // Brücke von zu..auf
+      if (auf > zu) {
+        const g = ctx.createLinearGradient(H.x, H.y, x, y); g.addColorStop(0, rgba(F.violet, .7)); g.addColorStop(1, rgba(F.mint, .8));
+        ctx.strokeStyle = g; ctx.lineWidth = 2; hell(ctx);
+        ctx.beginPath(); for (let i = 0; i <= 40; i++) { const u = lerp(zu, auf, i / 40), q = bez(u); i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y); } ctx.stroke();
+        for (let i = 0; i < 14; i++) { const u = ((t * .8 + i / 14) % 1); if (u < zu || u > auf) continue; const q = bez(u); glow(ctx, q.x, q.y, 6, i % 2 ? F.mint : F.violet, .7); }
+        normal(ctx); ctx.lineWidth = 1;
+      }
+      schwarz(ctx, S, H.x, H.y, 1 - ease(phase(f, .9, 1.5)), 1 - phase(f, 0, .6));
+      if (f > 1.4 && f < 1.9) { hell(ctx); glow(ctx, H.x, H.y, 40, F.violet, .5 * bump(f, 1.4, 1.9)); normal(ctx); }
+      wellen.forEach((e, i) => welle(ctx, x, y, 14 + aus3(e) * S.w * .5, (1 - e) * .4 * (e > 0), i % 2 ? F.mint : (F.dunkel ? '#ffffff' : F.mint), .5, 1.4));
+      kern(ctx, x, y, t, 1 + .15 * bump(f, 1.5, 2.2), 1 - phase(f, 2.0, 2.4));
+      haken(ctx, x, y, phase(f, 2.1, 3.1), t);
+      zaehler(ctx, x, y + U.aussen() * FL + 22, S.fertig, S.N, 1 - phase(f, 0, .4) + phase(f, 2.6, 3.2));
+    } },
+    parade: { D: 3.8, malen(ctx, S, U, f, t) {
+      const { x, y } = S.T, n = S.N, breit = S.tw - 30, x0 = x - breit / 2;
+      const hin = k => ease(phase(f, .05 + S.ordnung[k] / n * .35, .95 + S.ordnung[k] / n * .35)), zur = k => ease(phase(f, 2.4 + S.ordnung[k] / n * .3, 3.3 + S.ordnung[k] / n * .3));
+      const platz = k => ({ x: x0 + (S.ordnung[k] + .5) / n * breit, y });
+      const lauf = phase(f, 1.35, 2.05), da = clamp(phase(f, 1.2, 1.5)) * (1 - phase(f, 2.3, 2.6));
+      S.feld(ctx, t, 1);
+      U.bahnen(ctx, 1 - .85 * bump(f, 0, 3.6));
+      schwarz(ctx, S, S.H.x, S.H.y, 1 - phase(f, 0, .8), 1 - phase(f, 0, .5));
+      kern(ctx, x, y, t, 1, 1 - .85 * bump(f, 0, 3.0));
+      // Schiene und Prozent
+      if (da > 0) {
+        ctx.globalAlpha = da * .5; ctx.strokeStyle = F['line-stark']; ctx.beginPath(); ctx.moveTo(x0, y + 10); ctx.lineTo(x0 + breit, y + 10); ctx.stroke();
+        ctx.globalAlpha = da; ctx.fillStyle = S.fehler ? F.coral : F.mint; ctx.font = `600 22px ${MONO}`; ctx.textAlign = 'center';
+        ctx.fillText(Math.round(S.fertig / n * 100 * aus3(lauf)) + ' %', x, y - 22); ctx.textAlign = 'start'; ctx.globalAlpha = 1;
+        if (lauf > 0 && lauf < 1) { hell(ctx); glow(ctx, x0 + lauf * breit, y, 40, F.dunkel ? '#ffffff' : F.mint, .5); normal(ctx); }
+      }
+      S.slots.forEach((s, k) => {
+        const u = hin(k) - zur(k);
+        if (u <= 0) { U.planet(ctx, k, t); return; }
+        const b = U.pos(k, t), z = platz(k), q = { x: lerp(b.x, z.x, u), y: lerp(b.y, z.y, u) };
+        if (n > 20 && u > .95 && !s.fehl) { ctx.fillStyle = F[s.art]; ctx.fillRect(q.x - breit / n / 2, q.y - 3, breit / n + .6, 6); if (lauf > 0 && Math.abs(q.x - (x0 + lauf * breit)) < 30) { hell(ctx); glow(ctx, q.x, q.y, 10, F[s.art], .5); normal(ctx); } }
+        else U.planet(ctx, k, t, q);
+      });
+      haken(ctx, x, y, phase(f, 2.8, 3.7), t);
+      zaehler(ctx, x, y + U.aussen() * FL + 22, S.fertig, S.N, 1 - phase(f, 0, .4) + phase(f, 3.0, 3.6));
+    } }
+  };
+
+  /* ---------- Bühne ---------- */
+  let ANZ = 10, FEHLER = false;
+  const VOR = 1.7, RUHE = 3.6;
+  function buehne(el, art) {
+    el.innerHTML = `<canvas role="img" aria-label="Animation: Die letzte Datei landet im weißen Loch, danach folgt die Abschlussanimation"></canvas>
+      <button type="button" class="nochmal">Nochmal abspielen</button>
+      <div class="eingang"><small>Eingang</small><b class="ein-zahl"></b></div>
+      <div class="ergebnis" aria-live="polite"><b class="e-titel"></b><span class="e-zeile"></span><div class="akt"><button type="button" class="haupt">Ordner öffnen</button><button type="button">Neue Runde</button></div></div>
+      <div class="ziel-text"><small>Hierhin speichern</small><b>Neben dem Original</b><span class="pfad">jede Datei in ihren Ordner</span>
+        <button type="button" class="ort">Speicherort ändern ▾</button></div>`;
+    const cv = el.querySelector('canvas'), ctx = cv.getContext('2d'), E = ENDE[art];
+    const S = { w: 0, h: 0 };
+    let U, t0 = 0, zustand = '';
+    const erg = el.querySelector('.ergebnis'), eingang = el.querySelector('.eingang'), einZahl = el.querySelector('.ein-zahl');
+    function aufbauen(vorlauf) {
+      S.N = ANZ; S.fehler = FEHLER;
+      const l = auftrag(ANZ);
+      const fk = FEHLER ? l.indexOf('video') : -1;
+      S.slots = l.map((a, k) => ({ art: a, fertig: k !== fk && k !== ANZ - 1, fehl: k === fk }));
+      S.letzte = ANZ - 1 === fk ? ANZ - 2 : ANZ - 1; S.slots[S.letzte].fertig = false;
+      S.fertig = S.slots.filter(s => !s.fehl).length;
+      // Reihenfolge für Häkchen und Leiste: nach Dateiart
+      const sort = l.map((a, k) => k).sort((i, j) => ARTEN.indexOf(l[i]) - ARTEN.indexOf(l[j]) || i - j);
+      S.ordnung = []; sort.forEach((k, o) => S.ordnung[k] = o);
+      S.funken = Array.from({ length: 220 }, (_, i) => { const a = l[Math.floor(Math.random() * l.length)]; return { w: Math.random() * TAU, r: .35 + Math.random() * .75, c: F[a] }; });
+      S.P = Array.from({ length: 64 }, () => ({ gx: Math.random(), gy: Math.random(), r1: Math.random(), r2: Math.random(), r3: Math.random(), px: null, py: null }));
+      U = universum(S);
+      S.feld = sternfeld(S);
+      t0 = performance.now() / 1000 - (leise ? 99 : vorlauf);
+      zustand = '';
+      const vor = ANZ * 19.7, nach = ANZ * 9.5, mb = v => v.toLocaleString('de-DE', { maximumFractionDigits: 1 });
+      el.querySelector('.e-titel').textContent = FEHLER ? `${S.fertig} von ${ANZ} umgewandelt` : `Alle ${ANZ} Dateien umgewandelt`;
+      const z = el.querySelector('.e-zeile'); z.className = 'e-zeile' + (FEHLER ? ' fehl' : '');
+      z.textContent = FEHLER ? 'Urlaub_Clip.mov: Datei beschädigt, liegt wieder im Eingang' : `${mb(vor)} MB → ${mb(nach)} MB · ${Math.round((1 - nach / vor) * 100)} % kleiner`;
+    }
+    function groesse() {
+      const w = el.clientWidth, h = el.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+      if (!w) return;
+      S.w = w; S.h = h; cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      S.tw = Math.min(320, w * .48);
+      S.T = { x: w - 16 - S.tw / 2, y: 140 };
+      S.H = { x: Math.max(110, Math.min(w * .34, S.T.x - S.tw / 2 - 64)), y: h * .5 - 20 };
+      S.RAD = Math.max(40, Math.min(80, (S.H.x - 60) * .7));
+    }
+    new ResizeObserver(groesse).observe(el);
+    aufbauen(0);
+    el.querySelector('.nochmal').addEventListener('click', () => aufbauen(0));
+
+    function malen(T) {
+      if (!S.w) return;
+      let t = T - t0;
+      if (t > VOR + E.D + RUHE && !leise) { aufbauen(0); t = 0; }
+      if (leise) t = VOR + E.D + 1;
+      ctx.clearRect(0, 0, S.w, S.h);
+      const f = t - VOR;
+      glow(ctx, S.H.x, S.H.y, S.RAD + 50, F.violet, .08 * (1 - clamp(f / .8)));
+      if (f < 0) {
+        // letzte Datei: kreist noch kurz, fliegt dann zu ihrem Platz
+        S.feld(ctx, t, 1); U.bahnen(ctx, 1);
+        S.slots.forEach((s, k) => { if (s.fertig || s.fehl) U.planet(ctx, k, t); else if (k !== S.letzte) { const p = U.pos(k, t); ctx.fillStyle = rgba(F['line-stark'], .95); ctx.beginPath(); ctx.arc(p.x, p.y, 1.4, 0, TAU); ctx.fill(); } });
+        kern(ctx, S.T.x, S.T.y, t);
+        schwarz(ctx, S, S.H.x, S.H.y);
+        const c = F[S.slots[S.letzte].art], aus = clamp((t - .7) / (VOR - .7)), z = U.pos(S.letzte, t);
+        ctx.fillStyle = c; ctx.strokeStyle = rgba(c, .3);
+        S.P.forEach(p => {
+          const w = p.r1 * TAU + (t + 2) * (.6 + 1.6 * (1 - p.r2)), rad = 16 + p.r2 * S.RAD;
+          let px = S.H.x + Math.cos(w) * rad, py = S.H.y + Math.sin(w) * rad * FL + (p.r3 - .5) * 10;
+          if (aus > 0) { const e = ease(aus); px = lerp(px, z.x + (p.r1 - .5) * 4, e); py = lerp(py, z.y + (p.r2 - .5) * 4, e); }
+          if (p.px != null) { const dx = px - p.px, dy = py - p.py, dd = dx * dx + dy * dy; if (dd > 6 && dd < 4000) { ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(px, py); ctx.stroke(); } }
+          ctx.fillRect(px - 1, py - 1, 2, 2); p.px = px; p.py = py;
+        });
+        ctx.lineWidth = 1;
+        zaehler(ctx, S.T.x, S.T.y + U.aussen() * FL + 22, S.fertig - 1, S.N);
+      } else {
+        S.slots[S.letzte].fertig = true;
+        E.malen(ctx, S, U, f, t);
+      }
+      const z = f < 0 ? 'lauf' : f < E.D - .3 ? 'ende' : 'fertig';
+      if (z !== zustand) {
+        zustand = z;
+        if (z === 'lauf') { S.slots[S.letzte].fertig = false; S.P.forEach(p => p.px = null); einZahl.textContent = '1 im Wirbel'; }
+        eingang.classList.toggle('weg', z === 'fertig');
+        erg.classList.toggle('an', z === 'fertig');
+        if (z === 'ende') einZahl.textContent = FEHLER ? '1 Datei zurück im Eingang' : 'alles umgewandelt';
+      }
+    }
+    return { malen, sichtbar: false, el, aufbauen };
+  }
+
+  farben();
+  const B = [...document.querySelectorAll('.konzept')].map(k => buehne(k.querySelector('.buehne'), k.dataset.k));
+  function steuer(id, attr, setzen) {
+    const g = document.getElementById(id);
+    g.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      g.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+      setzen(b.dataset[attr]); B.forEach(x => x.aufbauen(0));
+    });
+  }
+  steuer('anzahl', 'n', v => { ANZ = +v; });
+  steuer('fehler', 'f', v => { FEHLER = v === '1'; });
+  const io = new IntersectionObserver(es => es.forEach(e => { const b = B.find(x => x.el === e.target); if (b) b.sichtbar = e.isIntersecting; }));
+  B.forEach(b => io.observe(b.el));
+  const neuFarben = () => { farben(); B.forEach(b => b.aufbauen(0)); };
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', neuFarben);
+  new MutationObserver(neuFarben).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  function schleife(ms) { const T = ms / 1000; B.forEach(b => { if (b.sichtbar) b.malen(T); }); requestAnimationFrame(schleife); }
+  requestAnimationFrame(schleife);
+})();
+</script>
