@@ -247,13 +247,28 @@
     <Setter Property="MinWidth" Value="0" />
   </Style>
 
-  <!-- .w5-menue -->
+  <!-- .w5-menue: 300 wide, panel, line-stark, radius 13, padding 8. The shadow is the flyout's own system shadow
+      , which WinUI drops in high contrast. -->
   <Style x:Key="KvMenuFlyoutPresenterStyle" TargetType="FlyoutPresenter">
     <Setter Property="Background" Value="{ThemeResource KvPanelBrush}" />
     <Setter Property="BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="13" />
     <Setter Property="Padding" Value="8" />
+    <Setter Property="MinWidth" Value="300" />
+    <Setter Property="MaxWidth" Value="300" />
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+  </Style>
+
+  <!-- .w5-menue h6 / small: the head of a menu -->
+  <Style x:Key="KvMenuTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvRowTextStyle}" />
+  <Style x:Key="KvMenuSubTextStyle" TargetType="TextBlock" BasedOn="{StaticResource KvMonoTextStyle}" />
+
+  <!-- .w5-menue hr -->
+  <Style x:Key="KvMenuSeparatorStyle" TargetType="Rectangle">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Margin" Value="2,4" />
+    <Setter Property="Fill" Value="{ThemeResource KvLineBrush}" />
   </Style>
 
   <!-- ============================ Surfaces (2.1 b) ============================ -->
@@ -465,6 +480,14 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <!-- .w5-akt.haupt: the small mint outline button (padding 9,5, 11.5 / Medium, radius 8) -->
+  <Style x:Key="KvSmallOutlineMintButtonStyle" TargetType="Button" BasedOn="{StaticResource KvOutlineMintButtonStyle}">
+    <Setter Property="Padding" Value="9,5" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="FontWeight" Value="Medium" />
   </Style>
 
   <!-- .taste: the primary (mint) button with its 4 px socket in dark mint (1.5). The face lifts 1 px on hover and

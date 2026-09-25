@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Step 3 "Umwandeln" (docs/entwuerfe/schritt-3-umwandeln.md). Pure XAML: left the inbox, in the middle
-     SwirlHost with the running files, right the result and the output location, below the list and the bar.
-     SwirlHost is the empty surface the drawing layer (pixel swirl, white hole) is hung into later (ADR-018);
-     the cards inside it stay above it. Colours only from Themes/KvertisColors.xaml. -->
+<!-- Step 3 "Umwandeln" after the mixed draft (design/oberflaeche-mischentwurf.html, .w5-*): a 300 px stage over the
+     full width (SwirlHost: inbox stack left, swirl in the middle, white hole right) with the inbox line bottom left
+     and the output location bottom right lying on it, below it the list of the round with fixed columns and the
+     bottom bar. Below 900 px the two stage blocks stack under the stage and the list scrolls sideways
+     (code-behind, ApplyLayout). Colours only from Themes/KvertisColors.xaml. -->
 <Page
   x:Class="Kvertis.App.Views.ConvertPage"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -14,456 +15,725 @@
 
   <Page.Resources>
 
-    <!-- Left: one waiting (or failed) file -->
-    <DataTemplate x:Key="InboxRowTemplate" x:DataType="convert:ConvertRowViewModel">
-      <Grid
-        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-        ColumnSpacing="8"
-        Padding="0,4">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Ellipse
-          Width="10"
-          Height="10"
-          VerticalAlignment="Center"
-          Fill="{x:Bind helpers:Ui.Brush(ColorBrushKey)}" />
-        <TextBlock
-          Grid.Column="1"
-          VerticalAlignment="Center"
-          Style="{StaticResource BodyTextBlockStyle}"
-          Text="{x:Bind FileName}"
-          TextTrimming="CharacterEllipsis" />
-        <TextBlock
-          Grid.Column="2"
-          VerticalAlignment="Center"
-          Style="{StaticResource SecondaryCaptionTextStyle}"
-          Text="{x:Bind StateText, Mode=OneWay}" />
-      </Grid>
+    <!-- .w5-opt small: the second line of a menu option -->
+    <Style
+      x:Key="OptionDetailTextStyle"
+      BasedOn="{StaticResource KvMonoTextStyle}"
+      TargetType="TextBlock">
+      <Setter Property="FontWeight" Value="Normal" />
+    </Style>
+
+    <!-- .w5-ein small / .w5-grund: the coral small line -->
+    <Style
+      x:Key="CoralSmallTextStyle"
+      BasedOn="{StaticResource KvTextBaseStyle}"
+      TargetType="TextBlock">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{ThemeResource KvErrorBrush}" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="TextTrimming" Value="None" />
+    </Style>
+
+    <!-- .w5-aendern: "Speicherort ändern" (panel, line-stark, radius 8, 4/10, 12 SemiBold) -->
+    <Style x:Key="LocationChangeButtonStyle" TargetType="DropDownButton">
+      <Setter Property="Background" Value="{ThemeResource KvPanelBrush}" />
+      <Setter Property="BorderBrush" Value="{ThemeResource KvLineStrongBrush}" />
+      <Setter Property="CornerRadius" Value="8" />
+      <Setter Property="Padding" Value="10,4,8,4" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Skipped files and the like: one coral line each (.w5-ein small) -->
+    <DataTemplate x:Key="CoralLineTemplate" x:DataType="x:String">
+      <TextBlock Style="{StaticResource CoralSmallTextStyle}" Text="{x:Bind}" />
     </DataTemplate>
 
-    <!-- Right: a finished file -->
-    <DataTemplate x:Key="DoneRowTemplate" x:DataType="convert:ConvertRowViewModel">
-      <Grid
-        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-        ColumnSpacing="8"
-        Padding="0,4">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <FontIcon
-          FontSize="12"
-          Foreground="{ThemeResource KvMintBrush}"
-          Glyph="&#xE73E;" />
-        <TextBlock
-          Grid.Column="1"
-          Style="{StaticResource BodyTextBlockStyle}"
-          Text="{x:Bind TargetFileName, Mode=OneWay}"
-          TextTrimming="CharacterEllipsis" />
-      </Grid>
-    </DataTemplate>
-
-    <!-- The list at the bottom: one line per file of the plan -->
-    <DataTemplate x:Key="ListRowTemplate" x:DataType="convert:ConvertRowViewModel">
-      <Grid
-        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
-        BorderBrush="{ThemeResource KvLineBrush}"
-        BorderThickness="0,0,0,1"
-        ColumnSpacing="12"
-        Padding="0,10">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="2*" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="3*" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <Ellipse
-          Width="10"
-          Height="10"
-          VerticalAlignment="Center"
-          Fill="{x:Bind helpers:Ui.Brush(ColorBrushKey)}" />
-
-        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-          <TextBlock
-            Style="{StaticResource BodyStrongTextBlockStyle}"
-            Text="{x:Bind FileName}"
-            TextTrimming="CharacterEllipsis" />
-          <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind SizesText, Mode=OneWay}" />
-        </StackPanel>
-
-        <Border
-          Grid.Column="2"
-          Padding="6,1"
-          VerticalAlignment="Center"
-          BorderBrush="{ThemeResource KvLineStrongBrush}"
-          BorderThickness="1"
-          CornerRadius="4">
-          <TextBlock Style="{StaticResource CaptionTextBlockStyle}" Text="{x:Bind FormatsText}" />
-        </Border>
-
-        <StackPanel
-          Grid.Column="3"
-          VerticalAlignment="Center"
-          ToolTipService.ToolTip="{x:Bind FullPath, Mode=OneWay}">
-          <TextBlock
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind TargetDirectoryText, Mode=OneWay}"
-            TextTrimming="CharacterEllipsis"
-            TextWrapping="NoWrap" />
-          <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock
-              Style="{StaticResource BodyStrongTextBlockStyle}"
-              Text="{x:Bind TargetFileName, Mode=OneWay}"
-              TextTrimming="CharacterEllipsis"
-              Visibility="{x:Bind helpers:Ui.Show(ShowPath), Mode=OneWay}" />
-            <TextBlock
-              Style="{StaticResource SecondaryCaptionTextStyle}"
-              Text="{x:Bind TargetMarkText, Mode=OneWay}" />
-          </StackPanel>
-        </StackPanel>
-
-        <StackPanel
-          Grid.Column="4"
-          VerticalAlignment="Center"
-          Orientation="Horizontal"
-          Spacing="4">
-          <DropDownButton
-            x:Uid="Convert_Row_Change_Button"
-            Visibility="{x:Bind helpers:Ui.Show(CanChangeTarget), Mode=OneWay}">
-            <DropDownButton.Flyout>
-              <Flyout Placement="Top">
-                <StackPanel MinWidth="220" Spacing="6">
-                  <TextBlock x:Uid="Convert_Row_Location_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                  <RadioButton
-                    x:Uid="Convert_Row_Location_Shared"
-                    Command="{x:Bind UseSharedCommand}"
-                    GroupName="RowTarget"
-                    IsChecked="{x:Bind UsesShared, Mode=OneWay}" />
-                  <RadioButton
-                    x:Uid="Convert_Location_Same_Option"
-                    Command="{x:Bind UseSameFolderCommand}"
-                    GroupName="RowTarget"
-                    IsChecked="{x:Bind IsSame, Mode=OneWay}" />
-                  <RadioButton
-                    x:Uid="Convert_Location_Sub_Option"
-                    Command="{x:Bind UseSubFolderCommand}"
-                    GroupName="RowTarget"
-                    IsChecked="{x:Bind IsSub, Mode=OneWay}" />
-                  <RadioButton
-                    x:Uid="Convert_Location_Custom_Option"
-                    Command="{x:Bind UseCustomFolderCommand}"
-                    GroupName="RowTarget"
-                    IsChecked="{x:Bind IsCustom, Mode=OneWay}" />
-                </StackPanel>
-              </Flyout>
-            </DropDownButton.Flyout>
-          </DropDownButton>
-          <Button
-            x:Uid="Convert_Row_Open_Button"
-            Command="{x:Bind OpenCommand}"
-            Visibility="{x:Bind helpers:Ui.Show(IsDone), Mode=OneWay}" />
-          <Button
-            x:Uid="Convert_Row_ShowInFolder_Button"
-            Command="{x:Bind ShowInFolderCommand}"
-            Visibility="{x:Bind helpers:Ui.Show(IsDone), Mode=OneWay}" />
-        </StackPanel>
-
-        <StackPanel Grid.Column="5" VerticalAlignment="Center" MinWidth="110">
-          <TextBlock
-            HorizontalAlignment="Right"
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind StateText, Mode=OneWay}" />
-          <TextBlock
-            HorizontalAlignment="Right"
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind PercentText, Mode=OneWay}"
-            Visibility="{x:Bind helpers:Ui.Show(ShowProgress), Mode=OneWay}" />
-          <StackPanel Visibility="{x:Bind helpers:Ui.Show(HasError), Mode=OneWay}">
-            <StackPanel Orientation="Horizontal" Spacing="6">
-              <FontIcon
-                FontSize="14"
-                Foreground="{ThemeResource KvErrorBrush}"
-                Glyph="&#xEA39;" />
-              <TextBlock
-                AutomationProperties.LiveSetting="Assertive"
-                Style="{StaticResource BodyStrongTextBlockStyle}"
-                Text="{x:Bind ErrorTitle, Mode=OneWay}"
-                TextWrapping="Wrap" />
-            </StackPanel>
-            <TextBlock
-              Style="{StaticResource SecondaryCaptionTextStyle}"
-              Text="{x:Bind ErrorBody, Mode=OneWay}"
-              TextWrapping="Wrap" />
-          </StackPanel>
-        </StackPanel>
-      </Grid>
-    </DataTemplate>
-
-    <DataTemplate x:Key="TextLineTemplate" x:DataType="x:String">
+    <!-- The bag's menu: one file with its own target -->
+    <DataTemplate x:Key="BagLineTemplate" x:DataType="x:String">
       <TextBlock
-        Padding="0,2"
-        Style="{StaticResource SecondaryCaptionTextStyle}"
+        Padding="8,3"
+        Style="{StaticResource OptionDetailTextStyle}"
         Text="{x:Bind}"
         TextWrapping="Wrap" />
     </DataTemplate>
+
+    <!-- The list (.w5-zeile): 10 | 170 | 124 | 1fr | 214 | 58, gap 12, padding 4/12, radius 11 -->
+    <DataTemplate x:Key="ListRowTemplate" x:DataType="convert:ConvertRowViewModel">
+      <Border
+        AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
+        BorderBrush="{x:Bind helpers:ConvertUi.RowFrame(IsRunning, IsFailed), Mode=OneWay}"
+        Style="{StaticResource KvRowStyle}">
+        <Grid ColumnSpacing="12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="124" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="214" />
+            <ColumnDefinition Width="58" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <!-- .w5-punkt -->
+          <Ellipse
+            Width="10"
+            Height="10"
+            VerticalAlignment="Center"
+            Fill="{x:Bind helpers:Ui.Brush(ColorBrushKey)}" />
+
+          <!-- .w5-nm: name 12.5 / 600, sizes 10.5 mono -->
+          <StackPanel Grid.Column="1" VerticalAlignment="Center">
+            <TextBlock
+              LineHeight="16"
+              Style="{StaticResource KvRowTextStyle}"
+              Text="{x:Bind FileName}"
+              ToolTipService.ToolTip="{x:Bind FileName}" />
+            <TextBlock
+              LineHeight="14"
+              Style="{StaticResource OptionDetailTextStyle}"
+              Text="{x:Bind SizesText, Mode=OneWay}" />
+          </StackPanel>
+
+          <!-- .w5-fa -->
+          <views:FormatArrow
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            IsDone="{x:Bind IsDone, Mode=OneWay}"
+            KindBrushKey="{x:Bind ColorBrushKey}"
+            Progress="{x:Bind ProgressValue, Mode=OneWay}"
+            SourceText="{x:Bind SourceCode}"
+            TargetText="{x:Bind TargetCode}" />
+
+          <!-- .w5-ziel: tag, then folder (muted) and file name (600, mint once written) -->
+          <StackPanel
+            Grid.Column="3"
+            VerticalAlignment="Center"
+            Spacing="1"
+            ToolTipService.ToolTip="{x:Bind FullPath, Mode=OneWay}">
+            <TextBlock
+              FontSize="10"
+              FontWeight="SemiBold"
+              Foreground="{x:Bind helpers:ConvertUi.TagBrush(IsOwnLocation), Mode=OneWay}"
+              Style="{StaticResource KvMonoTextStyle}"
+              Text="{x:Bind TargetMarkText, Mode=OneWay}" />
+            <TextBlock
+              FontSize="11.5"
+              FontWeight="Normal"
+              Foreground="{ThemeResource KvInkBrush}"
+              Style="{StaticResource KvMonoTextStyle}">
+              <Run Foreground="{ThemeResource KvMutedBrush}" Text="{x:Bind TargetDirectoryShort, Mode=OneWay}" /><Run FontWeight="SemiBold" Foreground="{x:Bind helpers:ConvertUi.FileBrush(IsDone), Mode=OneWay}" Text="{x:Bind TargetFileName, Mode=OneWay}" />
+            </TextBlock>
+          </StackPanel>
+
+          <!-- .w5-aktion: "Ändern" until done, then "Öffnen" and "Im Ordner zeigen"; a failure shows its reason -->
+          <StackPanel
+            Grid.Column="4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            Orientation="Horizontal"
+            Spacing="6">
+            <Button
+              x:Uid="Convert_Row_Change_Button"
+              IsEnabled="{x:Bind CanChangeTarget, Mode=OneWay}"
+              Style="{StaticResource KvSmallButtonStyle}"
+              Visibility="{x:Bind helpers:Ui.Show(ShowChange), Mode=OneWay}">
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <FontIcon
+                  FontSize="13"
+                  Foreground="{ThemeResource KvMutedBrush}"
+                  Glyph="&#xE70F;" />
+                <TextBlock x:Uid="Convert_Row_Change_Text" />
+              </StackPanel>
+              <Button.Flyout>
+                <Flyout
+                  FlyoutPresenterStyle="{StaticResource KvMenuFlyoutPresenterStyle}"
+                  Opened="OnMenuOpened"
+                  Placement="BottomEdgeAlignedRight">
+                  <StackPanel Spacing="2">
+                    <StackPanel Padding="8,4,8,8" Spacing="1">
+                      <TextBlock x:Uid="Convert_Row_Location_Header" Style="{StaticResource KvMenuTitleTextStyle}" />
+                      <TextBlock Style="{StaticResource KvMenuSubTextStyle}" Text="{x:Bind TargetFileName, Mode=OneWay}" />
+                    </StackPanel>
+                    <RadioButton
+                      x:Uid="Convert_Row_Location_Shared"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind UseSharedCommand}"
+                      GroupName="RowTarget"
+                      IsChecked="{x:Bind UsesShared, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_RowShared_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock x:Uid="Convert_Menu_RowShared_Detail" Style="{StaticResource OptionDetailTextStyle}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                      x:Uid="Convert_Location_Same_Option"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind UseSameFolderCommand}"
+                      GroupName="RowTarget"
+                      IsChecked="{x:Bind IsOwnSame, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Same_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock Style="{StaticResource OptionDetailTextStyle}" Text="{x:Bind InputDirectory}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                      x:Uid="Convert_Location_Sub_Option"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind UseSubFolderCommand}"
+                      GroupName="RowTarget"
+                      IsChecked="{x:Bind IsOwnSub, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Sub_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock Style="{StaticResource OptionDetailTextStyle}" Text="{x:Bind SubFolderDirectory}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                      x:Uid="Convert_Location_Custom_Option"
+                      GroupName="RowTarget"
+                      IsChecked="{x:Bind IsOwnCustom, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}"
+                      Visibility="{x:Bind helpers:Ui.Show(IsOwnCustom), Mode=OneWay}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Custom_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock Style="{StaticResource OptionDetailTextStyle}" Text="{x:Bind TargetDirectoryText, Mode=OneWay}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <Rectangle Style="{StaticResource KvMenuSeparatorStyle}" />
+                    <Button
+                      x:Uid="Convert_Location_Pick_Button"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind UseCustomFolderCommand}"
+                      Style="{StaticResource KvOptionActionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Pick_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock x:Uid="Convert_Menu_Pick_Detail" Style="{StaticResource OptionDetailTextStyle}" />
+                      </StackPanel>
+                    </Button>
+                  </StackPanel>
+                </Flyout>
+              </Button.Flyout>
+            </Button>
+            <Button
+              x:Uid="Convert_Row_Open_Button"
+              Command="{x:Bind OpenCommand}"
+              Style="{StaticResource KvSmallOutlineMintButtonStyle}"
+              Visibility="{x:Bind helpers:Ui.Show(IsDone), Mode=OneWay}">
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <FontIcon FontSize="13" Glyph="&#xE8A7;" />
+                <TextBlock x:Uid="Convert_Row_Open_Text" />
+              </StackPanel>
+            </Button>
+            <Button
+              x:Uid="Convert_Row_ShowInFolder_Button"
+              Command="{x:Bind ShowInFolderCommand}"
+              Style="{StaticResource KvSmallButtonStyle}"
+              Visibility="{x:Bind helpers:Ui.Show(IsDone), Mode=OneWay}">
+              <StackPanel Orientation="Horizontal" Spacing="5">
+                <FontIcon
+                  FontSize="13"
+                  Foreground="{ThemeResource KvMutedBrush}"
+                  Glyph="&#xE838;" />
+                <TextBlock x:Uid="Convert_Row_ShowInFolder_Text" />
+              </StackPanel>
+            </Button>
+            <TextBlock
+              MaxWidth="214"
+              VerticalAlignment="Center"
+              AutomationProperties.LiveSetting="Assertive"
+              FontSize="11.5"
+              Style="{StaticResource CoralSmallTextStyle}"
+              Text="{x:Bind ErrorTitle, Mode=OneWay}"
+              TextTrimming="CharacterEllipsis"
+              TextWrapping="NoWrap"
+              ToolTipService.ToolTip="{x:Bind ErrorBody, Mode=OneWay}"
+              Visibility="{x:Bind helpers:Ui.Show(HasError), Mode=OneWay}" />
+          </StackPanel>
+
+          <!-- .w5-st: 11 mono, tabular figures, right -->
+          <TextBlock
+            Grid.Column="5"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Center"
+            FontSize="11"
+            Foreground="{x:Bind helpers:ConvertUi.StatusBrush(IsDone, IsFailed), Mode=OneWay}"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind StatusText, Mode=OneWay}"
+            TextTrimming="None"
+            Typography.NumeralAlignment="Tabular" />
+
+          <!-- What to do about a failure (Error_* resources): a second line under the row -->
+          <TextBlock
+            Grid.Row="1"
+            Grid.Column="1"
+            Grid.ColumnSpan="5"
+            Margin="0,2,0,2"
+            FontSize="11.5"
+            Style="{StaticResource KvSmallTextStyle}"
+            Text="{x:Bind ErrorBody, Mode=OneWay}"
+            TextTrimming="None"
+            TextWrapping="Wrap"
+            Visibility="{x:Bind helpers:Ui.ShowText(ErrorBody), Mode=OneWay}" />
+
+          <!-- .w5-zeile::after: 2 px mint progress line at the bottom edge, with a faint glow -->
+          <Grid
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="6"
+            Height="4"
+            Margin="-6,0,-6,-4"
+            VerticalAlignment="Bottom"
+            IsHitTestVisible="False"
+            RenderTransformOrigin="0,0.5"
+            Visibility="{x:Bind helpers:Ui.Show(ShowProgress), Mode=OneWay}">
+            <Grid.RenderTransform>
+              <ScaleTransform ScaleX="{x:Bind helpers:ConvertUi.Fraction(ProgressValue), Mode=OneWay}" />
+            </Grid.RenderTransform>
+            <Rectangle
+              Fill="{ThemeResource KvMintBrush}"
+              Opacity="{ThemeResource KvGlowOpacity}"
+              RadiusX="2"
+              RadiusY="2" />
+            <Rectangle
+              Height="2"
+              VerticalAlignment="Bottom"
+              Fill="{ThemeResource KvMintBrush}"
+              RadiusX="1"
+              RadiusY="1" />
+          </Grid>
+        </Grid>
+      </Border>
+    </DataTemplate>
   </Page.Resources>
 
-  <Grid>
+  <Grid x:Name="PageRoot" SizeChanged="OnPageSizeChanged">
     <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
       <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
-    <VisualStateManager.VisualStateGroups>
-      <VisualStateGroup x:Name="WidthStates">
-        <VisualState x:Name="WideLayout">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="900" />
-          </VisualState.StateTriggers>
-        </VisualState>
-        <VisualState x:Name="NarrowLayout">
-          <VisualState.StateTriggers>
-            <AdaptiveTrigger MinWindowWidth="0" />
-          </VisualState.StateTriggers>
-          <VisualState.Setters>
-            <!-- Below 900 px the three columns stack above the list; 640 px stays usable (docs/06). -->
-            <Setter Target="LeftColumn.Width" Value="*" />
-            <Setter Target="MiddleColumn.Width" Value="0" />
-            <Setter Target="RightColumn.Width" Value="0" />
-            <Setter Target="MiddlePanel.(Grid.Column)" Value="0" />
-            <Setter Target="MiddlePanel.(Grid.Row)" Value="1" />
-            <Setter Target="RightPanel.(Grid.Column)" Value="0" />
-            <Setter Target="RightPanel.(Grid.Row)" Value="2" />
-            <Setter Target="ListPanel.(Grid.Row)" Value="3" />
-          </VisualState.Setters>
-        </VisualState>
-      </VisualStateGroup>
-    </VisualStateManager.VisualStateGroups>
+    <!-- ===== The stage (.w5-buehne, 300 high) ===== -->
+    <Grid x:Name="StageArea">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="300" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-    <ScrollViewer HorizontalScrollMode="Disabled" VerticalScrollBarVisibility="Auto">
-      <Grid
-        x:Name="PageRoot"
-        Padding="24"
-        ColumnSpacing="20"
-        RowSpacing="20"
-        SizeChanged="OnBagSizeChanged">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition x:Name="LeftColumn" Width="300" />
-          <ColumnDefinition x:Name="MiddleColumn" Width="*" />
-          <ColumnDefinition x:Name="RightColumn" Width="340" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+      <views:SwirlHost
+        x:Name="SwirlHost"
+        Height="300"
+        ShakeRequested="OnSwirlShakeRequested"
+        SizeChanged="OnBagSizeChanged"
+        SurfaceModeChanged="OnSwirlSurfaceModeChanged" />
 
-        <!-- Left: the inbox -->
-        <StackPanel x:Name="LeftPanel" Spacing="8">
-          <TextBlock x:Uid="Convert_Title" Style="{StaticResource TitleTextBlockStyle}" />
+      <!-- .w5-ein: bottom left under the drawn stack (left 22, bottom 16, max 300, gap 1) -->
+      <StackPanel
+        x:Name="LeftPanel"
+        MaxWidth="300"
+        Margin="22,0,0,16"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        Spacing="1">
+        <TextBlock x:Uid="Convert_Inbox_Header" Style="{StaticResource KvLabelTextStyle}" />
+        <TextBlock
+          FontWeight="Bold"
+          Style="{StaticResource KvTextBaseStyle}"
+          Text="{x:Bind ViewModel.InboxSummaryText, Mode=OneWay}" />
+        <TextBlock
+          x:Uid="Convert_NoPlan_Text"
+          Style="{StaticResource CoralSmallTextStyle}"
+          Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowNoPlan), Mode=OneWay}" />
+        <TextBlock
+          AutomationProperties.LiveSetting="Assertive"
+          Style="{StaticResource CoralSmallTextStyle}"
+          Text="{x:Bind ViewModel.ErrorText, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.ErrorText), Mode=OneWay}" />
+        <TextBlock
+          Style="{StaticResource CoralSmallTextStyle}"
+          Text="{x:Bind ViewModel.InboxFailedText, Mode=OneWay}"
+          Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.InboxFailedText), Mode=OneWay}" />
+        <!-- Files step 2 had to leave out, with the reason (draft: "1 nicht umwandelbar: …") -->
+        <ItemsControl
+          IsTabStop="False"
+          ItemTemplate="{StaticResource CoralLineTemplate}"
+          ItemsSource="{x:Bind ViewModel.SkippedTexts}"
+          Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSkipped), Mode=OneWay}" />
+        <!-- Pro hint: only with a reason, never a modal (docs/06, "Pro-Hinweis") -->
+        <StackPanel
+          Margin="0,4,0,0"
+          Orientation="Horizontal"
+          Spacing="4"
+          Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowProCard), Mode=OneWay}">
           <TextBlock
-            x:Uid="Convert_NoPlan_Text"
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowNoPlan), Mode=OneWay}" />
-          <TextBlock
-            AutomationProperties.LiveSetting="Assertive"
-            Foreground="{ThemeResource KvErrorBrush}"
-            Style="{StaticResource BodyTextBlockStyle}"
-            Text="{x:Bind ViewModel.ErrorText, Mode=OneWay}"
-            TextWrapping="Wrap"
-            Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.ErrorText), Mode=OneWay}" />
-          <TextBlock x:Uid="Convert_Inbox_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <TextBlock
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind ViewModel.InboxSummaryText, Mode=OneWay}" />
-          <Border Style="{StaticResource CardBorderStyle}" Padding="12">
-            <StackPanel Spacing="4">
-              <TextBlock
-                Foreground="{ThemeResource KvErrorBrush}"
-                Style="{StaticResource BodyStrongTextBlockStyle}"
-                Text="{x:Bind ViewModel.InboxFailedText, Mode=OneWay}"
-                Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.InboxFailedText), Mode=OneWay}" />
-              <ItemsControl
-                ItemTemplate="{StaticResource InboxRowTemplate}"
-                ItemsSource="{x:Bind ViewModel.Inbox}" />
-            </StackPanel>
-          </Border>
-
-          <!-- Files step 2 had to leave out, with the reason -->
-          <StackPanel Spacing="4" Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasSkipped), Mode=OneWay}">
-            <TextBlock x:Uid="Convert_Skipped_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-            <ItemsControl ItemTemplate="{StaticResource TextLineTemplate}" ItemsSource="{x:Bind ViewModel.SkippedTexts}" />
-          </StackPanel>
-
-          <!-- Pro card: only with a reason, never a modal (docs/06, "Pro-Hinweis") -->
-          <Border
-            Background="{ThemeResource KvMintSurfaceBrush}"
-            BorderBrush="{ThemeResource KvMintFrameBrush}"
-            BorderThickness="1"
-            CornerRadius="8"
-            Padding="12"
-            Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowProCard), Mode=OneWay}">
-            <StackPanel Spacing="8">
-              <TextBlock
-                AutomationProperties.LiveSetting="Polite"
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.ProCardText, Mode=OneWay}"
-                TextWrapping="Wrap" />
-              <Button x:Uid="Convert_Pro_LearnMore_Button" Command="{x:Bind ViewModel.OpenProCommand}" />
-            </StackPanel>
-          </Border>
+            MaxWidth="200"
+            VerticalAlignment="Center"
+            AutomationProperties.LiveSetting="Polite"
+            Style="{StaticResource KvSmallTextStyle}"
+            Text="{x:Bind ViewModel.ProCardText, Mode=OneWay}"
+            TextTrimming="None"
+            TextWrapping="Wrap" />
+          <HyperlinkButton
+            x:Uid="Convert_Pro_LearnMore_Button"
+            VerticalAlignment="Center"
+            Command="{x:Bind ViewModel.OpenProCommand}" />
         </StackPanel>
+      </StackPanel>
 
-        <!-- Middle: the swirl surface (ADR-023) with the running files and the report as XAML above it -->
-        <StackPanel x:Name="MiddlePanel" Grid.Column="1" Spacing="8">
-          <TextBlock x:Uid="Convert_Swirl_Header" Style="{StaticResource SectionHeaderTextStyle}" />
-          <views:SwirlHost x:Name="SwirlHost" ShakeRequested="OnSwirlShakeRequested" />
-        </StackPanel>
-
-        <!-- Right: what is finished, then the output location -->
-        <StackPanel x:Name="RightPanel" Grid.Column="2" Spacing="8">
-          <TextBlock x:Uid="Convert_Result_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+      <!-- .w5-gross: bottom right under the white hole; content min(300, 30 %) wide, 14 px from the right and 16 px
+           from the bottom of the stage as rendered in the draft (2 px drop ring + 4/6 padding around it);
+           a folder from the explorer dropped here becomes the target of all files (.drop: mint surface, 2 px ring) -->
+      <Border
+        x:Name="LocationCard"
+        Width="316"
+        Margin="0,0,6,10"
+        Padding="6,4"
+        HorizontalAlignment="Right"
+        VerticalAlignment="Bottom"
+        AllowDrop="True"
+        AutomationProperties.Name="{x:Bind ViewModel.Location.AutomationName, Mode=OneWay}"
+        Background="Transparent"
+        BorderBrush="Transparent"
+        BorderThickness="2"
+        CornerRadius="12"
+        DragLeave="OnLocationDragLeave"
+        DragOver="OnLocationDragOver"
+        Drop="OnLocationDrop">
+        <StackPanel Spacing="6">
+          <!-- "fertig n von N": drawn under the white hole on the moving surface; shown here without it -->
           <TextBlock
             x:Name="DoneText"
             AutomationProperties.LiveSetting="Polite"
-            Style="{StaticResource BodyStrongTextBlockStyle}"
-            Text="{x:Bind ViewModel.DoneText, Mode=OneWay}" />
-          <Border Style="{StaticResource CardBorderStyle}" Padding="12">
-            <ItemsControl ItemTemplate="{StaticResource DoneRowTemplate}" ItemsSource="{x:Bind ViewModel.Done}" />
-          </Border>
+            FontSize="12"
+            FontWeight="SemiBold"
+            Foreground="{ThemeResource KvInkBrush}"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind ViewModel.DoneText, Mode=OneWay}"
+            Visibility="Collapsed" />
+          <StackPanel Spacing="1">
+            <TextBlock
+              x:Uid="Convert_Location_Header"
+              FontSize="10"
+              FontWeight="SemiBold"
+              LineHeight="13"
+              LineStackingStrategy="BlockLineHeight"
+              Style="{StaticResource KvLabelTextStyle}" />
+            <TextBlock
+              FontFamily="{StaticResource KvFontFamily}"
+              FontSize="16"
+              FontWeight="SemiBold"
+              LineHeight="19"
+              LineStackingStrategy="BlockLineHeight"
+              Style="{StaticResource KvTextBaseStyle}"
+              Text="{x:Bind ViewModel.Location.TitleText, Mode=OneWay}" />
+            <TextBlock
+              Style="{StaticResource KvMonoTextStyle}"
+              Text="{x:Bind ViewModel.Location.DetailText, Mode=OneWay}"
+              ToolTipService.ToolTip="{x:Bind ViewModel.Location.DetailText, Mode=OneWay}" />
+          </StackPanel>
+          <views:ChipWrapPanel Spacing="6">
+            <DropDownButton
+              x:Uid="Convert_Location_Change_Button"
+              IsEnabled="{x:Bind ViewModel.Location.IsEnabled, Mode=OneWay}"
+              Style="{StaticResource LocationChangeButtonStyle}">
+              <DropDownButton.Flyout>
+                <Flyout
+                  x:Name="LocationFlyout"
+                  FlyoutPresenterStyle="{StaticResource KvMenuFlyoutPresenterStyle}"
+                  Opened="OnMenuOpened"
+                  Placement="BottomEdgeAlignedLeft">
+                  <StackPanel Spacing="2">
+                    <StackPanel Padding="8,4,8,8" Spacing="1">
+                      <TextBlock x:Uid="Convert_Menu_Shared_Header" Style="{StaticResource KvMenuTitleTextStyle}" />
+                      <TextBlock x:Uid="Convert_Menu_Shared_Sub" Style="{StaticResource KvMenuSubTextStyle}" />
+                    </StackPanel>
+                    <RadioButton
+                      x:Uid="Convert_Location_Same_Option"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind ViewModel.Location.UseSameFolderCommand}"
+                      GroupName="SharedTarget"
+                      IsChecked="{x:Bind ViewModel.Location.IsSame, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Same_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock x:Uid="Convert_Menu_Same_Detail" Style="{StaticResource OptionDetailTextStyle}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                      x:Uid="Convert_Location_Sub_Option"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind ViewModel.Location.UseSubFolderCommand}"
+                      GroupName="SharedTarget"
+                      IsChecked="{x:Bind ViewModel.Location.IsSub, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Sub_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock x:Uid="Convert_Menu_Sub_Detail" Style="{StaticResource OptionDetailTextStyle}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <RadioButton
+                      x:Uid="Convert_Location_Custom_Option"
+                      GroupName="SharedTarget"
+                      IsChecked="{x:Bind ViewModel.Location.IsCustom, Mode=OneWay}"
+                      Style="{StaticResource KvOptionStyle}"
+                      Visibility="{x:Bind helpers:Ui.Show(ViewModel.Location.IsCustom), Mode=OneWay}">
+                      <StackPanel Spacing="1">
+                        <TextBlock Style="{StaticResource KvRowTextStyle}" Text="{x:Bind ViewModel.Location.TitleText, Mode=OneWay}" />
+                        <TextBlock Style="{StaticResource OptionDetailTextStyle}" Text="{x:Bind ViewModel.Location.DetailText, Mode=OneWay}" />
+                      </StackPanel>
+                    </RadioButton>
+                    <Rectangle Style="{StaticResource KvMenuSeparatorStyle}" />
+                    <Button
+                      x:Uid="Convert_Location_Pick_Button"
+                      Click="OnMenuOptionClick"
+                      Command="{x:Bind ViewModel.Location.UseCustomFolderCommand}"
+                      Style="{StaticResource KvOptionActionStyle}">
+                      <StackPanel Spacing="1">
+                        <TextBlock x:Uid="Convert_Menu_Pick_Title" Style="{StaticResource KvRowTextStyle}" />
+                        <TextBlock x:Uid="Convert_Menu_Pick_Detail" Style="{StaticResource OptionDetailTextStyle}" />
+                      </StackPanel>
+                    </Button>
+                    <Rectangle Style="{StaticResource KvMenuSeparatorStyle}" />
+                    <TextBlock
+                      x:Uid="Convert_Menu_Footer"
+                      Padding="8,4,8,2"
+                      Style="{StaticResource KvSmallTextStyle}"
+                      TextTrimming="None"
+                      TextWrapping="Wrap" />
+                  </StackPanel>
+                </Flyout>
+              </DropDownButton.Flyout>
+            </DropDownButton>
 
-          <Border
-            x:Name="LocationCard"
-            AllowDrop="True"
-            AutomationProperties.Name="{x:Bind ViewModel.Location.AutomationName, Mode=OneWay}"
-            DragOver="OnLocationDragOver"
-            Drop="OnLocationDrop"
-            Style="{StaticResource CardBorderStyle}"
-            Padding="12">
-            <StackPanel Spacing="8">
-              <TextBlock x:Uid="Convert_Location_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
-              <TextBlock
-                Style="{StaticResource BodyTextBlockStyle}"
-                Text="{x:Bind ViewModel.Location.TitleText, Mode=OneWay}"
-                TextTrimming="CharacterEllipsis" />
-              <TextBlock
-                Style="{StaticResource SecondaryCaptionTextStyle}"
-                Text="{x:Bind ViewModel.Location.DetailText, Mode=OneWay}"
-                TextTrimming="CharacterEllipsis"
-                ToolTipService.ToolTip="{x:Bind ViewModel.Location.DetailText, Mode=OneWay}" />
-              <StackPanel Orientation="Horizontal" Spacing="8">
-                <DropDownButton x:Uid="Convert_Location_Change_Button" IsEnabled="{x:Bind ViewModel.Location.IsEnabled, Mode=OneWay}">
-                  <DropDownButton.Flyout>
-                    <Flyout Placement="Bottom">
-                      <StackPanel MinWidth="240" Spacing="6">
-                        <RadioButton
-                          x:Uid="Convert_Location_Same_Option"
-                          Command="{x:Bind ViewModel.Location.UseSameFolderCommand}"
-                          GroupName="SharedTarget"
-                          IsChecked="{x:Bind ViewModel.Location.IsSame, Mode=OneWay}" />
-                        <RadioButton
-                          x:Uid="Convert_Location_Sub_Option"
-                          Command="{x:Bind ViewModel.Location.UseSubFolderCommand}"
-                          GroupName="SharedTarget"
-                          IsChecked="{x:Bind ViewModel.Location.IsSub, Mode=OneWay}" />
-                        <RadioButton
-                          x:Uid="Convert_Location_Custom_Option"
-                          Command="{x:Bind ViewModel.Location.UseCustomFolderCommand}"
-                          GroupName="SharedTarget"
-                          IsChecked="{x:Bind ViewModel.Location.IsCustom, Mode=OneWay}" />
-                        <Button
-                          x:Uid="Convert_Location_Pick_Button"
-                          Command="{x:Bind ViewModel.Location.UseCustomFolderCommand}" />
-                      </StackPanel>
-                    </Flyout>
-                  </DropDownButton.Flyout>
-                </DropDownButton>
-                <DropDownButton
-                  x:Name="BagButton"
-                  AutomationProperties.Name="{x:Bind ViewModel.BagText, Mode=OneWay}"
-                  Content="{x:Bind ViewModel.BagText, Mode=OneWay}"
-                  SizeChanged="OnBagSizeChanged"
-                  Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasBagEntries), Mode=OneWay}">
-                  <DropDownButton.Flyout>
-                    <Flyout Placement="Bottom">
-                      <StackPanel MinWidth="260" Spacing="6">
-                        <TextBlock x:Uid="Convert_Bag_Header" Style="{StaticResource BodyStrongTextBlockStyle}" />
-                        <ItemsControl ItemTemplate="{StaticResource TextLineTemplate}" ItemsSource="{x:Bind ViewModel.BagEntries}" />
-                      </StackPanel>
-                    </Flyout>
-                  </DropDownButton.Flyout>
-                </DropDownButton>
-              </StackPanel>
-            </StackPanel>
-          </Border>
+            <!-- .w5-tasche: dashed, 11.5, folder symbol 14 in mint; lists the files with a target of their own -->
+            <Grid x:Name="BagBox">
+              <Rectangle
+                x:Name="BagFrame"
+                RadiusX="8"
+                RadiusY="8"
+                Stroke="{ThemeResource KvLineStrongBrush}"
+                StrokeDashArray="3,3"
+                StrokeThickness="1" />
+              <Button
+                x:Name="BagButton"
+                Padding="9,4"
+                AutomationProperties.Name="{x:Bind ViewModel.BagText, Mode=OneWay}"
+                FontSize="11.5"
+                FontWeight="Medium"
+                IsEnabled="{x:Bind ViewModel.IsReady, Mode=OneWay}"
+                PointerEntered="OnBagPointerEntered"
+                PointerExited="OnBagPointerExited"
+                SizeChanged="OnBagSizeChanged"
+                Style="{StaticResource KvGhostButtonStyle}">
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                  <FontIcon
+                    FontSize="14"
+                    Foreground="{ThemeResource KvMintBrush}"
+                    Glyph="&#xE8B7;" />
+                  <TextBlock Text="{x:Bind ViewModel.BagText, Mode=OneWay}" />
+                </StackPanel>
+                <Button.Flyout>
+                  <Flyout FlyoutPresenterStyle="{StaticResource KvMenuFlyoutPresenterStyle}" Placement="BottomEdgeAlignedLeft">
+                    <StackPanel Spacing="2">
+                      <TextBlock
+                        x:Uid="Convert_Bag_Header"
+                        Padding="8,4,8,6"
+                        Style="{StaticResource KvMenuTitleTextStyle}" />
+                      <ItemsControl
+                        IsTabStop="False"
+                        ItemTemplate="{StaticResource BagLineTemplate}"
+                        ItemsSource="{x:Bind ViewModel.BagEntries}"
+                        Visibility="{x:Bind helpers:Ui.Show(ViewModel.HasBagEntries), Mode=OneWay}" />
+                      <TextBlock
+                        x:Uid="Convert_Bag_Hint"
+                        Padding="8,0,8,4"
+                        Style="{StaticResource KvSmallTextStyle}"
+                        TextTrimming="None"
+                        TextWrapping="Wrap"
+                        Visibility="{x:Bind helpers:Ui.Hide(ViewModel.HasBagEntries), Mode=OneWay}" />
+                    </StackPanel>
+                  </Flyout>
+                </Button.Flyout>
+              </Button>
+            </Grid>
+          </views:ChipWrapPanel>
         </StackPanel>
+      </Border>
+    </Grid>
 
-        <!-- The list of all files of this round -->
-        <StackPanel
-          x:Name="ListPanel"
-          Grid.Row="1"
-          Grid.ColumnSpan="3"
-          Spacing="8">
-          <TextBlock x:Uid="Convert_List_Header" Style="{StaticResource SectionHeaderTextStyle}" />
+    <!-- ===== The list (.w5-liste): padding 6/20/8, gap 4, line on top, panel 30 % ===== -->
+    <ScrollViewer
+      x:Name="ListSideScroller"
+      Grid.Row="1"
+      HorizontalScrollBarVisibility="Disabled"
+      HorizontalScrollMode="Disabled"
+      IsTabStop="False"
+      VerticalScrollBarVisibility="Disabled"
+      VerticalScrollMode="Disabled">
+      <Grid
+        x:Name="ListPanel"
+        Padding="20,6,20,8"
+        Background="{ThemeResource KvPanel30Brush}"
+        BorderBrush="{ThemeResource KvLineBrush}"
+        BorderThickness="0,1,0,0"
+        RowSpacing="4">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- .w5-kopf: label | sizes | state (flex space-between: the sizes sit in the middle of the free space) -->
+        <Grid Padding="0,2,0,0" ColumnSpacing="12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
           <TextBlock
-            Style="{StaticResource SecondaryCaptionTextStyle}"
-            Text="{x:Bind ViewModel.ListSummaryText, Mode=OneWay}" />
-          <Border Style="{StaticResource CardBorderStyle}" Padding="16,0">
-            <ItemsControl
-              x:Name="RowsList"
-              ItemTemplate="{StaticResource ListRowTemplate}"
-              ItemsSource="{x:Bind ViewModel.Rows}" />
-          </Border>
-        </StackPanel>
+            x:Uid="Convert_List_Header"
+            VerticalAlignment="Bottom"
+            AutomationProperties.HeadingLevel="Level2"
+            Style="{StaticResource KvLabelTextStyle}" />
+          <TextBlock
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Bottom"
+            FontFamily="{StaticResource KvMonoFontFamily}"
+            FontSize="15"
+            FontWeight="SemiBold"
+            Style="{StaticResource KvTextBaseStyle}"
+            TextTrimming="None">
+            <Run Text="{x:Bind ViewModel.ListBeforeText, Mode=OneWay}" /><Run FontSize="12" FontWeight="Normal" Foreground="{ThemeResource KvMutedBrush}" Text=" &#x2192; " /><Run Foreground="{ThemeResource KvMintBrush}" Text="{x:Bind ViewModel.ListAfterText, Mode=OneWay}" />
+          </TextBlock>
+          <TextBlock
+            Grid.Column="2"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Style="{StaticResource KvLabelTextStyle}">
+            <Run Text="{x:Bind ViewModel.ListStateText, Mode=OneWay}" /><Run Foreground="{ThemeResource KvMintBrush}" Text="{x:Bind ViewModel.ListStateMintText, Mode=OneWay}" />
+          </TextBlock>
+        </Grid>
 
-        <!-- Screen reader live region for a finished or failed file and for the report. -->
-        <TextBlock
-          x:Name="AnnouncementText"
+        <!-- .w5-spalten: the column heads, hidden from screen readers like in the draft (aria-hidden) -->
+        <Grid
           Grid.Row="1"
-          Width="1"
-          Height="1"
-          HorizontalAlignment="Left"
-          VerticalAlignment="Top"
-          AutomationProperties.LiveSetting="Assertive"
-          IsHitTestVisible="False"
-          Opacity="0"
-          Text="{x:Bind ViewModel.Announcement, Mode=OneWay}" />
+          Margin="0,2,0,1"
+          Padding="13,0"
+          AutomationProperties.AccessibilityView="Raw"
+          ColumnSpacing="12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="124" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="214" />
+            <ColumnDefinition Width="58" />
+          </Grid.ColumnDefinitions>
+          <TextBlock
+            x:Uid="Convert_Column_File"
+            Grid.Column="1"
+            Style="{StaticResource KvLabelTextStyle}" />
+          <TextBlock
+            x:Uid="Convert_Column_Format"
+            Grid.Column="2"
+            Style="{StaticResource KvLabelTextStyle}" />
+          <TextBlock
+            x:Uid="Convert_Column_Target"
+            Grid.Column="3"
+            Style="{StaticResource KvLabelTextStyle}" />
+          <TextBlock
+            x:Uid="Convert_Column_Action"
+            Grid.Column="4"
+            HorizontalAlignment="Right"
+            Style="{StaticResource KvLabelTextStyle}" />
+          <TextBlock
+            x:Uid="Convert_Column_Status"
+            Grid.Column="5"
+            HorizontalAlignment="Right"
+            Style="{StaticResource KvLabelTextStyle}" />
+        </Grid>
+
+        <!-- .w5-zeilen -->
+        <ScrollViewer
+          Grid.Row="2"
+          HorizontalScrollMode="Disabled"
+          VerticalScrollBarVisibility="Auto">
+          <ItemsControl
+            x:Name="RowsList"
+            IsTabStop="False"
+            ItemTemplate="{StaticResource ListRowTemplate}"
+            ItemsSource="{x:Bind ViewModel.Rows}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="4" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+          </ItemsControl>
+        </ScrollViewer>
       </Grid>
     </ScrollViewer>
 
-    <!-- Bottom bar: trust line, overall progress, the actions of the round -->
-    <Border
+    <!-- Screen reader live region for a finished or failed file and for the report. -->
+    <TextBlock
+      x:Name="AnnouncementText"
       Grid.Row="1"
-      Background="{ThemeResource KvPanelBrush}"
-      BorderBrush="{ThemeResource KvLineBrush}"
-      BorderThickness="0,1,0,0"
-      Padding="24,12">
-      <Grid ColumnSpacing="16">
+      Width="1"
+      Height="1"
+      HorizontalAlignment="Left"
+      VerticalAlignment="Top"
+      AutomationProperties.LiveSetting="Assertive"
+      IsHitTestVisible="False"
+      Opacity="0"
+      Text="{x:Bind ViewModel.Announcement, Mode=OneWay}" />
+
+    <!-- ===== Bottom bar (.leiste, padding 12/18, gap 12): trust line, progress while running, actions ===== -->
+    <Border
+      Grid.Row="2"
+      Padding="18,12"
+      Style="{StaticResource KvBottomBarStyle}">
+      <Grid ColumnSpacing="12">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <StackPanel VerticalAlignment="Center" Orientation="Horizontal" Spacing="8">
-          <FontIcon FontSize="14" Glyph="&#xE72E;" />
-          <TextBlock x:Uid="Convert_Trust_Text" VerticalAlignment="Center" Style="{StaticResource CaptionTextBlockStyle}" />
+        <StackPanel
+          VerticalAlignment="Center"
+          Orientation="Horizontal"
+          Spacing="7">
+          <FontIcon
+            VerticalAlignment="Center"
+            FontSize="14"
+            Foreground="{ThemeResource KvMintBrush}"
+            Glyph="&#xE72E;" />
+          <TextBlock
+            x:Uid="Convert_Trust_Text"
+            VerticalAlignment="Center"
+            FontSize="12"
+            Style="{StaticResource KvSmallTextStyle}" />
         </StackPanel>
 
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="4">
+        <!-- Overall progress (bar 6 high) only while the round runs -->
+        <StackPanel
+          Grid.Column="1"
+          MaxWidth="420"
+          VerticalAlignment="Center"
+          Spacing="4"
+          Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsRunningOrPaused), Mode=OneWay}">
           <TextBlock
             x:Name="OverallText"
             AutomationProperties.LiveSetting="Polite"
-            Style="{StaticResource CaptionTextBlockStyle}"
-            Text="{x:Bind ViewModel.OverallText, Mode=OneWay}"
-            TextTrimming="CharacterEllipsis" />
+            FontSize="11"
+            Style="{StaticResource KvMonoTextStyle}"
+            Text="{x:Bind ViewModel.OverallText, Mode=OneWay}" />
           <ProgressBar
             AutomationProperties.Name="{x:Bind ViewModel.OverallAutomationText, Mode=OneWay}"
             IsIndeterminate="False"
@@ -476,7 +746,7 @@
           Grid.Column="2"
           VerticalAlignment="Center"
           Orientation="Horizontal"
-          Spacing="8">
+          Spacing="10">
           <Button
             x:Uid="Convert_Back_Button"
             Command="{x:Bind ViewModel.BackCommand}"
@@ -492,19 +762,15 @@
             Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsRunningOrPaused), Mode=OneWay}" />
           <Button
             x:Name="StartButton"
-            MinWidth="180"
-            MinHeight="40"
             AutomationProperties.Name="{x:Bind ViewModel.StartButtonText, Mode=OneWay}"
             Command="{x:Bind ViewModel.StartCommand}"
             Content="{x:Bind ViewModel.StartButtonText, Mode=OneWay}"
-            Style="{StaticResource AccentButtonStyle}"
+            Style="{StaticResource KvPrimaryButtonStyle}"
             Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsReady), Mode=OneWay}" />
           <Button
             x:Uid="Convert_NewRound_Button"
-            MinWidth="160"
-            MinHeight="40"
             Command="{x:Bind ViewModel.NewRoundCommand}"
-            Style="{StaticResource AccentButtonStyle}"
+            Style="{StaticResource KvPrimaryButtonStyle}"
             Visibility="{x:Bind helpers:Ui.Show(ViewModel.IsFinished), Mode=OneWay}" />
         </StackPanel>
       </Grid>

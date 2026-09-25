@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Numerics;
 using Kvertis.App.Animations;
+using Kvertis.App.Helpers;
 using Kvertis.App.Scenes;
 using Kvertis.App.Services;
 using Kvertis.App.ViewModels.Convert;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using Windows.ApplicationModel.DataTransfer;
@@ -19,8 +21,8 @@ namespace Kvertis.App.Views;
 /// <summary>
 /// Step 3 "Umwandeln". The code-behind handles the folder drop on the location card, the live region, the
 /// life of the swirl surface (resume, suspend, pause), the transition anchors and the XAML side of the
-/// finale: the page shake, the report entrance and the fading of inbox and location card. Everything else is
-/// in <see cref="ConvertPageViewModel"/>.
+/// finale: the page shake, the report entrance and the fading of inbox and location card, and the layout of the
+/// stage (location width, narrow stacking). Everything else is in <see cref="ConvertPageViewModel"/>.
 /// </summary>
 public sealed partial class ConvertPage : Page, ITransitionAnchors
 {
@@ -29,6 +31,21 @@ public sealed partial class ConvertPage : Page, ITransitionAnchors
     private readonly ITransitionService _transitions;
     private bool _windowVisible = true;
     private bool _cardsHidden;
+    private bool? _narrow;
+    private FlyoutBase? _openMenu;
+    private string _lastBagText = string.Empty;
+
+    /// <summary>Below this width the stage blocks stack under the stage (worksheet 1.1, 640–899 px).</summary>
+    private const double NarrowWidth = 900;
+
+    /// <summary>Smallest width of the list with its fixed columns; below it the list scrolls sideways.</summary>
+    private const double ListMinWidth = 822;
+
+    /// <summary>The location block is as wide as the white hole above it: min(300, 30 %) (draft .w5-gross).</summary>
+    private const double LocationMaxWidth = 300;
+
+    /// <summary>Drop ring (2) and padding (6) on both sides of the location block.</summary>
+    private const double LocationChrome = 16;
 
     public ConvertPage()
     {
@@ -90,18 +107,84 @@ public sealed partial class ConvertPage : Page, ITransitionAnchors
 
     private void OnLocationDragOver(object sender, DragEventArgs e)
     {
-        if (!e.DataView.Contains(StandardDataFormats.StorageItems))
+        if (!e.DataView.Contains(StandardDataFormats.StorageItems) || !ViewModel.Location.IsEnabled)
         {
             e.AcceptedOperation = DataPackageOperation.None;
+            SetDropHighlight(false);
             return;
         }
         e.AcceptedOperation = DataPackageOperation.Link;
         e.DragUIOverride.Caption = _loc.Get("Convert_Location_DropCaption");
+        SetDropHighlight(true);
     }
+
+    private void OnLocationDragLeave(object sender, DragEventArgs e) => SetDropHighlight(false);
+
+    /// <summary>.w5-gross.drop: mint surface with a 2 px mint ring while a folder hovers over the block.</summary>
+    private void SetDropHighlight(bool on)
+    {
+        LocationCard.Background = on ? Ui.Brush("KvMintSurfaceBrush") : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+        LocationCard.BorderBrush = on ? Ui.Brush("KvMintBrush") : new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+    }
+
+    // ---- Menus ------------------------------------------------------------------------------------
+
+    private void OnMenuOpened(object? sender, object e) => _openMenu = sender as FlyoutBase;
+
+    /// <summary>A choice in a location menu closes the menu, like the draft's .w5-menue.</summary>
+    private void OnMenuOptionClick(object sender, RoutedEventArgs e)
+    {
+        _openMenu?.Hide();
+        _openMenu = null;
+    }
+
+    private void OnBagPointerEntered(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) =>
+        BagFrame.Stroke = Ui.Brush("KvMintBrush");
+
+    private void OnBagPointerExited(object sender, Microsoft.UI.Xaml.Input.PointerRoutedEventArgs e) =>
+        BagFrame.Stroke = Ui.Brush("KvLineStrongBrush");
+
+    // ---- Layout -----------------------------------------------------------------------------------
+
+    private void OnPageSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        ApplyLayout(e.NewSize.Width);
+        UpdateBagAnchor();
+    }
+
+    /// <summary>
+    /// From 900 px the inbox and the location lie on the stage (bottom left, bottom right) and the location is
+    /// min(300, 30 %) wide like the white hole; below that both stack under the stage and the list keeps its fixed
+    /// columns and scrolls sideways. Done in code: setters on grid definitions break the XAML compiler (docs/06).
+    /// </summary>
+    private void ApplyLayout(double width)
+    {
+        var narrow = width < NarrowWidth;
+        LocationCard.Width = narrow ? double.NaN : Math.Min(LocationMaxWidth, width * 0.3) + LocationChrome;
+        if (_narrow == narrow)
+        {
+            return;
+        }
+        _narrow = narrow;
+
+        Grid.SetRow(LeftPanel, narrow ? 1 : 0);
+        Grid.SetRow(LocationCard, narrow ? 2 : 0);
+        LeftPanel.Margin = narrow ? new Thickness(16, 8, 16, 8) : new Thickness(22, 0, 0, 16);
+        LocationCard.Margin = narrow ? new Thickness(8, 0, 8, 8) : new Thickness(0, 0, 6, 10);
+        LocationCard.HorizontalAlignment = narrow ? HorizontalAlignment.Stretch : HorizontalAlignment.Right;
+        ListPanel.MinWidth = narrow ? ListMinWidth : 0;
+        ListSideScroller.HorizontalScrollMode = narrow ? ScrollMode.Enabled : ScrollMode.Disabled;
+        ListSideScroller.HorizontalScrollBarVisibility = narrow ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
+    }
+
+    /// <summary>Without the moving surface nothing draws "n von N" under the white hole; the text stands above the location then.</summary>
+    private void OnSwirlSurfaceModeChanged(object? sender, EventArgs e) =>
+        DoneText.Visibility = SwirlHost.IsAnimated ? Visibility.Collapsed : Visibility.Visible;
 
     // Drag-and-drop handlers are events; async void is intended here.
     private async void OnLocationDrop(object sender, DragEventArgs e)
     {
+        SetDropHighlight(false);
         if (!e.DataView.Contains(StandardDataFormats.StorageItems))
         {
             return;
@@ -139,6 +222,14 @@ public sealed partial class ConvertPage : Page, ITransitionAnchors
                 break;
             case nameof(ConvertPageViewModel.IsFinaleShowing):
                 ApplyFinaleCards(ViewModel.IsFinaleShowing);
+                break;
+            case nameof(ConvertPageViewModel.BagText):
+                // The bag hops once when a file gets or loses a target of its own (draft .w5-tasche.hupf).
+                if (!string.IsNullOrEmpty(_lastBagText) && _lastBagText != ViewModel.BagText)
+                {
+                    CardAnimations.CountHop(BagBox);
+                }
+                _lastBagText = ViewModel.BagText;
                 break;
             case nameof(ConvertPageViewModel.ShowReportCard):
                 if (ViewModel.ShowReportCard && SwirlHost.IsAnimated)
@@ -235,8 +326,10 @@ public sealed partial class ConvertPage : Page, ITransitionAnchors
         return null;
     }
 
+    private void OnBagSizeChanged(object sender, SizeChangedEventArgs e) => UpdateBagAnchor();
+
     /// <summary>Tells the scene where the bag sits, in surface coordinates; pixels of files with an own target land there.</summary>
-    private void OnBagSizeChanged(object sender, SizeChangedEventArgs e)
+    private void UpdateBagAnchor()
     {
         if (BagButton.Visibility != Visibility.Visible || BagButton.ActualWidth <= 0 || SwirlHost.ActualWidth <= 0)
         {

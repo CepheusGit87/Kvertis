@@ -203,8 +203,21 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
     [ObservableProperty]
     private string bagText = string.Empty;
 
+    /// <summary>List head, middle (.w5-kopf .gross): the size of all originals.</summary>
     [ObservableProperty]
-    private string listSummaryText = string.Empty;
+    private string listBeforeText = string.Empty;
+
+    /// <summary>List head, middle: "≈ 67,1 MB" before and during the round, the real size after it.</summary>
+    [ObservableProperty]
+    private string listAfterText = string.Empty;
+
+    /// <summary>List head, right (label): "BEREIT", "3 VON 7".</summary>
+    [ObservableProperty]
+    private string listStateText = string.Empty;
+
+    /// <summary>List head, right, in mint: the change so far, or "FERTIG · 197 → 67,1 MB".</summary>
+    [ObservableProperty]
+    private string listStateMintText = string.Empty;
 
     [ObservableProperty]
     private double overallProgress;
@@ -571,15 +584,38 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
         var total = Rows.Count;
         var doneCount = Rows.Count(r => r.IsFinished);
         var waiting = Rows.Where(r => !r.IsFinished && !r.IsRunning).ToList();
-        InboxSummaryText = _loc.Format(
-            "Convert_Inbox_Summary", waiting.Count, Formatting.Bytes(_loc, waiting.Sum(r => r.Item.Input.SizeBytes)));
         var failed = Rows.Count(r => r.IsFailed);
-        InboxFailedText = failed > 0 ? _loc.Format("Convert_Inbox_Failed", failed) : string.Empty;
+        var notConverted = Rows.Count(r => r.IsFinished && !r.IsDone);
+        // The inbox line of the stage (.w5-ein b): what waits before the start, what waits and swirls while the
+        // round runs, what is left afterwards.
+        InboxSummaryText = State switch
+        {
+            RoundState.Finished => notConverted > 0
+                ? _loc.Format("Convert_Inbox_NotConverted", notConverted)
+                : _loc.Get("Convert_Inbox_AllDone"),
+            RoundState.Running or RoundState.Paused => waiting.Count switch
+            {
+                0 when running.Count == 0 => _loc.Get("Convert_Inbox_AllDone"),
+                0 => _loc.Format("Convert_Inbox_InSwirl", running.Count),
+                1 => _loc.Format("Convert_Inbox_Running_One", running.Count),
+                _ => _loc.Format("Convert_Inbox_Running", waiting.Count, running.Count),
+            },
+            _ => _loc.Format(
+                waiting.Count == 1 ? "Convert_Inbox_Summary_One" : "Convert_Inbox_Summary",
+                waiting.Count,
+                Formatting.Bytes(_loc, waiting.Sum(r => r.InputBytes))),
+        };
+        InboxFailedText = failed > 0 && State != RoundState.Finished ? _loc.Format("Convert_Inbox_Failed", failed) : string.Empty;
         DoneText = _loc.Format("Convert_Result_Done", Rows.Count(r => r.IsDone), total);
         SwirlHintText = _loc.Format("Convert_Swirl_Ready", total);
 
         var own = Rows.Where(r => r.IsOwnLocation).ToList();
-        BagText = own.Count == 1 ? _loc.Get("Convert_Bag_One") : _loc.Format("Convert_Bag_Some", own.Count);
+        BagText = own.Count switch
+        {
+            0 => _loc.Get("Convert_Bag_None"),
+            1 => _loc.Get("Convert_Bag_One"),
+            _ => _loc.Format("Convert_Bag_Some", own.Count),
+        };
         HasBagEntries = own.Count > 0;
         var wanted = own.Select(r => _loc.Format("Convert_Bag_Entry", r.FileName, r.TargetDirectoryText)).ToList();
         if (!BagEntries.SequenceEqual(wanted, StringComparer.Ordinal))
@@ -591,22 +627,55 @@ public sealed partial class ConvertPageViewModel : ObservableObject, IConvertRow
             }
         }
 
-        ListSummaryText = _loc.Format(
-            "Convert_List_Summary",
-            Formatting.Bytes(_loc, Rows.Sum(r => r.Item.Input.SizeBytes)),
-            _loc.Get(State switch
-            {
-                RoundState.Running => "Convert_List_State_Running",
-                RoundState.Paused => "Convert_List_State_Running",
-                RoundState.Finished => "Convert_List_State_Done",
-                _ => "Convert_List_State_Ready",
-            }));
+        UpdateListHead(total, doneCount);
 
         StartButtonText = _loc.Format("Convert_Start_Button", total);
         CanStart = State == RoundState.Ready && total > 0 && _previews.Count == total && _previews.All(p => !p.NeedsFolder);
         Location.IsEnabled = State != RoundState.Finished;
 
         UpdateOverall(total, doneCount);
+    }
+
+    /// <summary>The head of the list (.w5-kopf): sizes in the middle, the state of the round on the right.</summary>
+    private void UpdateListHead(int total, int doneCount)
+    {
+        var before = Rows.Sum(r => r.InputBytes);
+        var estimated = Rows.Sum(r => r.EstimatedBytes);
+        var done = Rows.Where(r => r.IsDone && r.OutputBytes is not null).ToList();
+        ListBeforeText = Formatting.Bytes(_loc, before);
+        if (State == RoundState.Finished && done.Count > 0)
+        {
+            var doneBefore = done.Sum(r => r.InputBytes);
+            var doneAfter = done.Sum(r => r.OutputBytes ?? 0);
+            ListAfterText = Formatting.Bytes(_loc, doneAfter);
+            ListStateText = string.Empty;
+            ListStateMintText = _loc.Format(
+                "Convert_ListState_Done", Formatting.Bytes(_loc, doneBefore), Formatting.Bytes(_loc, doneAfter));
+            return;
+        }
+
+        ListAfterText = _loc.Format("Convert_List_Estimate", Formatting.Bytes(_loc, estimated));
+        switch (State)
+        {
+            case RoundState.Running:
+            case RoundState.Paused:
+                ListStateText = _loc.Format(
+                    State == RoundState.Paused ? "Convert_ListState_Paused" : "Convert_ListState_Progress", doneCount, total);
+                ListStateMintText = done.Count > 0
+                    ? _loc.Format(
+                        "Convert_ListState_Change",
+                        Formatting.Change(_loc, done.Sum(r => r.InputBytes), done.Sum(r => r.OutputBytes ?? 0)))
+                    : string.Empty;
+                break;
+            case RoundState.Finished:
+                ListStateText = _loc.Get("Convert_ListState_Finished");
+                ListStateMintText = string.Empty;
+                break;
+            default:
+                ListStateText = _loc.Get("Convert_ListState_Ready");
+                ListStateMintText = string.Empty;
+                break;
+        }
     }
 
     private void UpdateOverall(int total, int doneCount)

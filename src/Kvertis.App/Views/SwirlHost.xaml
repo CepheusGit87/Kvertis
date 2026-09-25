@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The middle of step 3 (ADR-023): the swirl surface plus everything that lies on top of it as XAML. The
-     single place that decides what is drawn at all - moving surface, static ring after the round, or only the
-     cards in high contrast. The report card and the progress cards are XAML in every mode. -->
+<!-- The stage of step 3 (ADR-023, draft .w5-buehne): the swirl surface plus everything that lies on top of it as
+     XAML. The single place that decides what is drawn at all - moving surface, static ring after the round, or only
+     the cards in high contrast. With the moving surface the running files show only in the swirl and in the list
+     (draft); without it the compact progress cards stand in the middle. The report card is XAML in every mode. -->
 <UserControl
   x:Class="Kvertis.App.Views.SwirlHost"
   xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -10,22 +11,16 @@
   xmlns:helpers="using:Kvertis.App.Helpers">
 
   <UserControl.Resources>
-    <!-- A running file with its progress; horizontal and compact under the swirl, vertical in the static view -->
+    <!-- A running file with its progress; only shown without the drawing surface -->
     <DataTemplate x:Key="SwirlRowTemplate" x:DataType="convert:ConvertRowViewModel">
       <Border
-        MinWidth="160"
-        MaxWidth="240"
-        Margin="0,0,8,0"
-        Padding="10,8"
-        Background="{ThemeResource KvGlasBrush}"
-        BorderBrush="{ThemeResource KvLineBrush}"
-        BorderThickness="1"
-        CornerRadius="8">
+        MinWidth="220"
+        MaxWidth="320"
+        Margin="0,0,0,6"
+        Style="{StaticResource KvRowStyle}"
+        Padding="12,7">
         <StackPanel AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}" Spacing="4">
-          <TextBlock
-            Style="{StaticResource CaptionTextBlockStyle}"
-            Text="{x:Bind FileName}"
-            TextTrimming="CharacterEllipsis" />
+          <TextBlock Style="{StaticResource KvRowTextStyle}" Text="{x:Bind FileName}" />
           <ProgressBar
             AutomationProperties.Name="{x:Bind AutomationName, Mode=OneWay}"
             Foreground="{x:Bind helpers:Ui.Brush(ColorBrushKey)}"
@@ -34,62 +29,55 @@
             Minimum="0"
             Value="{x:Bind ProgressValue, Mode=OneWay}" />
           <StackPanel Orientation="Horizontal" Spacing="8">
-            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind FormatsText}" />
-            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind PercentText, Mode=OneWay}" />
-            <TextBlock Style="{StaticResource SecondaryCaptionTextStyle}" Text="{x:Bind RemainingText, Mode=OneWay}" />
+            <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind FormatsText}" />
+            <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind PercentText, Mode=OneWay}" />
+            <TextBlock Style="{StaticResource KvMonoTextStyle}" Text="{x:Bind RemainingText, Mode=OneWay}" />
           </StackPanel>
         </StackPanel>
       </Border>
     </DataTemplate>
 
-    <DataTemplate x:Key="TextLineTemplate" x:DataType="x:String">
+    <!-- .w5-bericht span.fehl -->
+    <DataTemplate x:Key="FailureLineTemplate" x:DataType="x:String">
       <TextBlock
-        Padding="0,2"
         HorizontalAlignment="Center"
-        Style="{StaticResource SecondaryCaptionTextStyle}"
+        FontSize="11.5"
+        FontWeight="Normal"
+        Foreground="{ThemeResource KvErrorBrush}"
+        Style="{StaticResource KvMonoTextStyle}"
         Text="{x:Bind}"
+        TextAlignment="Center"
         TextWrapping="Wrap" />
     </DataTemplate>
   </UserControl.Resources>
 
-  <Grid
-    x:Name="Root"
-    MinHeight="300"
-    Background="{ThemeResource KvDeepBrush}"
-    CornerRadius="8">
+  <Grid x:Name="Root" Background="Transparent">
     <!-- The drawing surface (or the static ring) is put in here by the code behind. -->
     <Grid x:Name="SurfaceLayer" AutomationProperties.AccessibilityView="Raw" />
 
-    <!-- Before the start: what will happen -->
-    <TextBlock
-      Margin="16"
-      HorizontalAlignment="Center"
-      VerticalAlignment="Bottom"
-      Style="{StaticResource SecondaryCaptionTextStyle}"
-      Text="{x:Bind ViewModel.SwirlHintText, Mode=OneWay}"
-      TextAlignment="Center"
-      Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowSwirlHint), Mode=OneWay}" />
-
-    <!-- Running files: at most two cards, plus "und n weitere laufen" -->
+    <!-- Without the surface: what will happen, then the running files (the swirl shows them otherwise) -->
     <StackPanel
       x:Name="StatusStack"
-      Margin="16,12"
+      Margin="16,20,16,12"
       HorizontalAlignment="Center"
-      VerticalAlignment="Bottom"
-      Spacing="6">
-      <ItemsRepeater x:Name="RowsRepeater" ItemTemplate="{StaticResource SwirlRowTemplate}" ItemsSource="{x:Bind ViewModel.Swirl}">
-        <ItemsRepeater.Layout>
-          <StackLayout x:Name="RowsLayout" Orientation="Horizontal" Spacing="0" />
-        </ItemsRepeater.Layout>
-      </ItemsRepeater>
+      VerticalAlignment="Top"
+      Spacing="6"
+      Visibility="Collapsed">
       <TextBlock
         HorizontalAlignment="Center"
-        Style="{StaticResource SecondaryCaptionTextStyle}"
+        Style="{StaticResource KvSmallTextStyle}"
+        Text="{x:Bind ViewModel.SwirlHintText, Mode=OneWay}"
+        TextAlignment="Center"
+        Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowSwirlHint), Mode=OneWay}" />
+      <ItemsRepeater x:Name="RowsRepeater" ItemTemplate="{StaticResource SwirlRowTemplate}" ItemsSource="{x:Bind ViewModel.Swirl}" />
+      <TextBlock
+        HorizontalAlignment="Center"
+        Style="{StaticResource KvSmallTextStyle}"
         Text="{x:Bind ViewModel.SwirlMoreText, Mode=OneWay}"
         Visibility="{x:Bind helpers:Ui.ShowText(ViewModel.SwirlMoreText), Mode=OneWay}" />
     </StackPanel>
 
-    <!-- Closing report: centred inside the ring (draft: #w5-bericht, top 128, width min(440, 90 %)) -->
+    <!-- Closing report: centred inside the ring (draft: #w5-bericht, top 128, width min(440, 90 %), gap 3) -->
     <StackPanel
       x:Name="ReportCard"
       MaxWidth="440"
@@ -101,17 +89,25 @@
       Visibility="{x:Bind helpers:Ui.Show(ViewModel.ShowReportCard), Mode=OneWay}">
       <TextBlock
         HorizontalAlignment="Center"
+        AutomationProperties.HeadingLevel="Level2"
         AutomationProperties.LiveSetting="Assertive"
-        Style="{StaticResource SubtitleTextBlockStyle}"
+        CharacterSpacing="-10"
+        FontSize="18"
+        FontWeight="SemiBold"
+        Style="{StaticResource KvTextBaseStyle}"
         Text="{Binding TitleText}"
         TextAlignment="Center"
+        TextTrimming="None"
         TextWrapping="Wrap" />
       <TextBlock
         HorizontalAlignment="Center"
-        Style="{StaticResource SecondaryCaptionTextStyle}"
+        FontSize="11.5"
+        FontWeight="Normal"
+        Style="{StaticResource KvMonoTextStyle}"
         Text="{Binding SummaryText}"
-        TextAlignment="Center" />
-      <ItemsControl HorizontalAlignment="Center" ItemTemplate="{StaticResource TextLineTemplate}" ItemsSource="{Binding Failures}" />
+        TextAlignment="Center"
+        TextWrapping="Wrap" />
+      <ItemsControl HorizontalAlignment="Center" ItemTemplate="{StaticResource FailureLineTemplate}" ItemsSource="{Binding Failures}" />
       <StackPanel
         Margin="0,8,0,0"
         HorizontalAlignment="Center"
@@ -121,8 +117,11 @@
           x:Uid="Convert_Report_OpenFolder_Button"
           Command="{Binding OpenFolderCommand}"
           IsEnabled="{Binding CanOpenFolder}"
-          Style="{StaticResource AccentButtonStyle}" />
-        <Button x:Uid="Convert_NewRound_Button" Command="{x:Bind ViewModel.NewRoundCommand}" />
+          Style="{StaticResource KvSmallOutlineMintButtonStyle}" />
+        <Button
+          x:Uid="Convert_NewRound_Button"
+          Command="{x:Bind ViewModel.NewRoundCommand}"
+          Style="{StaticResource KvSmallButtonStyle}" />
       </StackPanel>
     </StackPanel>
   </Grid>

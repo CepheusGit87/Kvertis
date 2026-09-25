@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Format -> format of one row in step 3 (draft .w5-fa): the source chip in the kind colour, an arrow that fills
+     with mint as the file runs, and the target chip (mint dashed, filled mint once done). Decorative: the row
+     carries the same information in its automation name. Colours are set in code from the theme. -->
+<UserControl
+  x:Class="Kvertis.App.Views.FormatArrow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  AutomationProperties.AccessibilityView="Raw"
+  IsTabStop="False">
+
+  <Grid Height="22" ColumnSpacing="8">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="44" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="44" />
+    </Grid.ColumnDefinitions>
+
+    <!-- .w5-chip.alt -->
+    <Border
+      x:Name="SourceChip"
+      BorderThickness="1"
+      CornerRadius="6">
+      <TextBlock
+        x:Name="SourceLabel"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontSize="11"
+        Style="{StaticResource KvChipTextStyle}" />
+    </Border>
+
+    <!-- .w5-pfeil: 2 px line with 5 px room for the 7 x 10 head -->
+    <Grid
+      Grid.Column="1"
+      Height="10"
+      VerticalAlignment="Center">
+      <Grid
+        Height="2"
+        Margin="0,0,5,0"
+        VerticalAlignment="Center">
+        <Rectangle x:Name="Track" />
+        <Rectangle x:Name="Fill" RenderTransformOrigin="0,0.5">
+          <Rectangle.RenderTransform>
+            <ScaleTransform x:Name="FillScale" ScaleX="0" />
+          </Rectangle.RenderTransform>
+        </Rectangle>
+      </Grid>
+      <Polygon
+        x:Name="Head"
+        Margin="0,0,-1,0"
+        HorizontalAlignment="Right"
+        Points="0,0 7,5 0,10" />
+    </Grid>
+
+    <!-- .w5-chip.neu: dashed mint frame; filled mint when the file is done -->
+    <Grid Grid.Column="2">
+      <Rectangle
+        x:Name="TargetDash"
+        RadiusX="6"
+        RadiusY="6"
+        StrokeDashArray="2,1.5"
+        StrokeThickness="1.5" />
+      <Border
+        x:Name="TargetFill"
+        CornerRadius="6"
+        Visibility="Collapsed" />
+      <TextBlock
+        x:Name="TargetLabel"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        FontSize="11"
+        Style="{StaticResource KvChipTextStyle}" />
+    </Grid>
+  </Grid>
+</UserControl>

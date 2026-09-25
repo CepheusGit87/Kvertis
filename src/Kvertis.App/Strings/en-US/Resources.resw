@@ -160,25 +160,13 @@
     <value>{0} files were not converted</value>
   </data>
   <data name="Convert_Inbox_Header.Text" xml:space="preserve">
-    <value>Inbox</value>
+    <value>INBOX</value>
   </data>
   <data name="Convert_Inbox_Summary" xml:space="preserve">
     <value>{0} files · {1}</value>
   </data>
   <data name="Convert_List_Header.Text" xml:space="preserve">
-    <value>Files in this job</value>
-  </data>
-  <data name="Convert_List_State_Done" xml:space="preserve">
-    <value>done</value>
-  </data>
-  <data name="Convert_List_State_Ready" xml:space="preserve">
-    <value>ready</value>
-  </data>
-  <data name="Convert_List_State_Running" xml:space="preserve">
-    <value>running</value>
-  </data>
-  <data name="Convert_List_Summary" xml:space="preserve">
-    <value>{0} in total · {1}</value>
+    <value>FILES IN THIS JOB</value>
   </data>
   <data name="Convert_Location_AutomationName" xml:space="preserve">
     <value>Output location: {0}, {1}</value>
@@ -195,9 +183,6 @@
   <data name="Convert_Location_Custom_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Your own folder</value>
   </data>
-  <data name="Convert_Location_Custom_Option.Content" xml:space="preserve">
-    <value>Your own folder</value>
-  </data>
   <data name="Convert_Location_Custom_Title" xml:space="preserve">
     <value>Your own folder</value>
   </data>
@@ -205,33 +190,24 @@
     <value>Use as the output folder</value>
   </data>
   <data name="Convert_Location_Header.Text" xml:space="preserve">
-    <value>Output location</value>
+    <value>SAVE TO</value>
   </data>
   <data name="Convert_Location_Pick_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Choose a folder…</value>
   </data>
-  <data name="Convert_Location_Pick_Button.Content" xml:space="preserve">
-    <value>Choose a folder…</value>
-  </data>
   <data name="Convert_Location_Same_Detail" xml:space="preserve">
-    <value>Every file lands in its own folder.</value>
+    <value>every file into its own folder</value>
   </data>
   <data name="Convert_Location_Same_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Next to the original</value>
-  </data>
-  <data name="Convert_Location_Same_Option.Content" xml:space="preserve">
     <value>Next to the original</value>
   </data>
   <data name="Convert_Location_Same_Title" xml:space="preserve">
     <value>Next to the original</value>
   </data>
   <data name="Convert_Location_Sub_Detail" xml:space="preserve">
-    <value>A folder “Kvertis” is created next to the originals.</value>
+    <value>new folder “Kvertis” next to every original</value>
   </data>
   <data name="Convert_Location_Sub_Option.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Subfolder “Kvertis”</value>
-  </data>
-  <data name="Convert_Location_Sub_Option.Content" xml:space="preserve">
     <value>Subfolder “Kvertis”</value>
   </data>
   <data name="Convert_Location_Sub_Title" xml:space="preserve">
@@ -291,9 +267,6 @@
   <data name="Convert_Result_Done" xml:space="preserve">
     <value>done {0} of {1}</value>
   </data>
-  <data name="Convert_Result_Header.Text" xml:space="preserve">
-    <value>Result</value>
-  </data>
   <data name="Convert_Resume_Label" xml:space="preserve">
     <value>Resume</value>
   </data>
@@ -303,28 +276,19 @@
   <data name="Convert_Row_Change_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
     <value>Change</value>
   </data>
-  <data name="Convert_Row_Change_Button.Content" xml:space="preserve">
-    <value>Change</value>
-  </data>
   <data name="Convert_Row_Formats" xml:space="preserve">
     <value>{0} → {1}</value>
   </data>
   <data name="Convert_Row_Location_Header.Text" xml:space="preserve">
-    <value>Target of this file</value>
+    <value>Save only this file in</value>
   </data>
   <data name="Convert_Row_Location_Shared.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Like all the others</value>
-  </data>
-  <data name="Convert_Row_Location_Shared.Content" xml:space="preserve">
     <value>Like all the others</value>
   </data>
   <data name="Convert_Row_NeedsFolder" xml:space="preserve">
     <value>Choose a folder</value>
   </data>
   <data name="Convert_Row_Open_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Open</value>
-  </data>
-  <data name="Convert_Row_Open_Button.Content" xml:space="preserve">
     <value>Open</value>
   </data>
   <data name="Convert_Row_OwnTarget" xml:space="preserve">
@@ -337,9 +301,6 @@
     <value>like all</value>
   </data>
   <data name="Convert_Row_ShowInFolder_Button.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
-    <value>Show in folder</value>
-  </data>
-  <data name="Convert_Row_ShowInFolder_Button.Content" xml:space="preserve">
     <value>Show in folder</value>
   </data>
   <data name="Convert_Row_Sizes" xml:space="preserve">
@@ -369,9 +330,6 @@
   <data name="Convert_Skipped_Batch" xml:space="preserve">
     <value>{0}: above the limit of the free version</value>
   </data>
-  <data name="Convert_Skipped_Header.Text" xml:space="preserve">
-    <value>Not in this job</value>
-  </data>
   <data name="Convert_Skipped_Other" xml:space="preserve">
     <value>{0}: not in this job</value>
   </data>
@@ -381,17 +339,11 @@
   <data name="Convert_Start_Button" xml:space="preserve">
     <value>Convert · {0} files</value>
   </data>
-  <data name="Convert_Swirl_Header.Text" xml:space="preserve">
-    <value>Swirl</value>
-  </data>
   <data name="Convert_Swirl_More" xml:space="preserve">
     <value>and {0} more are running</value>
   </data>
   <data name="Convert_Swirl_Ready" xml:space="preserve">
     <value>Ready · Convert starts {0} files</value>
-  </data>
-  <data name="Convert_Title.Text" xml:space="preserve">
-    <value>Convert</value>
   </data>
   <data name="Convert_Trust_Text.Text" xml:space="preserve">
     <value>Your files never leave this PC.</value>
@@ -1715,5 +1667,137 @@
   </data>
   <data name="Finale_Check_AutomationName" xml:space="preserve">
     <value>Round finished</value>
+  </data>
+  <data name="Convert_Inbox_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Inbox</value>
+  </data>
+  <data name="Convert_Inbox_Summary_One" xml:space="preserve">
+    <value>1 file · {1}</value>
+  </data>
+  <data name="Convert_Inbox_Running" xml:space="preserve">
+    <value>{0} waiting · {1} in the swirl</value>
+  </data>
+  <data name="Convert_Inbox_Running_One" xml:space="preserve">
+    <value>1 waiting · {0} in the swirl</value>
+  </data>
+  <data name="Convert_Inbox_InSwirl" xml:space="preserve">
+    <value>{0} in the swirl</value>
+  </data>
+  <data name="Convert_Inbox_AllDone" xml:space="preserve">
+    <value>everything converted</value>
+  </data>
+  <data name="Convert_Inbox_NotConverted" xml:space="preserve">
+    <value>{0} not converted</value>
+  </data>
+  <data name="Convert_Location_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Save to</value>
+  </data>
+  <data name="Convert_Menu_Shared_Header.Text" xml:space="preserve">
+    <value>Save all files in</value>
+  </data>
+  <data name="Convert_Menu_Shared_Sub.Text" xml:space="preserve">
+    <value>applies to every file without its own target</value>
+  </data>
+  <data name="Convert_Menu_Same_Title.Text" xml:space="preserve">
+    <value>Next to the original</value>
+  </data>
+  <data name="Convert_Menu_Same_Detail.Text" xml:space="preserve">
+    <value>every file stays in its folder</value>
+  </data>
+  <data name="Convert_Menu_Sub_Title.Text" xml:space="preserve">
+    <value>Subfolder “Kvertis”</value>
+  </data>
+  <data name="Convert_Menu_Sub_Detail.Text" xml:space="preserve">
+    <value>a new folder next to every original</value>
+  </data>
+  <data name="Convert_Menu_Custom_Title.Text" xml:space="preserve">
+    <value>Your own folder</value>
+  </data>
+  <data name="Convert_Menu_Pick_Title.Text" xml:space="preserve">
+    <value>Choose a folder …</value>
+  </data>
+  <data name="Convert_Menu_Pick_Detail.Text" xml:space="preserve">
+    <value>opens the folder dialog of Windows</value>
+  </data>
+  <data name="Convert_Menu_Footer.Text" xml:space="preserve">
+    <value>Or drag a folder from Explorer onto the output location.</value>
+  </data>
+  <data name="Convert_Menu_RowShared_Title.Text" xml:space="preserve">
+    <value>Like all the others</value>
+  </data>
+  <data name="Convert_Menu_RowShared_Detail.Text" xml:space="preserve">
+    <value>follows “Save to”</value>
+  </data>
+  <data name="Convert_Bag_None" xml:space="preserve">
+    <value>One file somewhere else?</value>
+  </data>
+  <data name="Convert_Bag_Hint.Text" xml:space="preserve">
+    <value>Click “Change” next to a file in the list.</value>
+  </data>
+  <data name="Convert_List_Header.[using:Microsoft.UI.Xaml.Automation]AutomationProperties.Name" xml:space="preserve">
+    <value>Files in this job</value>
+  </data>
+  <data name="Convert_Column_File.Text" xml:space="preserve">
+    <value>FILE</value>
+  </data>
+  <data name="Convert_Column_Format.Text" xml:space="preserve">
+    <value>FORMAT</value>
+  </data>
+  <data name="Convert_Column_Target.Text" xml:space="preserve">
+    <value>SAVED AS</value>
+  </data>
+  <data name="Convert_Column_Action.Text" xml:space="preserve">
+    <value>ACTION</value>
+  </data>
+  <data name="Convert_Column_Status.Text" xml:space="preserve">
+    <value>STATUS</value>
+  </data>
+  <data name="Convert_List_Estimate" xml:space="preserve">
+    <value>≈ {0}</value>
+  </data>
+  <data name="Convert_ListState_Ready" xml:space="preserve">
+    <value>READY</value>
+  </data>
+  <data name="Convert_ListState_Progress" xml:space="preserve">
+    <value>{0} OF {1}</value>
+  </data>
+  <data name="Convert_ListState_Paused" xml:space="preserve">
+    <value>PAUSED · {0} OF {1}</value>
+  </data>
+  <data name="Convert_ListState_Change" xml:space="preserve">
+    <value> · {0}</value>
+  </data>
+  <data name="Convert_ListState_Finished" xml:space="preserve">
+    <value>DONE</value>
+  </data>
+  <data name="Convert_ListState_Done" xml:space="preserve">
+    <value>DONE · {0} → {1}</value>
+  </data>
+  <data name="Convert_Row_Status_Ready" xml:space="preserve">
+    <value>ready</value>
+  </data>
+  <data name="Convert_Row_Status_Waiting" xml:space="preserve">
+    <value>waiting</value>
+  </data>
+  <data name="Convert_Row_Status_Paused" xml:space="preserve">
+    <value>paused</value>
+  </data>
+  <data name="Convert_Row_Status_Done" xml:space="preserve">
+    <value>✓ done</value>
+  </data>
+  <data name="Convert_Row_Status_Failed" xml:space="preserve">
+    <value>✕ failed</value>
+  </data>
+  <data name="Convert_Row_Status_Cancelled" xml:space="preserve">
+    <value>✕ stopped</value>
+  </data>
+  <data name="Convert_Row_Change_Text.Text" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Convert_Row_Open_Text.Text" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Convert_Row_ShowInFolder_Text.Text" xml:space="preserve">
+    <value>Show in folder</value>
   </data>
 </root>

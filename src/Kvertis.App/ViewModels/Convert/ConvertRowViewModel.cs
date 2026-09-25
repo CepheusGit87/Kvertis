@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Kvertis.App.Helpers;
 using Kvertis.App.Services;
+using Kvertis.Engine.Abstractions;
 using Kvertis.Engine.Formats;
 using Kvertis.Queue;
 
@@ -49,12 +50,51 @@ public sealed partial class ConvertRowViewModel : ObservableObject
         ColorBrushKey = TargetPlanner.ColorKey(item.Input.Kind) + "Brush";
         SourceLabel = TargetPlanner.Label(registry, item.Input.Format);
         TargetLabel = TargetPlanner.Label(registry, item.Settings.Output);
+        SourceCode = ShortCode(registry, item.Input.Format);
+        TargetCode = ShortCode(registry, item.Settings.Output);
         FormatsText = loc.Format("Convert_Row_Formats", SourceLabel, TargetLabel);
         _inputBytes = item.Input.SizeBytes;
         _estimatedBytes = estimatedBytes;
+        InputDirectory = Path.GetDirectoryName(item.Input.Path) ?? string.Empty;
+        SubFolderDirectory = Path.Combine(InputDirectory, OutputLocation.DefaultSubFolderName);
         SizesText = loc.Format(
             "Convert_Row_Sizes", Formatting.Bytes(loc, _inputBytes), Formatting.Bytes(loc, estimatedBytes));
         StateText = loc.Get("Convert_Row_State_Waiting");
+        StatusText = loc.Get("Convert_Row_Status_Ready");
+    }
+
+    /// <summary>Longest directory part shown in the list before it is shortened from the left (draft: kurzPfad 42).</summary>
+    public const int MaxDirectoryChars = 42;
+
+    /// <summary>The short code of a format for the chips (.w5-chip): the main file extension, "JPG", "MD", "OGG".</summary>
+    public static string ShortCode(FormatRegistry registry, FormatId id)
+    {
+        ArgumentNullException.ThrowIfNull(registry);
+        var extension = registry.Get(id)?.PrimaryExtension;
+        return (string.IsNullOrEmpty(extension) ? id.Id : extension).ToUpperInvariant();
+    }
+
+    /// <summary>"C:\Users\…\Bilder\Urlaub\" for the list: the folder with a trailing separator, shortened from the left.</summary>
+    public static string ShortDirectory(string? directory, int maxChars = MaxDirectoryChars)
+    {
+        if (string.IsNullOrEmpty(directory))
+        {
+            return string.Empty;
+        }
+        var withSeparator = directory.EndsWith(Path.DirectorySeparatorChar) ? directory : directory + Path.DirectorySeparatorChar;
+        if (withSeparator.Length <= maxChars || maxChars < 8)
+        {
+            return withSeparator;
+        }
+        // Keep the drive and the end of the path: "C:\…\Bilder\Urlaub 2026\".
+        var root = Path.GetPathRoot(withSeparator) ?? string.Empty;
+        var tail = withSeparator[^(maxChars - root.Length - 1)..];
+        var cut = tail.IndexOf(Path.DirectorySeparatorChar);
+        if (cut > 0 && cut < tail.Length - 1)
+        {
+            tail = tail[cut..];
+        }
+        return root + "\u2026" + (tail.StartsWith(Path.DirectorySeparatorChar) ? tail : Path.DirectorySeparatorChar + tail);
     }
 
     public PlannedConversion Item { get; }
@@ -72,13 +112,38 @@ public sealed partial class ConvertRowViewModel : ObservableObject
 
     public string FormatsText { get; }
 
+    /// <summary>Chip text of the source format (.w5-chip.alt).</summary>
+    public string SourceCode { get; }
+
+    /// <summary>Chip text of the target format (.w5-chip.neu).</summary>
+    public string TargetCode { get; }
+
+    /// <summary>Size of the input file in bytes.</summary>
+    public long InputBytes => _inputBytes;
+
+    /// <summary>Estimated size of the result before the round.</summary>
+    public long EstimatedBytes => _estimatedBytes;
+
+    /// <summary>Size of the result once the file is done, otherwise null.</summary>
+    public long? OutputBytes { get; private set; }
+
+    /// <summary>The folder of the original ("Neben dem Original" in the row menu).</summary>
+    public string InputDirectory { get; }
+
+    /// <summary>The sub folder next to the original ("Unterordner" in the row menu).</summary>
+    public string SubFolderDirectory { get; }
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AutomationName))]
     private string sizesText = string.Empty;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(AutomationName))]
+    [NotifyPropertyChangedFor(nameof(AutomationName), nameof(TargetDirectoryShort))]
     private string targetDirectoryText = string.Empty;
+
+    /// <summary>Short visible status (.w5-st): "bereit", "42 %", "✓ fertig", "✕ Fehler". The screen reader gets <see cref="StateText"/>.</summary>
+    [ObservableProperty]
+    private string statusText = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(AutomationName))]
@@ -91,7 +156,7 @@ public sealed partial class ConvertRowViewModel : ObservableObject
     private string targetMarkText = string.Empty;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowPath))]
+    [NotifyPropertyChangedFor(nameof(ShowPath), nameof(TargetDirectoryShort))]
     private bool needsFolder;
 
     [ObservableProperty]
@@ -119,8 +184,20 @@ public sealed partial class ConvertRowViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsWaiting), nameof(IsRunning), nameof(IsDone), nameof(IsFailed),
-        nameof(IsFinished), nameof(CanChangeTarget), nameof(ShowProgress), nameof(ShowPath))]
+        nameof(IsFinished), nameof(CanChangeTarget), nameof(ShowProgress), nameof(ShowPath), nameof(ShowChange))]
     private JobState? state;
+
+    /// <summary>The folder part of the target path as the list shows it.</summary>
+    public string TargetDirectoryShort => NeedsFolder ? TargetDirectoryText : ShortDirectory(TargetDirectoryText);
+
+    /// <summary>"Ändern" stands in the action column until the file is done or failed.</summary>
+    public bool ShowChange => State is not (JobState.Completed or JobState.Failed);
+
+    public bool IsOwnSame => IsOwnLocation && IsSame;
+
+    public bool IsOwnSub => IsOwnLocation && IsSub;
+
+    public bool IsOwnCustom => IsOwnLocation && IsCustom;
 
     public bool HasError => !string.IsNullOrEmpty(ErrorTitle);
 
@@ -175,6 +252,10 @@ public sealed partial class ConvertRowViewModel : ObservableObject
         OnPropertyChanged(nameof(IsSub));
         OnPropertyChanged(nameof(IsCustom));
         OnPropertyChanged(nameof(UsesShared));
+        OnPropertyChanged(nameof(IsOwnSame));
+        OnPropertyChanged(nameof(IsOwnSub));
+        OnPropertyChanged(nameof(IsOwnCustom));
+        OnPropertyChanged(nameof(TargetDirectoryShort));
         OnPropertyChanged(nameof(AutomationName));
     }
 
@@ -202,6 +283,7 @@ public sealed partial class ConvertRowViewModel : ObservableObject
         switch (job.State)
         {
             case JobState.Completed when job.Result is { } result:
+                OutputBytes = result.OutputBytes;
                 SizesText = _loc.Format(
                     "Convert_Row_SizesFinal",
                     Formatting.Bytes(_loc, result.InputBytes),
@@ -230,13 +312,25 @@ public sealed partial class ConvertRowViewModel : ObservableObject
             JobState.Failed => "Convert_Row_State_Failed",
             _ => "Convert_Row_State_Cancelled",
         });
+        StatusText = job.State == JobState.Running
+            ? PercentText
+            : _loc.Get(job.State switch
+            {
+                JobState.Queued => "Convert_Row_Status_Waiting",
+                JobState.Paused => "Convert_Row_Status_Paused",
+                JobState.Completed => "Convert_Row_Status_Done",
+                JobState.Failed => "Convert_Row_Status_Failed",
+                _ => "Convert_Row_Status_Cancelled",
+            });
     }
 
     /// <summary>Back to "not started yet" (new round).</summary>
     public void ResetToWaiting()
     {
         State = null;
+        OutputBytes = null;
         StateText = _loc.Get("Convert_Row_State_Waiting");
+        StatusText = _loc.Get("Convert_Row_Status_Ready");
         ProgressValue = 0;
         PercentText = string.Empty;
         RemainingText = string.Empty;

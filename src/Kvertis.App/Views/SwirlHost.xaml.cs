@@ -36,6 +36,9 @@ public sealed partial class SwirlHost : UserControl
     /// <summary>Raised on the UI thread when the supernova goes off: the page runs the XAML shake.</summary>
     public event EventHandler? ShakeRequested;
 
+    /// <summary>Raised after the host switched between moving surface, static view and nothing (see <see cref="IsAnimated"/>).</summary>
+    public event EventHandler? SurfaceModeChanged;
+
     /// <summary>The view model of step 3. Set from the page before the host is loaded.</summary>
     public ConvertPageViewModel ViewModel { get; set; } = App.Services.GetRequiredService<ConvertPageViewModel>();
 
@@ -145,10 +148,11 @@ public sealed partial class SwirlHost : UserControl
                 break;
         }
 
-        // Horizontal compact cards under the swirl; the plain vertical list without the surface.
-        RowsLayout.Orientation = wanted == 1 ? Orientation.Horizontal : Orientation.Vertical;
-        StatusStack.HorizontalAlignment = wanted == 1 ? HorizontalAlignment.Center : HorizontalAlignment.Stretch;
+        // With the moving surface the running files show only in the swirl and in the list (draft); without it
+        // the progress cards and the hint stand in the middle of the stage.
+        StatusStack.Visibility = wanted == 1 ? Visibility.Collapsed : Visibility.Visible;
         ViewModel.AnimatedFinale = wanted == 1;
+        SurfaceModeChanged?.Invoke(this, EventArgs.Empty);
     }
 
     private void DropSurface()
