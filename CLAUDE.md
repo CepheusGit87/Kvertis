@@ -10,7 +10,7 @@ Im Zweifel wird ein Feature weggelassen. Nur MIT/Apache/BSD/MPL/LGPL-Bibliotheke
 
 ## Tech-Stack
 
-C# / .NET 8, WinUI 3 (Windows App SDK), MSIX. SkiaSharp + Windows Imaging Component (Bilder), eigener FFmpeg-LGPL-Build als Prozess (patentfreie Formate), Media Foundation (H.264/HEVC/AAC), PdfPig, PDFsharp, DocumentFormat.OpenXml, Markdig, CommunityToolkit.Mvvm, xUnit.
+C# / .NET 10, WinUI 3 (Windows App SDK), MSIX. SkiaSharp + Windows Imaging Component (Bilder), eigener FFmpeg-LGPL-Build als Prozess (patentfreie Formate), Media Foundation (H.264/HEVC/AAC), PdfPig, PDFsharp, DocumentFormat.OpenXml, Markdig, CommunityToolkit.Mvvm, xUnit.
 
 ## Projektstruktur
 

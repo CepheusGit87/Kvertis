@@ -12,7 +12,7 @@
     <Product>Kvertis</Product>
     <Copyright>Copyright © Kvertis</Copyright>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <!-- Allows net8.0-windows projects to compile on Linux CI (no XAML compiler involved). -->
+    <!-- Allows net10.0-windows projects to compile on Linux CI (no XAML compiler involved). -->
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <SatelliteResourceLanguages>en;de</SatelliteResourceLanguages>
   </PropertyGroup>

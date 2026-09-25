@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>Kvertis.App</RootNamespace>
     <AssemblyName>Kvertis</AssemblyName>
@@ -44,9 +44,10 @@
     <Content Include="Assets\**" />
   </ItemGroup>
 
-  <!-- Third-party license texts, shown on the licenses page (ThirdParty/<Library>/LICENSE). -->
+  <!-- Third-party license texts, shown on the licenses page (ThirdParty/<Library>/LICENSE).
+       third_party/_geplant/ holds texts of libraries that are approved but not yet referenced; they ship only once the package is in the code. -->
   <ItemGroup>
-    <Content Include="..\..\third_party\**\*" Link="ThirdParty\%(RecursiveDir)%(Filename)%(Extension)">
+    <Content Include="..\..\third_party\**\*" Exclude="..\..\third_party\_geplant\**" Link="ThirdParty\%(RecursiveDir)%(Filename)%(Extension)">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
